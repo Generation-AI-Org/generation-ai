@@ -2,19 +2,56 @@ import OpenAI from 'openai'
 import { KB_TOOLS_OPENAI, executeTool } from './kb-tools'
 import type { ChatMessage, ContentSource, ContentType } from './types'
 
-// MiniMax M2.7 via OpenAI-compatible API (Token Plan endpoint)
-const client = new OpenAI({
+// Primary: GLM-5.1 via Z.AI Coding Plan
+const glmClient = new OpenAI({
+  apiKey: process.env.ZHIPU_API_KEY,
+  baseURL: 'https://api.z.ai/api/coding/paas/v4',
+})
+
+// Fallback: MiniMax M2.7
+const minimaxClient = new OpenAI({
   apiKey: process.env.MINIMAX_API_KEY,
   baseURL: 'https://api.minimax.io/v1',
 })
 
-const MODEL = 'MiniMax-M2.7'
+const PRIMARY_MODEL = 'glm-5.1'
+const FALLBACK_MODEL = 'MiniMax-M2.7'
 
 /**
- * Strip MiniMax <think> reasoning tags from response
+ * Strip <think> reasoning tags from response (GLM & MiniMax both use these)
  */
 function stripThinkTags(text: string): string {
   return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
+}
+
+/**
+ * Create chat completion with GLM-5.1 primary, MiniMax fallback
+ */
+async function createCompletion(
+  messages: OpenAI.ChatCompletionMessageParam[],
+  tools: OpenAI.ChatCompletionTool[]
+): Promise<{ response: OpenAI.ChatCompletion; model: string }> {
+  // Try GLM-5.1 first
+  try {
+    const response = await glmClient.chat.completions.create({
+      model: PRIMARY_MODEL,
+      max_tokens: 2000,
+      tools,
+      messages,
+    })
+    return { response, model: PRIMARY_MODEL }
+  } catch (error) {
+    console.warn(`GLM-5.1 failed, falling back to MiniMax:`, (error as Error).message)
+
+    // Fallback to MiniMax
+    const response = await minimaxClient.chat.completions.create({
+      model: FALLBACK_MODEL,
+      max_tokens: 2000,
+      tools,
+      messages,
+    })
+    return { response, model: FALLBACK_MODEL }
+  }
 }
 
 /**
@@ -62,7 +99,8 @@ export interface AgentResult {
 }
 
 /**
- * Run the V2 agent with tool-calling loop using MiniMax M2.7
+ * Run the V2 agent with tool-calling loop
+ * Primary: GLM-5.1, Fallback: MiniMax M2.7
  *
  * @param message - User's message
  * @param history - Previous messages in the conversation
@@ -93,12 +131,7 @@ export async function runAgent(
   const maxIterations = 5
 
   while (iterations < maxIterations) {
-    const response = await client.chat.completions.create({
-      model: MODEL,
-      max_tokens: 2000,
-      tools: KB_TOOLS_OPENAI,
-      messages
-    })
+    const { response, model } = await createCompletion(messages, KB_TOOLS_OPENAI)
 
     const choice = response.choices[0]
     const assistantMessage = choice.message
