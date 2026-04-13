@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@genai/config/tailwind/base.css";
+@import "../../../packages/config/tailwind/base.css";
 
 /* ─── tools-app specific additions ────────────────────────────────────────── */
 

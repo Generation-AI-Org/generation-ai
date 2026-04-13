@@ -13,10 +13,16 @@ export const env = createEnv({
    */
   server: {
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'SUPABASE_SERVICE_ROLE_KEY is required'),
-    ANTHROPIC_API_KEY: z.string().min(1, 'ANTHROPIC_API_KEY is required'),
+    // New AI providers (April 2026)
+    GOOGLE_GENERATIVE_AI_API_KEY: z.string().min(1, 'GOOGLE_GENERATIVE_AI_API_KEY is required'),
+    MINIMAX_API_KEY: z.string().min(1, 'MINIMAX_API_KEY is required'),
+    // Legacy Anthropic (optional, for fallback)
+    ANTHROPIC_API_KEY: z.string().min(1).optional(),
     // Upstash Redis (optional — graceful degradation if missing)
     UPSTASH_REDIS_REST_URL: z.string().url().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
+    // Exa.ai for trusted web search (optional)
+    EXA_API_KEY: z.string().min(1).optional(),
   },
 
   /**
@@ -36,9 +42,12 @@ export const env = createEnv({
   runtimeEnv: {
     // Server
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    MINIMAX_API_KEY: process.env.MINIMAX_API_KEY,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+    EXA_API_KEY: process.env.EXA_API_KEY,
     // Client
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,

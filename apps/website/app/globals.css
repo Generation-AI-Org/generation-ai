@@ -1,6 +1,6 @@
 /* Generation AI Design System - Tailwind v4 */
 @import "tailwindcss";
-@import "@genai/config/tailwind/base.css";
+@import "../../../packages/config/tailwind/base.css";
 @import "tw-animate-css";
 
 /* ─── website-specific additions ──────────────────────────────────────────── */

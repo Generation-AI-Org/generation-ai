@@ -1,5 +1,7 @@
 import { createServerClient } from '@/lib/supabase'
+import { searchTrustedSources } from '@/lib/exa'
 import type { Tool } from '@anthropic-ai/sdk/resources/messages'
+import type OpenAI from 'openai'
 import type { KBExploreResult, KBListItem, KBReadResult, ContentType } from '@/lib/types'
 
 /**
@@ -172,6 +174,94 @@ export const KB_TOOLS: Tool[] = [
       },
       required: ["query"]
     }
+  },
+  {
+    name: "web_search",
+    description: "Recherchiert in vertrauenswuerdigen Quellen (offizielle Docs, GitHub, etc.) und gibt eine fertige Antwort mit Quellenlinks zurueck. Nur fuer KI/Tech-Themen nutzen wenn KB keine Infos hat.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        query: {
+          type: "string",
+          description: "Frage auf Englisch fuer beste Ergebnisse (z.B. 'What is Claude Code?', 'How does Stable Diffusion work?')"
+        }
+      },
+      required: ["query"]
+    }
+  }
+]
+
+// Tool Definitions for OpenAI-compatible API (MiniMax)
+
+export const KB_TOOLS_OPENAI: OpenAI.ChatCompletionTool[] = [
+  {
+    type: "function",
+    function: {
+      name: "kb_explore",
+      description: "Zeigt Struktur der Wissensbasis: Kategorien, Typen, Anzahl Items. Nutze das zuerst um dich zu orientieren.",
+      parameters: {
+        type: "object",
+        properties: {}
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "kb_list",
+      description: "Listet Items einer Kategorie oder eines Typs. Gibt nur slug, title, summary zurueck.",
+      parameters: {
+        type: "object",
+        properties: {
+          category: { type: "string", description: "Filter nach Kategorie (optional)" },
+          type: { type: "string", enum: ["tool", "concept", "faq", "workflow", "guide"], description: "Filter nach Typ (optional)" },
+          limit: { type: "integer", description: "Max Ergebnisse (default: 10, max: 50)" }
+        }
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "kb_read",
+      description: "Liest den vollen Content eines Items anhand seines slugs.",
+      parameters: {
+        type: "object",
+        properties: {
+          slug: { type: "string", description: "Der slug des Items" }
+        },
+        required: ["slug"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "kb_search",
+      description: "Volltextsuche ueber alle Items in der Wissensbasis.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: { type: "string", description: "Suchbegriff" },
+          limit: { type: "integer", description: "Max Ergebnisse (default: 5, max: 20)" }
+        },
+        required: ["query"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "web_search",
+      description: "Recherchiert in vertrauenswuerdigen Quellen (offizielle Docs, GitHub, etc.) und gibt eine fertige Antwort mit Quellenlinks zurueck. Nur fuer KI/Tech-Themen nutzen wenn KB keine Infos hat.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: { type: "string", description: "Frage auf Englisch fuer beste Ergebnisse (z.B. 'What is Claude Code?')" }
+        },
+        required: ["query"]
+      }
+    }
   }
 ]
 
@@ -199,6 +289,13 @@ export async function executeTool(
       return JSON.stringify(await kbSearch(
         input.query as string,
         input.limit as number | undefined
+      ))
+
+    case 'web_search':
+      const limit = Math.min((input.limit as number) || 5, 10)
+      return JSON.stringify(await searchTrustedSources(
+        input.query as string,
+        limit
       ))
 
     default:

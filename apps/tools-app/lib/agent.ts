@@ -1,8 +1,21 @@
-import Anthropic from '@anthropic-ai/sdk'
-import { KB_TOOLS, executeTool } from './kb-tools'
+import OpenAI from 'openai'
+import { KB_TOOLS_OPENAI, executeTool } from './kb-tools'
 import type { ChatMessage, ContentSource, ContentType } from './types'
 
-const client = new Anthropic()
+// MiniMax M2.7 via OpenAI-compatible API (Token Plan endpoint)
+const client = new OpenAI({
+  apiKey: process.env.MINIMAX_API_KEY,
+  baseURL: 'https://api.minimax.io/v1',
+})
+
+const MODEL = 'MiniMax-M2.7'
+
+/**
+ * Strip MiniMax <think> reasoning tags from response
+ */
+function stripThinkTags(text: string): string {
+  return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
+}
 
 /**
  * System prompt for V2 Member Agent
@@ -10,26 +23,34 @@ const client = new Anthropic()
  */
 export const SYSTEM_PROMPT = `Du bist der KI-Assistent von Generation AI — für Studierende im DACH-Raum.
 
-Du hast Zugriff auf eine Wissensbasis mit Tools, Concepts, FAQs und Workflows.
-Du erkundest die KB selbstständig um Fragen zu beantworten.
+Du hast Zugriff auf:
+1. **Wissensbasis (KB)** — kuratierte Inhalte zu KI-Tools, Concepts, FAQs
+2. **Web-Recherche** — vertrauenswürdige externe Quellen (offizielle Docs, GitHub, etc.)
 
 ## Wie du vorgehst
 
-1. Bei neuen Themen: Erst kb_explore() um Struktur zu verstehen
-2. Dann kb_list() für relevante Kategorie (nur Übersichten)
-3. Dann kb_read() für spezifische Items die relevant wirken
-4. Antworte basierend auf dem was du gelesen hast
+1. IMMER zuerst KB durchsuchen (kb_search, kb_list, kb_read)
+2. KB-Treffer? → Antworte damit, nenne die Quelle
+3. Kein KB-Treffer? → web_search() für externe Recherche (nur KI/Tech-Themen!)
+4. Antworte basierend auf den Recherche-Ergebnissen
+
+## Antwort-Format
+
+**Bei KB-Treffer:**
+Antworte direkt. Am Ende: "📚 Quelle: [Item-Titel]"
+
+**Bei Web-Recherche:**
+Antworte basierend auf den Ergebnissen. Am Ende:
+"🔗 Quellen: [URL1], [URL2]"
 
 ## Regeln
 
-- Antworte NUR basierend auf KB-Inhalten
-- Wenn nichts passt: "Dazu habe ich keine Infos"
-- Keine Halluzinationen
-- Nenne deine Quellen (Item-Titel)
-
-## Stil
-
-Deutsch, Du-Form, direkt. Erkläre Dinge so dass Studierende sie verstehen.`
+- KB hat Priorität — immer zuerst checken
+- web_search NUR für KI/Tech-Themen, nicht für allgemeines Wissen
+- Bei web_search: Füge "2026" zur Query hinzu für aktuelle Ergebnisse (z.B. "GPT-5 features 2026")
+- Keine Infos erfinden — wenn nichts gefunden: "Dazu konnte ich nichts finden"
+- Deutsch, Du-Form, direkt und hilfreich
+- Bei Fragen zu Generation AI selbst: "Stell deine Frage in unserer Community auf Circle!"`
 
 /**
  * Agent result type
@@ -41,7 +62,7 @@ export interface AgentResult {
 }
 
 /**
- * Run the V2 agent with tool-calling loop
+ * Run the V2 agent with tool-calling loop using MiniMax M2.7
  *
  * @param message - User's message
  * @param history - Previous messages in the conversation
@@ -51,11 +72,12 @@ export async function runAgent(
   message: string,
   history: ChatMessage[] = []
 ): Promise<AgentResult> {
-  // Build messages array for Anthropic API
-  const messages: Anthropic.MessageParam[] = [
+  // Build messages array for OpenAI-compatible API
+  const messages: OpenAI.ChatCompletionMessageParam[] = [
+    { role: 'system', content: SYSTEM_PROMPT },
     // Include history (last 6 messages max)
-    ...history.slice(-6).map((msg): Anthropic.MessageParam => ({
-      role: msg.role,
+    ...history.slice(-6).map((msg): OpenAI.ChatCompletionMessageParam => ({
+      role: msg.role as 'user' | 'assistant',
       content: msg.content
     })),
     // Add current user message
@@ -71,63 +93,65 @@ export async function runAgent(
   const maxIterations = 5
 
   while (iterations < maxIterations) {
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const response = await client.chat.completions.create({
+      model: MODEL,
       max_tokens: 2000,
-      system: SYSTEM_PROMPT,
-      tools: KB_TOOLS,
+      tools: KB_TOOLS_OPENAI,
       messages
     })
 
-    // Agent ist fertig
-    if (response.stop_reason === 'end_turn') {
-      const textBlock = response.content.find(b => b.type === 'text')
-      const text = textBlock && textBlock.type === 'text' ? textBlock.text : ''
+    const choice = response.choices[0]
+    const assistantMessage = choice.message
+
+    // Agent ist fertig (no tool calls)
+    if (choice.finish_reason === 'stop' || !assistantMessage.tool_calls?.length) {
+      const text = stripThinkTags(assistantMessage.content || '')
       return { text, sources, iterations }
     }
 
     // Agent will Tools nutzen
-    if (response.stop_reason === 'tool_use') {
-      const toolResults: Anthropic.ToolResultBlockParam[] = []
+    if (assistantMessage.tool_calls?.length) {
+      // Add assistant message with tool calls
+      messages.push(assistantMessage)
 
-      for (const block of response.content) {
-        if (block.type === 'tool_use') {
-          const result = await executeTool(block.name, block.input as Record<string, unknown>)
+      // Execute each tool call
+      for (const toolCall of assistantMessage.tool_calls) {
+        // Handle both function and custom tool call formats
+        const funcCall = 'function' in toolCall ? toolCall.function : null
+        if (!funcCall) continue
 
-          // Bei kb_read: Item zu sources hinzufügen
-          if (block.name === 'kb_read') {
-            try {
-              const parsed = JSON.parse(result)
-              if (parsed && parsed.slug && !seenSlugs.has(parsed.slug)) {
-                seenSlugs.add(parsed.slug)
-                sources.push({
-                  slug: parsed.slug,
-                  title: parsed.title,
-                  type: parsed.type as ContentType
-                })
-              }
-            } catch {
-              // Ignore parse errors
+        const args = JSON.parse(funcCall.arguments)
+        const result = await executeTool(funcCall.name, args)
+
+        // Bei kb_read: Item zu sources hinzufügen
+        if (funcCall.name === 'kb_read') {
+          try {
+            const parsed = JSON.parse(result)
+            if (parsed && parsed.slug && !seenSlugs.has(parsed.slug)) {
+              seenSlugs.add(parsed.slug)
+              sources.push({
+                slug: parsed.slug,
+                title: parsed.title,
+                type: parsed.type as ContentType
+              })
             }
+          } catch {
+            // Ignore parse errors
           }
-
-          toolResults.push({
-            type: 'tool_result',
-            tool_use_id: block.id,
-            content: result
-          })
         }
+
+        // Add tool result
+        messages.push({
+          role: 'tool',
+          tool_call_id: toolCall.id,
+          content: result
+        })
       }
 
-      // Add assistant response with tool use
-      messages.push({ role: 'assistant', content: response.content })
-      // Add tool results as user message
-      messages.push({ role: 'user', content: toolResults })
       iterations++
     } else {
-      // Unexpected stop reason - extract any text and return
-      const textBlock = response.content.find(b => b.type === 'text')
-      const text = textBlock && textBlock.type === 'text' ? textBlock.text : 'Ich konnte keine vollständige Antwort finden.'
+      // No tool calls - extract text and return
+      const text = stripThinkTags(assistantMessage.content || '') || 'Ich konnte keine vollständige Antwort finden.'
       return { text, sources, iterations }
     }
   }

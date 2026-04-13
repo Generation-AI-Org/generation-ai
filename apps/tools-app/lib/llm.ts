@@ -1,10 +1,9 @@
-import Anthropic from '@anthropic-ai/sdk'
+import { generateText } from 'ai'
+import { google } from '@ai-sdk/google'
 import type { ContentItem, ChatMessage, RecommendationResponse, ContentSource, ChatMode } from '@/lib/types'
 
-const MODELS: Record<ChatMode, string> = {
-  public: 'claude-haiku-4-5-20251001',    // V1: cost-efficient
-  member: 'claude-sonnet-4-20250514',     // V2: higher quality
-}
+// Lite tier uses Gemini 2.5 Flash-Lite (cheap, fast)
+const LITE_MODEL = google('gemini-2.5-flash-lite')
 
 function buildSystemPrompt(items: ContentItem[]): string {
   const knowledgeBase = items
@@ -73,7 +72,6 @@ ${knowledgeBase}`
 
 function parseResponse(raw: string, items: ContentItem[]): RecommendationResponse {
   const trimmed = raw.trim()
-  const itemMap = new Map(items.map((i) => [i.slug, i]))
 
   const defaultResponse: RecommendationResponse = {
     text: 'Dazu habe ich leider keine Informationen in meiner Wissensbasis.',
@@ -122,60 +120,59 @@ export async function getRecommendations(
   items: ContentItem[],
   mode: ChatMode = 'public'
 ): Promise<RecommendationResponse> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
+  // Build conversation messages
+  const conversationHistory = history.slice(-6).map((m) => ({
+    role: m.role as 'user' | 'assistant',
+    content: m.content,
+  }))
+
+  const messages = [
+    ...conversationHistory,
+    { role: 'user' as const, content: message },
+  ]
+
+  try {
+    const { text } = await generateText({
+      model: LITE_MODEL,
+      system: buildSystemPrompt(items),
+      messages,
+    })
+
+    const result = parseResponse(text, items)
+
+    // Slugs validieren — nur Slugs die in items existieren
+    const validSlugs = new Set(items.map((i) => i.slug))
+
+    result.recommendedSlugs = result.recommendedSlugs
+      .filter((s) => validSlugs.has(s))
+      .slice(0, 5)
+
+    // Sources validieren und anreichern
+    const validSources: ContentSource[] = []
+    const seenSlugs = new Set<string>()
+
+    for (const source of result.sources) {
+      if (source.slug && validSlugs.has(source.slug) && !seenSlugs.has(source.slug)) {
+        const item = items.find((i) => i.slug === source.slug)
+        if (item) {
+          validSources.push({
+            slug: item.slug,
+            title: item.title,
+            type: item.type,
+          })
+          seenSlugs.add(source.slug)
+        }
+      }
+    }
+    result.sources = validSources
+
+    return result
+  } catch (error) {
+    console.error('Gemini API error:', error)
     return {
-      text: 'Kein Anthropic API Key konfiguriert.',
+      text: 'Entschuldigung, es gab einen Fehler. Bitte versuche es erneut.',
       recommendedSlugs: [],
       sources: [],
     }
   }
-
-  const client = new Anthropic({ apiKey })
-
-  const messages: Anthropic.MessageParam[] = [
-    ...history.slice(-6).map((m) => ({
-      role: m.role as 'user' | 'assistant',
-      content: m.content,
-    })),
-    { role: 'user', content: message },
-  ]
-
-  const response = await client.messages.create({
-    model: MODELS[mode],
-    max_tokens: 1000,
-    system: buildSystemPrompt(items),
-    messages,
-  })
-
-  const raw = response.content[0].type === 'text' ? response.content[0].text : ''
-  const result = parseResponse(raw, items)
-
-  // Slugs validieren — nur Slugs die in items existieren
-  const validSlugs = new Set(items.map((i) => i.slug))
-
-  result.recommendedSlugs = result.recommendedSlugs
-    .filter((s) => validSlugs.has(s))
-    .slice(0, 5)
-
-  // Sources validieren und anreichern
-  const validSources: ContentSource[] = []
-  const seenSlugs = new Set<string>()
-
-  for (const source of result.sources) {
-    if (source.slug && validSlugs.has(source.slug) && !seenSlugs.has(source.slug)) {
-      const item = items.find((i) => i.slug === source.slug)
-      if (item) {
-        validSources.push({
-          slug: item.slug,
-          title: item.title,
-          type: item.type,
-        })
-        seenSlugs.add(source.slug)
-      }
-    }
-  }
-  result.sources = validSources
-
-  return result
 }
