@@ -1,0 +1,20 @@
+{
+  "name": "generation-ai",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.8.1",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "clean": "turbo clean",
+    "dev:website": "turbo dev --filter=website",
+    "dev:tools": "turbo dev --filter=tools-app",
+    "build:website": "turbo build --filter=website",
+    "build:tools": "turbo build --filter=tools-app"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.3",
+    "typescript": "^5"
+  }
+}

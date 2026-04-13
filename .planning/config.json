@@ -1,0 +1,15 @@
+{
+  "mode": "yolo",
+  "granularity": "coarse",
+  "commit_docs": true,
+  "parallel_execution": true,
+  "research_enabled": true,
+  "plan_check_enabled": true,
+  "verifier_enabled": true,
+  "researcher_model": "sonnet",
+  "planner_model": "sonnet",
+  "executor_model": "sonnet",
+  "verifier_model": "sonnet",
+  "created": "2026-04-13",
+  "project_type": "monorepo-migration"
+}
