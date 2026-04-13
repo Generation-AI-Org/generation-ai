@@ -8,7 +8,7 @@
     "./tailwind/base.css": "./tailwind/base.css"
   },
   "devDependencies": {
-    "eslint": "^9",
-    "eslint-config-next": "16.2.3"
+    "eslint": "catalog:",
+    "eslint-config-next": "catalog:"
   }
 }
