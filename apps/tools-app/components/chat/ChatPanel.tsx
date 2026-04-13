@@ -143,8 +143,7 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
         ) : (
           <button
             onClick={async () => {
-              const { createClient } = await import('@genai/auth/browser')
-              const supabase = createClient({ domain: '.generation-ai.org', path: '/', sameSite: 'lax', secure: true })
+              const { supabase } = await import('@/lib/supabase')
               await supabase.auth.signOut()
               window.location.reload()
             }}

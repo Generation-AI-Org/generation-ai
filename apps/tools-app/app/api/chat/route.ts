@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getFullContent } from '@/lib/content'
 import { getRecommendations } from '@/lib/llm'
 import { runAgent } from '@/lib/agent'
-import { createAdminClient } from '@genai/auth/admin'
+import { createServerClient } from '@/lib/supabase'
 import { sanitizeUserInput } from '@/lib/sanitize'
 import { checkRateLimit, getClientIp } from '@/lib/ratelimit'
 import type { ChatMessage, ChatMode } from '@/lib/types'
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Nachricht fehlt.' }, { status: 400 })
     }
 
-    const supabase = createAdminClient()
+    const supabase = createServerClient()
 
     // Session anlegen oder fortführen
     let activeSessionId = sessionId

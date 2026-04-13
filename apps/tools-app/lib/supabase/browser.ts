@@ -1,10 +1,16 @@
-import { createClient as createAuthClient } from '@genai/auth/browser'
+import { createBrowserClient } from '@supabase/ssr'
 
 export function createClient() {
-  return createAuthClient({
-    domain: '.generation-ai.org',
-    path: '/',
-    sameSite: 'lax',
-    secure: true,
-  })
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookieOptions: {
+        domain: '.generation-ai.org', // Leading dot for all subdomains
+        path: '/',
+        sameSite: 'lax',
+        secure: true,
+      },
+    }
+  )
 }

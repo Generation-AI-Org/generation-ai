@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@genai/auth/browser'
+import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -17,8 +17,6 @@ export default function LoginPage() {
 
     setLoading(true)
     setMessage(null)
-
-    const supabase = createClient({ domain: '.generation-ai.org', path: '/', sameSite: 'lax', secure: true })
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -42,8 +40,6 @@ export default function LoginPage() {
 
     setLoading(true)
     setMessage(null)
-
-    const supabase = createClient({ domain: '.generation-ai.org', path: '/', sameSite: 'lax', secure: true })
 
     const { error } = await supabase.auth.signInWithPassword({
       email,

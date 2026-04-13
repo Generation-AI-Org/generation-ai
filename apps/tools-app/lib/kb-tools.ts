@@ -1,4 +1,4 @@
-import { createAdminClient } from '@genai/auth/admin'
+import { createServerClient } from '@/lib/supabase'
 import type { Tool } from '@anthropic-ai/sdk/resources/messages'
 import type { KBExploreResult, KBListItem, KBReadResult, ContentType } from '@/lib/types'
 
@@ -15,7 +15,7 @@ import type { KBExploreResult, KBListItem, KBReadResult, ContentType } from '@/l
 // Tool Implementations
 
 export async function kbExplore(): Promise<KBExploreResult> {
-  const supabase = createAdminClient()
+  const supabase = createServerClient()
 
   const { data } = await supabase
     .from('content_items')
@@ -41,7 +41,7 @@ export async function kbList(params: {
   type?: string
   limit?: number
 }): Promise<KBListItem[]> {
-  const supabase = createAdminClient()
+  const supabase = createServerClient()
   const limit = Math.min(params.limit || 10, 50) // Cap at 50 for DoS mitigation
 
   let query = supabase
@@ -61,7 +61,7 @@ export async function kbList(params: {
 }
 
 export async function kbRead(slug: string): Promise<KBReadResult | null> {
-  const supabase = createAdminClient()
+  const supabase = createServerClient()
 
   const { data } = await supabase
     .from('content_items')
@@ -82,7 +82,7 @@ export async function kbRead(slug: string): Promise<KBReadResult | null> {
 }
 
 export async function kbSearch(query: string, limit = 5): Promise<KBListItem[]> {
-  const supabase = createAdminClient()
+  const supabase = createServerClient()
   const maxLimit = Math.min(limit, 20) // Cap at 20 for DoS mitigation
 
   // 1. Try FTS on title with websearch syntax
