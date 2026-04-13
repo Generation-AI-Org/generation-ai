@@ -1,41 +1,16 @@
-export type ContentType = 'tool' | 'guide' | 'faq' | 'concept' | 'workflow'
-export type ContentStatus = 'draft' | 'published' | 'archived'
-export type PricingModel = 'free' | 'freemium' | 'paid' | 'open_source'
-
-export interface ContentItem {
-  id: string
-  type: ContentType
-  status: ContentStatus
-  title: string
-  slug: string
-  summary: string
-  content: string
-  category: string
-  tags: string[]
-  use_cases: string[]
-  pricing_model: PricingModel | null
-  external_url: string | null
-  logo_domain: string | null
-  quick_win: string | null
-  updated_at: string
-  created_at: string
-}
-
-export type ContentItemMeta = Pick<
+// Re-export shared types from @genai/types
+export type {
+  ContentType,
+  ContentStatus,
+  PricingModel,
   ContentItem,
-  | 'id'
-  | 'type'
-  | 'title'
-  | 'slug'
-  | 'summary'
-  | 'category'
-  | 'tags'
-  | 'use_cases'
-  | 'pricing_model'
-  | 'logo_domain'
-  | 'quick_win'
->
+  ContentItemMeta,
+  ContentSource,
+} from '@genai/types/content'
 
+import type { ContentType, ContentSource } from '@genai/types/content'
+
+// App-specific types (Chat, KB-Tools)
 export interface ChatMessage {
   id: string
   role: 'user' | 'assistant'
@@ -43,12 +18,6 @@ export interface ChatMessage {
   recommendedSlugs?: string[]
   sources?: ContentSource[]
   created_at: string
-}
-
-export interface ContentSource {
-  slug: string
-  title: string
-  type: ContentType
 }
 
 export type ChatMode = 'public' | 'member'

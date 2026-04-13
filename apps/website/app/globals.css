@@ -1,72 +1,12 @@
 /* Generation AI Design System - Tailwind v4 */
 @import "tailwindcss";
+@import "@genai/config/tailwind/base.css";
 @import "tw-animate-css";
 
-/* ─── Generation AI Design System ─────────────────────────────────────────
-   Dark Mode (Default): Blue / Neon Green  (Farbwelt A)
-   Light Mode: Pink / Red  (Farbwelt B)
-────────────────────────────────────────────────────────────────────────── */
+/* ─── website-specific additions ──────────────────────────────────────────── */
 
-/* Dark Mode (Default) — Blue/Neon Green */
-:root {
-  --bg: #141414;
-  --bg-card: #1C1C1C;
-  --bg-elevated: #222222;
-  --bg-header: #3A3AFF;
-  --accent: #CEFF32;
-  --accent-hover: #D4FF4D;
-  --accent-glow: rgba(206, 255, 50, 0.4);
-  --accent-soft: rgba(206, 255, 50, 0.15);
-  --text: #F6F6F6;
-  --text-muted: #666666;
-  --text-secondary: #999999;
-  --text-on-accent: #141414;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-accent: rgba(206, 255, 50, 0.6);
-}
-
-/* Light Mode — Pink/Red CI */
-.light {
-  --bg: #FAF7F8;
-  --bg-card: #FFFFFF;
-  --bg-elevated: #F5EEF0;
-  --bg-header: #F870F4;
-  --accent: #D91040;
-  --accent-hover: #B80D35;
-  --accent-glow: rgba(217, 16, 64, 0.3);
-  --accent-soft: rgba(217, 16, 64, 0.08);
-  --text: #1A1A1A;
-  --text-muted: #555555;
-  --text-secondary: #666666;
-  --text-on-accent: #FFFFFF;
-  --border: rgba(0, 0, 0, 0.1);
-  --border-accent: rgba(217, 16, 64, 0.4);
-}
-
-/* Bind CSS variables to Tailwind */
+/* shadcn compatibility */
 @theme inline {
-  --color-bg: var(--bg);
-  --color-bg-card: var(--bg-card);
-  --color-bg-elevated: var(--bg-elevated);
-  --color-bg-header: var(--bg-header);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-text: var(--text);
-  --color-text-muted: var(--text-muted);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-on-accent: var(--text-on-accent);
-  --color-border: var(--border);
-  --color-border-accent: var(--border-accent);
-
-  /* Static Brand Colors */
-  --color-blue-brand: #3A3AFF;
-  --color-neon: #CEFF32;
-  --color-pink-brand: #FC78FE;
-  --color-red-brand: #F5133B;
-  --color-black-brand: #141414;
-  --color-gray-light: #F6F6F6;
-
-  /* shadcn compatibility */
   --color-background: var(--bg);
   --color-foreground: var(--text);
   --color-card: var(--bg-card);
@@ -100,10 +40,7 @@ html {
 }
 
 body {
-  background-color: var(--bg);
-  color: var(--text);
   font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
 
@@ -152,15 +89,6 @@ textarea:focus-visible,
   outline-offset: 3px;
   border-radius: 4px;
 }
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
-
-.light ::-webkit-scrollbar-thumb { background: rgba(217, 16, 64, 0.2); }
-.light ::-webkit-scrollbar-thumb:hover { background: rgba(217, 16, 64, 0.35); }
 
 /* Terminal Splash Animations */
 @keyframes fadeInUp {
