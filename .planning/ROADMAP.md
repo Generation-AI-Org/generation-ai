@@ -1,98 +1,155 @@
-# Roadmap — Generation AI Monorepo
+# Roadmap — Generation AI
 
-## Overview
+## Milestone v1.0: Monorepo Migration ✅ COMPLETE
+
+| Phase | Name | Status |
+|-------|------|--------|
+| 1 | App Migration | ✅ Complete |
+| 2 | Shared Packages | ✅ Complete |
+| 3 | Deploy & Archive | ✅ Complete |
+
+---
+
+## Milestone v2.0: Production Hardening (Current)
 
 | Phase | Name | Goal | Requirements |
 |-------|------|------|--------------|
-| 1 | App Migration | Beide Apps im Monorepo lauffähig | R-01, R-02, R-03, N-01 |
-| 2 | Shared Packages | Code-Sharing über packages/ | R-04, R-05, R-06, N-02, N-03 |
-| 3 | Deploy & Archive | Live auf neuem Repo, alte archiviert | R-07, R-08, N-04 |
+| 4 | DSGVO & Legal | Rechtliche Compliance sicherstellen | R2 |
+| 5 | Security Headers | Security Headers + CSP implementieren | R1 |
+| 6 | Monitoring | Error Tracking + Uptime Monitoring | R3 |
+| 7 | Testing | Test-Infrastruktur aufbauen | R4 |
+| 8 | Performance & A11y | Lighthouse Audit + Fixes | R5 |
 
 ---
 
-## Phase 1: App Migration
+## Phase 4: DSGVO & Legal
 
-**Goal:** Website und tools-app Code ins Monorepo kopieren, beide Apps laufen lokal.
-
-**Plans:** 1 plan
-
-Plans:
-- [ ] 01-01-PLAN.md — Website + tools-app kopieren, Dependencies, lokale Dev-Tests
+**Goal:** Rechtliche Compliance für DACH-Markt sicherstellen.
 
 **Scope:**
-- Website-Code nach `apps/website/` kopieren
-- tools-app-Code nach `apps/tools-app/` kopieren
-- package.json für beide Apps anpassen (name, scripts)
-- pnpm install, lokale .env files
-- `pnpm dev` startet beide Apps
+- Impressum auf beiden Domains prüfen/vervollständigen
+- Datenschutzerklärung aktualisieren (TDDDG, alle Drittanbieter)
+- Supabase DPA anfordern und unterzeichnen
+- Vercel DPA aktivieren
+- Resend DPA prüfen
+- Supabase Region verifizieren (EU)
+- Account-Delete-Funktion in tools-app
 
 **Success Criteria:**
-- [ ] `pnpm dev:website` → localhost:3000 zeigt Website
-- [ ] `pnpm dev:tools` → localhost:3001 zeigt tools-app
-- [ ] Alle existierenden Features funktionieren
+- [ ] Impressum enthält alle Pflichtangaben (Name, Adresse, E-Mail, Telefon)
+- [ ] Datenschutzerklärung nennt Supabase, Vercel, Resend, Claude API
+- [ ] DPAs dokumentiert (Screenshot/PDF)
+- [ ] Account-Delete oder Löschanfrage-E-Mail möglich
 
-**Deliverables:**
-- `apps/website/` mit vollständigem Code
-- `apps/tools-app/` mit vollständigem Code
-- Funktionierende lokale Dev-Umgebung
+**Manual Steps (Luca):**
+- Supabase Dashboard → Legal → DPA anfordern
+- Vercel Dashboard → Legal → DPA aktivieren
+- Resend Dashboard → DPA prüfen
 
 ---
 
-## Phase 2: Shared Packages
+## Phase 5: Security Headers
 
-**Goal:** Gemeinsamen Code in packages/ extrahieren, Apps importieren von `@genai/*`.
+**Goal:** Security Headers auf A+ Niveau bringen.
 
 **Scope:**
-- `packages/auth/` — Supabase createClient, Session Helpers
-- `packages/types/` — User, Profile, Content Types
-- `packages/config/` — Tailwind preset, ESLint config, TSConfig base
-- Apps auf package-imports umstellen
-- Package-übergreifende Builds mit Turborepo
+- HSTS in beiden Apps
+- Standard Security Headers (X-Content-Type-Options, X-Frame-Options, etc.)
+- CSP in tools-app (nonce-basiert via proxy.ts)
+- CSP in website (unsafe-inline via next.config.ts)
+- CSP-Report-Only erst, dann enforcing
 
 **Success Criteria:**
-- [ ] `@genai/auth` exportiert createClient, createAdminClient
-- [ ] `@genai/types` exportiert User, Profile Types
-- [ ] Beide Apps importieren erfolgreich von packages
-- [ ] `pnpm build` baut alles in richtiger Reihenfolge
+- [ ] securityheaders.com → A+ für beide Domains
+- [ ] Keine CSP-Violations in Browser Console
+- [ ] Auth funktioniert (Supabase connect-src korrekt)
 
-**Deliverables:**
-- `packages/auth/`
-- `packages/types/`
-- `packages/config/`
-- Aktualisierte app imports
+**Dependencies:**
+- Phase 4 sollte abgeschlossen sein (DPAs vor Security-Audit)
 
 ---
 
-## Phase 3: Deploy & Archive
+## Phase 6: Monitoring
 
-**Goal:** Neues GitHub Repo live, Vercel umkonfiguriert, alte Repos archiviert.
+**Goal:** Observability für Production.
 
 **Scope:**
-- GitHub Repo `Generation-AI-Org/generation-ai` erstellen
-- Code pushen
-- Vercel Website Project → Root Directory `apps/website`
-- Vercel tools-app Project → Root Directory `apps/tools-app`
-- Environment Variables übertragen
-- Production testen
-- Alte Repos archivieren (read-only)
+- Sentry Error Tracking (Free) in beiden Apps
+- Sentry Source Maps Upload
+- Sentry Alert-Regeln konfigurieren
+- Better Stack Uptime Monitoring
+- Vercel Speed Insights aktivieren
+- /api/health Endpoint in tools-app
 
 **Success Criteria:**
-- [ ] https://generation-ai.org deployt vom neuen Repo
-- [ ] https://tools.generation-ai.org deployt vom neuen Repo
-- [ ] Alle Features funktionieren auf Production
-- [ ] Alte Repos sind archived auf GitHub
+- [ ] Test-Error erscheint in Sentry mit Stack Trace
+- [ ] Downtime-Alert funktioniert (Test mit offline-setzen)
+- [ ] CWV sichtbar im Vercel Dashboard
+- [ ] /api/health → 200 OK
 
-**Deliverables:**
-- Live Monorepo Deployment
-- Archivierte Legacy Repos
-- Aktualisierte MIGRATION.md
+**Manual Steps (Luca):**
+- Sentry Account erstellen (Free)
+- Better Stack Account erstellen (Free)
+- SENTRY_DSN + SENTRY_AUTH_TOKEN in Vercel Env
+
+---
+
+## Phase 7: Testing
+
+**Goal:** Test-Infrastruktur für Qualitätssicherung.
+
+**Scope:**
+- Vitest + RTL Setup in apps/tools-app
+- Vitest Setup in apps/website
+- Vitest Setup in packages/auth
+- API Route Tests mit next-test-api-route-handler
+- Playwright E2E Package
+- GitHub Actions CI Workflow
+- turbo.json Test-Tasks
+
+**Success Criteria:**
+- [ ] `pnpm test` läuft durch
+- [ ] CI blockiert PRs mit failing Tests
+- [ ] Auth E2E Test besteht
+- [ ] Chat E2E Test besteht
+
+**Dependencies:**
+- Phase 6 (Monitoring) kann parallel laufen
+
+---
+
+## Phase 8: Performance & Accessibility
+
+**Goal:** Polish und Professionalisierung.
+
+**Scope:**
+- Lighthouse Audit dokumentieren
+- Kritische A11y Issues fixen
+- Google Fonts lokal hosten (falls extern)
+- Performance-Optimierungen (falls nötig)
+
+**Success Criteria:**
+- [ ] Lighthouse > 90 in allen Kategorien
+- [ ] Keine WCAG 2.1 AA Violations
+- [ ] Keine Third-Party Google Fonts Requests
+
+**Dependencies:**
+- Alle anderen Phasen abgeschlossen
 
 ---
 
 ## Timeline
 
-Geschätzt 1-2 Tage für alle Phasen bei fokussierter Arbeit.
+| Phase | Geschätzt | Abhängigkeiten |
+|-------|-----------|----------------|
+| Phase 4 (DSGVO) | 2-3 Stunden | - |
+| Phase 5 (Security) | 3-4 Stunden | Phase 4 |
+| Phase 6 (Monitoring) | 2-3 Stunden | - (parallel zu 4/5 möglich) |
+| Phase 7 (Testing) | 4-6 Stunden | - (parallel zu 6 möglich) |
+| Phase 8 (Performance) | 1-2 Stunden | alle anderen |
+
+**Gesamt:** ~2-3 Tage bei fokussierter Arbeit
 
 ---
 
-*Erstellt: 2026-04-13*
+*v2.0 Roadmap erstellt: 2026-04-13*

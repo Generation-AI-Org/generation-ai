@@ -4,41 +4,26 @@
 
 ## Current Status
 
-**Milestone:** Monorepo Migration ✅ **COMPLETE**
-**Last Updated:** 2026-04-14T01:30
+**Milestone:** v2.0 Production Hardening
+**Phase:** Ready to plan Phase 4
+**Last Updated:** 2026-04-13T23:45
 
 ## Progress
 
 ```
-Phase 1: [##########] App Migration ✅
-Phase 2: [##########] Shared Packages ✅
-Phase 3: [##########] Deploy & Archive ✅
+Phase 4: [          ] DSGVO & Legal
+Phase 5: [          ] Security Headers
+Phase 6: [          ] Monitoring
+Phase 7: [          ] Testing
+Phase 8: [          ] Performance & A11y
 ```
 
-## What's Done
+## Completed Milestones
 
-### Phase 1: App Migration ✅
-- [x] Monorepo-Grundstruktur erstellt
-- [x] Turborepo + pnpm konfiguriert
-- [x] Website migriert → apps/website/
-- [x] tools-app migriert → apps/tools-app/
-- [x] Beide Apps laufen lokal
-
-### Phase 2: Shared Packages ✅
-- [x] `@genai/auth` — Supabase Clients (browser, server, admin, helpers)
-- [x] `@genai/types` — Content-Types extrahiert
-- [x] `@genai/config` — TSConfig, ESLint, Tailwind CSS Base
-- [x] Apps auf Package-Imports umgestellt
-- [x] pnpm catalog für Dependency Consistency
-- [x] Alte `lib/supabase.ts` entfernt
-
-### Phase 3: Deploy & Archive ✅
-- [x] GitHub Repo: `Generation-AI-Org/generation-ai`
-- [x] Vercel Website → Root: `apps/website`
-- [x] Vercel tools-app → Root: `apps/tools-app`
-- [x] turbo.json mit globalPassThroughEnv
-- [x] Beide Apps live
-- [x] Alte Repos archiviert
+### v1.0: Monorepo Migration ✅
+- Phase 1: App Migration ✅
+- Phase 2: Shared Packages ✅
+- Phase 3: Deploy & Archive ✅
 
 ## Live URLs
 
@@ -46,15 +31,26 @@ Phase 3: [##########] Deploy & Archive ✅
 - **tools-app:** https://tools.generation-ai.org
 - **GitHub:** https://github.com/Generation-AI-Org/generation-ai
 
-## Next Milestone
+## Research Completed
 
-Security Hardening (Phasen 8-10 aus altem tools-app Roadmap):
-- Phase 8: CSP Headers, Cookie Hardening, CORS
-- Phase 9: Audit Logging, Monitoring
-- Phase 10: Tests
+Research für Production Hardening abgeschlossen:
+- `.planning/research/security-headers.md` — CSP, HSTS, Nonce vs. unsafe-inline
+- `.planning/research/dsgvo-privacy.md` — DPAs, Account Delete, Impressum
+- `.planning/research/monitoring.md` — Sentry, Better Stack, Axiom
+- `.planning/research/testing.md` — Vitest, Playwright, CI/CD
 
-Starten mit: `/gsd-new-milestone`
+## Next Step
+
+```
+/gsd-plan-phase 4
+```
+
+Plant Phase 4 (DSGVO & Legal) mit Tasks für:
+- Impressum prüfen
+- Datenschutzerklärung aktualisieren
+- DPAs (Supabase, Vercel, Resend)
+- Account-Delete-Funktion
 
 ## Context für neue Sessions
 
-Monorepo-Migration COMPLETE. Website + tools-app laufen vom Monorepo `Generation-AI-Org/generation-ai`. Shared Packages: @genai/auth, @genai/types, @genai/config. Nächster Schritt: Security Hardening Milestone planen.
+v2.0 Production Hardening Milestone gestartet. Research abgeschlossen. Requirements und Roadmap erstellt. Nächster Schritt: Phase 4 (DSGVO & Legal) planen und ausführen.

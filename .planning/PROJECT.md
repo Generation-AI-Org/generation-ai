@@ -4,50 +4,32 @@
 
 Ein Monorepo das alle Generation AI Web-Projekte vereint: website, tools-app, und zukünftige Services. Shared packages für Code der in mehreren Apps genutzt wird. Turborepo für Build-Orchestrierung, pnpm für Package Management.
 
-## Problem
+## Current Milestone: v2.0 Production Hardening
 
-Aktuell existieren zwei separate GitHub Repos:
-- `Generation-AI-Org/generation-ai-website` — Landing Page, Sign-up
-- `Generation-AI-Org/generation-ai-tools-app` — KI-Tool-Bibliothek, Chat
+**Goal:** Apps production-ready und professional-grade machen.
 
-**Probleme mit separaten Repos:**
-- Doppelter Code (Supabase Client, Auth-Logic, Types)
-- Dependency-Drift (unterschiedliche Versionen)
-- Kein atomares Deployment bei cross-cutting changes
-- Mehr Overhead bei neuen Services
+**Scope:**
+- Security Headers (HSTS, CSP)
+- DSGVO/Legal Compliance (DPAs, Account Delete)
+- Error Tracking & Monitoring (Sentry, Better Stack)
+- Testing Infrastructure (Vitest, Playwright, CI)
+- Performance & Accessibility
 
-## Solution
+Siehe `REQUIREMENTS.md` für Details, `ROADMAP.md` für Phasen.
 
-Monorepo mit Turborepo + pnpm:
+---
 
-```
-generation-ai/
-├── apps/
-│   ├── website/          ← Next.js 16
-│   └── tools-app/        ← Next.js 16
-├── packages/
-│   ├── auth/             ← Supabase Client, Session Helpers
-│   ├── ui/               ← Shared Components (optional)
-│   ├── types/            ← Shared TypeScript Types
-│   └── config/           ← Tailwind, ESLint, TSConfig
-├── turbo.json
-├── pnpm-workspace.yaml
-└── package.json
-```
+## Completed Milestones
 
-## Success Criteria
+### v1.0: Monorepo Migration ✅
+*Completed: 2026-04-14*
 
-1. **Beide Apps laufen lokal** — `pnpm dev` startet beide
-2. **Beide Apps deployen** — Vercel Projects zeigen aufs Monorepo
-3. **Shared packages funktionieren** — Apps importieren von `@genai/*`
-4. **Nichts ist kaputt** — Alle existierenden Features funktionieren
-5. **Alte Repos archiviert** — Sauberer Übergang
+Zwei separate Repos in ein Monorepo zusammengeführt:
+- Website + tools-app migriert
+- Shared packages: @genai/auth, @genai/types, @genai/config
+- Vercel umgestellt, alte Repos archiviert
 
-## Constraints
-
-- **Kein Downtime** — Apps müssen während Migration erreichbar bleiben
-- **Parallel aufbauen** — Neues Repo neben alten, erst umschalten wenn alles funktioniert
-- **Git History** — Geht verloren (akzeptiert, Apps sind jung)
+---
 
 ## Context
 
@@ -56,6 +38,7 @@ generation-ai/
 - **Live URLs:**
   - https://generation-ai.org (Website)
   - https://tools.generation-ai.org (tools-app)
+- **GitHub:** https://github.com/Generation-AI-Org/generation-ai
 - **Shared Supabase:** wbohulnuwqrhystaamjc.supabase.co
 
 ## Tech Stack
@@ -66,8 +49,19 @@ generation-ai/
 - Turborepo + pnpm
 - Vercel (Hosting)
 
-## Out of Scope (für diese Migration)
+## Structure
 
-- Neue Features (Assessment, Blog, etc.) — kommt nach Migration
-- Circle-Integration
-- Content-System
+```
+generation-ai/
+├── apps/
+│   ├── website/          ← Next.js 16, Landing + Sign-up
+│   └── tools-app/        ← Next.js 16, Bibliothek + Chat
+├── packages/
+│   ├── auth/             ← Supabase Client, Session Helpers
+│   ├── types/            ← Shared TypeScript Types
+│   └── config/           ← Tailwind, ESLint, TSConfig
+├── .planning/            ← GSD Artefakte
+├── turbo.json
+├── pnpm-workspace.yaml
+└── package.json
+```
