@@ -14,6 +14,11 @@
 
 **Goal:** Website und tools-app Code ins Monorepo kopieren, beide Apps laufen lokal.
 
+**Plans:** 1 plan
+
+Plans:
+- [ ] 01-01-PLAN.md — Website + tools-app kopieren, Dependencies, lokale Dev-Tests
+
 **Scope:**
 - Website-Code nach `apps/website/` kopieren
 - tools-app-Code nach `apps/tools-app/` kopieren
