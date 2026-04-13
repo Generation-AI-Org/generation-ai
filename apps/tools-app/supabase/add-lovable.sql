@@ -1,0 +1,11 @@
+-- Lovable hinzufügen
+-- Im Supabase SQL Editor ausführen
+
+INSERT INTO content_items (type, status, title, slug, summary, content, category, tags, use_cases, pricing_model, external_url, logo_domain, quick_win) VALUES
+('tool', 'published', 'Lovable', 'lovable',
+ 'KI-gestützter Website-Builder der aus natürlicher Sprache funktionierende Web-Apps erstellt — von Prototyp bis Production ohne Code.',
+ E'## Was ist Lovable?\nLovable (ehemals GPT Engineer) ist ein KI-Website-Builder der aus Text-Beschreibungen funktionierende Web-Apps generiert. Läuft auf Claude und erzeugt echten React-Code mit Supabase-Backend — keine No-Code-Limitierungen.\n\n## Was kann es besonders gut?\n- Text-zu-App: beschreibe was du willst, Lovable baut es — Formulare, Dashboards, Landing Pages, interne Tools\n- Echter Code: generiert React + TypeScript + Tailwind, exportierbar und weiter bearbeitbar\n- Supabase-Integration: Datenbank, Auth und Storage direkt eingebaut — keine manuelle Backend-Konfiguration\n- Iteratives Arbeiten: Änderungen per Chat beschreiben, Lovable passt den Code an\n- GitHub-Sync: Code wird automatisch in dein Repo gepusht\n- One-Click Deploy: direkt auf eigener Domain veröffentlichen\n\n## Pricing\nKostenlos: 5 Projekte, Lovable-Subdomain, Community-Support.\nLaunch: 20 USD/Monat — unlimitierte Projekte, Custom Domains, 15M Tokens.\nScale: 50 USD/Monat — 50M Tokens, Priority Support.\n\n## So nutzt du es als Studierender\nPerfekt für Prototypen, Hackathon-Projekte oder persönliche Portfolio-Seiten. Beschreibe dein Projekt in 2-3 Sätzen, Lovable generiert eine funktionierende App die du iterativ verbessern kannst — kein React-Wissen nötig zum Starten.\n\n## Alternativen\n- Bolt.new: ähnlicher Ansatz, mehr auf schnelle Prototypen fokussiert\n- v0 (Vercel): generiert UI-Komponenten, weniger Full-Stack\n- Replit: Code-fokussierter, weniger visuell',
+ 'Website & Design', ARRAY['website','builder','no-code','react','ai','prototyping'],
+ ARRAY['Prototypen bauen','Portfolio erstellen','Hackathon-Projekte','Interne Tools','Landing Pages'],
+ 'freemium', 'https://lovable.dev', 'lovable.dev',
+ 'Projekt in 2-3 Sätzen beschreiben → Lovable generiert funktionierende Web-App → iterativ per Chat verbessern.');

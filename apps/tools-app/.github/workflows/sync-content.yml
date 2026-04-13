@@ -1,0 +1,41 @@
+name: Sync Content to Supabase
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'content/**'
+      - 'scripts/sync-vault.ts'
+
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force sync all content'
+        required: false
+        default: 'false'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run sync
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          echo "Sync script will be implemented in Phase 1"
+          # npm run sync

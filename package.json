@@ -8,10 +8,10 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "clean": "turbo clean",
-    "dev:website": "turbo dev --filter=website",
-    "dev:tools": "turbo dev --filter=tools-app",
-    "build:website": "turbo build --filter=website",
-    "build:tools": "turbo build --filter=tools-app"
+    "dev:website": "turbo dev --filter=@genai/website",
+    "dev:tools": "turbo dev --filter=@genai/tools-app",
+    "build:website": "turbo build --filter=@genai/website",
+    "build:tools": "turbo build --filter=@genai/tools-app"
   },
   "devDependencies": {
     "turbo": "^2.5.3",
