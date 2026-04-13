@@ -1,8 +1,8 @@
-import { createServerClient } from '@/lib/supabase'
+import { createAdminClient } from '@genai/auth/admin'
 import type { ContentItem, ContentItemMeta } from '@/lib/types'
 
 export async function getPublishedItems(): Promise<ContentItemMeta[]> {
-  const supabase = createServerClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('content_items')
     .select('id, type, title, slug, summary, category, tags, use_cases, pricing_model, logo_domain, quick_win')
@@ -20,7 +20,7 @@ export async function getPublishedItems(): Promise<ContentItemMeta[]> {
 const FEATURED_TOOLS = ['chatgpt', 'claude', 'lovable', 'cursor', 'perplexity']
 
 export async function getPublishedTools(): Promise<ContentItemMeta[]> {
-  const supabase = createServerClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('content_items')
     .select('id, type, title, slug, summary, category, tags, use_cases, pricing_model, logo_domain, quick_win')
@@ -48,7 +48,7 @@ export async function getPublishedTools(): Promise<ContentItemMeta[]> {
 }
 
 export async function getFullContent(): Promise<ContentItem[]> {
-  const supabase = createServerClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('content_items')
     .select('*')
@@ -64,7 +64,7 @@ export async function getFullContent(): Promise<ContentItem[]> {
 }
 
 export async function getItemBySlug(slug: string): Promise<ContentItem | null> {
-  const supabase = createServerClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('content_items')
     .select('*')
