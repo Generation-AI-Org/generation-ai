@@ -11,9 +11,14 @@
     "dev:website": "turbo dev --filter=@genai/website",
     "dev:tools": "turbo dev --filter=@genai/tools-app",
     "build:website": "turbo build --filter=@genai/website",
-    "build:tools": "turbo build --filter=@genai/tools-app"
+    "build:tools": "turbo build --filter=@genai/tools-app",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.6.0",
+    "@changesets/cli": "^2.30.0",
     "turbo": "^2.5.3",
     "typescript": "^5"
   }
