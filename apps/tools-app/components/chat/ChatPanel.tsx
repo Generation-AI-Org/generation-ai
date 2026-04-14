@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import QuickActions from './QuickActions'
 import MessageList from './MessageList'
 import ChatInput from './ChatInput'
@@ -19,6 +19,7 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [sessionId, setSessionId] = useState<string | undefined>()
   const [isHydrated, setIsHydrated] = useState(false)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   // Load from sessionStorage on mount
   useEffect(() => {
@@ -46,8 +47,19 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
     } catch {}
   }, [messages, sessionId, isHydrated])
 
+  function stopGeneration() {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+      setIsLoading(false)
+    }
+  }
+
   async function send(text: string) {
-    if (isLoading) return
+    // Abort any running request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
 
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
@@ -59,10 +71,15 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
     setMessages(newMessages)
     setIsLoading(true)
 
+    // Create new AbortController for this request
+    const controller = new AbortController()
+    abortControllerRef.current = controller
+
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           message: text,
           sessionId,
@@ -95,6 +112,10 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
         onHighlight([])
       }
     } catch (err) {
+      // Don't show error for aborted requests
+      if (err instanceof Error && err.name === 'AbortError') {
+        return
+      }
       const errorMessage: ChatMessage = {
         id: crypto.randomUUID(),
         role: 'assistant',
@@ -103,6 +124,7 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
       }
       setMessages((prev) => [...prev, errorMessage])
     } finally {
+      abortControllerRef.current = null
       setIsLoading(false)
     }
   }
@@ -212,7 +234,7 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
       </div>
 
       {/* Input */}
-      <ChatInput onSend={send} disabled={isLoading} />
+      <ChatInput onSend={send} onStop={stopGeneration} isLoading={isLoading} />
     </div>
   )
 }
