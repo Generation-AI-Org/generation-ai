@@ -149,17 +149,24 @@ Plans:
 
 ## Phase 8: Performance & Accessibility
 
-**Goal:** Polish und Professionalisierung.
+**Goal:** Polish und Professionalisierung - Lighthouse > 90 in allen Kategorien.
+
+**Plans:** 2 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Lighthouse + axe-core Audit dokumentieren
+- [ ] 08-02-PLAN.md — A11y-Issues fixen + Re-Audit
 
 **Scope:**
-- Lighthouse Audit dokumentieren
+- Lighthouse Audit dokumentieren (Performance, A11y, Best Practices, SEO)
+- axe-core WCAG 2.1 AA Check
 - Kritische A11y Issues fixen
-- Google Fonts lokal hosten (falls extern)
+- Google Fonts Third-Party Requests verifizieren (next/font/google = lokal)
 - Performance-Optimierungen (falls noetig)
 
 **Success Criteria:**
 - [ ] Lighthouse > 90 in allen Kategorien
-- [ ] Keine WCAG 2.1 AA Violations
+- [ ] Keine WCAG 2.1 AA Violations (Critical/Serious)
 - [ ] Keine Third-Party Google Fonts Requests
 
 **Dependencies:**
@@ -186,3 +193,4 @@ Plans:
 *Phase 5 geplant: 2026-04-14*
 *Phase 6 geplant: 2026-04-14*
 *Phase 7 geplant: 2026-04-14*
+*Phase 8 geplant: 2026-04-14*
