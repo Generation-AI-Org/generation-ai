@@ -87,6 +87,13 @@ Plans:
 
 **Goal:** Observability fuer Production.
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Vercel Speed Insights + /api/health Endpoint
+- [ ] 06-02-PLAN.md — Sentry Error Tracking in beiden Apps
+- [ ] 06-03-PLAN.md — Better Stack Uptime + Sentry Alerts
+
 **Scope:**
 - Sentry Error Tracking (Free) in beiden Apps
 - Sentry Source Maps Upload
@@ -169,3 +176,4 @@ Plans:
 *v2.0 Roadmap erstellt: 2026-04-13*
 *Phase 4 geplant: 2026-04-14*
 *Phase 5 geplant: 2026-04-14*
+*Phase 6 geplant: 2026-04-14*
