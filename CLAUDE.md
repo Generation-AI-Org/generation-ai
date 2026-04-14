@@ -61,6 +61,40 @@ Siehe `.planning/STATE.md` für aktuellen Stand.
 /gsd-execute-phase N      # Phase ausführen
 ```
 
+## Changelog & Versioning
+
+Wir nutzen [Changesets](https://github.com/changesets/changesets) für Versionierung und Changelog-Generierung.
+
+### Bei jeder Änderung (Feature, Fix, etc.)
+
+```bash
+pnpm changeset            # Interaktiv: Welche Packages? Major/Minor/Patch? Beschreibung?
+git add .changeset/       # Changeset-Datei committen
+git commit                # Normaler Commit
+```
+
+### Bei Release (Ende eines Milestones)
+
+```bash
+pnpm version              # Generiert CHANGELOGs, bumpt Versionen
+git add -A && git commit -m "chore: release"
+git tag vX.Y.Z
+git push --follow-tags
+gh release create vX.Y.Z  # GitHub Release erstellen
+```
+
+### Config
+
+- `linked: [website, tools-app]` — Apps werden zusammen versioniert
+- `@changesets/changelog-github` — Verlinkt PRs/Commits in Changelogs
+- `ignore: [@genai/config]` — Config-Package wird nicht versioniert
+
+### Wichtig
+
+- **Jede nicht-triviale Änderung braucht ein Changeset**
+- Changeset-Dateien werden mit dem Feature-Commit committed
+- CHANGELOG.md wird automatisch generiert — nicht manuell editieren
+
 ## Links
 
 - **Live Website:** https://generation-ai.org
