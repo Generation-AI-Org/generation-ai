@@ -98,6 +98,9 @@ export async function runAgent(
   message: string,
   history: ChatMessage[] = []
 ): Promise<AgentResult> {
+  const startTime = Date.now()
+  console.log(`[Agent] START`)
+
   // Build messages array for OpenAI-compatible API
   const messages: OpenAI.ChatCompletionMessageParam[] = [
     { role: 'system', content: SYSTEM_PROMPT },
@@ -119,7 +122,9 @@ export async function runAgent(
   const maxIterations = 5
 
   while (iterations < maxIterations) {
+    const llmStart = Date.now()
     const { response, model } = await createCompletion(messages, KB_TOOLS_OPENAI)
+    console.log(`[Agent] LLM call ${iterations + 1} took ${Date.now() - llmStart}ms`)
 
     const choice = response.choices[0]
     const assistantMessage = choice.message
@@ -127,6 +132,7 @@ export async function runAgent(
     // Agent ist fertig (no tool calls)
     if (choice.finish_reason === 'stop' || !assistantMessage.tool_calls?.length) {
       const text = stripThinkTags(assistantMessage.content || '')
+      console.log(`[Agent] DONE in ${Date.now() - startTime}ms (${iterations + 1} iterations)`)
       return { text, sources, iterations }
     }
 
@@ -142,7 +148,9 @@ export async function runAgent(
         if (!funcCall) continue
 
         const args = JSON.parse(funcCall.arguments)
+        const toolStart = Date.now()
         const result = await executeTool(funcCall.name, args)
+        console.log(`[Agent] Tool ${funcCall.name} took ${Date.now() - toolStart}ms`)
 
         // Bei kb_read: Item zu sources hinzufügen
         if (funcCall.name === 'kb_read') {
