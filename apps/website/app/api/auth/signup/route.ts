@@ -15,6 +15,12 @@ interface SignupRequest {
 }
 
 export async function POST(request: NextRequest) {
+  // TEMPORARILY DISABLED — Remove this block to re-enable signups
+  return NextResponse.json(
+    { error: 'Anmeldung ist momentan geschlossen. Wir öffnen bald wieder!' },
+    { status: 503 }
+  )
+
   try {
     const body: SignupRequest = await request.json()
     const { email, name, university, studyField, kiLevel, interests } = body
