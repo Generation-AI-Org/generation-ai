@@ -26,8 +26,10 @@ function getMinimaxClient(): OpenAI {
   return _minimaxClient
 }
 
-const PRIMARY_MODEL = 'glm-5.1'
-const FALLBACK_MODEL = 'MiniMax-M2.7'
+// MiniMax primary (stabiler, kein Concurrency-Limit)
+// GLM-5.1 als Fallback (schlauer, aber Z.AI hat 1-Concurrency Limit)
+const PRIMARY_MODEL = 'MiniMax-M2.7'
+const FALLBACK_MODEL = 'glm-5.1'
 
 /**
  * Strip <think> reasoning tags from response (GLM & MiniMax both use these)
@@ -37,15 +39,15 @@ function stripThinkTags(text: string): string {
 }
 
 /**
- * Create chat completion with GLM-5.1 primary, MiniMax fallback
+ * Create chat completion with MiniMax primary, GLM fallback
  */
 async function createCompletion(
   messages: OpenAI.ChatCompletionMessageParam[],
   tools: OpenAI.ChatCompletionTool[]
 ): Promise<{ response: OpenAI.ChatCompletion; model: string }> {
-  // Try GLM-5.1 first
+  // Try MiniMax first (stabiler, kein Concurrency-Limit)
   try {
-    const response = await getGlmClient().chat.completions.create({
+    const response = await getMinimaxClient().chat.completions.create({
       model: PRIMARY_MODEL,
       max_tokens: 2000,
       tools,
@@ -55,10 +57,10 @@ async function createCompletion(
     console.log(`[Chat] Model: ${PRIMARY_MODEL} | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out, ${usage?.total_tokens ?? '?'} total`)
     return { response, model: PRIMARY_MODEL }
   } catch (error) {
-    console.warn(`[Chat] GLM-5.1 failed, falling back to MiniMax:`, (error as Error).message)
+    console.warn(`[Chat] MiniMax failed, falling back to GLM:`, (error as Error).message)
 
-    // Fallback to MiniMax
-    const response = await getMinimaxClient().chat.completions.create({
+    // Fallback to GLM-5.1
+    const response = await getGlmClient().chat.completions.create({
       model: FALLBACK_MODEL,
       max_tokens: 2000,
       tools,
