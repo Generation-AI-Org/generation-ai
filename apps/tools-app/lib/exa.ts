@@ -56,7 +56,7 @@ export async function searchTrustedSources(
       body: JSON.stringify({
         query,
         excludeDomains: EXCLUDED_DOMAINS,
-        text: true,
+        // text: true entfernt — /answer gibt bereits eine Zusammenfassung
       }),
     })
 
