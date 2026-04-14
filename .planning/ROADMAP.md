@@ -123,7 +123,7 @@ Plans:
 
 Plans:
 - [x] 07-01-PLAN.md — Vitest Setup in packages/auth + apps/tools-app
-- [ ] 07-02-PLAN.md — Vitest Setup in apps/website + Playwright E2E Package
+- [x] 07-02-PLAN.md — Vitest Setup in apps/website + Playwright E2E Package
 - [ ] 07-03-PLAN.md — API Route Tests + E2E Auth/Chat Tests
 - [ ] 07-04-PLAN.md — turbo.json Test-Tasks + GitHub Actions CI
 

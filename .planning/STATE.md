@@ -15,7 +15,7 @@
 Phase 4: [████████░░] DSGVO & Legal (Code ✓, DPAs pending)
 Phase 5: [████░░░░░░] Security Headers (CSP disabled - Edge Runtime issue)
 Phase 6: [███░░░░░░░] Monitoring (Health ✓, SpeedInsights broken)
-Phase 7: [██        ] Testing (Plan 01 done: Vitest setup)
+Phase 7: [████      ] Testing (Plan 02 done: Website Vitest + E2E Package)
 Phase 8: [          ] Performance & A11y
 ```
 
@@ -51,7 +51,9 @@ Phase 8: [          ] Performance & A11y
 ### Phase 7 (in progress)
 - Vitest + RTL setup in packages/auth (4 tests)
 - Vitest + RTL setup in apps/tools-app (6 tests)
+- Vitest + RTL setup in apps/website (5 tests)
+- Playwright E2E package created (packages/e2e-tools)
 
 ## Next Step
 
-Phase 7 Plan 02: API Route Tests (`/gsd-execute-phase 7`)
+Phase 7 Plan 03: API Route Tests (`/gsd-execute-phase 7`)
