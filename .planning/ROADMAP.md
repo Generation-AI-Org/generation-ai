@@ -29,8 +29,8 @@
 **Plans:** 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Impressum und Datenschutzerklaerung aktualisieren (DDG, TDDDG, Claude API)
-- [ ] 04-02-PLAN.md — Account-Delete-Funktion in tools-app (Art. 17 DSGVO)
+- [x] 04-01-PLAN.md — Impressum und Datenschutzerklaerung aktualisieren (DDG, TDDDG, Claude API)
+- [x] 04-02-PLAN.md — Account-Delete-Funktion in tools-app (Art. 17 DSGVO)
 - [ ] 04-03-PLAN.md — DPA-Dokumentation (Supabase, Vercel, Resend)
 
 **Scope:**
@@ -43,10 +43,10 @@ Plans:
 - Account-Delete-Funktion in tools-app
 
 **Success Criteria:**
-- [ ] Impressum enthaelt alle Pflichtangaben (Name, Adresse, E-Mail, Telefon)
-- [ ] Datenschutzerklaerung nennt Supabase, Vercel, Resend, Claude API
+- [x] Impressum enthaelt alle Pflichtangaben (Name, Adresse, E-Mail, Telefon)
+- [x] Datenschutzerklaerung nennt Supabase, Vercel, Resend, Claude API
 - [ ] DPAs dokumentiert (Screenshot/PDF)
-- [ ] Account-Delete oder Loeschanfrage-E-Mail moeglich
+- [x] Account-Delete oder Loeschanfrage-E-Mail moeglich
 
 **Manual Steps (Luca):**
 - Supabase Dashboard -> Legal -> DPA anfordern
@@ -58,6 +58,13 @@ Plans:
 ## Phase 5: Security Headers
 
 **Goal:** Security Headers auf A+ Niveau bringen.
+
+**Plans:** 3 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Website Security Headers + CSP-Report-Only
+- [ ] 05-02-PLAN.md — tools-app HSTS + Nonce-CSP via proxy.ts
+- [ ] 05-03-PLAN.md — CSP Enforcing + securityheaders.com Verifikation
 
 **Scope:**
 - HSTS in beiden Apps
@@ -161,3 +168,4 @@ Plans:
 
 *v2.0 Roadmap erstellt: 2026-04-13*
 *Phase 4 geplant: 2026-04-14*
+*Phase 5 geplant: 2026-04-14*
