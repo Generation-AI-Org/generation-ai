@@ -90,7 +90,7 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Vercel Speed Insights + /api/health Endpoint
+- [x] 06-01-PLAN.md — Vercel Speed Insights + /api/health Endpoint
 - [ ] 06-02-PLAN.md — Sentry Error Tracking in beiden Apps
 - [ ] 06-03-PLAN.md — Better Stack Uptime + Sentry Alerts
 
@@ -105,8 +105,8 @@ Plans:
 **Success Criteria:**
 - [ ] Test-Error erscheint in Sentry mit Stack Trace
 - [ ] Downtime-Alert funktioniert (Test mit offline-setzen)
-- [ ] CWV sichtbar im Vercel Dashboard
-- [ ] /api/health → 200 OK
+- [x] CWV sichtbar im Vercel Dashboard (nach Deploy)
+- [x] /api/health → 200 OK (nach Deploy)
 
 **Manual Steps (Luca):**
 - Sentry Account erstellen (Free)
