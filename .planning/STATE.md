@@ -19,12 +19,18 @@ Phase 7: [██████████] Testing COMPLETE (CI Pipeline live)
 Phase 8: [██████████] Performance & A11y COMPLETE (2/2 plans)
 ```
 
-## Backlog (aus Parallel-Session)
+## Backlog (Longlist — nicht kritisch)
 
-1. **CSP Header** — Edge Runtime kompatibel machen (Phase 5 incomplete)
-2. **SpeedInsights** — `pnpm approve-builds` fixen
-3. **LLM Keys** — auf Vercel setzen, dann in env.ts required machen
-4. **DPAs** — Supabase, Vercel, Resend aktivieren
+1. **CSP Header** — Edge Runtime Issue, parken
+2. **Sentry** — Error-Tracking, nice-to-have
+3. **Better Stack** — Uptime-Monitoring, nice-to-have
+
+## Erledigt (2026-04-14)
+
+- ✓ SpeedInsights re-enabled
+- ✓ ZHIPU_API_KEY von Vercel gelöscht
+- ✓ Agent auf Gemini 3 Flash umgestellt (71s → ~10s)
+- ⏳ DPAs — Supabase angefragt, Vercel braucht Pro-Plan
 
 ## Completed Code Tasks
 
