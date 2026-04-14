@@ -27,7 +27,7 @@ function getMinimaxClient(): OpenAI {
   return _minimaxClient
 }
 
-const PRIMARY_MODEL = 'gemini-3-flash'
+const PRIMARY_MODEL = 'gemini-3-flash-preview'
 const FALLBACK_MODEL = 'MiniMax-M2.7'
 
 /**
