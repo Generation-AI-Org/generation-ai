@@ -5,13 +5,13 @@
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** Ready to plan Phase 4
-**Last Updated:** 2026-04-13T23:45
+**Phase:** 04-dsgvo-legal (Plan 2 of 3 complete)
+**Last Updated:** 2026-04-14T02:15
 
 ## Progress
 
 ```
-Phase 4: [          ] DSGVO & Legal
+Phase 4: [======    ] DSGVO & Legal (2/3 plans)
 Phase 5: [          ] Security Headers
 Phase 6: [          ] Monitoring
 Phase 7: [          ] Testing
@@ -39,18 +39,25 @@ Research für Production Hardening abgeschlossen:
 - `.planning/research/monitoring.md` — Sentry, Better Stack, Axiom
 - `.planning/research/testing.md` — Vitest, Playwright, CI/CD
 
+## Completed Plans (Phase 4)
+
+| Plan | Name | Commit(s) |
+|------|------|-----------|
+| 04-01 | Legal Pages (Impressum/DSE) | 5bbf69b |
+| 04-02 | Account Delete | 1729842, 8c48ce2, cc09b8d |
+
+## Decisions
+
+- Settings link in ChatPanel (not AppShell) - follows existing auth UI pattern
+
 ## Next Step
 
 ```
-/gsd-plan-phase 4
+/gsd-execute-phase 4
 ```
 
-Plant Phase 4 (DSGVO & Legal) mit Tasks für:
-- Impressum prüfen
-- Datenschutzerklärung aktualisieren
-- DPAs (Supabase, Vercel, Resend)
-- Account-Delete-Funktion
+Remaining: 04-03-PLAN.md (DPA Checklist)
 
 ## Context für neue Sessions
 
-v2.0 Production Hardening Milestone gestartet. Research abgeschlossen. Requirements und Roadmap erstellt. Nächster Schritt: Phase 4 (DSGVO & Legal) planen und ausführen.
+Phase 4 (DSGVO & Legal) in progress. Plans 01 (Legal Pages) und 02 (Account Delete) complete. Plan 03 (DPA Checklist) remaining.
