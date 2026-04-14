@@ -1,20 +1,11 @@
 import OpenAI from 'openai'
+import { generateText } from 'ai'
+import { google } from '@ai-sdk/google'
 import { KB_TOOLS_OPENAI, executeTool } from './kb-tools'
 import type { ChatMessage, ContentSource, ContentType } from './types'
 
-// Lazy-initialized clients (avoid build-time errors when env vars missing)
-let _glmClient: OpenAI | null = null
+// Lazy-initialized MiniMax client
 let _minimaxClient: OpenAI | null = null
-
-function getGlmClient(): OpenAI {
-  if (!_glmClient) {
-    _glmClient = new OpenAI({
-      apiKey: process.env.ZHIPU_API_KEY,
-      baseURL: 'https://api.z.ai/api/coding/paas/v4',
-    })
-  }
-  return _glmClient
-}
 
 function getMinimaxClient(): OpenAI {
   if (!_minimaxClient) {
@@ -26,8 +17,10 @@ function getMinimaxClient(): OpenAI {
   return _minimaxClient
 }
 
-const PRIMARY_MODEL = 'glm-5.1'
-const FALLBACK_MODEL = 'MiniMax-M2.7'
+// Gemini Flash-Lite for fallback
+const FALLBACK_MODEL = google('gemini-2.5-flash-lite')
+
+const PRIMARY_MODEL = 'MiniMax-M2.7'
 
 /**
  * Strip <think> reasoning tags from response (GLM & MiniMax both use these)
@@ -37,36 +30,72 @@ function stripThinkTags(text: string): string {
 }
 
 /**
- * Create chat completion with GLM-5.1 primary, MiniMax fallback
+ * Create chat completion with MiniMax primary, Gemini Flash-Lite fallback
  */
 async function createCompletion(
   messages: OpenAI.ChatCompletionMessageParam[],
   tools: OpenAI.ChatCompletionTool[]
 ): Promise<{ response: OpenAI.ChatCompletion; model: string }> {
-  // Try GLM-5.1 first
+  const startTime = Date.now()
+
+  // Try MiniMax first
   try {
-    const response = await getGlmClient().chat.completions.create({
+    console.log(`[Timing] MiniMax request starting...`)
+    const response = await getMinimaxClient().chat.completions.create({
       model: PRIMARY_MODEL,
       max_tokens: 2000,
       tools,
       messages,
     })
+    const elapsed = Date.now() - startTime
     const usage = response.usage
-    console.log(`[Chat] Model: ${PRIMARY_MODEL} | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out, ${usage?.total_tokens ?? '?'} total`)
+    console.log(`[Timing] MiniMax completed in ${elapsed}ms | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out`)
     return { response, model: PRIMARY_MODEL }
   } catch (error) {
-    console.warn(`[Chat] GLM-5.1 failed, falling back to MiniMax:`, (error as Error).message)
+    const elapsed = Date.now() - startTime
+    console.warn(`[Timing] MiniMax failed after ${elapsed}ms:`, (error as Error).message)
+    console.log(`[Timing] Falling back to Gemini Flash-Lite...`)
 
-    // Fallback to MiniMax
-    const response = await getMinimaxClient().chat.completions.create({
+    // Fallback: Convert to Gemini format and use AI SDK
+    const fallbackStart = Date.now()
+    const systemMessage = messages.find(m => m.role === 'system')?.content as string || ''
+    const chatMessages = messages
+      .filter(m => m.role !== 'system')
+      .map(m => ({
+        role: m.role as 'user' | 'assistant',
+        content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content)
+      }))
+
+    // Gemini fallback - simple text response without tool calling
+    // Tool calling in fallback is too complex, just answer directly
+    const { text } = await generateText({
       model: FALLBACK_MODEL,
-      max_tokens: 2000,
-      tools,
-      messages,
+      system: systemMessage,
+      messages: chatMessages,
     })
-    const usage = response.usage
-    console.log(`[Chat] Model: ${FALLBACK_MODEL} (fallback) | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out, ${usage?.total_tokens ?? '?'} total`)
-    return { response, model: FALLBACK_MODEL }
+
+    const fallbackElapsed = Date.now() - fallbackStart
+    console.log(`[Timing] Gemini fallback completed in ${fallbackElapsed}ms`)
+
+    // Return as OpenAI format (no tool calls - direct answer)
+    const fakeResponse = {
+      id: 'gemini-fallback',
+      object: 'chat.completion',
+      created: Date.now(),
+      model: 'gemini-2.5-flash-lite',
+      choices: [{
+        index: 0,
+        message: {
+          role: 'assistant',
+          content: text || 'Entschuldigung, ich konnte keine Antwort generieren.',
+          refusal: null,
+        },
+        logprobs: null,
+        finish_reason: 'stop'
+      }],
+      usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 }
+    } as OpenAI.ChatCompletion
+    return { response: fakeResponse, model: 'gemini-2.5-flash-lite' }
   }
 }
 
@@ -116,7 +145,7 @@ export interface AgentResult {
 
 /**
  * Run the V2 agent with tool-calling loop
- * Primary: GLM-5.1, Fallback: MiniMax M2.7
+ * Primary: MiniMax, Fallback: Gemini Flash-Lite
  *
  * @param message - User's message
  * @param history - Previous messages in the conversation
@@ -126,6 +155,9 @@ export async function runAgent(
   message: string,
   history: ChatMessage[] = []
 ): Promise<AgentResult> {
+  const agentStart = Date.now()
+  console.log(`[Timing] === Agent started ===`)
+
   // Build messages array for OpenAI-compatible API
   const messages: OpenAI.ChatCompletionMessageParam[] = [
     { role: 'system', content: SYSTEM_PROMPT },
@@ -147,7 +179,10 @@ export async function runAgent(
   const maxIterations = 5
 
   while (iterations < maxIterations) {
+    console.log(`[Timing] --- Iteration ${iterations + 1} starting ---`)
+    const iterStart = Date.now()
     const { response, model } = await createCompletion(messages, KB_TOOLS_OPENAI)
+    console.log(`[Timing] LLM call completed in ${Date.now() - iterStart}ms (model: ${model})`)
 
     const choice = response.choices[0]
     const assistantMessage = choice.message
@@ -155,6 +190,7 @@ export async function runAgent(
     // Agent ist fertig (no tool calls)
     if (choice.finish_reason === 'stop' || !assistantMessage.tool_calls?.length) {
       const text = stripThinkTags(assistantMessage.content || '')
+      console.log(`[Timing] === Agent finished in ${Date.now() - agentStart}ms (${iterations} iterations) ===`)
       return { text, sources, iterations }
     }
 
@@ -169,8 +205,10 @@ export async function runAgent(
         const funcCall = 'function' in toolCall ? toolCall.function : null
         if (!funcCall) continue
 
+        const toolStart = Date.now()
         const args = JSON.parse(funcCall.arguments)
         const result = await executeTool(funcCall.name, args)
+        console.log(`[Timing] Tool ${funcCall.name} completed in ${Date.now() - toolStart}ms`)
 
         // Bei kb_read: Item zu sources hinzufügen
         if (funcCall.name === 'kb_read') {
@@ -201,11 +239,13 @@ export async function runAgent(
     } else {
       // No tool calls - extract text and return
       const text = stripThinkTags(assistantMessage.content || '') || 'Ich konnte keine vollständige Antwort finden.'
+      console.log(`[Timing] === Agent finished in ${Date.now() - agentStart}ms (${iterations} iterations) ===`)
       return { text, sources, iterations }
     }
   }
 
   // Max iterations reached
+  console.log(`[Timing] === Agent max iterations reached in ${Date.now() - agentStart}ms ===`)
   return {
     text: 'Ich konnte keine vollständige Antwort finden. Bitte versuche es mit einer anderen Frage.',
     sources,
