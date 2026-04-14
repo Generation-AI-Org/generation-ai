@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-// SpeedInsights temporarily disabled for debugging
-// import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthProvider";
@@ -104,7 +103,7 @@ export default async function RootLayout({
             {children}
           </AuthProvider>
         </ThemeProvider>
-        {/* <SpeedInsights /> */}
+        <SpeedInsights />
       </body>
     </html>
   );
