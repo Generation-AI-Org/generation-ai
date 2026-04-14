@@ -13,10 +13,12 @@ export const env = createEnv({
    */
   server: {
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'SUPABASE_SERVICE_ROLE_KEY is required'),
-    // New AI providers (April 2026)
-    GOOGLE_GENERATIVE_AI_API_KEY: z.string().min(1, 'GOOGLE_GENERATIVE_AI_API_KEY is required'),
+    // Primary: GLM-5.1 via Z.AI Coding Plan
+    ZHIPU_API_KEY: z.string().min(1, 'ZHIPU_API_KEY is required'),
+    // Fallback: MiniMax M2.7
     MINIMAX_API_KEY: z.string().min(1, 'MINIMAX_API_KEY is required'),
-    // Legacy Anthropic (optional, for fallback)
+    // Legacy (optional)
+    GOOGLE_GENERATIVE_AI_API_KEY: z.string().min(1).optional(),
     ANTHROPIC_API_KEY: z.string().min(1).optional(),
     // Upstash Redis (optional — graceful degradation if missing)
     UPSTASH_REDIS_REST_URL: z.string().url().optional(),
@@ -42,8 +44,9 @@ export const env = createEnv({
   runtimeEnv: {
     // Server
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-    GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    ZHIPU_API_KEY: process.env.ZHIPU_API_KEY,
     MINIMAX_API_KEY: process.env.MINIMAX_API_KEY,
+    GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
