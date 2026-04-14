@@ -2,17 +2,29 @@ import OpenAI from 'openai'
 import { KB_TOOLS_OPENAI, executeTool } from './kb-tools'
 import type { ChatMessage, ContentSource, ContentType } from './types'
 
-// Primary: GLM-5.1 via Z.AI Coding Plan
-const glmClient = new OpenAI({
-  apiKey: process.env.ZHIPU_API_KEY,
-  baseURL: 'https://api.z.ai/api/coding/paas/v4',
-})
+// Lazy-initialized clients (avoid build-time errors when env vars missing)
+let _glmClient: OpenAI | null = null
+let _minimaxClient: OpenAI | null = null
 
-// Fallback: MiniMax M2.7
-const minimaxClient = new OpenAI({
-  apiKey: process.env.MINIMAX_API_KEY,
-  baseURL: 'https://api.minimax.io/v1',
-})
+function getGlmClient(): OpenAI {
+  if (!_glmClient) {
+    _glmClient = new OpenAI({
+      apiKey: process.env.ZHIPU_API_KEY,
+      baseURL: 'https://api.z.ai/api/coding/paas/v4',
+    })
+  }
+  return _glmClient
+}
+
+function getMinimaxClient(): OpenAI {
+  if (!_minimaxClient) {
+    _minimaxClient = new OpenAI({
+      apiKey: process.env.MINIMAX_API_KEY,
+      baseURL: 'https://api.minimax.io/v1',
+    })
+  }
+  return _minimaxClient
+}
 
 const PRIMARY_MODEL = 'glm-5.1'
 const FALLBACK_MODEL = 'MiniMax-M2.7'
@@ -33,7 +45,7 @@ async function createCompletion(
 ): Promise<{ response: OpenAI.ChatCompletion; model: string }> {
   // Try GLM-5.1 first
   try {
-    const response = await glmClient.chat.completions.create({
+    const response = await getGlmClient().chat.completions.create({
       model: PRIMARY_MODEL,
       max_tokens: 2000,
       tools,
@@ -44,7 +56,7 @@ async function createCompletion(
     console.warn(`GLM-5.1 failed, falling back to MiniMax:`, (error as Error).message)
 
     // Fallback to MiniMax
-    const response = await minimaxClient.chat.completions.create({
+    const response = await getMinimaxClient().chat.completions.create({
       model: FALLBACK_MODEL,
       max_tokens: 2000,
       tools,
