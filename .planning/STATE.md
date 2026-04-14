@@ -69,6 +69,6 @@ Phase 8: [██████████] Performance & A11y COMPLETE (2/2 plans
 ## Next Step
 
 Phase 8 complete. Remaining v2.0 items:
-- Phase 4-03: DPAs (manual)
+- Phase 4-03: DPAs ✓ (Supabase angefragt, Resend auto, Vercel = Pro-Entscheidung)
 - Phase 5-03: CSP Enforcing (blocked by Edge Runtime issue)
 - Phase 6-02/03: Sentry + Better Stack (manual setup needed)

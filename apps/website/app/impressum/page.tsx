@@ -43,8 +43,7 @@ export default function Impressum() {
           <section>
             <h2 className="text-xl font-semibold text-text mb-4">Kontakt</h2>
             <p className="text-text-secondary">
-              {/* TODO: Echte Telefonnummer eintragen */}
-              Telefon: +49 XXX XXXXXXXX<br />
+              Telefon: +49 160 7080308<br />
               E-Mail: info@generation-ai.org
             </p>
           </section>

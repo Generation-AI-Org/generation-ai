@@ -39,8 +39,7 @@ export default function Datenschutz() {
               Generation AI e.V. (i.Gr.)<br />
               Feuerbachstraße 26<br />
               71254 Ditzingen<br /><br />
-              {/* TODO: Echte Telefonnummer eintragen */}
-              Telefon: +49 XXX XXXXXXXX<br />
+              Telefon: +49 160 7080308<br />
               E-Mail: info@generation-ai.org
             </p>
             <p className="text-text-secondary mt-4">
