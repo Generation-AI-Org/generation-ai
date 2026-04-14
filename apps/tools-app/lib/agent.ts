@@ -4,7 +4,10 @@ import { google } from '@ai-sdk/google'
 import { KB_TOOLS_OPENAI, executeTool } from './kb-tools'
 import type { ChatMessage, ContentSource, ContentType } from './types'
 
-// Lazy-initialized MiniMax client
+// Gemini Flash-Lite as primary
+const PRIMARY_MODEL = google('gemini-2.5-flash-lite')
+
+// Lazy-initialized MiniMax client for fallback
 let _minimaxClient: OpenAI | null = null
 
 function getMinimaxClient(): OpenAI {
@@ -17,20 +20,15 @@ function getMinimaxClient(): OpenAI {
   return _minimaxClient
 }
 
-// Gemini Flash-Lite for fallback
-const FALLBACK_MODEL = google('gemini-2.5-flash-lite')
-
-const PRIMARY_MODEL = 'MiniMax-M2.7'
-
 /**
- * Strip <think> reasoning tags from response (GLM & MiniMax both use these)
+ * Strip <think> reasoning tags from response
  */
 function stripThinkTags(text: string): string {
   return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
 }
 
 /**
- * Create chat completion with MiniMax primary, Gemini Flash-Lite fallback
+ * Create chat completion with Gemini Flash-Lite primary, MiniMax fallback
  */
 async function createCompletion(
   messages: OpenAI.ChatCompletionMessageParam[],
@@ -38,48 +36,30 @@ async function createCompletion(
 ): Promise<{ response: OpenAI.ChatCompletion; model: string }> {
   const startTime = Date.now()
 
-  // Try MiniMax first
+  // Try Gemini Flash-Lite first (direct answer, no tool calling)
   try {
-    console.log(`[Timing] MiniMax request starting...`)
-    const response = await getMinimaxClient().chat.completions.create({
-      model: PRIMARY_MODEL,
-      max_tokens: 2000,
-      tools,
-      messages,
-    })
-    const elapsed = Date.now() - startTime
-    const usage = response.usage
-    console.log(`[Timing] MiniMax completed in ${elapsed}ms | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out`)
-    return { response, model: PRIMARY_MODEL }
-  } catch (error) {
-    const elapsed = Date.now() - startTime
-    console.warn(`[Timing] MiniMax failed after ${elapsed}ms:`, (error as Error).message)
-    console.log(`[Timing] Falling back to Gemini Flash-Lite...`)
+    console.log(`[Timing] Gemini Flash-Lite request starting...`)
 
-    // Fallback: Convert to Gemini format and use AI SDK
-    const fallbackStart = Date.now()
     const systemMessage = messages.find(m => m.role === 'system')?.content as string || ''
     const chatMessages = messages
-      .filter(m => m.role !== 'system')
+      .filter(m => m.role === 'user' || m.role === 'assistant')
       .map(m => ({
         role: m.role as 'user' | 'assistant',
         content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content)
       }))
 
-    // Gemini fallback - simple text response without tool calling
-    // Tool calling in fallback is too complex, just answer directly
-    const { text } = await generateText({
-      model: FALLBACK_MODEL,
+    const result = await generateText({
+      model: PRIMARY_MODEL,
       system: systemMessage,
       messages: chatMessages,
     })
 
-    const fallbackElapsed = Date.now() - fallbackStart
-    console.log(`[Timing] Gemini fallback completed in ${fallbackElapsed}ms`)
+    const elapsed = Date.now() - startTime
+    console.log(`[Timing] Gemini completed in ${elapsed}ms`)
 
-    // Return as OpenAI format (no tool calls - direct answer)
+    // Return as direct answer (no tool calls)
     const fakeResponse = {
-      id: 'gemini-fallback',
+      id: 'gemini-primary',
       object: 'chat.completion',
       created: Date.now(),
       model: 'gemini-2.5-flash-lite',
@@ -87,7 +67,7 @@ async function createCompletion(
         index: 0,
         message: {
           role: 'assistant',
-          content: text || 'Entschuldigung, ich konnte keine Antwort generieren.',
+          content: result.text || 'Keine Antwort generiert.',
           refusal: null,
         },
         logprobs: null,
@@ -95,7 +75,25 @@ async function createCompletion(
       }],
       usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 }
     } as OpenAI.ChatCompletion
+
     return { response: fakeResponse, model: 'gemini-2.5-flash-lite' }
+  } catch (error) {
+    const elapsed = Date.now() - startTime
+    console.warn(`[Timing] Gemini failed after ${elapsed}ms:`, (error as Error).message)
+    console.log(`[Timing] Falling back to MiniMax...`)
+
+    // Fallback to MiniMax (with tool calling)
+    const fallbackStart = Date.now()
+    const response = await getMinimaxClient().chat.completions.create({
+      model: 'MiniMax-M2.7',
+      max_tokens: 2000,
+      tools,
+      messages,
+    })
+    const fallbackElapsed = Date.now() - fallbackStart
+    const usage = response.usage
+    console.log(`[Timing] MiniMax fallback completed in ${fallbackElapsed}ms | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out`)
+    return { response, model: 'MiniMax-M2.7' }
   }
 }
 
