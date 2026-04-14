@@ -5,25 +5,26 @@
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** 04-dsgvo-legal (Plan 2 of 3 complete)
-**Last Updated:** 2026-04-14T02:15
+**Phase:** Phase 5 in progress (Plan 01 complete)
+**Last Updated:** 2026-04-14T00:21
 
 ## Progress
 
 ```
-Phase 4: [======    ] DSGVO & Legal (2/3 plans)
-Phase 5: [          ] Security Headers
+Phase 4: [████████░░] DSGVO & Legal (Code ✓, DPAs pending)
+Phase 5: [███◆      ] Security Headers (01/03 complete)
 Phase 6: [          ] Monitoring
 Phase 7: [          ] Testing
 Phase 8: [          ] Performance & A11y
 ```
 
-## Completed Milestones
+## Phase 4 Completed Tasks
 
-### v1.0: Monorepo Migration ✅
-- Phase 1: App Migration ✅
-- Phase 2: Shared Packages ✅
-- Phase 3: Deploy & Archive ✅
+- ✓ Impressum aktualisiert (DDG, Telefon-Placeholder)
+- ✓ Datenschutzerklärung aktualisiert (TDDDG, Claude API)
+- ✓ tools-app Legal Pages erstellt
+- ✓ Account-Delete-Funktion implementiert
+- ○ DPAs (Supabase, Vercel, Resend) — Luca's Backlog
 
 ## Live URLs
 
@@ -31,33 +32,6 @@ Phase 8: [          ] Performance & A11y
 - **tools-app:** https://tools.generation-ai.org
 - **GitHub:** https://github.com/Generation-AI-Org/generation-ai
 
-## Research Completed
-
-Research für Production Hardening abgeschlossen:
-- `.planning/research/security-headers.md` — CSP, HSTS, Nonce vs. unsafe-inline
-- `.planning/research/dsgvo-privacy.md` — DPAs, Account Delete, Impressum
-- `.planning/research/monitoring.md` — Sentry, Better Stack, Axiom
-- `.planning/research/testing.md` — Vitest, Playwright, CI/CD
-
-## Completed Plans (Phase 4)
-
-| Plan | Name | Commit(s) |
-|------|------|-----------|
-| 04-01 | Legal Pages (Impressum/DSE) | 5bbf69b |
-| 04-02 | Account Delete | 1729842, 8c48ce2, cc09b8d |
-
-## Decisions
-
-- Settings link in ChatPanel (not AppShell) - follows existing auth UI pattern
-
 ## Next Step
 
-```
-/gsd-execute-phase 4
-```
-
-Remaining: 04-03-PLAN.md (DPA Checklist)
-
-## Context für neue Sessions
-
-Phase 4 (DSGVO & Legal) in progress. Plans 01 (Legal Pages) und 02 (Account Delete) complete. Plan 03 (DPA Checklist) remaining.
+Phase 5: Security Headers ausführen
