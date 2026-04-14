@@ -24,27 +24,34 @@
 
 ## Phase 4: DSGVO & Legal
 
-**Goal:** Rechtliche Compliance für DACH-Markt sicherstellen.
+**Goal:** Rechtliche Compliance fuer DACH-Markt sicherstellen.
+
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Impressum und Datenschutzerklaerung aktualisieren (DDG, TDDDG, Claude API)
+- [ ] 04-02-PLAN.md — Account-Delete-Funktion in tools-app (Art. 17 DSGVO)
+- [ ] 04-03-PLAN.md — DPA-Dokumentation (Supabase, Vercel, Resend)
 
 **Scope:**
-- Impressum auf beiden Domains prüfen/vervollständigen
-- Datenschutzerklärung aktualisieren (TDDDG, alle Drittanbieter)
+- Impressum auf beiden Domains pruefen/vervollstaendigen
+- Datenschutzerklaerung aktualisieren (TDDDG, alle Drittanbieter)
 - Supabase DPA anfordern und unterzeichnen
 - Vercel DPA aktivieren
-- Resend DPA prüfen
+- Resend DPA pruefen
 - Supabase Region verifizieren (EU)
 - Account-Delete-Funktion in tools-app
 
 **Success Criteria:**
-- [ ] Impressum enthält alle Pflichtangaben (Name, Adresse, E-Mail, Telefon)
-- [ ] Datenschutzerklärung nennt Supabase, Vercel, Resend, Claude API
+- [ ] Impressum enthaelt alle Pflichtangaben (Name, Adresse, E-Mail, Telefon)
+- [ ] Datenschutzerklaerung nennt Supabase, Vercel, Resend, Claude API
 - [ ] DPAs dokumentiert (Screenshot/PDF)
-- [ ] Account-Delete oder Löschanfrage-E-Mail möglich
+- [ ] Account-Delete oder Loeschanfrage-E-Mail moeglich
 
 **Manual Steps (Luca):**
-- Supabase Dashboard → Legal → DPA anfordern
-- Vercel Dashboard → Legal → DPA aktivieren
-- Resend Dashboard → DPA prüfen
+- Supabase Dashboard -> Legal -> DPA anfordern
+- Vercel Dashboard -> Legal -> DPA aktivieren
+- Resend Dashboard -> DPA pruefen
 
 ---
 
@@ -60,7 +67,7 @@
 - CSP-Report-Only erst, dann enforcing
 
 **Success Criteria:**
-- [ ] securityheaders.com → A+ für beide Domains
+- [ ] securityheaders.com → A+ fuer beide Domains
 - [ ] Keine CSP-Violations in Browser Console
 - [ ] Auth funktioniert (Supabase connect-src korrekt)
 
@@ -71,7 +78,7 @@
 
 ## Phase 6: Monitoring
 
-**Goal:** Observability für Production.
+**Goal:** Observability fuer Production.
 
 **Scope:**
 - Sentry Error Tracking (Free) in beiden Apps
@@ -96,7 +103,7 @@
 
 ## Phase 7: Testing
 
-**Goal:** Test-Infrastruktur für Qualitätssicherung.
+**Goal:** Test-Infrastruktur fuer Qualitaetssicherung.
 
 **Scope:**
 - Vitest + RTL Setup in apps/tools-app
@@ -108,7 +115,7 @@
 - turbo.json Test-Tasks
 
 **Success Criteria:**
-- [ ] `pnpm test` läuft durch
+- [ ] `pnpm test` laeuft durch
 - [ ] CI blockiert PRs mit failing Tests
 - [ ] Auth E2E Test besteht
 - [ ] Chat E2E Test besteht
@@ -126,7 +133,7 @@
 - Lighthouse Audit dokumentieren
 - Kritische A11y Issues fixen
 - Google Fonts lokal hosten (falls extern)
-- Performance-Optimierungen (falls nötig)
+- Performance-Optimierungen (falls noetig)
 
 **Success Criteria:**
 - [ ] Lighthouse > 90 in allen Kategorien
@@ -140,12 +147,12 @@
 
 ## Timeline
 
-| Phase | Geschätzt | Abhängigkeiten |
+| Phase | Geschaetzt | Abhaengigkeiten |
 |-------|-----------|----------------|
 | Phase 4 (DSGVO) | 2-3 Stunden | - |
 | Phase 5 (Security) | 3-4 Stunden | Phase 4 |
-| Phase 6 (Monitoring) | 2-3 Stunden | - (parallel zu 4/5 möglich) |
-| Phase 7 (Testing) | 4-6 Stunden | - (parallel zu 6 möglich) |
+| Phase 6 (Monitoring) | 2-3 Stunden | - (parallel zu 4/5 moeglich) |
+| Phase 7 (Testing) | 4-6 Stunden | - (parallel zu 6 moeglich) |
 | Phase 8 (Performance) | 1-2 Stunden | alle anderen |
 
 **Gesamt:** ~2-3 Tage bei fokussierter Arbeit
@@ -153,3 +160,4 @@
 ---
 
 *v2.0 Roadmap erstellt: 2026-04-13*
+*Phase 4 geplant: 2026-04-14*
