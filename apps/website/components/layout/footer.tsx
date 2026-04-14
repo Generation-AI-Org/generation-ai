@@ -1,16 +1,20 @@
+'use client'
+
 import Image from "next/image";
 import Link from "next/link";
+import { useTheme } from "@/components/ThemeProvider";
 
 export function Footer() {
+  const { theme } = useTheme();
 
   return (
     <footer className="bg-bg-header border-t border-white/10 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Logo */}
+          {/* Logo - switches based on theme */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/logos/generationai-blau-neon.jpg"
+              src={theme === 'dark' ? '/logos/generationai-blau-neon.svg' : '/logos/generationai-pink-rot-wide.svg'}
               alt="Generation AI"
               width={140}
               height={28}
