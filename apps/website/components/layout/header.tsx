@@ -16,14 +16,22 @@ export function Header() {
 
       <nav aria-label="Hauptnavigation" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo - switches based on theme */}
-          <Link href="/" className="flex items-center" aria-label="Generation AI - Startseite">
+          {/* Logo - both preloaded, CSS switches instantly */}
+          <Link href="/" className="flex items-center relative" aria-label="Generation AI - Startseite">
             <Image
-              src={theme === 'dark' ? '/logos/generationai-blau-neon.jpg' : '/logos/generationai-pink-rot-wide.svg'}
+              src="/logos/generationai-blau-neon.jpg"
               alt="Generation AI"
               width={150}
               height={40}
-              className="h-8 md:h-10 w-auto hover:opacity-90 transition-opacity"
+              className={`h-8 md:h-10 w-auto transition-opacity duration-200 ${theme === 'dark' ? 'opacity-100' : 'opacity-0 absolute'}`}
+              priority
+            />
+            <Image
+              src="/logos/generationai-pink-rot-wide.svg"
+              alt="Generation AI"
+              width={150}
+              height={40}
+              className={`h-8 md:h-10 w-auto transition-opacity duration-200 ${theme === 'light' ? 'opacity-100' : 'opacity-0 absolute'}`}
               priority
             />
           </Link>
