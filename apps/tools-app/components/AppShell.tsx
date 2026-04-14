@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import CardGrid from '@/components/library/CardGrid'
 import FilterBar from '@/components/library/FilterBar'
 import ChatPanel from '@/components/chat/ChatPanel'
@@ -155,6 +156,17 @@ export default function AppShell({ items, mode }: AppShellProps) {
           )}
         </button>
 
+        {/* Legal Links - Desktop only, visible in header */}
+        <div className="hidden lg:flex items-center gap-3 ml-2 text-xs text-white/50">
+          <Link href="/impressum" className="hover:text-white/80 transition-colors">
+            Impressum
+          </Link>
+          <span>|</span>
+          <Link href="/datenschutz" className="hover:text-white/80 transition-colors">
+            Datenschutz
+          </Link>
+        </div>
+
       </header>
 
       {/* Search Overlay */}
@@ -264,6 +276,17 @@ export default function AppShell({ items, mode }: AppShellProps) {
           <ChatPanel onHighlight={setHighlightedSlugs} mode={mode} />
         </div>
       </div>
+
+      {/* Mobile Legal Footer */}
+      <footer className="lg:hidden flex items-center justify-center gap-4 py-2 border-t border-[var(--border)] bg-[var(--bg-header)] text-xs text-text-muted shrink-0">
+        <Link href="/impressum" className="hover:text-text transition-colors">
+          Impressum
+        </Link>
+        <span>|</span>
+        <Link href="/datenschutz" className="hover:text-text transition-colors">
+          Datenschutz
+        </Link>
+      </footer>
     </div>
   )
 }
