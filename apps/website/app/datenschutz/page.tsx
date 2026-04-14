@@ -39,6 +39,8 @@ export default function Datenschutz() {
               Generation AI e.V. (i.Gr.)<br />
               Feuerbachstraße 26<br />
               71254 Ditzingen<br /><br />
+              {/* TODO: Echte Telefonnummer eintragen */}
+              Telefon: +49 XXX XXXXXXXX<br />
               E-Mail: info@generation-ai.org
             </p>
             <p className="text-text-secondary mt-4">
@@ -78,6 +80,9 @@ export default function Datenschutz() {
               Diese Cookies sind für den Betrieb der Website erforderlich und können nicht
               deaktiviert werden.
             </p>
+            <p className="text-text-secondary mt-2">
+              <strong>Rechtsgrundlage:</strong> § 25 Abs. 2 Nr. 2 TDDDG (technisch notwendige Speicherung)
+            </p>
           </section>
 
           <section>
@@ -116,6 +121,15 @@ export default function Datenschutz() {
             </p>
             <p className="text-text-secondary mt-2">
               Anbieter: Resend Inc., 2261 Market Street #4059, San Francisco, CA 94114, USA
+            </p>
+
+            <h3 className="text-lg font-medium text-text mb-2 mt-6">KI-Assistent (Anthropic Claude)</h3>
+            <p className="text-text-secondary">
+              Für unseren KI-Assistenten im Tool-Bereich nutzen wir die Claude API von Anthropic.
+              Bei der Nutzung des Chat-Assistenten werden Ihre Eingaben an Anthropic übermittelt.
+            </p>
+            <p className="text-text-secondary mt-2">
+              Anbieter: Anthropic, PBC, 548 Market St, San Francisco, CA 94104, USA
             </p>
           </section>
 

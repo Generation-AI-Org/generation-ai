@@ -24,7 +24,7 @@ export default function Impressum() {
 
         <div className="prose prose-invert max-w-none space-y-8">
           <section>
-            <h2 className="text-xl font-semibold text-text mb-4">Angaben gemäß § 5 TMG</h2>
+            <h2 className="text-xl font-semibold text-text mb-4">Angaben gemäß § 5 DDG</h2>
             <p className="text-text-secondary">
               Generation AI e.V. (i.Gr.)<br />
               Feuerbachstraße 26<br />
@@ -43,12 +43,14 @@ export default function Impressum() {
           <section>
             <h2 className="text-xl font-semibold text-text mb-4">Kontakt</h2>
             <p className="text-text-secondary">
+              {/* TODO: Echte Telefonnummer eintragen */}
+              Telefon: +49 XXX XXXXXXXX<br />
               E-Mail: info@generation-ai.org
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-text mb-4">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
+            <h2 className="text-xl font-semibold text-text mb-4">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
             <p className="text-text-secondary">
               Janna Schweigmann<br />
               Feuerbachstraße 26<br />
