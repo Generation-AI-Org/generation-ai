@@ -119,6 +119,14 @@ Plans:
 
 **Goal:** Test-Infrastruktur fuer Qualitaetssicherung.
 
+**Plans:** 4 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Vitest Setup in packages/auth + apps/tools-app
+- [ ] 07-02-PLAN.md — Vitest Setup in apps/website + Playwright E2E Package
+- [ ] 07-03-PLAN.md — API Route Tests + E2E Auth/Chat Tests
+- [ ] 07-04-PLAN.md — turbo.json Test-Tasks + GitHub Actions CI
+
 **Scope:**
 - Vitest + RTL Setup in apps/tools-app
 - Vitest Setup in apps/website
@@ -177,3 +185,4 @@ Plans:
 *Phase 4 geplant: 2026-04-14*
 *Phase 5 geplant: 2026-04-14*
 *Phase 6 geplant: 2026-04-14*
+*Phase 7 geplant: 2026-04-14*
