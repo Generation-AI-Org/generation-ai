@@ -154,7 +154,7 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Lighthouse + axe-core Audit dokumentieren
+- [x] 08-01-PLAN.md — Lighthouse + axe-core Audit dokumentieren
 - [ ] 08-02-PLAN.md — A11y-Issues fixen + Re-Audit
 
 **Scope:**
@@ -167,7 +167,7 @@ Plans:
 **Success Criteria:**
 - [ ] Lighthouse > 90 in allen Kategorien
 - [ ] Keine WCAG 2.1 AA Violations (Critical/Serious)
-- [ ] Keine Third-Party Google Fonts Requests
+- [x] Keine Third-Party Google Fonts Requests (verified: next/font self-hosted)
 
 **Dependencies:**
 - Alle anderen Phasen abgeschlossen

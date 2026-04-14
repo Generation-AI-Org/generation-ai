@@ -5,8 +5,8 @@
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** Phase 7 in progress
-**Last Updated:** 2026-04-14T02:54
+**Phase:** Phase 8 in progress (Plan 1/2 complete)
+**Last Updated:** 2026-04-14T03:15
 **Site Status:** ✓ ONLINE (tools.generation-ai.org)
 
 ## Progress
@@ -16,7 +16,7 @@ Phase 4: [████████░░] DSGVO & Legal (Code ✓, DPAs pending)
 Phase 5: [████░░░░░░] Security Headers (CSP disabled - Edge Runtime issue)
 Phase 6: [███░░░░░░░] Monitoring (Health ✓, SpeedInsights broken)
 Phase 7: [██████████] Testing COMPLETE (CI Pipeline live)
-Phase 8: [          ] Performance & A11y
+Phase 8: [█████░░░░░] Performance & A11y (1/2 plans)
 ```
 
 ## Backlog (aus Parallel-Session)
@@ -59,6 +59,12 @@ Phase 8: [          ] Performance & A11y
 - GitHub Actions CI Workflow (.github/workflows/ci.yml)
 - Total: 20 unit tests passing, FULL TURBO caching
 
+### Phase 8 (in progress)
+- Lighthouse + A11y Audit complete (LIGHTHOUSE-AUDIT.md)
+- Google Fonts self-hosting verified (no third-party requests)
+- WCAG 2.1 AA violations identified (6 issues in tools-app)
+- Fixes pending in Plan 08-02
+
 ## Next Step
 
-Phase 8: Performance & A11y (`/gsd-plan-phase 8`)
+Phase 8 Plan 02: A11y Fixes (`/gsd-execute-phase 8`)
