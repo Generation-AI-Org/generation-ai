@@ -32,6 +32,13 @@ Alle Code-Tasks erledigt. Nur noch Admin-Aufgaben offen:
 - ✓ Sentry Error-Tracking eingerichtet
 - ✓ Better Stack Uptime-Monitoring eingerichtet
 - ✓ ZHIPU_API_KEY von Vercel gelöscht
+- ✓ **Dokumentation erstellt:**
+  - `docs/ARCHITECTURE.md` — System-Uebersicht, Datenfluss, Schema
+  - `docs/API.md` — Alle API-Endpoints dokumentiert
+  - `docs/DEPLOYMENT.md` — Deploy-Flow, Env-Vars, Setup
+  - `CLAUDE.md` erweitert mit Session-Start-Checkliste
+  - `packages/ui/README.md` — Erklaerung warum leer
+  - Memory-Datei aktualisiert
 
 ## Backlog (nice-to-have)
 
