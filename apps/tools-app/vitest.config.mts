@@ -9,5 +9,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
     include: ['__tests__/**/*.test.{ts,tsx}'],
+    environmentMatchGlobs: [
+      ['**/*.test.tsx', 'jsdom'],
+      ['**/api/**/*.test.ts', 'node'],
+    ],
   },
 })
