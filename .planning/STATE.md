@@ -13,24 +13,29 @@
 
 ```
 Phase 4: [████████░░] DSGVO & Legal (Code ✓, DPAs pending)
-Phase 5: [████░░░░░░] Security Headers (CSP disabled - Edge Runtime issue)
-Phase 6: [███░░░░░░░] Monitoring (Health ✓, SpeedInsights broken)
+Phase 5: [████████░░] Security Headers (HSTS ✓, CSP geparkt)
+Phase 6: [██████████] Monitoring COMPLETE
 Phase 7: [██████████] Testing COMPLETE (CI Pipeline live)
-Phase 8: [██████████] Performance & A11y COMPLETE (2/2 plans)
+Phase 8: [██████████] Performance & A11y COMPLETE
 ```
 
-## Backlog (Longlist — nicht kritisch)
+## v2.0 Production Hardening — COMPLETE ✓
 
-1. **CSP Header** — Edge Runtime Issue, parken
-2. **Sentry** — Error-Tracking, nice-to-have
-3. **Better Stack** — Uptime-Monitoring, nice-to-have
+Alle Code-Tasks erledigt. Nur noch Admin-Aufgaben offen:
+- ⏳ DPA Supabase (angefragt)
+- ⏳ DPA Vercel (braucht Pro-Plan)
 
 ## Erledigt (2026-04-14)
 
+- ✓ Agent auf Gemini 3 Flash (71s → ~10s)
 - ✓ SpeedInsights re-enabled
+- ✓ Sentry Error-Tracking eingerichtet
+- ✓ Better Stack Uptime-Monitoring eingerichtet
 - ✓ ZHIPU_API_KEY von Vercel gelöscht
-- ✓ Agent auf Gemini 3 Flash umgestellt (71s → ~10s)
-- ⏳ DPAs — Supabase angefragt, Vercel braucht Pro-Plan
+
+## Backlog (nice-to-have)
+
+1. **CSP Header** — Edge Runtime Issue, geparkt
 
 ## Completed Code Tasks
 
