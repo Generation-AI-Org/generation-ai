@@ -66,9 +66,9 @@
 **Problem:** Keine Tests vorhanden. Kein CI/CD.
 
 **Requirements:**
-- R4.1: Vitest + React Testing Library in apps/tools-app
+- [x] R4.1: Vitest + React Testing Library in apps/tools-app (07-01)
 - R4.2: Vitest in apps/website
-- R4.3: Vitest in packages/auth (Unit Tests für Helpers)
+- [x] R4.3: Vitest in packages/auth (Unit Tests für Helpers) (07-01)
 - R4.4: API Route Tests mit next-test-api-route-handler
 - R4.5: Playwright E2E Package für kritische Flows (Auth, Chat)
 - R4.6: GitHub Actions CI Workflow (Build, Lint, Test)
