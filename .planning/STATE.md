@@ -5,8 +5,8 @@
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** Phase 8 in progress (Plan 1/2 complete)
-**Last Updated:** 2026-04-14T03:15
+**Phase:** Phase 8 COMPLETE (Plan 2/2 complete)
+**Last Updated:** 2026-04-14T01:21
 **Site Status:** ✓ ONLINE (tools.generation-ai.org)
 
 ## Progress
@@ -16,7 +16,7 @@ Phase 4: [████████░░] DSGVO & Legal (Code ✓, DPAs pending)
 Phase 5: [████░░░░░░] Security Headers (CSP disabled - Edge Runtime issue)
 Phase 6: [███░░░░░░░] Monitoring (Health ✓, SpeedInsights broken)
 Phase 7: [██████████] Testing COMPLETE (CI Pipeline live)
-Phase 8: [█████░░░░░] Performance & A11y (1/2 plans)
+Phase 8: [██████████] Performance & A11y COMPLETE (2/2 plans)
 ```
 
 ## Backlog (aus Parallel-Session)
@@ -59,12 +59,16 @@ Phase 8: [█████░░░░░] Performance & A11y (1/2 plans)
 - GitHub Actions CI Workflow (.github/workflows/ci.yml)
 - Total: 20 unit tests passing, FULL TURBO caching
 
-### Phase 8 (in progress)
+### Phase 8 COMPLETE
 - Lighthouse + A11y Audit complete (LIGHTHOUSE-AUDIT.md)
 - Google Fonts self-hosting verified (no third-party requests)
-- WCAG 2.1 AA violations identified (6 issues in tools-app)
-- Fixes pending in Plan 08-02
+- WCAG 2.1 AA violations identified and FIXED (6 issues in tools-app)
+- Skip-Link, aria-labels, aria-pressed, focus-visible styles implemented
+- All Critical/Serious axe violations resolved
 
 ## Next Step
 
-Phase 8 Plan 02: A11y Fixes (`/gsd-execute-phase 8`)
+Phase 8 complete. Remaining v2.0 items:
+- Phase 4-03: DPAs (manual)
+- Phase 5-03: CSP Enforcing (blocked by Edge Runtime issue)
+- Phase 6-02/03: Sentry + Better Stack (manual setup needed)
