@@ -17,6 +17,7 @@
     "@genai/auth": "workspace:*",
     "@genai/config": "workspace:*",
     "@genai/types": "workspace:*",
+    "@sentry/nextjs": "^10",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
     "@t3-oss/env-nextjs": "^0.13.11",
