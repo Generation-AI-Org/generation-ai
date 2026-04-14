@@ -14,6 +14,8 @@
   --text-muted: #666666;
   --text-secondary: #999999;
   --text-on-accent: #141414;
+  --text-on-header: rgba(255, 255, 255, 0.6);
+  --text-on-header-hover: rgba(255, 255, 255, 0.9);
   --border: rgba(255, 255, 255, 0.08);
   --border-accent: rgba(206, 255, 50, 0.6);
 }
@@ -32,6 +34,8 @@
   --text-muted: #555555;
   --text-secondary: #666666;
   --text-on-accent: #FFFFFF;
+  --text-on-header: rgba(255, 255, 255, 0.7);
+  --text-on-header-hover: rgba(255, 255, 255, 1);
   --border: rgba(0, 0, 0, 0.1);
   --border-accent: rgba(217, 16, 64, 0.4);
 }
@@ -48,6 +52,8 @@
   --color-text-muted: var(--text-muted);
   --color-text-secondary: var(--text-secondary);
   --color-text-on-accent: var(--text-on-accent);
+  --color-text-on-header: var(--text-on-header);
+  --color-text-on-header-hover: var(--text-on-header-hover);
   --color-border: var(--border);
   --color-border-accent: var(--border-accent);
 

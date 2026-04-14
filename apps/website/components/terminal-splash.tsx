@@ -405,7 +405,7 @@ export function TerminalSplash({
                 {/* Floating Logo */}
                 <div className="relative mb-8 animate-float">
                   <Image
-                    src="/logos/generationai-blau-neon.jpg"
+                    src="/logos/generationai-blau-neon-transparent.png"
                     alt="Generation AI"
                     width={220}
                     height={220}
