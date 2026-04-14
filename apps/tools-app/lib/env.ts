@@ -13,11 +13,9 @@ export const env = createEnv({
    */
   server: {
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'SUPABASE_SERVICE_ROLE_KEY is required'),
-    // Primary: GLM-5.1 via Z.AI Coding Plan
-    ZHIPU_API_KEY: z.string().min(1, 'ZHIPU_API_KEY is required'),
-    // Fallback: MiniMax M2.7
-    MINIMAX_API_KEY: z.string().min(1, 'MINIMAX_API_KEY is required'),
-    // Legacy (optional)
+    // LLM Keys - all optional to allow graceful fallback
+    ZHIPU_API_KEY: z.string().min(1).optional(),
+    MINIMAX_API_KEY: z.string().min(1).optional(),
     GOOGLE_GENERATIVE_AI_API_KEY: z.string().min(1).optional(),
     ANTHROPIC_API_KEY: z.string().min(1).optional(),
     // Upstash Redis (optional — graceful degradation if missing)
