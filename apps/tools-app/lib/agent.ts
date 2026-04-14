@@ -51,9 +51,11 @@ async function createCompletion(
       tools,
       messages,
     })
+    const usage = response.usage
+    console.log(`[Chat] Model: ${PRIMARY_MODEL} | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out, ${usage?.total_tokens ?? '?'} total`)
     return { response, model: PRIMARY_MODEL }
   } catch (error) {
-    console.warn(`GLM-5.1 failed, falling back to MiniMax:`, (error as Error).message)
+    console.warn(`[Chat] GLM-5.1 failed, falling back to MiniMax:`, (error as Error).message)
 
     // Fallback to MiniMax
     const response = await getMinimaxClient().chat.completions.create({
@@ -62,6 +64,8 @@ async function createCompletion(
       tools,
       messages,
     })
+    const usage = response.usage
+    console.log(`[Chat] Model: ${FALLBACK_MODEL} (fallback) | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out, ${usage?.total_tokens ?? '?'} total`)
     return { response, model: FALLBACK_MODEL }
   }
 }
