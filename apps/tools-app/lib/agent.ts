@@ -2,8 +2,19 @@ import OpenAI from 'openai'
 import { KB_TOOLS_OPENAI, executeTool } from './kb-tools'
 import type { ChatMessage, ContentSource, ContentType } from './types'
 
-// MiniMax client (einziges Model für Agent mit Tool-Calling)
+// Lazy-initialized clients (avoid build-time errors when env vars missing)
+let _glmClient: OpenAI | null = null
 let _minimaxClient: OpenAI | null = null
+
+function getGlmClient(): OpenAI {
+  if (!_glmClient) {
+    _glmClient = new OpenAI({
+      apiKey: process.env.ZHIPU_API_KEY,
+      baseURL: 'https://api.z.ai/api/coding/paas/v4',
+    })
+  }
+  return _glmClient
+}
 
 function getMinimaxClient(): OpenAI {
   if (!_minimaxClient) {
@@ -15,31 +26,48 @@ function getMinimaxClient(): OpenAI {
   return _minimaxClient
 }
 
-const MODEL = 'MiniMax-M2.7'
+const PRIMARY_MODEL = 'glm-5.1'
+const FALLBACK_MODEL = 'MiniMax-M2.7'
 
 /**
- * Strip <think> reasoning tags from response
+ * Strip <think> reasoning tags from response (GLM & MiniMax both use these)
  */
 function stripThinkTags(text: string): string {
   return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
 }
 
 /**
- * Create chat completion with MiniMax
+ * Create chat completion with GLM-5.1 primary, MiniMax fallback
  */
 async function createCompletion(
   messages: OpenAI.ChatCompletionMessageParam[],
   tools: OpenAI.ChatCompletionTool[]
 ): Promise<{ response: OpenAI.ChatCompletion; model: string }> {
-  const response = await getMinimaxClient().chat.completions.create({
-    model: MODEL,
-    max_tokens: 2000,
-    tools,
-    messages,
-  })
-  const usage = response.usage
-  console.log(`[Chat] Model: ${MODEL} | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out, ${usage?.total_tokens ?? '?'} total`)
-  return { response, model: MODEL }
+  // Try GLM-5.1 first
+  try {
+    const response = await getGlmClient().chat.completions.create({
+      model: PRIMARY_MODEL,
+      max_tokens: 2000,
+      tools,
+      messages,
+    })
+    const usage = response.usage
+    console.log(`[Chat] Model: ${PRIMARY_MODEL} | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out, ${usage?.total_tokens ?? '?'} total`)
+    return { response, model: PRIMARY_MODEL }
+  } catch (error) {
+    console.warn(`[Chat] GLM-5.1 failed, falling back to MiniMax:`, (error as Error).message)
+
+    // Fallback to MiniMax
+    const response = await getMinimaxClient().chat.completions.create({
+      model: FALLBACK_MODEL,
+      max_tokens: 2000,
+      tools,
+      messages,
+    })
+    const usage = response.usage
+    console.log(`[Chat] Model: ${FALLBACK_MODEL} (fallback) | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out, ${usage?.total_tokens ?? '?'} total`)
+    return { response, model: FALLBACK_MODEL }
+  }
 }
 
 /**
@@ -98,9 +126,6 @@ export async function runAgent(
   message: string,
   history: ChatMessage[] = []
 ): Promise<AgentResult> {
-  const startTime = Date.now()
-  console.log(`[Agent] START`)
-
   // Build messages array for OpenAI-compatible API
   const messages: OpenAI.ChatCompletionMessageParam[] = [
     { role: 'system', content: SYSTEM_PROMPT },
@@ -122,9 +147,7 @@ export async function runAgent(
   const maxIterations = 5
 
   while (iterations < maxIterations) {
-    const llmStart = Date.now()
     const { response, model } = await createCompletion(messages, KB_TOOLS_OPENAI)
-    console.log(`[Agent] LLM call ${iterations + 1} took ${Date.now() - llmStart}ms`)
 
     const choice = response.choices[0]
     const assistantMessage = choice.message
@@ -132,7 +155,6 @@ export async function runAgent(
     // Agent ist fertig (no tool calls)
     if (choice.finish_reason === 'stop' || !assistantMessage.tool_calls?.length) {
       const text = stripThinkTags(assistantMessage.content || '')
-      console.log(`[Agent] DONE in ${Date.now() - startTime}ms (${iterations + 1} iterations)`)
       return { text, sources, iterations }
     }
 
@@ -148,9 +170,7 @@ export async function runAgent(
         if (!funcCall) continue
 
         const args = JSON.parse(funcCall.arguments)
-        const toolStart = Date.now()
         const result = await executeTool(funcCall.name, args)
-        console.log(`[Agent] Tool ${funcCall.name} took ${Date.now() - toolStart}ms`)
 
         // Bei kb_read: Item zu sources hinzufügen
         if (funcCall.name === 'kb_read') {
