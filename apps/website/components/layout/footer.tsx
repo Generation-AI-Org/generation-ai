@@ -14,11 +14,11 @@ export function Footer() {
           {/* Logo - switches based on theme */}
           <Link href="/" className="flex items-center">
             <Image
-              src={theme === 'dark' ? '/logos/generationai-blau-neon.svg' : '/logos/generationai-pink-rot-wide.svg'}
+              src={theme === 'dark' ? '/logos/generationai-blau-neon.jpg' : '/logos/generationai-pink-rot-wide.svg'}
               alt="Generation AI"
-              width={140}
-              height={28}
-              className="h-7 w-auto"
+              width={150}
+              height={40}
+              className="h-8 md:h-10 w-auto"
             />
           </Link>
 
