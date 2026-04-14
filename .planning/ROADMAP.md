@@ -62,8 +62,8 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Website Security Headers + CSP-Report-Only
-- [ ] 05-02-PLAN.md — tools-app HSTS + Nonce-CSP via proxy.ts
+- [x] 05-01-PLAN.md — Website Security Headers + CSP-Report-Only
+- [x] 05-02-PLAN.md — tools-app HSTS + Nonce-CSP via proxy.ts
 - [ ] 05-03-PLAN.md — CSP Enforcing + securityheaders.com Verifikation
 
 **Scope:**
