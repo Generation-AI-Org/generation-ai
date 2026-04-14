@@ -11,21 +11,14 @@ export function Footer() {
     <footer className="bg-bg-header border-t border-white/10 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Logo - both preloaded, CSS switches instantly */}
-          <Link href="/" className="flex items-center relative">
+          {/* Logo - switches based on theme */}
+          <Link href="/" className="flex items-center">
             <Image
-              src="/logos/generationai-blau-neon.jpg"
+              src={theme === 'dark' ? '/logos/generationai-blau-neon.jpg' : '/logos/generationai-pink-rot.jpg'}
               alt="Generation AI"
               width={150}
               height={40}
-              className={`h-8 md:h-10 w-auto transition-opacity duration-200 ${theme === 'dark' ? 'opacity-100' : 'opacity-0 absolute'}`}
-            />
-            <Image
-              src="/logos/generationai-pink-rot-wide.svg"
-              alt="Generation AI"
-              width={150}
-              height={40}
-              className={`h-8 md:h-10 w-auto transition-opacity duration-200 ${theme === 'light' ? 'opacity-100' : 'opacity-0 absolute'}`}
+              className="h-8 md:h-10 w-auto"
             />
           </Link>
 
