@@ -41,8 +41,10 @@ export async function proxy(request: NextRequest) {
   // This refreshes the session if needed
   await supabase.auth.getUser()
 
-  // 6. Set CSP-Report-Only header on final response (Report-Only mode for testing)
-  response.headers.set('Content-Security-Policy-Report-Only', cspHeader)
+  // 6. CSP temporarily disabled - caused 500s on Vercel Edge Runtime
+  // The CSP header value was rejected as invalid by Headers.set()
+  // TODO: Fix CSP format for Edge Runtime compatibility
+  // response.headers.set('Content-Security-Policy-Report-Only', cspHeader)
 
   return response
 }
