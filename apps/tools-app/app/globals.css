@@ -47,3 +47,49 @@ body {
 .light ::-webkit-scrollbar-track { background: var(--bg); }
 .light ::-webkit-scrollbar-thumb { background: rgba(245, 19, 59, 0.2); }
 .light ::-webkit-scrollbar-thumb:hover { background: rgba(245, 19, 59, 0.35); }
+
+/* ─── Accessibility ───────────────────────────────────────────────────────── */
+
+/* Skip to content link - visible on focus only */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  padding: 12px 24px;
+  border-radius: 0 0 8px 8px;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 9999;
+  transition: top 0.2s ease-out;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: none;
+}
+
+/* Global focus-visible styles */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Remove default focus for mouse users, keep for keyboard */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Ensure buttons, links, and inputs have consistent focus ring */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}

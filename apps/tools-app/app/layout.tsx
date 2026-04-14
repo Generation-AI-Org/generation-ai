@@ -95,6 +95,9 @@ export default async function RootLayout({
   return (
     <html lang="de" className={inter.variable} suppressHydrationWarning>
       <body className="bg-bg text-text antialiased font-sans">
+        <a href="#main-content" className="skip-link">
+          Zum Hauptinhalt springen
+        </a>
         <ThemeProvider>
           <AuthProvider initialUser={user}>
             {children}

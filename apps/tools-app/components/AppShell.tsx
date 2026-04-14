@@ -144,6 +144,7 @@ export default function AppShell({ items, mode }: AppShellProps) {
               : 'bg-black/20 hover:bg-black/30'
           }`}
           aria-label={theme === 'dark' ? 'Light Mode aktivieren' : 'Dark Mode aktivieren'}
+          aria-pressed={theme === 'dark'}
         >
           {theme === 'dark' ? (
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -185,6 +186,7 @@ export default function AppShell({ items, mode }: AppShellProps) {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleSearchKeyDown}
                   placeholder="Tool suchen..."
+                  aria-label="Tool suchen"
                   className="flex-1 bg-transparent text-text placeholder:text-text-muted outline-none text-base"
                 />
                 <kbd className="text-xs px-2 py-1 rounded bg-[var(--border)] text-text-muted font-mono">ESC</kbd>
@@ -249,7 +251,7 @@ export default function AppShell({ items, mode }: AppShellProps) {
       </div>
 
       {/* Main 2-Panel */}
-      <div className="flex flex-1 overflow-hidden">
+      <main id="main-content" className="flex flex-1 overflow-hidden">
 
         {/* Library — 65% */}
         <div
@@ -275,7 +277,7 @@ export default function AppShell({ items, mode }: AppShellProps) {
         >
           <ChatPanel onHighlight={setHighlightedSlugs} mode={mode} />
         </div>
-      </div>
+      </main>
 
       {/* Mobile Legal Footer */}
       <footer className="lg:hidden flex items-center justify-center gap-4 py-2 border-t border-[var(--border)] bg-[var(--bg-header)] text-xs text-text-muted shrink-0">

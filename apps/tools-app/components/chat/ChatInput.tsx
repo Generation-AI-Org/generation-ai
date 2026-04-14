@@ -73,12 +73,14 @@ export default function ChatInput({ onSend, onStop, isLoading }: ChatInputProps)
         onKeyDown={handleKeyDown}
         placeholder={isLoading ? "Tippe weiter oder drücke Enter zum Abbrechen..." : "Schreib eine Frage…"}
         rows={1}
+        aria-label="Nachricht eingeben"
         className="flex-1 resize-none bg-[var(--bg-card)] border border-[var(--border)] rounded-xl px-3 md:px-4 py-3 text-base md:text-sm text-text placeholder-text-muted focus:outline-none focus:border-[var(--accent)]/40 focus:ring-2 focus:ring-[var(--accent)]/10 transition-all"
         style={{ maxHeight: '120px', minHeight: '48px', fontSize: '16px' }}
       />
       <button
         onClick={handleButtonClick}
         disabled={!isLoading && !value.trim()}
+        aria-label={isLoading ? "Senden abbrechen" : "Nachricht senden"}
         className={`shrink-0 w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none ${
           isLoading
             ? 'bg-red-500/80 hover:bg-red-500 hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]'
