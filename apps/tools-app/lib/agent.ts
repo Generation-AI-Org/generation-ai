@@ -2,19 +2,8 @@ import OpenAI from 'openai'
 import { KB_TOOLS_OPENAI, executeTool } from './kb-tools'
 import type { ChatMessage, ContentSource, ContentType } from './types'
 
-// Lazy-initialized clients (avoid build-time errors when env vars missing)
-let _glmClient: OpenAI | null = null
+// MiniMax client (einziges Model für Agent mit Tool-Calling)
 let _minimaxClient: OpenAI | null = null
-
-function getGlmClient(): OpenAI {
-  if (!_glmClient) {
-    _glmClient = new OpenAI({
-      apiKey: process.env.ZHIPU_API_KEY,
-      baseURL: 'https://api.z.ai/api/coding/paas/v4',
-    })
-  }
-  return _glmClient
-}
 
 function getMinimaxClient(): OpenAI {
   if (!_minimaxClient) {
@@ -26,50 +15,31 @@ function getMinimaxClient(): OpenAI {
   return _minimaxClient
 }
 
-// MiniMax primary (stabiler, kein Concurrency-Limit)
-// GLM-5.1 als Fallback (schlauer, aber Z.AI hat 1-Concurrency Limit)
-const PRIMARY_MODEL = 'MiniMax-M2.7'
-const FALLBACK_MODEL = 'glm-5.1'
+const MODEL = 'MiniMax-M2.7'
 
 /**
- * Strip <think> reasoning tags from response (GLM & MiniMax both use these)
+ * Strip <think> reasoning tags from response
  */
 function stripThinkTags(text: string): string {
   return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
 }
 
 /**
- * Create chat completion with MiniMax primary, GLM fallback
+ * Create chat completion with MiniMax
  */
 async function createCompletion(
   messages: OpenAI.ChatCompletionMessageParam[],
   tools: OpenAI.ChatCompletionTool[]
 ): Promise<{ response: OpenAI.ChatCompletion; model: string }> {
-  // Try MiniMax first (stabiler, kein Concurrency-Limit)
-  try {
-    const response = await getMinimaxClient().chat.completions.create({
-      model: PRIMARY_MODEL,
-      max_tokens: 2000,
-      tools,
-      messages,
-    })
-    const usage = response.usage
-    console.log(`[Chat] Model: ${PRIMARY_MODEL} | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out, ${usage?.total_tokens ?? '?'} total`)
-    return { response, model: PRIMARY_MODEL }
-  } catch (error) {
-    console.warn(`[Chat] MiniMax failed, falling back to GLM:`, (error as Error).message)
-
-    // Fallback to GLM-5.1
-    const response = await getGlmClient().chat.completions.create({
-      model: FALLBACK_MODEL,
-      max_tokens: 2000,
-      tools,
-      messages,
-    })
-    const usage = response.usage
-    console.log(`[Chat] Model: ${FALLBACK_MODEL} (fallback) | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out, ${usage?.total_tokens ?? '?'} total`)
-    return { response, model: FALLBACK_MODEL }
-  }
+  const response = await getMinimaxClient().chat.completions.create({
+    model: MODEL,
+    max_tokens: 2000,
+    tools,
+    messages,
+  })
+  const usage = response.usage
+  console.log(`[Chat] Model: ${MODEL} | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out, ${usage?.total_tokens ?? '?'} total`)
+  return { response, model: MODEL }
 }
 
 /**
