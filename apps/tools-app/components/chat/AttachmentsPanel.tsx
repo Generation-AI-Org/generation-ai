@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Link, ExternalLink } from 'lucide-react'
+import { X, Link, ExternalLink, FolderPlus } from 'lucide-react'
 
 export interface Attachment {
   id: string
@@ -23,10 +23,10 @@ export default function AttachmentsPanel({ attachments, onRemove, onAddLink }: A
       <div className="px-4 py-3 border-b border-[var(--border)]/50">
         <button
           onClick={onAddLink}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-all"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-[var(--accent)]/40 bg-[var(--accent)]/5 text-[var(--accent)]/70 hover:border-[var(--accent)] hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all"
         >
-          <Link className="w-4 h-4" />
-          <span className="text-sm">Web-Link hinzufügen</span>
+          <FolderPlus className="w-5 h-5" />
+          <span className="text-sm font-medium">Web-Link hinzufügen</span>
         </button>
       </div>
     )
