@@ -186,15 +186,63 @@ Plans:
 
 **Gesamt:** ~2-3 Tage bei fokussierter Arbeit
 
-### Phase 9: Floating Chat Bubble
+### Phase 9: Floating Chat Bubble ✅ COMPLETE
 
-**Goal:** [To be planned]
-**Requirements**: TBD
-**Depends on:** Phase 8
-**Plans:** 0 plans
+**Goal:** Chat-Interface von Sidebar zu kollabierender Bubble umbauen
+**Status:** COMPLETE (2026-04-15)
+- Kiwi-Button mit Eye-Tracking
+- Glassmorphism Popup mit Glow
+- Lite/Pro Badge
+- Tool-Bibliothek volle Breite
+- Voice/Link Buttons vorbereitet
+
+---
+
+### Phase 10: Voice Input
+
+**Goal:** Professionelle Spracheingabe mit Deepgram API, Live-Transkription und echter Audio-Visualisierung
+
+**Requirements:** VOICE-01, VOICE-02, VOICE-03, VOICE-04, VOICE-05, VOICE-06, VOICE-07, VOICE-08
+**Depends on:** Phase 9
+**Plans:** 3 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 9 to break down)
+- [ ] 10-01-PLAN.md — Backend Token-Endpoint + useDeepgramVoice Hook
+- [ ] 10-02-PLAN.md — Audio-Visualisierung mit Web Audio API AnalyserNode
+- [ ] 10-03-PLAN.md — FloatingChat Integration + Cross-Browser Verifikation
+
+**Requirements Detail:**
+| ID | Beschreibung |
+|----|--------------|
+| VOICE-01 | Token-Endpoint gibt gueltigen Deepgram JWT zurueck |
+| VOICE-02 | WebSocket verbindet zu Deepgram mit Token-Auth |
+| VOICE-03 | Interim Results werden live angezeigt |
+| VOICE-04 | Manueller Stopp funktioniert sauber |
+| VOICE-05 | Audio-Visualisierung zeigt echte Frequenzen |
+| VOICE-06 | iOS Safari AudioContext funktioniert |
+| VOICE-07 | Text wird ins Textarea eingefuegt (kein Auto-Send) |
+| VOICE-08 | Cross-Browser Support (Chrome, Safari, Firefox, Edge, iOS, Android) |
+
+**Scope:**
+- Deepgram API Integration (nova-3, language=multi)
+- Sichere Token-basierte Auth (API-Key nie im Browser)
+- WebSocket Streaming mit MediaRecorder
+- Web Audio API AnalyserNode fuer 12 Bar-Visualisierung
+- Live Interim + Final Transcript
+- Manueller Stopp per Button
+- Text ins Textarea, User kann editieren vor Senden
+- Cross-Browser: Desktop + Mobile
+
+**Success Criteria:**
+- [ ] /api/voice/token gibt Token bei gueltigem API-Key
+- [ ] Voice funktioniert auf Chrome, Safari, Firefox, Edge
+- [ ] Voice funktioniert auf iOS Safari und Chrome Android
+- [ ] Bars zeigen echte Audio-Pegel (nicht Random)
+- [ ] Interim-Text erscheint live waehrend Sprechen
+- [ ] Finaler Text im Textarea nach Stopp
+
+**User Setup Required:**
+- `DEEPGRAM_API_KEY` in .env.local und Vercel Env-Vars
 
 ---
 
@@ -204,3 +252,4 @@ Plans:
 *Phase 6 geplant: 2026-04-14*
 *Phase 7 geplant: 2026-04-14*
 *Phase 8 geplant: 2026-04-14*
+*Phase 10 geplant: 2026-04-15*
