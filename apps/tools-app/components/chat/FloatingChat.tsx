@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, Send, Info, Maximize2, Minimize2, Paperclip } from 'lucide-react'
+import { X, Send, Square, Info, Maximize2, Minimize2, Paperclip } from 'lucide-react'
 import { VoiceInputButton } from '@/components/ui/VoiceInputButton'
 import QuickActions from './QuickActions'
 import MessageList from './MessageList'
 import UrlInputModal from './UrlInputModal'
-import AttachmentsPanel, { type Attachment } from './AttachmentsPanel'
+import { type Attachment } from './AttachmentsPanel'
 import { useDeepgramVoice } from '@/hooks/useDeepgramVoice'
 import { useCallback } from 'react'
 import type { ChatMessage, ChatMode } from '@/lib/types'
@@ -31,6 +31,9 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
   const [isUrlModalOpen, setIsUrlModalOpen] = useState(false)
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const [showAttachments, setShowAttachments] = useState(false)
+  const [inlineUrlInput, setInlineUrlInput] = useState('')
+  const [isEditingUrl, setIsEditingUrl] = useState(false)
+  const urlInputRef = useRef<HTMLInputElement>(null)
   const maxChars = 2000
 
   const chatRef = useRef<HTMLDivElement>(null)
@@ -41,12 +44,11 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
   // Voice input hook (Deepgram API)
   const {
     isRecording,
-    isConnecting,
+    isProcessing,
     isSupported: isVoiceSupported,
     startRecording,
     stopRecording,
     transcript,
-    interimTranscript,
     audioLevels,
     error: voiceError,
     clearError,
@@ -63,19 +65,13 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
 
   // When transcript changes, append to message
   useEffect(() => {
-    console.log('[FloatingChat] Transcript changed:', transcript)
     if (transcript) {
-      console.log('[FloatingChat] Inserting transcript into message...')
       setMessage((prev) => {
         const newMessage = prev ? `${prev} ${transcript}` : transcript
-        console.log('[FloatingChat] New message will be:', newMessage)
         setCharCount(newMessage.length)
         return newMessage
       })
-      // Focus textarea after inserting
-      if (textareaRef.current) {
-        textareaRef.current.focus()
-      }
+      textareaRef.current?.focus()
     }
   }, [transcript])
 
@@ -123,6 +119,40 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
   useEffect(() => {
     onExpandChange?.(isExpanded && isOpen)
   }, [isExpanded, isOpen, onExpandChange])
+
+  // Reset inline URL editing when dropdown closes
+  useEffect(() => {
+    if (!showAttachments) {
+      setIsEditingUrl(false)
+      setInlineUrlInput('')
+    }
+  }, [showAttachments])
+
+  // Close attachment dropdown on click outside or Escape
+  useEffect(() => {
+    if (!showAttachments) return
+
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as HTMLElement
+      // Check if click is inside the dropdown or the trigger button
+      if (!target.closest('[data-attachment-dropdown]')) {
+        setShowAttachments(false)
+      }
+    }
+
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setShowAttachments(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [showAttachments])
 
   // Eye tracking for Kiwi face (throttled with RAF, disabled when expanded)
   useEffect(() => {
@@ -280,12 +310,61 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
     const value = e.target.value
     setMessage(value)
     setCharCount(value.length)
+
+    // Auto-resize textarea
+    const textarea = e.target
+    textarea.style.height = 'auto'
+    const maxHeight = 120 // ~4 lines
+    textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`
   }
 
   function handleSend() {
     if (message.trim()) {
       send(message.trim())
     }
+  }
+
+  // Handle inline URL input submission
+  async function handleInlineUrlSubmit() {
+    const url = inlineUrlInput.trim()
+    if (!url) {
+      setIsEditingUrl(false)
+      return
+    }
+
+    // Basic URL validation
+    let finalUrl = url
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      finalUrl = 'https://' + url
+    }
+
+    try {
+      // Fetch content via defuddle API
+      const response = await fetch('/api/defuddle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: finalUrl }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        const newAttachment: Attachment = {
+          id: Date.now().toString(),
+          type: 'url',
+          title: data.title || new URL(finalUrl).hostname,
+          url: finalUrl,
+          content: data.content || '',
+          excerpt: data.excerpt || '',
+        }
+        setAttachments(prev => [...prev, newAttachment])
+      }
+    } catch (error) {
+      console.error('Failed to fetch URL:', error)
+    }
+
+    setInlineUrlInput('')
+    setIsEditingUrl(false)
+    setShowAttachments(false)
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -316,8 +395,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
     return (
       <div
         ref={chatRef}
-        className="fixed right-0 top-[148px] bottom-0 w-full md:w-[35%] flex flex-col rounded-l-2xl border-l border-t border-[var(--border)] bg-[var(--bg-card)] z-40 shadow-2xl"
-        style={{ animation: 'slideIn 0.3s ease-out forwards' }}
+        className="fixed right-0 top-[148px] bottom-0 w-full md:w-[35%] flex flex-col rounded-l-2xl border-l border-t border-[var(--border)] bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
@@ -373,20 +451,34 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
           )}
         </div>
 
-        {/* Attachments Panel */}
-        {showAttachments && (
-          <AttachmentsPanel
-            attachments={attachments}
-            onRemove={(id) => setAttachments(prev => prev.filter(a => a.id !== id))}
-            onAddLink={() => setIsUrlModalOpen(true)}
-          />
+        {/* Attachment Chips */}
+        {attachments.length > 0 && (
+          <div className="px-4 py-2 flex flex-wrap gap-1.5 border-b border-[var(--border)]/30">
+            {attachments.map((attachment) => (
+              <div
+                key={attachment.id}
+                className="flex items-center gap-1.5 pl-2 pr-1 py-1 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-xs group"
+              >
+                <svg className="w-3 h-3 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                <span className="text-[var(--text)] max-w-[120px] truncate">{attachment.title}</span>
+                <button
+                  onClick={() => setAttachments(prev => prev.filter(a => a.id !== attachment.id))}
+                  className="p-0.5 rounded-full hover:bg-[var(--accent)]/20 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
         )}
 
-        {/* Interim Transcript Preview */}
-        {isRecording && interimTranscript && (
-          <div className="px-4 py-2 text-sm text-[var(--text-muted)] italic border-b border-[var(--border)]/30 bg-[var(--accent)]/5">
-            <span className="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2" />
-            {interimTranscript}
+        {/* Processing Indicator */}
+        {isProcessing && (
+          <div className="px-4 py-2 text-sm text-[var(--text-muted)] italic border-b border-[var(--border)]/30 bg-[var(--accent)]/5 flex items-center gap-2">
+            <div className="w-4 h-4 border-2 border-[var(--accent)]/30 border-t-[var(--accent)] rounded-full animate-spin" />
+            Transkribiere...
           </div>
         )}
 
@@ -397,7 +489,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
               value={message}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              rows={3}
+              rows={1}
               maxLength={maxChars}
               className="chat-textarea w-full px-4 py-3 bg-transparent border-none outline-none resize-none text-sm leading-relaxed text-[var(--text)] placeholder-[var(--text-muted)]"
               placeholder={isLoading ? "Tippe weiter oder Enter zum Abbrechen..." : "Was möchtest du wissen?"}
@@ -414,29 +506,129 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                 {/* Voice Button with animated bars */}
                 <VoiceInputButton
                   isRecording={isRecording}
-                  isConnecting={isConnecting}
+                  isProcessing={isProcessing}
                   isSupported={isVoiceSupported}
                   onToggle={toggleRecording}
                   audioLevels={audioLevels}
                 />
 
-                {/* Attachments Button - icon only colored */}
-                <button
-                  onClick={() => setShowAttachments(!showAttachments)}
-                  className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105"
-                  title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhänge verwalten'}
-                >
-                  <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-125 ${
-                    attachments.length > 0
-                      ? 'text-[var(--accent)]'
-                      : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)]'
-                  }`} />
-                  {attachments.length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent)] text-[var(--text-on-accent)] text-[10px] font-bold rounded-full flex items-center justify-center">
-                      {attachments.length}
-                    </span>
+                {/* Attachments Dropdown */}
+                <div className="relative" data-attachment-dropdown>
+                  <button
+                    onClick={() => setShowAttachments(!showAttachments)}
+                    className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105"
+                    title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhang hinzufügen'}
+                  >
+                    <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-15deg] ${
+                      attachments.length > 0
+                        ? 'text-[var(--accent)]'
+                        : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)]'
+                    }`} />
+                    {attachments.length > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent)] text-[var(--text-on-accent)] text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {attachments.length}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Dropdown Menu with inline URL input */}
+                  {showAttachments && (
+                    <div
+                      data-attachment-dropdown
+                      className={`absolute bottom-full left-0 mb-2 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)]/95 backdrop-blur-sm z-50 animate-dropdown dropdown-glow ${
+                        isEditingUrl ? 'w-72' : 'w-52'
+                      }`}
+                    >
+                      {/* Web-Link Option - transforms to input */}
+                      {isEditingUrl ? (
+                        <div className="flex items-center gap-2 px-3 py-2">
+                          <div className="w-7 h-7 rounded-lg bg-[var(--accent)]/15 flex items-center justify-center shrink-0">
+                            <svg className="w-3.5 h-3.5 text-[var(--accent)] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                          </div>
+                          <input
+                            ref={urlInputRef}
+                            type="url"
+                            value={inlineUrlInput}
+                            onChange={(e) => setInlineUrlInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault()
+                                handleInlineUrlSubmit()
+                              } else if (e.key === 'Escape') {
+                                setIsEditingUrl(false)
+                                setInlineUrlInput('')
+                              }
+                            }}
+                            placeholder="example.com"
+                            className="input-clean flex-1 bg-transparent border-none outline-none text-sm text-[var(--text)] placeholder:text-[var(--text-muted)]/50"
+                            autoFocus
+                          />
+                          <button
+                            onClick={handleInlineUrlSubmit}
+                            className="p-1.5 rounded-lg bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 transition-transform"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setIsEditingUrl(true)
+                            setTimeout(() => urlInputRef.current?.focus(), 50)
+                          }}
+                          className="group w-full flex items-center gap-3 px-3 py-2.5 text-sm text-[var(--text)] hover:bg-[var(--accent)]/10 transition-all duration-200 rounded-lg mx-1 hover:mx-0 hover:px-4"
+                          style={{ width: 'calc(100% - 8px)' }}
+                        >
+                          <div className="relative w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center group-hover:bg-[var(--accent)]/20 transition-all duration-300 group-hover:scale-110">
+                            <svg
+                              className="w-4 h-4 text-[var(--accent)] transition-transform duration-300 group-hover:rotate-[-20deg] group-hover:scale-110"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                          </div>
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium group-hover:text-[var(--accent)] transition-colors">Web-Link</span>
+                            <span className="text-[10px] text-[var(--text-muted)]">URL einfügen</span>
+                          </div>
+                          <svg className="w-4 h-4 ml-auto text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-1 group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      )}
+
+                      {/* Divider - hidden when editing */}
+                      {!isEditingUrl && <div className="my-1 mx-3 h-px bg-[var(--border)]/50" />}
+
+                      {/* PDF/Text Option (disabled) - hidden when editing */}
+                      {!isEditingUrl && (
+                        <div
+                          className="group w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[var(--text-muted)] cursor-not-allowed rounded-lg mx-1"
+                          style={{ width: 'calc(100% - 8px)' }}
+                        >
+                          <div className="relative w-8 h-8 shrink-0 rounded-lg bg-[var(--border)]/30 flex items-center justify-center">
+                            <svg className="w-4 h-4 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                          <div className="flex flex-col items-start flex-1 min-w-0">
+                            <span className="font-medium truncate">PDF / Text</span>
+                            <span className="text-[10px] truncate">Datei hochladen</span>
+                          </div>
+                          <span className="shrink-0 text-[9px] px-2 py-0.5 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium border border-[var(--accent)]/20">
+                            bald ✨
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   )}
-                </button>
+                </div>
               </div>
 
               <div className="flex items-center gap-3">
@@ -450,7 +642,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                   disabled={!isLoading && !message.trim()}
                   className={`group relative p-3 rounded-xl transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed ${
                     isLoading
-                      ? 'bg-red-500 hover:bg-red-600 text-white'
+                      ? 'bg-[var(--accent)]/15 border border-[var(--accent)]/40 text-[var(--accent)] hover:bg-[var(--accent)]/25'
                       : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2'
                   }`}
                   style={{
@@ -459,7 +651,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                   aria-label={isLoading ? 'Abbrechen' : 'Senden'}
                 >
                   {isLoading ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <Square className="w-4 h-4 fill-current" />
                   ) : (
                     <Send className="w-5 h-5 transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:rotate-12 group-hover:scale-110" />
                   )}
@@ -471,12 +663,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--border)]/50 text-xs text-[var(--text-secondary)]">
-              <Info className="w-4 h-4" />
-              <span>
-                <kbd className="px-1.5 py-1 bg-[var(--border)] rounded text-[11px] font-mono">Shift+Enter</kbd> für neue Zeile
-              </span>
+            {/* Footer - hidden on mobile/tablet */}
+            <div className="hidden lg:flex items-center gap-1.5 mt-2 pt-2 border-t border-[var(--border)]/30 text-[10px] text-[var(--text-muted)]">
+              <kbd className="px-1 py-0.5 bg-[var(--border)]/50 rounded text-[9px] font-mono">Shift+Enter</kbd>
+              <span>neue Zeile</span>
             </div>
           </div>
         </div>
@@ -556,11 +746,11 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
       </button>
 
       {/* Chat Window Popup - always fills from FilterBar line to Kiwi button */}
-      {/* Top: 148px (header + filterbar), Bottom: 104px (kiwi button area) */}
+      {/* Top: 148px (header + filterbar), Bottom: 96px (kiwi button area) */}
       {isOpen && (
         <div
           ref={chatRef}
-          className="fixed top-[148px] bottom-[104px] right-4 md:right-6 w-[calc(100vw-2rem)] md:w-[420px] max-w-[420px] transition-all duration-300 origin-bottom-right"
+          className="fixed top-[148px] bottom-[96px] right-4 md:right-6 w-[calc(100vw-2rem)] md:w-[420px] max-w-[420px] transition-all duration-300 origin-bottom-right"
           style={{
             animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
           }}
@@ -626,20 +816,34 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
               )}
             </div>
 
-            {/* Attachments Panel */}
-            {showAttachments && (
-              <AttachmentsPanel
-                attachments={attachments}
-                onRemove={(id) => setAttachments(prev => prev.filter(a => a.id !== id))}
-                onAddLink={() => setIsUrlModalOpen(true)}
-              />
+            {/* Attachment Chips */}
+            {attachments.length > 0 && (
+              <div className="mx-4 mb-2 flex flex-wrap gap-1.5">
+                {attachments.map((attachment) => (
+                  <div
+                    key={attachment.id}
+                    className="flex items-center gap-1.5 pl-2 pr-1 py-1 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-xs"
+                  >
+                    <svg className="w-3 h-3 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                    <span className="text-[var(--text)] max-w-[120px] truncate">{attachment.title}</span>
+                    <button
+                      onClick={() => setAttachments(prev => prev.filter(a => a.id !== attachment.id))}
+                      className="p-0.5 rounded-full hover:bg-[var(--accent)]/20 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
 
-            {/* Interim Transcript Preview */}
-            {isRecording && interimTranscript && (
-              <div className="mx-4 mb-2 px-3 py-2 text-sm text-[var(--text-muted)] italic rounded-lg bg-[var(--accent)]/5 border border-[var(--border)]/30">
-                <span className="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2" />
-                {interimTranscript}
+            {/* Processing Indicator */}
+            {isProcessing && (
+              <div className="mx-4 mb-2 px-3 py-2 text-sm text-[var(--text-muted)] italic rounded-lg bg-[var(--accent)]/5 border border-[var(--border)]/30 flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-[var(--accent)]/30 border-t-[var(--accent)] rounded-full animate-spin" />
+                Transkribiere...
               </div>
             )}
 
@@ -650,7 +854,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                 value={message}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                rows={3}
+                rows={1}
                 maxLength={maxChars}
                 className="chat-textarea w-full px-4 py-3 bg-transparent border-none outline-none resize-none text-sm leading-relaxed text-[var(--text)] placeholder-[var(--text-muted)]"
                 placeholder={isLoading ? "Tippe weiter oder Enter zum Abbrechen..." : "Was möchtest du wissen?"}
@@ -669,29 +873,127 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                     {/* Voice Button with animated bars */}
                     <VoiceInputButton
                       isRecording={isRecording}
-                      isConnecting={isConnecting}
+                      isProcessing={isProcessing}
                       isSupported={isVoiceSupported}
                       onToggle={toggleRecording}
                       audioLevels={audioLevels}
                     />
 
-                    {/* Attachments Button - icon only colored */}
-                    <button
-                      onClick={() => setShowAttachments(!showAttachments)}
-                      className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105"
-                      title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhänge verwalten'}
-                    >
-                      <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-125 ${
-                        attachments.length > 0
-                          ? 'text-[var(--accent)]'
-                          : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)]'
-                      }`} />
-                      {attachments.length > 0 && (
-                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent)] text-[var(--text-on-accent)] text-[10px] font-bold rounded-full flex items-center justify-center">
-                          {attachments.length}
-                        </span>
+                    {/* Attachments Dropdown */}
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowAttachments(!showAttachments)}
+                        className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105"
+                        title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhang hinzufügen'}
+                      >
+                        <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-15deg] ${
+                          attachments.length > 0
+                            ? 'text-[var(--accent)]'
+                            : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)]'
+                        }`} />
+                        {attachments.length > 0 && (
+                          <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent)] text-[var(--text-on-accent)] text-[10px] font-bold rounded-full flex items-center justify-center">
+                            {attachments.length}
+                          </span>
+                        )}
+                      </button>
+
+                      {/* Dropdown Menu with inline URL input */}
+                      {showAttachments && (
+                        <div
+                          data-attachment-dropdown
+                          className={`absolute bottom-full left-0 mb-2 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)]/95 backdrop-blur-sm z-50 animate-dropdown dropdown-glow ${
+                            isEditingUrl ? 'w-72' : 'w-52'
+                          }`}
+                        >
+                          {/* Web-Link Option - transforms to input */}
+                          {isEditingUrl ? (
+                            <div className="flex items-center gap-2 px-3 py-2">
+                              <div className="w-7 h-7 rounded-lg bg-[var(--accent)]/15 flex items-center justify-center shrink-0">
+                                <svg className="w-3.5 h-3.5 text-[var(--accent)] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                </svg>
+                              </div>
+                              <input
+                                type="url"
+                                value={inlineUrlInput}
+                                onChange={(e) => setInlineUrlInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault()
+                                    handleInlineUrlSubmit()
+                                  } else if (e.key === 'Escape') {
+                                    setIsEditingUrl(false)
+                                    setInlineUrlInput('')
+                                  }
+                                }}
+                                placeholder="example.com"
+                                className="input-clean flex-1 bg-transparent border-none outline-none text-sm text-[var(--text)] placeholder:text-[var(--text-muted)]/50"
+                                autoFocus
+                              />
+                              <button
+                                onClick={handleInlineUrlSubmit}
+                                className="p-1.5 rounded-lg bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 transition-transform"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setIsEditingUrl(true)
+                              }}
+                              className="group w-full flex items-center gap-3 px-3 py-2.5 text-sm text-[var(--text)] hover:bg-[var(--accent)]/10 transition-all duration-200 rounded-lg mx-1 hover:mx-0 hover:px-4"
+                              style={{ width: 'calc(100% - 8px)' }}
+                            >
+                              <div className="relative w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center group-hover:bg-[var(--accent)]/20 transition-all duration-300 group-hover:scale-110">
+                                <svg
+                                  className="w-4 h-4 text-[var(--accent)] transition-transform duration-300 group-hover:rotate-[-20deg] group-hover:scale-110"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                </svg>
+                              </div>
+                              <div className="flex flex-col items-start">
+                                <span className="font-medium group-hover:text-[var(--accent)] transition-colors">Web-Link</span>
+                                <span className="text-[10px] text-[var(--text-muted)]">URL einfügen</span>
+                              </div>
+                              <svg className="w-4 h-4 ml-auto text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-1 group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          )}
+
+                          {/* Divider - hidden when editing */}
+                          {!isEditingUrl && <div className="my-1 mx-3 h-px bg-[var(--border)]/50" />}
+
+                          {/* PDF/Text Option (disabled) - hidden when editing */}
+                          {!isEditingUrl && (
+                            <div
+                              className="group w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[var(--text-muted)] cursor-not-allowed rounded-lg mx-1"
+                              style={{ width: 'calc(100% - 8px)' }}
+                            >
+                              <div className="relative w-8 h-8 shrink-0 rounded-lg bg-[var(--border)]/30 flex items-center justify-center">
+                                <svg className="w-4 h-4 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                              <div className="flex flex-col items-start flex-1 min-w-0">
+                                <span className="font-medium truncate">PDF / Text</span>
+                                <span className="text-[10px] truncate">Datei hochladen</span>
+                              </div>
+                              <span className="shrink-0 text-[9px] px-2 py-0.5 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium border border-[var(--accent)]/20">
+                                bald ✨
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       )}
-                    </button>
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -706,7 +1008,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                     disabled={!isLoading && !message.trim()}
                     className={`group relative p-3 rounded-xl transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 ${
                       isLoading
-                        ? 'bg-red-500 hover:bg-red-600 text-white'
+                        ? 'bg-[var(--accent)]/15 border border-[var(--accent)]/40 text-[var(--accent)] hover:bg-[var(--accent)]/25'
                         : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2'
                     }`}
                     style={{
@@ -715,7 +1017,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                     aria-label={isLoading ? 'Abbrechen' : 'Senden'}
                   >
                     {isLoading ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <Square className="w-4 h-4 fill-current" />
                     ) : (
                       <Send className="w-5 h-5 transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:rotate-12 group-hover:scale-110" />
                     )}
@@ -727,12 +1029,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                 </div>
               </div>
 
-              {/* Footer Info */}
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--border)]/50 text-xs text-[var(--text-secondary)]">
-                <Info className="w-4 h-4" />
-                <span>
-                  <kbd className="px-1.5 py-1 bg-[var(--border)] rounded text-[11px] font-mono">Shift+Enter</kbd> für neue Zeile
-                </span>
+              {/* Footer Info - hidden on mobile/tablet */}
+              <div className="hidden lg:flex items-center gap-1.5 mt-2 pt-2 border-t border-[var(--border)]/30 text-[10px] text-[var(--text-muted)]">
+                <kbd className="px-1 py-0.5 bg-[var(--border)]/50 rounded text-[9px] font-mono">Shift+Enter</kbd>
+                <span>neue Zeile</span>
               </div>
             </div>
 

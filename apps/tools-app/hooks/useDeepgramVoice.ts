@@ -4,10 +4,9 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 
 export interface UseDeepgramVoiceReturn {
   isRecording: boolean
-  isConnecting: boolean
+  isProcessing: boolean
   isSupported: boolean
   transcript: string
-  interimTranscript: string
   audioLevels: number[]
   error: string | null
   startRecording: () => Promise<void>
@@ -16,46 +15,29 @@ export interface UseDeepgramVoiceReturn {
   clearTranscript: () => void
 }
 
-const DEEPGRAM_URL = 'wss://api.deepgram.com/v1/listen?' + new URLSearchParams({
-  model: 'nova-2',
-  language: 'multi',
-  interim_results: 'true',
-  punctuate: 'true',
-  smart_format: 'true',
-  endpointing: 'false',
-}).toString()
-
 export function useDeepgramVoice(): UseDeepgramVoiceReturn {
   const [isRecording, setIsRecording] = useState(false)
-  const [isConnecting, setIsConnecting] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
   const [transcript, setTranscript] = useState('')
-  const [interimTranscript, setInterimTranscript] = useState('')
   const [audioLevels, setAudioLevels] = useState<number[]>([])
   const [error, setError] = useState<string | null>(null)
 
-  const socketRef = useRef<WebSocket | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
   const streamRef = useRef<MediaStream | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
   const animationFrameRef = useRef<number | null>(null)
-  const finalTranscriptRef = useRef('')
 
   // Check browser support
   const isSupported = typeof navigator !== 'undefined' &&
     !!navigator.mediaDevices?.getUserMedia &&
-    typeof MediaRecorder !== 'undefined' &&
-    typeof WebSocket !== 'undefined'
+    typeof MediaRecorder !== 'undefined'
 
   const clearError = useCallback(() => setError(null), [])
+  const clearTranscript = useCallback(() => setTranscript(''), [])
 
-  const clearTranscript = useCallback(() => {
-    setTranscript('')
-    setInterimTranscript('')
-    finalTranscriptRef.current = ''
-  }, [])
-
-  // Audio level analysis
+  // Audio level analysis for visualization
   const startAudioAnalysis = useCallback((stream: MediaStream) => {
     try {
       const audioContext = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
@@ -65,7 +47,6 @@ export function useDeepgramVoice(): UseDeepgramVoiceReturn {
       analyser.fftSize = 32
       analyser.smoothingTimeConstant = 0.5
       source.connect(analyser)
-      // Don't connect to destination - we don't want to hear ourselves
 
       audioContextRef.current = audioContext
       analyserRef.current = analyser
@@ -76,8 +57,6 @@ export function useDeepgramVoice(): UseDeepgramVoiceReturn {
         if (!analyserRef.current) return
 
         analyserRef.current.getByteFrequencyData(dataArray)
-
-        // Take first 12 bins and normalize to 0-1
         const levels = Array.from(dataArray.slice(0, 12)).map(v => v / 255)
         setAudioLevels(levels)
 
@@ -103,39 +82,14 @@ export function useDeepgramVoice(): UseDeepgramVoiceReturn {
     setAudioLevels([])
   }, [])
 
-  const stopRecording = useCallback(() => {
-    // Send close message to Deepgram
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
-      try {
-        socketRef.current.send(JSON.stringify({ type: 'CloseStream' }))
-        socketRef.current.close()
-      } catch (e) {
-        // Ignore close errors
-      }
+  const stopRecording = useCallback(async () => {
+    if (!mediaRecorderRef.current || mediaRecorderRef.current.state === 'inactive') {
+      return
     }
-    socketRef.current = null
 
-    // Stop MediaRecorder
-    if (mediaRecorderRef.current?.state !== 'inactive') {
-      try {
-        mediaRecorderRef.current?.stop()
-      } catch (e) {
-        // Ignore stop errors
-      }
-    }
-    mediaRecorderRef.current = null
-
-    // Stop all audio tracks
-    streamRef.current?.getTracks().forEach(track => track.stop())
-    streamRef.current = null
-
-    // Stop audio analysis
-    stopAudioAnalysis()
-
-    setIsRecording(false)
-    setIsConnecting(false)
-    setInterimTranscript('')
-  }, [stopAudioAnalysis])
+    // Stop recording - this triggers ondataavailable with final chunk
+    mediaRecorderRef.current.stop()
+  }, [])
 
   const startRecording = useCallback(async () => {
     if (!isSupported) {
@@ -143,30 +97,20 @@ export function useDeepgramVoice(): UseDeepgramVoiceReturn {
       return
     }
 
-    // Clear previous state
     setError(null)
-    finalTranscriptRef.current = ''
     setTranscript('')
-    setInterimTranscript('')
-    setIsConnecting(true)
+    chunksRef.current = []
 
     try {
-      // 1. Get token from our API
-      const tokenRes = await fetch('/api/voice/token', { method: 'POST' })
-      if (!tokenRes.ok) {
-        const data = await tokenRes.json()
-        throw new Error(data.error || 'Token-Anfrage fehlgeschlagen')
-      }
-      const { token } = await tokenRes.json()
-
-      // 2. Get microphone access
+      console.log('[Voice] Requesting microphone...')
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream
+      console.log('[Voice] Microphone granted')
 
-      // 3. Start audio analysis for visualization
+      // Start audio visualization
       startAudioAnalysis(stream)
 
-      // 4. Find best supported mime type
+      // Find best mime type
       const mimeTypes = [
         'audio/webm;codecs=opus',
         'audio/webm',
@@ -174,87 +118,97 @@ export function useDeepgramVoice(): UseDeepgramVoiceReturn {
         'audio/mp4',
       ]
       const mimeType = mimeTypes.find(type => MediaRecorder.isTypeSupported(type)) || 'audio/webm'
+      console.log('[Voice] Using mime type:', mimeType)
 
-      // 5. Create WebSocket with token auth via subprotocol
-      const socket = new WebSocket(DEEPGRAM_URL, ['token', token])
-      socketRef.current = socket
+      const mediaRecorder = new MediaRecorder(stream, { mimeType })
+      mediaRecorderRef.current = mediaRecorder
 
-      socket.onopen = () => {
-        console.log('[Voice] WebSocket connected')
-        setIsConnecting(false)
-        setIsRecording(true)
-
-        // Start MediaRecorder
-        const mediaRecorder = new MediaRecorder(stream, { mimeType })
-        mediaRecorderRef.current = mediaRecorder
-
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
-            socket.send(event.data)
-          }
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunksRef.current.push(event.data)
         }
-
-        mediaRecorder.start(250) // Send chunks every 250ms
       }
 
-      socket.onmessage = (event) => {
+      mediaRecorder.onstop = async () => {
+        console.log('[Voice] Recording stopped, processing...')
+        setIsRecording(false)
+        setIsProcessing(true)
+        stopAudioAnalysis()
+
+        // Stop all tracks
+        streamRef.current?.getTracks().forEach(track => track.stop())
+        streamRef.current = null
+
+        // Create blob from chunks
+        const audioBlob = new Blob(chunksRef.current, { type: mimeType })
+        console.log('[Voice] Audio blob size:', audioBlob.size)
+
+        if (audioBlob.size === 0) {
+          setError('Keine Audio-Daten aufgenommen.')
+          setIsProcessing(false)
+          return
+        }
+
+        // Send to transcription API
         try {
-          const data = JSON.parse(event.data)
+          const formData = new FormData()
+          formData.append('audio', audioBlob, 'recording.webm')
 
-          if (data.type !== 'Results') return
+          const response = await fetch('/api/voice/transcribe', {
+            method: 'POST',
+            body: formData,
+          })
 
-          const text = data.channel?.alternatives?.[0]?.transcript
-          if (!text) return
+          const data = await response.json()
 
-          if (data.is_final) {
-            finalTranscriptRef.current += (finalTranscriptRef.current ? ' ' : '') + text
-            setInterimTranscript('')
-            setTranscript(finalTranscriptRef.current)
-          } else {
-            setInterimTranscript(text)
+          if (!response.ok) {
+            throw new Error(data.error || 'Transkription fehlgeschlagen')
           }
-        } catch (e) {
-          console.error('[Voice] Parse error:', e)
+
+          if (data.transcript) {
+            console.log('[Voice] Transcript:', data.transcript)
+            setTranscript(data.transcript)
+          } else {
+            setError('Keine Sprache erkannt. Bitte versuche es erneut.')
+          }
+        } catch (err) {
+          console.error('[Voice] Transcription error:', err)
+          setError('Transkription fehlgeschlagen. Bitte versuche es erneut.')
+        } finally {
+          setIsProcessing(false)
         }
       }
 
-      socket.onerror = (event) => {
-        console.error('[Voice] WebSocket error:', event)
-        setError('Verbindung zur Spracherkennung fehlgeschlagen. Bitte versuche es erneut.')
-        stopRecording()
+      mediaRecorder.onerror = (event) => {
+        console.error('[Voice] MediaRecorder error:', event)
+        setError('Aufnahme fehlgeschlagen.')
+        setIsRecording(false)
+        stopAudioAnalysis()
       }
 
-      socket.onclose = (event) => {
-        console.log('[Voice] WebSocket closed:', event.code, event.reason)
-        if (event.code !== 1000 && event.code !== 1005) {
-          // Abnormal close
-          setError('Verbindung unterbrochen. Bitte versuche es erneut.')
-        }
-        stopRecording()
-      }
+      // Start recording
+      mediaRecorder.start()
+      setIsRecording(true)
+      console.log('[Voice] Recording started')
 
     } catch (err) {
       console.error('[Voice] Start error:', err)
-      setIsConnecting(false)
 
       if (err instanceof Error) {
-        if (err.name === 'NotAllowedError' || err.message.includes('Permission')) {
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
           setError('Mikrofon-Zugriff verweigert. Bitte erlaube das Mikrofon in den Browser-Einstellungen.')
-        } else if (err.message.includes('network') || err.message.includes('Network')) {
-          setError('Keine Internetverbindung. Bitte prüfe deine Verbindung.')
         } else {
-          setError(err.message || 'Spracherkennung konnte nicht gestartet werden.')
+          setError(err.message || 'Aufnahme konnte nicht gestartet werden.')
         }
       } else {
-        setError('Spracherkennung konnte nicht gestartet werden.')
+        setError('Aufnahme konnte nicht gestartet werden.')
       }
 
-      // Clean up on error
       streamRef.current?.getTracks().forEach(track => track.stop())
       streamRef.current = null
       stopAudioAnalysis()
     }
-  }, [isSupported, startAudioAnalysis, stopRecording, stopAudioAnalysis])
+  }, [isSupported, startAudioAnalysis, stopAudioAnalysis])
 
   // Cleanup on unmount
   useEffect(() => {
@@ -263,19 +217,15 @@ export function useDeepgramVoice(): UseDeepgramVoiceReturn {
         mediaRecorderRef.current?.stop()
       }
       streamRef.current?.getTracks().forEach(track => track.stop())
-      if (socketRef.current?.readyState === WebSocket.OPEN) {
-        socketRef.current.close()
-      }
       stopAudioAnalysis()
     }
   }, [stopAudioAnalysis])
 
   return {
     isRecording,
-    isConnecting,
+    isProcessing,
     isSupported,
     transcript,
-    interimTranscript,
     audioLevels,
     error,
     startRecording,

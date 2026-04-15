@@ -84,3 +84,89 @@ body {
 
 .light ::-webkit-scrollbar-thumb { background: rgba(245, 19, 59, 0.2); }
 .light ::-webkit-scrollbar-thumb:hover { background: rgba(245, 19, 59, 0.35); }
+
+/* ─── Component Standards ─────────────────────────────────────────────────── */
+/* Use these CSS custom properties + Tailwind classes for consistent UI        */
+
+/*
+ * BUTTONS
+ * -------
+ * Primary:   bg-[var(--accent)] text-[var(--text-on-accent)] rounded-full px-4 py-2.5
+ *            hover:shadow-[0_0_20px_var(--accent-glow)] hover:scale-[1.03]
+ *
+ * Secondary: bg-[var(--border)] text-[var(--text-muted)] rounded-full px-4 py-2.5
+ *            hover:bg-[var(--accent)]/10 hover:text-[var(--text)]
+ *
+ * Ghost:     bg-transparent rounded-full p-2.5
+ *            hover:bg-[var(--accent)]/10
+ *
+ * Icon-only: min-w-[44px] min-h-[44px] (touch target)
+ *
+ * All buttons: transition-all duration-300, group class for child animations
+ */
+
+/*
+ * INPUTS
+ * ------
+ * Standard:  bg-transparent text-[var(--text)] placeholder:text-[var(--text-muted)]
+ *            outline-none text-base
+ *
+ * In Modal:  Add class "input-clean" to disable focus ring (container handles styling)
+ *            bg-transparent input-clean text-text placeholder:text-text-muted outline-none
+ *
+ * Standalone: border border-[var(--border)] rounded-2xl px-4 py-3
+ *             focus:border-[var(--border-accent)]
+ */
+
+/*
+ * CARDS / CONTAINERS
+ * ------------------
+ * Card:      bg-[var(--bg-card)] rounded-2xl border border-[var(--border)]
+ * Elevated:  bg-[var(--bg-elevated)] rounded-2xl
+ * Modal:     bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] shadow-2xl
+ */
+
+/*
+ * BADGES / KBD
+ * ------------
+ * Default:   bg-[var(--border)] text-[var(--text-muted)] rounded-full px-2.5 py-1 font-mono text-xs
+ */
+
+/*
+ * TYPOGRAPHY
+ * ----------
+ * Heading:   text-[var(--text)] font-semibold
+ * Body:      text-[var(--text)]
+ * Muted:     text-[var(--text-muted)]
+ * Secondary: text-[var(--text-secondary)]
+ * On Accent: text-[var(--text-on-accent)]
+ */
+
+/*
+ * ANIMATIONS
+ * ----------
+ * Standard:  transition-all duration-300
+ * Fast:      transition-all duration-150
+ * Hover:     hover:scale-[1.02] or hover:scale-105
+ * Active:    active:scale-[0.98]
+ *
+ * Icons:     group-hover:scale-110, optional rotate/translate
+ */
+
+/*
+ * SPACING
+ * -------
+ * Touch targets: min-w-[44px] min-h-[44px]
+ * Button padding: px-4 py-2.5
+ * Card padding: p-4 or p-6
+ * Gap: gap-2 (small), gap-3 (medium), gap-4 (large)
+ */
+
+/*
+ * BORDER RADIUS
+ * -------------
+ * Buttons/Pills: rounded-full
+ * Cards/Modals: rounded-2xl
+ * Small elements: rounded-xl
+ * Inputs: rounded-2xl
+ */

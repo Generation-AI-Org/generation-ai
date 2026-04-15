@@ -9,9 +9,10 @@ interface ToolLogoProps {
   domain: string | null
   name: string
   size?: number
+  priority?: boolean
 }
 
-export default function ToolLogo({ slug, domain, name, size = 48 }: ToolLogoProps) {
+export default function ToolLogo({ slug, domain, name, size = 48, priority = false }: ToolLogoProps) {
   const [clearbitFailed, setClearbitFailed] = useState(false)
   const iconSize = Math.round(size * 0.52)
 
@@ -58,6 +59,7 @@ export default function ToolLogo({ slug, domain, name, size = 48 }: ToolLogoProp
         height={size}
         className="object-contain w-full h-full p-1"
         unoptimized
+        priority={priority}
         onError={() => setClearbitFailed(true)}
       />
     </div>

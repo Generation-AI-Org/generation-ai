@@ -1,13 +1,18 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import CardGrid from '@/components/library/CardGrid'
 import FilterBar from '@/components/library/FilterBar'
-import FloatingChat from '@/components/chat/FloatingChat'
 import { useTheme } from '@/components/ThemeProvider'
 import type { ContentItemMeta, ChatMode } from '@/lib/types'
+
+// Lazy load chat - not needed for initial render, reduces bundle
+const FloatingChat = dynamic(() => import('@/components/chat/FloatingChat'), {
+  ssr: false,
+})
 
 interface AppShellProps {
   items: ContentItemMeta[]
@@ -76,7 +81,10 @@ export default function AppShell({ items, mode }: AppShellProps) {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-bg">
       {/* Header */}
-      <header className="flex items-center gap-4 px-4 md:px-6 py-3 md:py-4 border-b border-[var(--border)] shrink-0 bg-[var(--bg-header)]">
+      <header
+        className="flex items-center gap-4 px-4 md:px-6 py-3 md:py-4 border-b border-[var(--border)] shrink-0 bg-[var(--bg-header)]"
+        onClick={() => setHighlightedSlugs([])}
+      >
         <a href="https://community.generation-ai.org" target="_blank" rel="noopener noreferrer" className="shrink-0">
           <Image
             src={theme === 'dark' ? '/logo-blue-neon-new.jpg' : '/logo-pink-red.jpg'}
@@ -102,14 +110,14 @@ export default function AppShell({ items, mode }: AppShellProps) {
             setShowSearch(true)
             setTimeout(() => searchInputRef.current?.focus(), 50)
           }}
-          className={`md:hidden p-2.5 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${
+          className={`group md:hidden p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 ${
             theme === 'dark'
-              ? 'bg-white/10 hover:bg-white/20'
-              : 'bg-black/20 hover:bg-black/30'
+              ? 'bg-white/10 hover:bg-white/15'
+              : 'bg-black/20 hover:bg-black/25'
           }`}
           aria-label="Suche öffnen"
         >
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-[var(--accent)] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-12deg]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </button>
@@ -121,17 +129,17 @@ export default function AppShell({ items, mode }: AppShellProps) {
               setShowSearch(!showSearch)
               if (!showSearch) setTimeout(() => searchInputRef.current?.focus(), 50)
             }}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors text-sm ${
+            className={`group flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 text-sm hover:scale-[1.03] ${
               theme === 'dark'
-                ? 'bg-white/10 hover:bg-white/20 text-white/70'
-                : 'bg-black/20 hover:bg-black/30 text-white'
+                ? 'bg-white/10 hover:bg-white/15 text-white/80'
+                : 'bg-black/20 hover:bg-black/25 text-white'
             }`}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-[var(--accent)] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-12deg]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <span className="hidden lg:inline">Suche</span>
-            <kbd className={`hidden lg:inline text-[10px] px-1.5 py-0.5 rounded font-mono ${
+            <kbd className={`hidden lg:inline text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
               theme === 'dark' ? 'bg-white/10' : 'bg-black/15'
             }`}>⌘K</kbd>
           </button>
@@ -140,20 +148,20 @@ export default function AppShell({ items, mode }: AppShellProps) {
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className={`p-2.5 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${
+          className={`group p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 ${
             theme === 'dark'
-              ? 'bg-white/10 hover:bg-white/20'
-              : 'bg-black/20 hover:bg-black/30'
+              ? 'bg-white/10 hover:bg-white/15'
+              : 'bg-black/20 hover:bg-black/25'
           }`}
           aria-label={theme === 'dark' ? 'Light Mode aktivieren' : 'Dark Mode aktivieren'}
           aria-pressed={theme === 'dark'}
         >
           {theme === 'dark' ? (
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-white transition-transform duration-300 group-hover:rotate-45 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           ) : (
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-white transition-transform duration-300 group-hover:rotate-[-20deg] group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
             </svg>
           )}
@@ -174,11 +182,17 @@ export default function AppShell({ items, mode }: AppShellProps) {
 
       {/* Search Overlay */}
       {showSearch && (
-        <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-[15vh] md:pt-[20vh]" onClick={() => setShowSearch(false)}>
-          <div className="w-full max-w-lg mx-4" onClick={e => e.stopPropagation()}>
-            <div className="bg-bg-card rounded-xl border border-[var(--border)] shadow-2xl overflow-hidden">
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)]">
-                <svg className="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div
+          className="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-[15vh] md:pt-[20vh] animate-[fadeIn_0.15s_ease-out]"
+          onClick={() => setShowSearch(false)}
+        >
+          <div
+            className="w-full max-w-lg mx-4 animate-[popIn_0.2s_ease-out]"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="bg-bg-card rounded-2xl border border-[var(--border)] shadow-2xl overflow-hidden">
+              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[var(--border)]">
+                <svg className="w-5 h-5 text-[var(--accent)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
@@ -189,9 +203,9 @@ export default function AppShell({ items, mode }: AppShellProps) {
                   onKeyDown={handleSearchKeyDown}
                   placeholder="Tool suchen..."
                   aria-label="Tool suchen"
-                  className="flex-1 bg-transparent text-text placeholder:text-text-muted outline-none text-base"
+                  className="input-clean flex-1 bg-transparent text-text placeholder:text-text-muted outline-none text-base"
                 />
-                <kbd className="text-xs px-2 py-1 rounded bg-[var(--border)] text-text-muted font-mono">ESC</kbd>
+                <kbd className="text-xs px-2.5 py-1 rounded-full bg-[var(--border)] text-text-muted font-mono">ESC</kbd>
               </div>
               {searchQuery && (
                 <div className="max-h-[300px] overflow-y-auto">
@@ -199,14 +213,16 @@ export default function AppShell({ items, mode }: AppShellProps) {
                     <a
                       key={item.id}
                       href={`/${item.slug}`}
-                      className={`flex items-center gap-3 px-4 py-3 transition-colors ${
+                      className={`group flex items-center gap-3 px-4 py-3 transition-all duration-200 ${
                         index === selectedIndex
                           ? 'bg-[var(--accent)]/10 border-l-2 border-[var(--accent)]'
-                          : 'hover:bg-[var(--border)]'
+                          : 'hover:bg-[var(--accent)]/5 hover:pl-5'
                       }`}
                       onClick={() => setShowSearch(false)}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)] font-bold text-sm">
+                      <div className={`w-8 h-8 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)] font-bold text-sm transition-transform duration-200 ${
+                        index === selectedIndex ? 'scale-110' : 'group-hover:scale-105'
+                      }`}>
                         {item.title[0]}
                       </div>
                       <div className="flex-1">
@@ -214,7 +230,7 @@ export default function AppShell({ items, mode }: AppShellProps) {
                         <p className="text-text-muted text-xs">{item.category}</p>
                       </div>
                       {index === selectedIndex && (
-                        <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--border)] text-text-muted font-mono">Enter</kbd>
+                        <kbd className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--border)] text-text-muted font-mono">Enter</kbd>
                       )}
                     </a>
                   ))}

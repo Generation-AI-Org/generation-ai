@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
 import ToolLogo from '@/components/ui/ToolLogo'
@@ -8,9 +9,11 @@ interface ContentCardProps {
   isHighlighted: boolean
   isDimmed: boolean
   animationDelay?: number
+  priority?: boolean
 }
 
-export default function ContentCard({ item, isHighlighted, isDimmed, animationDelay = 0 }: ContentCardProps) {
+// Memoized to prevent re-renders when grid updates but this card's props are stable
+const ContentCard = memo(function ContentCard({ item, isHighlighted, isDimmed, animationDelay = 0, priority = false }: ContentCardProps) {
   return (
     <Link
       href={`/${item.slug}`}
@@ -30,7 +33,7 @@ export default function ContentCard({ item, isHighlighted, isDimmed, animationDe
       {/* Top: Logo + Pricing Badge */}
       <div className="flex items-start justify-between mb-4">
         <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0">
-          <ToolLogo slug={item.slug} domain={item.logo_domain} name={item.title} size={48} />
+          <ToolLogo slug={item.slug} domain={item.logo_domain} name={item.title} size={48} priority={priority} />
         </div>
         {item.pricing_model && (
           <Badge variant="pricing" value={item.pricing_model} />
@@ -53,4 +56,6 @@ export default function ContentCard({ item, isHighlighted, isDimmed, animationDe
       </p>
     </Link>
   )
-}
+})
+
+export default ContentCard

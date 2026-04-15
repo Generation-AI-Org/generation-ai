@@ -64,6 +64,7 @@ export default function CardGrid({ items, highlightedSlugs, activeFilter }: Card
             isHighlighted={isHighlighted}
             isDimmed={isDimmed}
             animationDelay={isHighlighted ? index * 50 : 0}
+            priority={index < 6}
           />
         )
       })}

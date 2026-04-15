@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'motion/react'
 
 interface VoiceInputButtonProps {
   isRecording: boolean
-  isConnecting?: boolean
+  isProcessing?: boolean
   isSupported: boolean
   onToggle: () => void
   className?: string
@@ -15,7 +15,7 @@ interface VoiceInputButtonProps {
 
 export function VoiceInputButton({
   isRecording,
-  isConnecting = false,
+  isProcessing = false,
   isSupported,
   onToggle,
   className = '',
@@ -50,9 +50,9 @@ export function VoiceInputButton({
         type="button"
         onClick={onToggle}
         disabled={!isSupported}
-        className={`flex p-2 items-center justify-center rounded-full cursor-pointer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
+        className={`group flex p-2 items-center justify-center rounded-full cursor-pointer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
           isRecording
-            ? 'bg-red-500/20 border border-red-500/50'
+            ? 'bg-[var(--accent)]/15 border border-[var(--accent)]/40'
             : 'hover:bg-[var(--accent)]/10 border border-transparent hover:border-[var(--accent)]/30'
         }`}
         layout
@@ -61,10 +61,10 @@ export function VoiceInputButton({
             duration: 0.4,
           },
         }}
-        title={isSupported ? (isConnecting ? 'Verbinde...' : isRecording ? 'Aufnahme stoppen' : 'Spracheingabe starten') : 'Nicht unterstützt'}
+        title={isSupported ? (isProcessing ? 'Transkribiere...' : isRecording ? 'Aufnahme stoppen' : 'Spracheingabe starten') : 'Nicht unterstützt'}
       >
         <div className="h-5 w-5 items-center justify-center flex">
-          {isConnecting ? (
+          {isProcessing ? (
             <motion.div
               className="w-4 h-4 border-2 border-[var(--accent)]/30 border-t-[var(--accent)] rounded-full"
               animate={{ rotate: 360 }}
@@ -76,18 +76,18 @@ export function VoiceInputButton({
             />
           ) : isRecording ? (
             <motion.div
-              className="w-3 h-3 bg-red-500 rounded-sm"
+              className="w-3 h-3 bg-[var(--accent)] rounded-sm"
               animate={{
-                rotate: [0, 180, 360],
+                scale: [1, 0.85, 1],
               }}
               transition={{
-                duration: 2,
+                duration: 1.5,
                 repeat: Number.POSITIVE_INFINITY,
                 ease: 'easeInOut',
               }}
             />
           ) : (
-            <Mic className="w-4 h-4 text-[var(--accent)]/60 group-hover:text-[var(--accent)]" />
+            <Mic className="w-4 h-4 text-[var(--accent)]/60 group-hover:text-[var(--accent)] transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-0.5" />
           )}
         </div>
         <AnimatePresence mode="wait">
@@ -101,29 +101,26 @@ export function VoiceInputButton({
               }}
               className="overflow-hidden flex gap-2 items-center justify-center"
             >
-              {/* Frequency Animation - Real Audio Bars */}
-              <div className="flex gap-0.5 items-center justify-center">
+              {/* Frequency Animation - Real Audio Bars (GPU-accelerated via scaleY) */}
+              <div className="flex gap-0.5 items-end justify-center h-4">
                 {Array.from({ length: 12 }).map((_, i) => {
                   const level = audioLevels[i] ?? 0
-                  const minHeight = 2
-                  const maxHeight = 16
-                  const height = minHeight + level * (maxHeight - minHeight)
+                  const scale = 0.15 + level * 0.85 // 15% min, 100% max
 
                   return (
-                    <motion.div
+                    <div
                       key={i}
-                      className="w-0.5 bg-red-500 rounded-full"
-                      animate={{ height }}
-                      transition={{
-                        duration: 0.05,
-                        ease: 'linear',
+                      className="w-0.5 h-full bg-[var(--accent)] rounded-full origin-bottom will-change-transform"
+                      style={{
+                        transform: `scaleY(${scale})`,
+                        transition: 'transform 0.05s linear',
                       }}
                     />
                   )
                 })}
               </div>
               {/* Timer */}
-              <div className="text-xs text-red-400 w-10 text-center font-mono">
+              <div className="text-xs text-[var(--accent)] w-10 text-center font-mono">
                 {formatTime(time)}
               </div>
             </motion.div>
