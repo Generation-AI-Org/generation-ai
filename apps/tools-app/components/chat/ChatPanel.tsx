@@ -177,7 +177,8 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
             </a>
             <button
               onClick={async () => {
-                const { supabase } = await import('@/lib/supabase')
+                const { createClient } = await import('@/lib/supabase/browser')
+                const supabase = createClient()
                 await supabase.auth.signOut()
                 window.location.reload()
               }}
