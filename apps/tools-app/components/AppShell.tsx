@@ -160,7 +160,7 @@ export default function AppShell({ items, mode }: AppShellProps) {
         </button>
 
         {/* Legal Links - Desktop only, visible in header */}
-        <div className="hidden lg:flex items-center gap-3 ml-2 text-xs text-white/50">
+        <div className="hidden lg:flex items-center gap-3 ml-2 text-xs text-white/70">
           <Link href="/impressum" className="hover:text-white/80 transition-colors">
             Impressum
           </Link>

@@ -11,8 +11,8 @@
   --accent-glow: rgba(206, 255, 50, 0.4);
   --accent-soft: rgba(206, 255, 50, 0.15);
   --text: #F6F6F6;
-  --text-muted: #666666;
-  --text-secondary: #999999;
+  --text-muted: #8A8A8A;
+  --text-secondary: #B0B0B0;
   --text-on-accent: #141414;
   --text-on-header: rgba(255, 255, 255, 0.6);
   --text-on-header-hover: rgba(255, 255, 255, 0.9);
