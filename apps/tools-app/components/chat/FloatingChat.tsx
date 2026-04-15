@@ -321,11 +321,11 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
               <div className="flex items-center gap-1 p-1 bg-[var(--border)]/40 rounded-xl">
                 {/* Voice Button with cool hover */}
                 <button
-                  className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-40"
+                  className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-70"
                   title="Voice Input (coming soon)"
                   disabled
                 >
-                  <Mic className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
+                  <Mic className="w-5 h-5 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
                   {/* Tooltip */}
                   <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                     Voice input
@@ -335,11 +335,11 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
 
                 {/* Link Button with cool hover */}
                 <button
-                  className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-6 disabled:opacity-40"
+                  className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-6 disabled:opacity-70"
                   title="Web Link (coming soon)"
                   disabled
                 >
-                  <Link className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
+                  <Link className="w-5 h-5 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
                   {/* Tooltip */}
                   <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                     Web link
@@ -381,10 +381,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
             </div>
 
             {/* Footer */}
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--border)]/50 text-[10px] text-[var(--text-muted)]">
-              <Info className="w-3 h-3" />
+            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--border)]/50 text-xs text-[var(--text-secondary)]">
+              <Info className="w-4 h-4" />
               <span>
-                <kbd className="px-1.5 py-1 bg-[var(--border)] rounded text-[9px] font-mono">Shift+Enter</kbd> für neue Zeile
+                <kbd className="px-1.5 py-1 bg-[var(--border)] rounded text-[11px] font-mono">Shift+Enter</kbd> für neue Zeile
               </span>
             </div>
           </div>
@@ -562,10 +562,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                   <div className="flex items-center gap-1 p-1 bg-[var(--border)]/40 rounded-xl">
                     {/* Voice Button */}
                     <button
-                      className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-40"
+                      className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-70"
                       disabled
                     >
-                      <Mic className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
+                      <Mic className="w-5 h-5 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
                       {/* Tooltip */}
                       <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                         Voice input
@@ -575,10 +575,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
 
                     {/* Link Button */}
                     <button
-                      className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-6 disabled:opacity-40"
+                      className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-6 disabled:opacity-70"
                       disabled
                     >
-                      <Link className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
+                      <Link className="w-5 h-5 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
                       {/* Tooltip */}
                       <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                         Web link
@@ -622,10 +622,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
               </div>
 
               {/* Footer Info */}
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--border)]/50 text-[10px] text-[var(--text-muted)]">
-                <Info className="w-3 h-3" />
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--border)]/50 text-xs text-[var(--text-secondary)]">
+                <Info className="w-4 h-4" />
                 <span>
-                  <kbd className="px-1.5 py-1 bg-[var(--border)] rounded text-[9px] font-mono">Shift+Enter</kbd> für neue Zeile
+                  <kbd className="px-1.5 py-1 bg-[var(--border)] rounded text-[11px] font-mono">Shift+Enter</kbd> für neue Zeile
                 </span>
               </div>
             </div>
