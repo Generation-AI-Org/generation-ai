@@ -464,24 +464,21 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
         )}
       </button>
 
-      {/* Chat Window Popup - never goes above FilterBar line */}
-      {/* FilterBar bottom = 148px from top, Popup starts at ~120px from bottom */}
-      {/* maxHeight = 100vh - 148px (top) - 120px (bottom) = 100vh - 268px */}
+      {/* Chat Window Popup - always fills from FilterBar line to Kiwi button */}
+      {/* Top: 148px (header + filterbar), Bottom: 104px (kiwi button area) */}
       {isOpen && (
         <div
           ref={chatRef}
-          className="absolute bottom-20 md:bottom-24 right-0 w-[calc(100vw-2rem)] md:w-[420px] max-w-[420px] transition-all duration-300 origin-bottom-right"
+          className="fixed top-[148px] bottom-[104px] right-4 md:right-6 w-[calc(100vw-2rem)] md:w-[420px] max-w-[420px] transition-all duration-300 origin-bottom-right"
           style={{
             animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
           }}
         >
           <div
-            className="relative flex flex-col rounded-2xl md:rounded-3xl border shadow-2xl backdrop-blur-xl overflow-hidden"
+            className="relative flex flex-col h-full rounded-2xl md:rounded-3xl border shadow-2xl backdrop-blur-xl overflow-hidden"
             style={{
               background: 'var(--bg-card)',
               borderColor: 'var(--border)',
-              // Never go above FilterBar: 100vh - top(148px) - bottom(120px) = 268px reserved
-              maxHeight: 'calc(100vh - 268px)',
             }}
           >
             {/* Header */}
@@ -520,11 +517,8 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
               </div>
             </div>
 
-            {/* Messages or Welcome */}
-            <div
-              className="flex-1 overflow-y-auto"
-              style={{ maxHeight: '400px', minHeight: '150px' }}
-            >
+            {/* Messages or Welcome - fills available space */}
+            <div className="flex-1 overflow-y-auto">
               {isEmpty ? (
                 <div className="flex flex-col p-4 gap-3">
                   <p className="text-[var(--text-muted)] text-sm leading-relaxed text-center">
