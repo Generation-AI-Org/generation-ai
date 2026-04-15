@@ -1,9 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, Mic, Link, Send, Info, Maximize2, Minimize2 } from 'lucide-react'
+import { X, Mic, Link, Send, Info, Maximize2, Minimize2, Paperclip } from 'lucide-react'
 import QuickActions from './QuickActions'
 import MessageList from './MessageList'
+import UrlInputModal from './UrlInputModal'
+import AttachmentsPanel, { type Attachment } from './AttachmentsPanel'
+import { useVoiceInput } from '@/hooks/useVoiceInput'
 import type { ChatMessage, ChatMode } from '@/lib/types'
 
 const STORAGE_KEY = 'genai-chat-session'
@@ -23,12 +26,37 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
   const [message, setMessage] = useState('')
   const [charCount, setCharCount] = useState(0)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isUrlModalOpen, setIsUrlModalOpen] = useState(false)
+  const [attachments, setAttachments] = useState<Attachment[]>([])
+  const [showAttachments, setShowAttachments] = useState(false)
   const maxChars = 2000
 
   const chatRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Voice input hook (new API)
+  const { isRecording, isSupported: isVoiceSupported, toggleRecording, transcript, error: voiceError, clearError } = useVoiceInput()
+
+  // When transcript changes, append to message
+  useEffect(() => {
+    if (transcript) {
+      setMessage((prev) => {
+        const newMessage = prev ? `${prev} ${transcript}` : transcript
+        setCharCount(newMessage.length)
+        return newMessage
+      })
+    }
+  }, [transcript])
+
+  // Clear voice error after 5 seconds
+  useEffect(() => {
+    if (voiceError) {
+      const timer = setTimeout(clearError, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [voiceError, clearError])
 
   // Eye tracking state
   const [eyeOffset, setEyeOffset] = useState({ x: 0, y: 0 })
@@ -41,6 +69,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
         const data = JSON.parse(stored)
         if (data.messages) setMessages(data.messages)
         if (data.sessionId) setSessionId(data.sessionId)
+        if (data.draft) {
+          setMessage(data.draft)
+          setCharCount(data.draft.length)
+        }
         const lastAssistant = [...(data.messages || [])].reverse().find((m: ChatMessage) => m.role === 'assistant')
         if (lastAssistant?.recommendedSlugs?.length > 0) {
           onHighlight(lastAssistant.recommendedSlugs)
@@ -54,9 +86,9 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
   useEffect(() => {
     if (!isHydrated) return
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ messages, sessionId }))
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ messages, sessionId, draft: message }))
     } catch {}
-  }, [messages, sessionId, isHydrated])
+  }, [messages, sessionId, message, isHydrated])
 
   // Notify parent about expand changes
   useEffect(() => {
@@ -136,10 +168,22 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
       abortControllerRef.current.abort()
     }
 
+    // Build message with optional URL contexts
+    let fullMessage = text
+    if (attachments.length > 0) {
+      const contexts = attachments.map(a => `[Kontext von ${a.url}]\n${a.content}`).join('\n\n')
+      fullMessage = `${contexts}\n\n[Frage]\n${text}`
+    }
+
+    // Display version shows attachment count
+    const displayContent = attachments.length > 0
+      ? `${text}\n\n📎 ${attachments.length} Anhang${attachments.length > 1 ? 'e' : ''}`
+      : text
+
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'user',
-      content: text,
+      content: displayContent,
       created_at: new Date().toISOString(),
     }
     const newMessages = [...messages, userMessage]
@@ -147,6 +191,8 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
     setIsLoading(true)
     setMessage('')
     setCharCount(0)
+    setAttachments([]) // Clear attachments after sending
+    setShowAttachments(false)
 
     const controller = new AbortController()
     abortControllerRef.current = controller
@@ -157,7 +203,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
         body: JSON.stringify({
-          message: text,
+          message: fullMessage,
           sessionId,
           mode,
           history: newMessages.slice(-6).map((m) => ({
@@ -298,6 +344,15 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
           )}
         </div>
 
+        {/* Attachments Panel */}
+        {showAttachments && (
+          <AttachmentsPanel
+            attachments={attachments}
+            onRemove={(id) => setAttachments(prev => prev.filter(a => a.id !== id))}
+            onAddLink={() => setIsUrlModalOpen(true)}
+          />
+        )}
+
         {/* Input Section - styled like example */}
         <div className="shrink-0 p-4">
           <div className="relative overflow-hidden rounded-xl bg-[var(--border)]/20">
@@ -319,32 +374,36 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
           <div className="mt-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-0.5 bg-[var(--border)]/40 rounded-lg">
-                {/* Voice Button with cool hover */}
+                {/* Voice Button */}
                 <button
-                  className="group relative p-1.5 rounded-md transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-70"
-                  title="Voice Input (coming soon)"
-                  disabled
+                  onClick={toggleRecording}
+                  disabled={!isVoiceSupported}
+                  className={`group relative p-1.5 rounded-md transition-all duration-300 hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isRecording
+                      ? 'text-red-500 animate-pulse'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--accent)]'
+                  }`}
+                  title={isVoiceSupported ? (isRecording ? 'Aufnahme stoppen' : 'Spracheingabe starten') : 'Nicht unterstützt'}
                 >
-                  <Mic className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
-                  {/* Tooltip - aligned left */}
-                  <div className="absolute -top-10 left-0 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
-                    Voice input
-                    <div className="absolute top-full left-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
-                  </div>
+                  <Mic className={`w-4 h-4 transition-all duration-300 ${isRecording ? 'scale-110' : 'group-hover:scale-125 group-hover:rotate-[-12deg]'}`} />
                 </button>
 
-                {/* Link Button with cool hover */}
+                {/* Attachments Button */}
                 <button
-                  className="group relative p-1.5 rounded-md transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-6 disabled:opacity-70"
-                  title="Web Link (coming soon)"
-                  disabled
+                  onClick={() => setShowAttachments(!showAttachments)}
+                  className={`group relative p-1.5 rounded-md transition-all duration-300 hover:bg-[var(--bg-card)] hover:scale-105 ${
+                    attachments.length > 0
+                      ? 'text-[var(--accent)]'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--accent)]'
+                  }`}
+                  title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhänge verwalten'}
                 >
-                  <Link className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
-                  {/* Tooltip - aligned left */}
-                  <div className="absolute -top-10 left-0 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
-                    Web link
-                    <div className="absolute top-full left-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
-                  </div>
+                  <Paperclip className="w-4 h-4 transition-all duration-300 group-hover:scale-125" />
+                  {attachments.length > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent)] text-[var(--text-on-accent)] text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {attachments.length}
+                    </span>
+                  )}
                 </button>
               </div>
 
@@ -535,6 +594,15 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
               )}
             </div>
 
+            {/* Attachments Panel */}
+            {showAttachments && (
+              <AttachmentsPanel
+                attachments={attachments}
+                onRemove={(id) => setAttachments(prev => prev.filter(a => a.id !== id))}
+                onAddLink={() => setIsUrlModalOpen(true)}
+              />
+            )}
+
             {/* Input Section - styled like example component */}
             <div className="relative overflow-hidden rounded-xl mx-4 mb-2 bg-[var(--border)]/20">
               <textarea
@@ -562,28 +630,34 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                   <div className="flex items-center gap-0.5 bg-[var(--border)]/40 rounded-lg">
                     {/* Voice Button */}
                     <button
-                      className="group relative p-1.5 rounded-md transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-70"
-                      disabled
+                      onClick={toggleRecording}
+                      disabled={!isVoiceSupported}
+                      className={`group relative p-1.5 rounded-md transition-all duration-300 hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-50 disabled:cursor-not-allowed ${
+                        isRecording
+                          ? 'text-red-500 animate-pulse'
+                          : 'text-[var(--text-secondary)] hover:text-[var(--accent)]'
+                      }`}
+                      title={isVoiceSupported ? (isRecording ? 'Aufnahme stoppen' : 'Spracheingabe starten') : 'Nicht unterstützt'}
                     >
-                      <Mic className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
-                      {/* Tooltip - aligned left */}
-                      <div className="absolute -top-10 left-0 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
-                        Voice input
-                        <div className="absolute top-full left-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
-                      </div>
+                      <Mic className={`w-4 h-4 transition-all duration-300 ${isRecording ? 'scale-110' : 'group-hover:scale-125 group-hover:rotate-[-12deg]'}`} />
                     </button>
 
-                    {/* Link Button */}
+                    {/* Attachments Button */}
                     <button
-                      className="group relative p-1.5 rounded-md transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-6 disabled:opacity-70"
-                      disabled
+                      onClick={() => setShowAttachments(!showAttachments)}
+                      className={`group relative p-1.5 rounded-md transition-all duration-300 hover:bg-[var(--bg-card)] hover:scale-105 ${
+                        attachments.length > 0
+                          ? 'text-[var(--accent)]'
+                          : 'text-[var(--text-secondary)] hover:text-[var(--accent)]'
+                      }`}
+                      title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhänge verwalten'}
                     >
-                      <Link className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
-                      {/* Tooltip - aligned left */}
-                      <div className="absolute -top-10 left-0 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
-                        Web link
-                        <div className="absolute top-full left-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
-                      </div>
+                      <Paperclip className="w-4 h-4 transition-all duration-300 group-hover:scale-125" />
+                      {attachments.length > 0 && (
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent)] text-[var(--text-on-accent)] text-[10px] font-bold rounded-full flex items-center justify-center">
+                          {attachments.length}
+                        </span>
+                      )}
                     </button>
                   </div>
                 </div>
@@ -670,6 +744,28 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
           box-shadow: 0 0 30px var(--accent-glow), 0 0 50px var(--accent-glow);
         }
       `}</style>
+
+      {/* Voice Error Toast */}
+      {voiceError && (
+        <div className="fixed bottom-28 right-4 md:right-6 z-50 px-4 py-3 bg-red-500/90 text-white text-sm rounded-xl shadow-lg animate-in slide-in-from-bottom-2 max-w-xs">
+          {voiceError}
+        </div>
+      )}
+
+      {/* URL Input Modal */}
+      <UrlInputModal
+        isOpen={isUrlModalOpen}
+        onClose={() => setIsUrlModalOpen(false)}
+        onExtracted={(extracted) => {
+          const newAttachment: Attachment = {
+            id: crypto.randomUUID(),
+            type: 'url',
+            ...extracted,
+          }
+          setAttachments(prev => [...prev, newAttachment])
+          setShowAttachments(true)
+        }}
+      />
     </div>
   )
 }

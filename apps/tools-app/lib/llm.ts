@@ -106,9 +106,22 @@ function parseResponse(raw: string, items: ContentItem[]): RecommendationRespons
     } catch {}
   }
 
-  // Fallback: Text ohne JSON
+  // Fallback: Text ohne JSON — aber JSON-Artefakte entfernen
   if (trimmed) {
-    return { text: trimmed, recommendedSlugs: [], sources: [] }
+    // Entferne häufige JSON-Artefakte die der LLM manchmal hinzufügt
+    let cleanedText = trimmed
+      // Entferne "sources: []" und "recommendedSlugs: []" Fragmente
+      .replace(/\s*sources:\s*\[\s*\]\s*/gi, '')
+      .replace(/\s*recommendedSlugs:\s*\[\s*\]\s*/gi, '')
+      // Entferne leere JSON-Objekte am Ende
+      .replace(/\s*\{\s*\}\s*$/g, '')
+      // Entferne Markdown code blocks mit leerem JSON
+      .replace(/```json\s*\{?\s*\}?\s*```/gi, '')
+      .trim()
+
+    if (cleanedText) {
+      return { text: cleanedText, recommendedSlugs: [], sources: [] }
+    }
   }
 
   return defaultResponse
