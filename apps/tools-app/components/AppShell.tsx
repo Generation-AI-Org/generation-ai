@@ -167,6 +167,39 @@ export default function AppShell({ items, mode }: AppShellProps) {
           )}
         </button>
 
+        {/* Mobile Login/Logout Button */}
+        {mode === 'public' ? (
+          <Link
+            href="/login"
+            className={`group md:hidden p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 ${
+              theme === 'dark'
+                ? 'bg-[var(--accent)] hover:bg-[var(--accent)]/90'
+                : 'bg-[var(--accent)] hover:bg-[var(--accent)]/90'
+            }`}
+            aria-label="Anmelden"
+          >
+            <svg className="w-5 h-5 text-[var(--text-on-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 17v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14" />
+            </svg>
+          </Link>
+        ) : (
+          <Link
+            href="/auth/signout"
+            className={`group md:hidden p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 ${
+              theme === 'dark'
+                ? 'bg-white/10 hover:bg-red-500/20'
+                : 'bg-black/20 hover:bg-red-500/20'
+            }`}
+            aria-label="Abmelden"
+          >
+            <svg className="w-5 h-5 text-white group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7" />
+            </svg>
+          </Link>
+        )}
+
         {/* Legal Links - Desktop only, visible in header */}
         <div className="hidden lg:flex items-center gap-3 ml-2 text-xs text-white/70">
           <Link href="/impressum" className="hover:text-white/80 transition-colors">
