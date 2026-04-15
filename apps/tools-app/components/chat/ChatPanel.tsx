@@ -164,6 +164,7 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
           </a>
         ) : (
           <div className="flex items-center gap-2">
+            {/* Settings - use <a> to bypass router cache */}
             <a
               href="/settings"
               className="p-2 rounded-lg hover:bg-[var(--border)] transition-colors"
