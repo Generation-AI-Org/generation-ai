@@ -4,6 +4,9 @@ import Link from 'next/link'
 import { getUser } from '@/lib/auth'
 import { DeleteAccountButton } from './DeleteAccountButton'
 
+// Disable caching - auth state must be fresh on every request
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Einstellungen | Generation AI Tools',
 }
