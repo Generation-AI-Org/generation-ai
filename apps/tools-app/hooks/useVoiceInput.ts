@@ -41,7 +41,7 @@ export function useVoiceInput(language = 'de-DE'): UseVoiceInputReturn {
     setIsRecording(false)
   }, [])
 
-  const startRecording = useCallback(() => {
+  const startRecording = useCallback(async () => {
     if (!isSupported) {
       setError('Spracherkennung wird in diesem Browser nicht unterstützt.')
       return
@@ -59,6 +59,24 @@ export function useVoiceInput(language = 'de-DE'): UseVoiceInputReturn {
 
     setError(null)
     setTranscript(null)
+
+    // Check if we're on Chrome - it needs explicit microphone permission first
+    const isChrome = navigator.userAgent.includes('Chrome') && !navigator.userAgent.includes('Edg')
+
+    if (isChrome && navigator.mediaDevices?.getUserMedia) {
+      try {
+        // Request microphone permission explicitly on Chrome
+        console.log('[Voice] Chrome detected - requesting mic permission first...')
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        // Stop immediately, we just needed the permission
+        stream.getTracks().forEach(track => track.stop())
+        console.log('[Voice] Microphone permission granted')
+      } catch (micErr) {
+        console.error('[Voice] Microphone permission denied:', micErr)
+        setError('Mikrofon-Zugriff verweigert. Bitte erlaube das Mikrofon in den Browser-Einstellungen.')
+        return
+      }
+    }
 
     try {
       const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition
@@ -90,7 +108,7 @@ export function useVoiceInput(language = 'de-DE'): UseVoiceInputReturn {
           const result = event.results[event.results.length - 1]
           if (result.length > 0) {
             const text = result[0].transcript
-            console.log('[Voice] Transcript:', text)
+            console.log('[Voice] Transcript:', text, '- will update state')
             setTranscript(text)
           }
         }

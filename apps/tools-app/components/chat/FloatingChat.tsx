@@ -41,12 +41,19 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
 
   // When transcript changes, append to message
   useEffect(() => {
+    console.log('[FloatingChat] Transcript changed:', transcript)
     if (transcript) {
+      console.log('[FloatingChat] Inserting transcript into message...')
       setMessage((prev) => {
         const newMessage = prev ? `${prev} ${transcript}` : transcript
+        console.log('[FloatingChat] New message will be:', newMessage)
         setCharCount(newMessage.length)
         return newMessage
       })
+      // Focus textarea after inserting
+      if (textareaRef.current) {
+        textareaRef.current.focus()
+      }
     }
   }, [transcript])
 
