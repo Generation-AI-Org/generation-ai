@@ -128,3 +128,8 @@ Große UI/UX Session mit Fokus auf Micro-Interactions, Konsistenz und Performanc
 
 ### STATE.md
 - Phase 11 als COMPLETE markiert
+
+### Mobile Login Button
+- Login/Logout Button jetzt auch im Header auf Mobile
+- Accent-farbiger Button für Login, dezenter für Logout
+- Hover-Effekt mit roter Farbe beim Logout

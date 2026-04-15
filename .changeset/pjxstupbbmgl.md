@@ -12,3 +12,4 @@ Performance Polish (Phase 11)
 - Added will-change hints for smooth animations
 - Lazy-loaded FloatingChat with next/dynamic (smaller initial bundle)
 - Added priority prop to above-the-fold images (first 6 cards)
+- Added mobile login/logout button to header (no more horizontal scroll needed)
