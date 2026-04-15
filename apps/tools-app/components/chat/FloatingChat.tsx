@@ -325,7 +325,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                   title="Voice Input (coming soon)"
                   disabled
                 >
-                  <Mic className="w-5 h-5 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
+                  <Mic className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
                   {/* Tooltip */}
                   <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                     Voice input
@@ -339,7 +339,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                   title="Web Link (coming soon)"
                   disabled
                 >
-                  <Link className="w-5 h-5 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
+                  <Link className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
                   {/* Tooltip */}
                   <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                     Web link
@@ -565,7 +565,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                       className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-70"
                       disabled
                     >
-                      <Mic className="w-5 h-5 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
+                      <Mic className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
                       {/* Tooltip */}
                       <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                         Voice input
@@ -578,7 +578,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                       className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-6 disabled:opacity-70"
                       disabled
                     >
-                      <Link className="w-5 h-5 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
+                      <Link className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
                       {/* Tooltip */}
                       <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                         Web link
