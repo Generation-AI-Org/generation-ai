@@ -326,10 +326,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                   disabled
                 >
                   <Mic className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
-                  {/* Tooltip */}
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
+                  {/* Tooltip - aligned left */}
+                  <div className="absolute -top-10 left-0 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                     Voice input
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
+                    <div className="absolute top-full left-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
                   </div>
                 </button>
 
@@ -340,10 +340,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                   disabled
                 >
                   <Link className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
-                  {/* Tooltip */}
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
+                  {/* Tooltip - aligned left */}
+                  <div className="absolute -top-10 left-0 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                     Web link
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
+                    <div className="absolute top-full left-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
                   </div>
                 </button>
               </div>
@@ -566,10 +566,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                       disabled
                     >
                       <Mic className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
-                      {/* Tooltip */}
-                      <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
+                      {/* Tooltip - aligned left */}
+                      <div className="absolute -top-10 left-0 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                         Voice input
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
+                        <div className="absolute top-full left-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
                       </div>
                     </button>
 
@@ -579,10 +579,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                       disabled
                     >
                       <Link className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
-                      {/* Tooltip */}
-                      <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
+                      {/* Tooltip - aligned left */}
+                      <div className="absolute -top-10 left-0 px-3 py-2 bg-[var(--bg-card)] text-[var(--text)] text-xs rounded-lg whitespace-nowrap opacity-0 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:-translate-y-1 shadow-lg border border-[var(--border)]">
                         Web link
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
+                        <div className="absolute top-full left-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--border)]" />
                       </div>
                     </button>
                   </div>
