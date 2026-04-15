@@ -107,11 +107,24 @@ Große UI/UX Session mit Fokus auf Micro-Interactions, Konsistenz und Performanc
 
 ## Offene Punkte
 
-- [ ] Lighthouse Performance-Test (CLI nicht installiert)
-- [ ] Browser-Testing der Animationen
+- [x] Lighthouse Performance-Test (CLI installiert, Production: 80% Performance)
+- [x] Browser-Testing der Animationen
 - [ ] Voice-Feature noch nicht Production-getestet (Phase 10)
 
 ## Memory Updates
 
 - `project_tools_app_conventions.md` — Logging, Performance, Components
 - `feedback_self_documentation.md` — Immer selbst dokumentieren
+
+## Teil 3: Dokumentation (2026-04-15)
+
+### Changeset erstellt
+- `.changeset/pjxstupbbmgl.md` — Patch-Release für tools-app
+
+### README.md aktualisiert
+- Neue Features: Floating Chat Bubble, Voice Input, Web-Link Attachment, Lite/Pro Badge
+- Neue Performance-Details: Lazy Loading, Memoization, GPU Animationen
+- Neue Env-Var: `DEEPGRAM_API_KEY`
+
+### STATE.md
+- Phase 11 als COMPLETE markiert

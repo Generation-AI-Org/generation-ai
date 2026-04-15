@@ -12,8 +12,11 @@ Studierende wissen nicht, welche KI-Tools es gibt — und nutzen deshalb nur Cha
 - **Tool-Bibliothek** — Kuratierte KI-Tools mit Beschreibungen, Pricing, Use Cases
 - **Chat-Assistent** — Claude-powered Beratung, die passende Tools aus der Bibliothek empfiehlt
 - **Highlight-System** — Empfohlene Tools leuchten neon auf, Rest wird gedimmt
+- **Floating Chat Bubble** — Kollabierbarer Chat mit Kiwi-Maskottchen (Augen folgen Cursor)
+- **Voice Input** — Deepgram-powered Spracheingabe mit Live-Transkription
+- **Web-Link Attachment** — URLs als Kontext an den Chat anhängen
 - **Light/Dark Mode** — Zwei CI-Farbwelten (Blue/Neon Green + Pink/Red)
-- **Kiwi-Maskottchen** — Roboter mit Kiwi-Kopf, Augen folgen dem Cursor
+- **Lite/Pro Badge** — Zeigt Login-Status im Chat-Header
 - **Mobile-optimiert** — Touch-Targets, iOS-Zoom-Fix, responsive Layout
 - **Cmd+K Suche** — Schnelle Tool-Suche mit Keyboard-Navigation
 
@@ -111,6 +114,7 @@ npm run dev
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Anon Key | Client + Server |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase Service Role | Server only |
 | `ANTHROPIC_API_KEY` | Anthropic API Key | Server only |
+| `DEEPGRAM_API_KEY` | Deepgram API Key (Voice) | Server only |
 
 ## Security
 
@@ -147,11 +151,14 @@ Live unter: [tools.generation-ai.org](https://tools.generation-ai.org)
 
 ## Performance
 
-- **Image Optimization** — AVIF/WebP via next/image
+- **Image Optimization** — AVIF/WebP via next/image, priority für above-the-fold
 - **Static Generation** — Tool-Seiten werden zur Build-Zeit generiert
 - **ISR** — Incremental Static Regeneration (60s)
 - **Aggressive Caching** — Static Assets mit 1-Jahr Cache
 - **Turbopack** — Schnelle Dev-Builds
+- **Lazy Loading** — FloatingChat wird erst bei Bedarf geladen
+- **Memoization** — React.memo für ContentCard, MarkdownContent
+- **GPU Animationen** — CSS transforms statt JS für smooth 60fps
 
 ---
 
