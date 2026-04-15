@@ -34,6 +34,13 @@ export default function AuthCallbackPage() {
           return
         }
 
+        // Check if this is a password recovery flow
+        const type = hashParams.get('type')
+        if (type === 'recovery') {
+          window.location.href = '/auth/set-password'
+          return
+        }
+
         // Success - redirect to home
         window.location.href = '/'
         return
