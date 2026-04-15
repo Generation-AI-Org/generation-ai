@@ -5,8 +5,8 @@
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** Phase 8 COMPLETE (Plan 2/2 complete)
-**Last Updated:** 2026-04-14T01:21
+**Phase:** Phase 10 IN TESTING (Code complete, needs verification)
+**Last Updated:** 2026-04-15T14:10
 **Site Status:** ✓ ONLINE (tools.generation-ai.org)
 
 ## Progress
@@ -17,6 +17,8 @@ Phase 5: [████████░░] Security Headers (HSTS ✓, CSP gepark
 Phase 6: [██████████] Monitoring COMPLETE
 Phase 7: [██████████] Testing COMPLETE (CI Pipeline live)
 Phase 8: [██████████] Performance & A11y COMPLETE
+Phase 9: [██████████] Floating Chat Bubble COMPLETE
+Phase 10: [████████░░] Voice Input (Code ✓, Testing pending)
 ```
 
 ## v2.0 Production Hardening — COMPLETE ✓
@@ -92,9 +94,32 @@ Alle Code-Tasks erledigt. Nur noch Admin-Aufgaben offen:
 - Mobile Tabs entfernt
 - Voice/Link Buttons vorbereitet (disabled)
 
+## Phase 10: Voice Input — IN TESTING
+
+**Code complete, needs manual browser testing.**
+
+Built:
+- ✓ `/api/voice/token` — Token endpoint für Deepgram
+- ✓ `useDeepgramVoice` — Hook mit WebSocket streaming
+- ✓ Real audio visualization via Web Audio API
+- ✓ Live interim transcript während Aufnahme
+- ✓ VoiceInputButton mit echten Frequenz-Bars
+- ✓ Integration in FloatingChat
+
+**Testing Checklist:**
+- [ ] Chrome Desktop: Voice startet, Bars animieren, Text erscheint
+- [ ] Safari Desktop: Kein AudioContext-Fehler
+- [ ] Firefox Desktop: audio/webm funktioniert
+- [ ] iOS Safari: AudioContext nicht suspended
+- [ ] Android Chrome: Alles funktioniert
+
+**Setup Required:**
+- `DEEPGRAM_API_KEY` in `.env.local` ✓
+- `DEEPGRAM_API_KEY` in Vercel Env-Vars (für Production)
+
 ## Next Step
 
-Phase 9 complete. Vercel deploying...
+Manuelles Testing auf verschiedenen Browsern.
 
 ## Roadmap Evolution
 
