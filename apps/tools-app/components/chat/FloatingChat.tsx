@@ -493,7 +493,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
               maxLength={maxChars}
               className="chat-textarea w-full px-4 py-3 bg-transparent border-none outline-none resize-none text-sm leading-relaxed text-[var(--text)] placeholder-[var(--text-muted)]"
               placeholder={isLoading ? "Tippe weiter oder Enter zum Abbrechen..." : "Was möchtest du wissen?"}
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              style={{ minHeight: '44px', maxHeight: '120px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             />
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-card)]/10 to-transparent pointer-events-none rounded-xl" />
@@ -858,7 +858,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                 maxLength={maxChars}
                 className="chat-textarea w-full px-4 py-3 bg-transparent border-none outline-none resize-none text-sm leading-relaxed text-[var(--text)] placeholder-[var(--text-muted)]"
                 placeholder={isLoading ? "Tippe weiter oder Enter zum Abbrechen..." : "Was möchtest du wissen?"}
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                style={{ minHeight: '44px', maxHeight: '120px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               />
               {/* Subtle gradient overlay */}
               <div
