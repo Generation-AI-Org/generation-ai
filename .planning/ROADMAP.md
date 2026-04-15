@@ -186,6 +186,16 @@ Plans:
 
 **Gesamt:** ~2-3 Tage bei fokussierter Arbeit
 
+### Phase 9: Floating Chat Bubble
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 8
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 9 to break down)
+
 ---
 
 *v2.0 Roadmap erstellt: 2026-04-13*

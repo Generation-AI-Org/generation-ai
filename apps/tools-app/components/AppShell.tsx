@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import CardGrid from '@/components/library/CardGrid'
 import FilterBar from '@/components/library/FilterBar'
-import ChatPanel from '@/components/chat/ChatPanel'
+import FloatingChat from '@/components/chat/FloatingChat'
 import { useTheme } from '@/components/ThemeProvider'
 import type { ContentItemMeta, ChatMode } from '@/lib/types'
 
@@ -16,7 +16,6 @@ interface AppShellProps {
 
 export default function AppShell({ items, mode }: AppShellProps) {
   const [highlightedSlugs, setHighlightedSlugs] = useState<string[]>([])
-  const [activeTab, setActiveTab] = useState<'library' | 'chat'>('library')
   const [activeFilter, setActiveFilter] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearch, setShowSearch] = useState(false)
@@ -226,58 +225,20 @@ export default function AppShell({ items, mode }: AppShellProps) {
         </div>
       )}
 
-      {/* Mobile Tabs */}
-      <div className="flex md:hidden border-b border-[var(--border)] shrink-0">
-        <button
-          onClick={() => setActiveTab('library')}
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
-            activeTab === 'library'
-              ? 'text-[var(--accent)] border-b-2 border-[var(--accent)]'
-              : 'text-text-muted'
-          }`}
-        >
-          Bibliothek
-        </button>
-        <button
-          onClick={() => setActiveTab('chat')}
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
-            activeTab === 'chat'
-              ? 'text-[var(--accent)] border-b-2 border-[var(--accent)]'
-              : 'text-text-muted'
-          }`}
-        >
-          Assistent
-        </button>
-      </div>
-
-      {/* Main 2-Panel */}
-      <main id="main-content" className="flex flex-1 overflow-hidden">
-
-        {/* Library — 65% */}
-        <div
-          className={`flex flex-col flex-1 overflow-hidden ${
-            activeTab === 'chat' ? 'hidden md:flex' : ''
-          }`}
-        >
-          <FilterBar active={activeFilter} onChange={setActiveFilter} />
-          <div className="flex-1 overflow-y-auto">
-            <CardGrid
-              items={items}
-              highlightedSlugs={highlightedSlugs}
-              activeFilter={activeFilter}
-            />
-          </div>
-        </div>
-
-        {/* Chat Panel — 35% */}
-        <div
-          className={`w-full md:w-[35%] shrink-0 border-l border-[var(--border)] ${
-            activeTab === 'library' ? 'hidden md:flex' : 'flex'
-          } flex-col`}
-        >
-          <ChatPanel onHighlight={setHighlightedSlugs} mode={mode} />
+      {/* Main Content — Full Width Library */}
+      <main id="main-content" className="flex flex-col flex-1 overflow-hidden">
+        <FilterBar active={activeFilter} onChange={setActiveFilter} />
+        <div className="flex-1 overflow-y-auto">
+          <CardGrid
+            items={items}
+            highlightedSlugs={highlightedSlugs}
+            activeFilter={activeFilter}
+          />
         </div>
       </main>
+
+      {/* Floating Chat */}
+      <FloatingChat onHighlight={setHighlightedSlugs} mode={mode} />
 
       {/* Mobile Legal Footer */}
       <footer className="lg:hidden flex items-center justify-center gap-4 py-2 border-t border-[var(--border)] bg-[var(--bg-header)] text-xs text-text-muted shrink-0">
