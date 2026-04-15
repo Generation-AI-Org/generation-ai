@@ -1,7 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import { GeistMono } from "geist/font/mono";
+import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+
+const cascadiaCode = localFont({
+  src: "./fonts/CascadiaCode.woff2",
+  variable: "--font-mono",
+  display: "swap",
+  preload: true,
+});
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import {
@@ -20,7 +27,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: [
     { media: "(prefers-color-scheme: dark)", color: "#141414" },
-    { media: "(prefers-color-scheme: light)", color: "#FAF7F8" },
+    { media: "(prefers-color-scheme: light)", color: "#F6F6F6" },
   ],
 };
 
@@ -87,7 +94,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="de" className={`${inter.variable} ${GeistMono.variable}`}>
+    <html lang="de" className={`${inter.variable} ${cascadiaCode.variable}`}>
       <body className="antialiased min-h-screen">
         <script
           type="application/ld+json"

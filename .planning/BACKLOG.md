@@ -24,7 +24,7 @@
 - [x] **Telefonnummer** — +49 160 7080308 in allen Legal-Seiten
 - [x] **SpeedInsights** — wieder aktiviert, lokal getestet ✓
 - [ ] **CSP Edge Runtime** — proxy.ts fixen (braucht Testing)
-- [ ] **LLM Keys auf Vercel** — ZHIPU_API_KEY etc. setzen
+- [x] **LLM Keys auf Vercel** — ZHIPU_API_KEY gelöscht ✓
 
 ---
 

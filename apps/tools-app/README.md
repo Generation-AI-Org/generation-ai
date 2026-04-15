@@ -33,9 +33,9 @@ Zwei Farbwelten, gesteuert über CSS-Variablen:
 
 | Token | Dark Mode | Light Mode |
 |---|---|---|
-| `--bg` | #141414 | #FAF7F8 |
-| `--accent` | #CEFF32 (Neon Green) | #D91040 (Red) |
-| `--bg-header` | #3A3AFF (Blue) | #F870F4 (Pink) |
+| `--bg` | #141414 | #F6F6F6 |
+| `--accent` | #CEFF32 (Neon Green) | #F5133B (Red) |
+| `--bg-header` | #3A3AFF (Blue) | #FC78FE (Pink) |
 
 Theme-Toggle speichert die Präferenz in localStorage.
 

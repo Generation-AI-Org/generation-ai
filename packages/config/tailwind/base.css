@@ -20,28 +20,31 @@
   --border-accent: rgba(206, 255, 50, 0.6);
 }
 
-/* Light Mode — Pink/Red CI */
+/* Light Mode — Pink/Red CI (exakte CI-Werte) */
 .light {
-  --bg: #FAF7F8;
+  --bg: #F6F6F6;
   --bg-card: #FFFFFF;
-  --bg-elevated: #F5EEF0;
-  --bg-header: #F870F4;
-  --accent: #D91040;
-  --accent-hover: #B80D35;
-  --accent-glow: rgba(217, 16, 64, 0.3);
-  --accent-soft: rgba(217, 16, 64, 0.08);
-  --text: #1A1A1A;
+  --bg-elevated: #EFEFEF;
+  --bg-header: #FC78FE;
+  --accent: #F5133B;
+  --accent-hover: #D9102F;
+  --accent-glow: rgba(245, 19, 59, 0.3);
+  --accent-soft: rgba(245, 19, 59, 0.08);
+  --text: #141414;
   --text-muted: #555555;
   --text-secondary: #666666;
   --text-on-accent: #FFFFFF;
   --text-on-header: rgba(255, 255, 255, 0.7);
   --text-on-header-hover: rgba(255, 255, 255, 1);
   --border: rgba(0, 0, 0, 0.1);
-  --border-accent: rgba(217, 16, 64, 0.4);
+  --border-accent: rgba(245, 19, 59, 0.4);
 }
 
 /* Common @theme bindings */
 @theme inline {
+  /* Font families */
+  --font-family-mono: var(--font-mono), ui-monospace, "Cascadia Code", "Fira Code", monospace;
+
   --color-bg: var(--bg);
   --color-bg-card: var(--bg-card);
   --color-bg-elevated: var(--bg-elevated);
@@ -79,5 +82,5 @@ body {
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 
-.light ::-webkit-scrollbar-thumb { background: rgba(217, 16, 64, 0.2); }
-.light ::-webkit-scrollbar-thumb:hover { background: rgba(217, 16, 64, 0.35); }
+.light ::-webkit-scrollbar-thumb { background: rgba(245, 19, 59, 0.2); }
+.light ::-webkit-scrollbar-thumb:hover { background: rgba(245, 19, 59, 0.35); }

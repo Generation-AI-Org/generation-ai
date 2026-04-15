@@ -59,7 +59,7 @@ export default function KiwiMascot({ isActive = false }: KiwiMascotProps) {
         seeds: '#333333',
         eye: '#FFFFFF',
         pupil: '#111111',
-        accent: '#D91040',
+        accent: '#F5133B',
         metal: '#555555',
         metalLight: '#777777',
         metalDark: '#3A3A3A',
@@ -78,8 +78,8 @@ export default function KiwiMascot({ isActive = false }: KiwiMascotProps) {
       {/* Humanoid Kiwi Robot - Kiwi head on robot body */}
       <svg
         width="130"
-        height="195"
-        viewBox="0 0 100 150"
+        height="210"
+        viewBox="0 -10 100 160"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="drop-shadow-lg"
