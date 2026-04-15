@@ -388,13 +388,13 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                   <Mic className={`w-4 h-4 transition-all duration-300 ${isRecording ? 'scale-110' : 'group-hover:scale-125 group-hover:rotate-[-12deg]'}`} />
                 </button>
 
-                {/* Attachments Button */}
+                {/* Attachments Button - always slightly highlighted */}
                 <button
                   onClick={() => setShowAttachments(!showAttachments)}
-                  className={`group relative p-1.5 rounded-md transition-all duration-300 hover:bg-[var(--bg-card)] hover:scale-105 ${
+                  className={`group relative p-1.5 rounded-md transition-all duration-300 bg-[var(--accent)]/10 hover:bg-[var(--accent)]/25 hover:scale-105 hover:shadow-[0_0_8px_var(--accent-glow)] ${
                     attachments.length > 0
                       ? 'text-[var(--accent)]'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--accent)]'
+                      : 'text-[var(--accent)]/60 hover:text-[var(--accent)]'
                   }`}
                   title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhänge verwalten'}
                 >
@@ -642,13 +642,13 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                       <Mic className={`w-4 h-4 transition-all duration-300 ${isRecording ? 'scale-110' : 'group-hover:scale-125 group-hover:rotate-[-12deg]'}`} />
                     </button>
 
-                    {/* Attachments Button */}
+                    {/* Attachments Button - always slightly highlighted */}
                     <button
                       onClick={() => setShowAttachments(!showAttachments)}
-                      className={`group relative p-1.5 rounded-md transition-all duration-300 hover:bg-[var(--bg-card)] hover:scale-105 ${
+                      className={`group relative p-1.5 rounded-md transition-all duration-300 bg-[var(--accent)]/10 hover:bg-[var(--accent)]/25 hover:scale-105 hover:shadow-[0_0_8px_var(--accent-glow)] ${
                         attachments.length > 0
                           ? 'text-[var(--accent)]'
-                          : 'text-[var(--text-secondary)] hover:text-[var(--accent)]'
+                          : 'text-[var(--accent)]/60 hover:text-[var(--accent)]'
                       }`}
                       title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhänge verwalten'}
                     >

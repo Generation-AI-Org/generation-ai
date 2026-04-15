@@ -5,11 +5,14 @@ import type { ChatMode } from '@/lib/types'
 
 const FILTERS = [
   { label: 'Alle', value: '' },
-  { label: 'Texte schreiben', value: 'Texte schreiben' },
+  { label: 'KI-Assistenten', value: 'KI-Assistenten' },
+  { label: 'Schreiben & Chat', value: 'Schreiben & Chat' },
   { label: 'Recherche', value: 'Recherche' },
-  { label: 'Automation', value: 'Automation' },
   { label: 'Coding', value: 'Coding' },
-  { label: 'Präsentationen', value: 'Präsentationen' },
+  { label: 'Bilder & Design', value: 'Bilder & Design' },
+  { label: 'Audio & Transkription', value: 'Audio & Transkription' },
+  { label: 'Automation', value: 'Automation' },
+  { label: 'Produktivität', value: 'Produktivität' },
 ]
 
 interface FilterBarProps {
