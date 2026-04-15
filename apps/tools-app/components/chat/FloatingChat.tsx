@@ -206,45 +206,62 @@ export default function FloatingChat({ onHighlight, mode }: FloatingChatProps) {
 
   return (
     <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50">
-      {/* Floating Kiwi Button */}
+      {/* Floating Kiwi Button - larger */}
       <button
         ref={buttonRef}
-        className={`relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 transform ${
+        className={`relative w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-300 transform ${
           isOpen ? 'rotate-0 scale-95' : 'rotate-0 scale-100 hover:scale-110'
         }`}
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? 'Chat schließen' : 'Chat öffnen'}
         style={{
-          background: 'linear-gradient(135deg, var(--accent) 0%, var(--bg-header) 100%)',
+          background: '#7A5C14',
           boxShadow: `0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow), 0 4px 12px rgba(0,0,0,0.3)`,
-          border: '2px solid rgba(255, 255, 255, 0.2)',
+          border: '3px solid #5A4410',
         }}
       >
-        {/* Inner glow */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent opacity-30" />
+        {/* Kiwi texture overlay */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#9B7924]/40 to-transparent" />
 
         {/* Kiwi Face or X */}
         <div className="relative z-10">
           {isOpen ? (
-            <X className="w-7 h-7 md:w-8 md:h-8 text-[var(--text-on-accent)]" />
+            <X className="w-8 h-8 md:w-10 md:h-10 text-white" />
           ) : (
-            <svg width="32" height="32" viewBox="0 0 32 32" className="md:w-9 md:h-9">
-              {/* Kiwi skin */}
-              <ellipse cx="16" cy="16" rx="14" ry="13" fill="#7A5C14" />
-              <ellipse cx="13" cy="13" rx="6" ry="5" fill="#9B7924" opacity="0.4" />
-              {/* Kiwi flesh */}
-              <ellipse cx="16" cy="16" rx="10" ry="9" fill="#8BC34A" />
-              {/* Eyes */}
-              <g transform={`translate(${eyeOffset.x}, ${eyeOffset.y})`}>
-                <ellipse cx="12" cy="14" rx="3" ry="3.5" fill="white" />
-                <ellipse cx="20" cy="14" rx="3" ry="3.5" fill="white" />
-                <circle cx="12" cy="14" r="1.5" fill="#111" />
-                <circle cx="20" cy="14" r="1.5" fill="#111" />
+            <svg width="44" height="44" viewBox="0 0 44 44" className="md:w-14 md:h-14">
+              {/* Kiwi brown skin with fuzzy texture */}
+              <ellipse cx="22" cy="22" rx="20" ry="19" fill="#7A5C14" />
+              <ellipse cx="18" cy="17" rx="8" ry="6" fill="#9B7924" opacity="0.3" />
+              {/* Fuzzy dots for texture */}
+              <circle cx="8" cy="18" r="1" fill="#5A4410" opacity="0.4" />
+              <circle cx="36" cy="20" r="1" fill="#5A4410" opacity="0.4" />
+              <circle cx="12" cy="32" r="0.8" fill="#5A4410" opacity="0.3" />
+              <circle cx="32" cy="30" r="0.8" fill="#5A4410" opacity="0.3" />
+              {/* Green kiwi flesh inside */}
+              <ellipse cx="22" cy="22" rx="14" ry="13" fill="#8BC34A" />
+              <ellipse cx="22" cy="22" rx="12" ry="11" fill="#9CCC65" />
+              {/* White center */}
+              <ellipse cx="22" cy="22" rx="3" ry="4" fill="#E8F5E9" />
+              {/* Seeds radiating from center */}
+              <g fill="#2E2E2E">
+                <ellipse cx="22" cy="28" rx="0.8" ry="1.2" />
+                <ellipse cx="18" cy="27" rx="0.7" ry="1" transform="rotate(-20 18 27)" />
+                <ellipse cx="26" cy="27" rx="0.7" ry="1" transform="rotate(20 26 27)" />
+                <ellipse cx="16" cy="24" rx="0.6" ry="0.9" transform="rotate(-40 16 24)" />
+                <ellipse cx="28" cy="24" rx="0.6" ry="0.9" transform="rotate(40 28 24)" />
+                <ellipse cx="17" cy="20" rx="0.5" ry="0.8" transform="rotate(-60 17 20)" />
+                <ellipse cx="27" cy="20" rx="0.5" ry="0.8" transform="rotate(60 27 20)" />
               </g>
-              {/* Seeds */}
-              <circle cx="16" cy="20" r="0.8" fill="#2A2A2A" />
-              <circle cx="13" cy="19" r="0.6" fill="#2A2A2A" />
-              <circle cx="19" cy="19" r="0.6" fill="#2A2A2A" />
+              {/* Cute eyes */}
+              <g transform={`translate(${eyeOffset.x}, ${eyeOffset.y})`}>
+                <ellipse cx="17" cy="18" rx="4" ry="4.5" fill="white" />
+                <ellipse cx="27" cy="18" rx="4" ry="4.5" fill="white" />
+                <circle cx="17" cy="18" r="2" fill="#111" />
+                <circle cx="27" cy="18" r="2" fill="#111" />
+                {/* Eye shine */}
+                <circle cx="18" cy="17" r="0.8" fill="white" />
+                <circle cx="28" cy="17" r="0.8" fill="white" />
+              </g>
             </svg>
           )}
         </div>
@@ -252,7 +269,7 @@ export default function FloatingChat({ onHighlight, mode }: FloatingChatProps) {
         {/* Pulsing ring */}
         {!isOpen && (
           <div
-            className="absolute inset-0 rounded-full animate-ping opacity-20"
+            className="absolute inset-0 rounded-full animate-ping opacity-25"
             style={{ background: 'var(--accent)' }}
           />
         )}
@@ -262,17 +279,17 @@ export default function FloatingChat({ onHighlight, mode }: FloatingChatProps) {
       {isOpen && (
         <div
           ref={chatRef}
-          className="absolute bottom-16 md:bottom-20 right-0 w-[calc(100vw-2rem)] md:w-[420px] max-w-[420px] transition-all duration-300 origin-bottom-right"
+          className="absolute bottom-20 md:bottom-24 right-0 w-[calc(100vw-2rem)] md:w-[420px] max-w-[420px] transition-all duration-300 origin-bottom-right"
           style={{
             animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
           }}
         >
           <div
-            className="relative flex flex-col rounded-2xl md:rounded-3xl border shadow-2xl backdrop-blur-xl overflow-hidden"
+            className="relative flex flex-col rounded-2xl md:rounded-3xl border shadow-2xl overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%)',
+              background: 'var(--bg-card)',
               borderColor: 'var(--border)',
-              maxHeight: 'calc(100vh - 120px)',
+              maxHeight: 'calc(100vh - 140px)',
             }}
           >
             {/* Header */}
@@ -401,11 +418,11 @@ export default function FloatingChat({ onHighlight, mode }: FloatingChatProps) {
               </div>
             </div>
 
-            {/* Overlay gradient */}
+            {/* Subtle overlay - very minimal */}
             <div
-              className="absolute inset-0 rounded-2xl md:rounded-3xl pointer-events-none"
+              className="absolute inset-0 rounded-2xl md:rounded-3xl pointer-events-none opacity-[0.02]"
               style={{
-                background: 'linear-gradient(135deg, var(--accent-soft), transparent, var(--accent-soft))'
+                background: 'linear-gradient(135deg, var(--accent), transparent)'
               }}
             />
           </div>

@@ -227,7 +227,7 @@ export default function AppShell({ items, mode }: AppShellProps) {
 
       {/* Main Content — Full Width Library */}
       <main id="main-content" className="flex flex-col flex-1 overflow-hidden">
-        <FilterBar active={activeFilter} onChange={setActiveFilter} />
+        <FilterBar active={activeFilter} onChange={setActiveFilter} mode={mode} />
         <div className="flex-1 overflow-y-auto">
           <CardGrid
             items={items}
