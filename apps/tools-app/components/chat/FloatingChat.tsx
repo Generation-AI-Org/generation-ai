@@ -214,6 +214,16 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
     }
   }, [isOpen])
 
+  // Auto-resize textarea when message changes (e.g. from voice input)
+  useEffect(() => {
+    if (textareaRef.current) {
+      const textarea = textareaRef.current
+      textarea.style.height = 'auto'
+      const maxHeight = 120
+      textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`
+    }
+  }, [message])
+
   function stopGeneration() {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
