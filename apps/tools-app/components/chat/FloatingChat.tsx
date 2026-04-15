@@ -63,24 +63,41 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
     onExpandChange?.(isExpanded && isOpen)
   }, [isExpanded, isOpen, onExpandChange])
 
-  // Eye tracking for Kiwi face
+  // Eye tracking for Kiwi face (throttled with RAF, disabled when expanded)
   useEffect(() => {
+    if (isExpanded && isOpen) return // No eye tracking needed when expanded
+
+    let rafId: number
+    let lastX = 0
+    let lastY = 0
+
     function handleMouseMove(e: MouseEvent) {
-      if (!buttonRef.current) return
-      const rect = buttonRef.current.getBoundingClientRect()
-      const centerX = rect.left + rect.width / 2
-      const centerY = rect.top + rect.height / 2
-      const deltaX = e.clientX - centerX
-      const deltaY = e.clientY - centerY
-      const maxOffset = 3
-      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
-      const normalizedX = distance > 0 ? (deltaX / distance) * Math.min(distance / 100, 1) * maxOffset : 0
-      const normalizedY = distance > 0 ? (deltaY / distance) * Math.min(distance / 100, 1) * maxOffset : 0
-      setEyeOffset({ x: normalizedX, y: normalizedY })
+      // Skip if position barely changed (threshold of 5px)
+      if (Math.abs(e.clientX - lastX) < 5 && Math.abs(e.clientY - lastY) < 5) return
+      lastX = e.clientX
+      lastY = e.clientY
+
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(() => {
+        if (!buttonRef.current) return
+        const rect = buttonRef.current.getBoundingClientRect()
+        const centerX = rect.left + rect.width / 2
+        const centerY = rect.top + rect.height / 2
+        const deltaX = e.clientX - centerX
+        const deltaY = e.clientY - centerY
+        const maxOffset = 3
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+        const normalizedX = distance > 0 ? (deltaX / distance) * Math.min(distance / 100, 1) * maxOffset : 0
+        const normalizedY = distance > 0 ? (deltaY / distance) * Math.min(distance / 100, 1) * maxOffset : 0
+        setEyeOffset({ x: normalizedX, y: normalizedY })
+      })
     }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      cancelAnimationFrame(rafId)
+    }
+  }, [isExpanded, isOpen])
 
   // Close on click outside (only in popup mode)
   useEffect(() => {
