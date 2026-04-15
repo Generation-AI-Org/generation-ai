@@ -1,0 +1,156 @@
+- generic [ref=e1]:
+  - link "Zum Hauptinhalt springen" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=e3]:
+    - link "Fußpflegestudio Gabriela Herm" [ref=e5] [cursor=pointer]:
+      - /url: /
+      - img "Fußpflegestudio Gabriela Herm" [ref=e6]
+  - main [ref=e8]:
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - img "Professionelle Fußpflege in Vimbuch" [ref=e13]
+        - generic [ref=e18]:
+          - paragraph [ref=e19]: Fußpflege in Vimbuch
+          - heading "Ihre Füße in besten Händen" [level=1] [ref=e20]
+          - paragraph [ref=e21]: Professionelle Fußpflege mit persönlicher Leidenschaft. Medizinisch fundiert, mit Hingabe und höchstem Qualitätsanspruch.
+          - generic [ref=e22]:
+            - link "Termin vereinbaren" [ref=e23] [cursor=pointer]:
+              - /url: tel:+497223991388
+              - img [ref=e24]
+              - text: Termin vereinbaren
+            - link "Leistungen ansehen" [ref=e26] [cursor=pointer]:
+              - /url: "#leistungen"
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - img [ref=e31]
+          - generic [ref=e33]: Persönliche Betreuung
+        - generic [ref=e34]:
+          - img [ref=e35]
+          - generic [ref=e37]: Medizinische Kompetenz
+        - generic [ref=e38]:
+          - img [ref=e39]
+          - generic [ref=e42]: Zufriedene Kunden
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - paragraph [ref=e46]: Meine Leistungen
+          - heading "Medizinische Fußpflege" [level=2] [ref=e47]
+          - paragraph [ref=e48]: Professionelle Behandlung mit höchster Sorgfalt und Hygiene — bei mir sind Ihre Füße in erfahrenen Händen.
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - img "Behandlungsraum im Fußpflegestudio" [ref=e52]
+            - generic [ref=e54]:
+              - generic [ref=e55]: Medizinische Fußpflege
+              - heading "Fachgerechte Behandlung für gesunde Füße" [level=3] [ref=e56]
+          - generic [ref=e57]:
+            - img [ref=e59]
+            - generic [ref=e61]:
+              - heading "Hornhaut & Schwielen" [level=4] [ref=e62]
+              - paragraph [ref=e63]: Schonende Entfernung
+          - generic [ref=e64]:
+            - img [ref=e66]
+            - generic [ref=e68]:
+              - heading "Hühneraugen" [level=4] [ref=e69]
+              - paragraph [ref=e70]: Schmerzfreie Behandlung
+          - generic [ref=e71]:
+            - img [ref=e73]
+            - generic [ref=e75]:
+              - heading "Nagelkorrektur" [level=4] [ref=e76]
+              - paragraph [ref=e77]: Eingewachsene Nägel
+          - generic [ref=e78]:
+            - img [ref=e80]
+            - generic [ref=e82]:
+              - heading "Nagelpilz" [level=4] [ref=e83]
+              - paragraph [ref=e84]: Fachgerechte Therapie
+      - generic [ref=e87]:
+        - generic [ref=e88]:
+          - paragraph [ref=e89]: Über mich
+          - heading "Gabriela Herm" [level=2] [ref=e90]
+          - paragraph [ref=e91]: Qualität steht bei mir an erster Stelle. Mit viel Erfahrung und Sorgfalt kümmere ich mich um Ihre Füße - ob medizinische Behandlung oder kosmetische Pflege. Meine Kunden schätzen die persönliche Betreuung und das Ergebnis.
+        - generic [ref=e92]:
+          - generic [ref=e94]:
+            - heading "23 Jahre Erfahrung" [level=4] [ref=e95]
+            - paragraph [ref=e96]: Seit 2003 für Sie da
+          - generic [ref=e98]:
+            - heading "Höchste Sorgfalt" [level=4] [ref=e99]
+            - paragraph [ref=e100]: Professionelle Werkzeuge
+          - generic [ref=e102]:
+            - heading "Persönliche Betreuung" [level=4] [ref=e103]
+            - paragraph [ref=e104]: Individuelle Behandlung
+      - generic [ref=e106]:
+        - generic [ref=e107]:
+          - paragraph [ref=e108]: Kontakt
+          - heading "Ich freue mich auf Sie" [level=2] [ref=e109]
+        - generic [ref=e110]:
+          - generic [ref=e111]:
+            - generic [ref=e113]:
+              - generic [ref=e114]:
+                - img [ref=e116]
+                - heading "Adresse" [level=3] [ref=e119]
+              - generic [ref=e120]:
+                - paragraph [ref=e121]: Vimbucher Straße 48
+                - paragraph [ref=e122]: 77815 Bühl-Vimbuch
+            - generic [ref=e124]:
+              - generic [ref=e125]:
+                - img [ref=e127]
+                - heading "Telefon" [level=3] [ref=e129]
+              - link "07223 991388" [ref=e131] [cursor=pointer]:
+                - /url: tel:+497223991388
+            - generic [ref=e133]:
+              - generic [ref=e134]:
+                - img [ref=e136]
+                - heading "E-Mail" [level=3] [ref=e139]
+              - link "gabi@fusspflegeherm.de" [ref=e141] [cursor=pointer]:
+                - /url: mailto:gabi@fusspflegeherm.de
+            - generic [ref=e143]:
+              - generic [ref=e144]:
+                - img [ref=e146]
+                - heading "Öffnungszeiten" [level=3] [ref=e149]
+              - paragraph [ref=e151]: Termine nur auf Anfrage
+          - iframe [ref=e154]:
+            - link "In Maps öffnen (wird in neuem Tab geöffnet)" [ref=f3e4] [cursor=pointer]:
+              - /url: about:invalid#zClosurez
+              - text: In Maps öffnen
+              - img [ref=f3e6]
+      - generic [ref=e157]:
+        - paragraph [ref=e158]: Bereit für den ersten Schritt?
+        - heading "Vereinbaren Sie Ihren Termin" [level=2] [ref=e159]
+        - paragraph [ref=e160]: Ich freue mich darauf, Sie persönlich kennenzulernen und Ihre Füße in besten Händen zu wissen.
+        - link "07223 991388" [ref=e161] [cursor=pointer]:
+          - /url: tel:+497223991388
+          - img [ref=e162]
+          - text: 07223 991388
+      - generic [ref=e166]:
+        - generic [ref=e167]:
+          - paragraph [ref=e168]: Fußpflegestudio Gabriela Herm
+          - paragraph [ref=e169]: Fußpflege mit Qualitätsanspruch in Vimbuch
+        - generic [ref=e170]:
+          - generic [ref=e171]: © 2026 Gabriela Herm
+          - generic [ref=e172]:
+            - link "Impressum" [ref=e173] [cursor=pointer]:
+              - /url: /impressum
+            - link "Datenschutz" [ref=e174] [cursor=pointer]:
+              - /url: /datenschutz
+  - button "Open Next.js Dev Tools" [ref=e180] [cursor=pointer]:
+    - img [ref=e181]
+  - alert [ref=e184]
+  - button "Menü schließen" [expanded] [active] [ref=e190]
+  - navigation [ref=e192]:
+    - img "Fußpflegestudio Gabriela Herm" [ref=e194]
+    - list [ref=e195]:
+      - listitem [ref=e196]:
+        - link "Leistungen" [ref=e197] [cursor=pointer]:
+          - /url: "#leistungen"
+      - listitem [ref=e198]:
+        - link "Über mich" [ref=e199] [cursor=pointer]:
+          - /url: "#ueber"
+      - listitem [ref=e200]:
+        - link "Kontakt" [ref=e201] [cursor=pointer]:
+          - /url: "#kontakt"
+    - generic [ref=e202]:
+      - link "07223 991388" [ref=e203] [cursor=pointer]:
+        - /url: tel:+497223991388
+        - img [ref=e204]
+        - text: 07223 991388
+      - generic [ref=e206]:
+        - paragraph [ref=e207]: Vimbucher Straße 48
+        - paragraph [ref=e208]: 77815 Bühl-Vimbuch

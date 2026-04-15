@@ -373,32 +373,32 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
           {/* Controls */}
           <div className="mt-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-0.5 bg-[var(--border)]/40 rounded-lg">
-                {/* Voice Button */}
+              <div className="flex items-center gap-1">
+                {/* Voice Button - icon only colored */}
                 <button
                   onClick={toggleRecording}
                   disabled={!isVoiceSupported}
-                  className={`group relative p-1.5 rounded-md transition-all duration-300 hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-50 disabled:cursor-not-allowed ${
-                    isRecording
-                      ? 'text-red-500 animate-pulse'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--accent)]'
-                  }`}
+                  className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                   title={isVoiceSupported ? (isRecording ? 'Aufnahme stoppen' : 'Spracheingabe starten') : 'Nicht unterstützt'}
                 >
-                  <Mic className={`w-4 h-4 transition-all duration-300 ${isRecording ? 'scale-110' : 'group-hover:scale-125 group-hover:rotate-[-12deg]'}`} />
+                  <Mic className={`w-4 h-4 transition-all duration-300 ${
+                    isRecording
+                      ? 'text-red-500 animate-pulse scale-110'
+                      : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)] group-hover:scale-125'
+                  }`} />
                 </button>
 
-                {/* Attachments Button - always slightly highlighted */}
+                {/* Attachments Button - icon only colored */}
                 <button
                   onClick={() => setShowAttachments(!showAttachments)}
-                  className={`group relative p-1.5 rounded-md transition-all duration-300 bg-[var(--accent)]/10 hover:bg-[var(--accent)]/25 hover:scale-105 hover:shadow-[0_0_8px_var(--accent-glow)] ${
-                    attachments.length > 0
-                      ? 'text-[var(--accent)]'
-                      : 'text-[var(--accent)]/60 hover:text-[var(--accent)]'
-                  }`}
+                  className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105"
                   title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhänge verwalten'}
                 >
-                  <Paperclip className="w-4 h-4 transition-all duration-300 group-hover:scale-125" />
+                  <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-125 ${
+                    attachments.length > 0
+                      ? 'text-[var(--accent)]'
+                      : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)]'
+                  }`} />
                   {attachments.length > 0 && (
                     <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent)] text-[var(--text-on-accent)] text-[10px] font-bold rounded-full flex items-center justify-center">
                       {attachments.length}
@@ -625,41 +625,38 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
             {/* Controls Section */}
             <div className="px-4 pb-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  {/* Attachment Group */}
-                  <div className="flex items-center gap-0.5 bg-[var(--border)]/40 rounded-lg">
-                    {/* Voice Button */}
+                <div className="flex items-center gap-1">
+                    {/* Voice Button - icon only colored */}
                     <button
                       onClick={toggleRecording}
                       disabled={!isVoiceSupported}
-                      className={`group relative p-1.5 rounded-md transition-all duration-300 hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-50 disabled:cursor-not-allowed ${
-                        isRecording
-                          ? 'text-red-500 animate-pulse'
-                          : 'text-[var(--text-secondary)] hover:text-[var(--accent)]'
-                      }`}
+                      className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                       title={isVoiceSupported ? (isRecording ? 'Aufnahme stoppen' : 'Spracheingabe starten') : 'Nicht unterstützt'}
                     >
-                      <Mic className={`w-4 h-4 transition-all duration-300 ${isRecording ? 'scale-110' : 'group-hover:scale-125 group-hover:rotate-[-12deg]'}`} />
+                      <Mic className={`w-4 h-4 transition-all duration-300 ${
+                        isRecording
+                          ? 'text-red-500 animate-pulse scale-110'
+                          : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)] group-hover:scale-125'
+                      }`} />
                     </button>
 
-                    {/* Attachments Button - always slightly highlighted */}
+                    {/* Attachments Button - icon only colored */}
                     <button
                       onClick={() => setShowAttachments(!showAttachments)}
-                      className={`group relative p-1.5 rounded-md transition-all duration-300 bg-[var(--accent)]/10 hover:bg-[var(--accent)]/25 hover:scale-105 hover:shadow-[0_0_8px_var(--accent-glow)] ${
-                        attachments.length > 0
-                          ? 'text-[var(--accent)]'
-                          : 'text-[var(--accent)]/60 hover:text-[var(--accent)]'
-                      }`}
+                      className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105"
                       title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhänge verwalten'}
                     >
-                      <Paperclip className="w-4 h-4 transition-all duration-300 group-hover:scale-125" />
+                      <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-125 ${
+                        attachments.length > 0
+                          ? 'text-[var(--accent)]'
+                          : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)]'
+                      }`} />
                       {attachments.length > 0 && (
                         <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent)] text-[var(--text-on-accent)] text-[10px] font-bold rounded-full flex items-center justify-center">
                           {attachments.length}
                         </span>
                       )}
                     </button>
-                  </div>
                 </div>
 
                 <div className="flex items-center gap-3">
