@@ -14,6 +14,8 @@ export default function ContentCard({ item, isHighlighted, isDimmed, animationDe
   return (
     <Link
       href={`/${item.slug}`}
+      data-card
+      data-slug={item.slug}
       className={`
         group block rounded-2xl border p-4 md:p-5 transition-all duration-300 cursor-pointer min-h-[120px]
         hover:scale-[1.015] hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)]

@@ -93,3 +93,10 @@ textarea:focus-visible,
   outline-offset: 3px;
   border-radius: 4px;
 }
+
+/* Chat textarea should have no focus ring - uses gradient instead */
+.chat-textarea:focus,
+.chat-textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}

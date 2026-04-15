@@ -20,6 +20,7 @@ export default function AppShell({ items, mode }: AppShellProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearch, setShowSearch] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [isChatExpanded, setIsChatExpanded] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const { theme, toggleTheme } = useTheme()
 
@@ -49,6 +50,8 @@ export default function AppShell({ items, mode }: AppShellProps) {
         setShowSearch(false)
         setSearchQuery('')
         setSelectedIndex(0)
+        // Clear any highlighted cards
+        setHighlightedSlugs([])
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -226,9 +229,29 @@ export default function AppShell({ items, mode }: AppShellProps) {
       )}
 
       {/* Main Content — Full Width Library */}
-      <main id="main-content" className="flex flex-col flex-1 overflow-hidden">
+      <main
+        id="main-content"
+        className="flex flex-col flex-1 overflow-hidden"
+        onClick={(e) => {
+          // Clear highlights on any click outside of highlighted cards
+          const card = (e.target as HTMLElement).closest('[data-card]')
+          if (!card) {
+            // Clicked on empty space, filterbar, etc.
+            setHighlightedSlugs([])
+          } else {
+            // Clicked on a card - check if it's highlighted
+            const slug = card.getAttribute('data-slug')
+            if (!slug || !highlightedSlugs.includes(slug)) {
+              // Clicked on non-highlighted card - clear highlights
+              setHighlightedSlugs([])
+            }
+          }
+        }}
+      >
         <FilterBar active={activeFilter} onChange={setActiveFilter} mode={mode} />
-        <div className="flex-1 overflow-y-auto">
+        <div
+          className={`flex-1 overflow-y-auto transition-all duration-300 ${isChatExpanded ? 'md:mr-[35%]' : ''}`}
+        >
           <CardGrid
             items={items}
             highlightedSlugs={highlightedSlugs}
@@ -237,8 +260,12 @@ export default function AppShell({ items, mode }: AppShellProps) {
         </div>
       </main>
 
-      {/* Floating Chat */}
-      <FloatingChat onHighlight={setHighlightedSlugs} mode={mode} />
+      {/* Floating Chat - always rendered, handles its own expand state */}
+      <FloatingChat
+        onHighlight={setHighlightedSlugs}
+        onExpandChange={setIsChatExpanded}
+        mode={mode}
+      />
 
       {/* Mobile Legal Footer */}
       <footer className="lg:hidden flex items-center justify-center gap-4 py-2 border-t border-[var(--border)] bg-[var(--bg-header)] text-xs text-text-muted shrink-0">
