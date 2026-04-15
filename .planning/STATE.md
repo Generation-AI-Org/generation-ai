@@ -84,10 +84,19 @@ Alle Code-Tasks erledigt. Nur noch Admin-Aufgaben offen:
 - Skip-Link, aria-labels, aria-pressed, focus-visible styles implemented
 - All Critical/Serious axe violations resolved
 
+### Phase 9 COMPLETE
+- Floating Chat Bubble mit Kiwi-Gesicht (Augen folgen Maus)
+- Glassmorphism Popup mit Glow-Effekten
+- Tool-Bibliothek hat jetzt volle Breite
+- Lite/Pro Badge je nach Login-Status
+- Mobile Tabs entfernt
+- Voice/Link Buttons vorbereitet (disabled)
+
 ## Next Step
 
-Phase 9: Floating Chat Bubble - Chat-UI Redesign
+Phase 9 complete. Vercel deploying...
 
 ## Roadmap Evolution
 
 - Phase 9 added: Floating Chat Bubble (2026-04-15)
+- Phase 9 COMPLETE: Floating Chat implemented (2026-04-15)
