@@ -1,6 +1,13 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
+const cookieOptions = {
+  domain: '.generation-ai.org',
+  path: '/',
+  sameSite: 'lax' as const,
+  secure: true,
+}
+
 export async function createClient() {
   const cookieStore = await cookies()
 
@@ -15,7 +22,7 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, { ...cookieOptions, ...options })
             )
           } catch {
             // Server Components cannot set cookies — ignore
