@@ -1,12 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, Mic, Link, Send, Info, Maximize2, Minimize2, Paperclip } from 'lucide-react'
+import { X, Send, Info, Maximize2, Minimize2, Paperclip } from 'lucide-react'
+import { VoiceInputButton } from '@/components/ui/VoiceInputButton'
 import QuickActions from './QuickActions'
 import MessageList from './MessageList'
 import UrlInputModal from './UrlInputModal'
 import AttachmentsPanel, { type Attachment } from './AttachmentsPanel'
-import { useVoiceInput } from '@/hooks/useVoiceInput'
+import { useDeepgramVoice } from '@/hooks/useDeepgramVoice'
+import { useCallback } from 'react'
 import type { ChatMessage, ChatMode } from '@/lib/types'
 
 const STORAGE_KEY = 'genai-chat-session'
@@ -36,8 +38,28 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
   const abortControllerRef = useRef<AbortController | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Voice input hook (new API)
-  const { isRecording, isSupported: isVoiceSupported, toggleRecording, transcript, error: voiceError, clearError } = useVoiceInput()
+  // Voice input hook (Deepgram API)
+  const {
+    isRecording,
+    isConnecting,
+    isSupported: isVoiceSupported,
+    startRecording,
+    stopRecording,
+    transcript,
+    interimTranscript,
+    audioLevels,
+    error: voiceError,
+    clearError,
+    clearTranscript,
+  } = useDeepgramVoice()
+
+  const toggleRecording = useCallback(() => {
+    if (isRecording) {
+      stopRecording()
+    } else {
+      startRecording()
+    }
+  }, [isRecording, startRecording, stopRecording])
 
   // When transcript changes, append to message
   useEffect(() => {
@@ -360,6 +382,14 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
           />
         )}
 
+        {/* Interim Transcript Preview */}
+        {isRecording && interimTranscript && (
+          <div className="px-4 py-2 text-sm text-[var(--text-muted)] italic border-b border-[var(--border)]/30 bg-[var(--accent)]/5">
+            <span className="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2" />
+            {interimTranscript}
+          </div>
+        )}
+
         {/* Input Section - styled like example */}
         <div className="shrink-0 p-4">
           <div className="relative overflow-hidden rounded-xl bg-[var(--border)]/20">
@@ -381,19 +411,14 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
           <div className="mt-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
-                {/* Voice Button - icon only colored */}
-                <button
-                  onClick={toggleRecording}
-                  disabled={!isVoiceSupported}
-                  className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                  title={isVoiceSupported ? (isRecording ? 'Aufnahme stoppen' : 'Spracheingabe starten') : 'Nicht unterstützt'}
-                >
-                  <Mic className={`w-4 h-4 transition-all duration-300 ${
-                    isRecording
-                      ? 'text-red-500 animate-pulse scale-110'
-                      : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)] group-hover:scale-125'
-                  }`} />
-                </button>
+                {/* Voice Button with animated bars */}
+                <VoiceInputButton
+                  isRecording={isRecording}
+                  isConnecting={isConnecting}
+                  isSupported={isVoiceSupported}
+                  onToggle={toggleRecording}
+                  audioLevels={audioLevels}
+                />
 
                 {/* Attachments Button - icon only colored */}
                 <button
@@ -610,6 +635,14 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
               />
             )}
 
+            {/* Interim Transcript Preview */}
+            {isRecording && interimTranscript && (
+              <div className="mx-4 mb-2 px-3 py-2 text-sm text-[var(--text-muted)] italic rounded-lg bg-[var(--accent)]/5 border border-[var(--border)]/30">
+                <span className="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2" />
+                {interimTranscript}
+              </div>
+            )}
+
             {/* Input Section - styled like example component */}
             <div className="relative overflow-hidden rounded-xl mx-4 mb-2 bg-[var(--border)]/20">
               <textarea
@@ -633,19 +666,14 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
             <div className="px-4 pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1">
-                    {/* Voice Button - icon only colored */}
-                    <button
-                      onClick={toggleRecording}
-                      disabled={!isVoiceSupported}
-                      className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                      title={isVoiceSupported ? (isRecording ? 'Aufnahme stoppen' : 'Spracheingabe starten') : 'Nicht unterstützt'}
-                    >
-                      <Mic className={`w-4 h-4 transition-all duration-300 ${
-                        isRecording
-                          ? 'text-red-500 animate-pulse scale-110'
-                          : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)] group-hover:scale-125'
-                      }`} />
-                    </button>
+                    {/* Voice Button with animated bars */}
+                    <VoiceInputButton
+                      isRecording={isRecording}
+                      isConnecting={isConnecting}
+                      isSupported={isVoiceSupported}
+                      onToggle={toggleRecording}
+                      audioLevels={audioLevels}
+                    />
 
                     {/* Attachments Button - icon only colored */}
                     <button

@@ -1,8 +1,17 @@
 'use client'
 
+// DEPRECATED: Use useDeepgramVoice directly for new code
+// This file is kept for backwards compatibility
+
+export { useDeepgramVoice as useVoiceInput } from './useDeepgramVoice'
+export type { UseDeepgramVoiceReturn as UseVoiceInputReturn } from './useDeepgramVoice'
+
+// Legacy Web Speech API implementation below (kept for reference)
+// -----------------------------------------------------------
+
 import { useState, useCallback, useRef, useEffect } from 'react'
 
-interface UseVoiceInputReturn {
+interface LegacyUseVoiceInputReturn {
   isRecording: boolean
   isSupported: boolean
   startRecording: () => void
@@ -13,7 +22,7 @@ interface UseVoiceInputReturn {
   clearError: () => void
 }
 
-export function useVoiceInput(language = 'de-DE'): UseVoiceInputReturn {
+export function useLegacyVoiceInput(language = 'de-DE'): LegacyUseVoiceInputReturn {
   const [isRecording, setIsRecording] = useState(false)
   const [isSupported, setIsSupported] = useState(false)
   const [transcript, setTranscript] = useState<string | null>(null)
