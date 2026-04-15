@@ -318,10 +318,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
           {/* Controls */}
           <div className="mt-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1 p-1 bg-[var(--border)]/40 rounded-xl">
+              <div className="flex items-center gap-0.5 bg-[var(--border)]/40 rounded-lg">
                 {/* Voice Button with cool hover */}
                 <button
-                  className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-70"
+                  className="group relative p-1.5 rounded-md transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-70"
                   title="Voice Input (coming soon)"
                   disabled
                 >
@@ -335,7 +335,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
 
                 {/* Link Button with cool hover */}
                 <button
-                  className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-6 disabled:opacity-70"
+                  className="group relative p-1.5 rounded-md transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-6 disabled:opacity-70"
                   title="Web Link (coming soon)"
                   disabled
                 >
@@ -557,12 +557,12 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
             {/* Controls Section */}
             <div className="px-4 pb-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center">
                   {/* Attachment Group */}
-                  <div className="flex items-center gap-1 p-1 bg-[var(--border)]/40 rounded-xl">
+                  <div className="flex items-center gap-0.5 bg-[var(--border)]/40 rounded-lg">
                     {/* Voice Button */}
                     <button
-                      className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-70"
+                      className="group relative p-1.5 rounded-md transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-[-3deg] disabled:opacity-70"
                       disabled
                     >
                       <Mic className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-[-12deg]" />
@@ -575,7 +575,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
 
                     {/* Link Button */}
                     <button
-                      className="group relative p-2.5 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-6 disabled:opacity-70"
+                      className="group relative p-1.5 rounded-md transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] hover:scale-105 hover:rotate-6 disabled:opacity-70"
                       disabled
                     >
                       <Link className="w-4 h-4 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
