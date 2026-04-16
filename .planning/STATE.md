@@ -5,9 +5,23 @@
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** Phase 11 COMPLETE (Performance Polish)
-**Last Updated:** 2026-04-15T16:30
-**Site Status:** ✓ ONLINE (tools.generation-ai.org)
+**Phase:** AUTH DEBUGGING (Blocker)
+**Last Updated:** 2026-04-16T13:20
+**Site Status:** ⚠️ ONLINE aber Auth broken (tools.generation-ai.org)
+
+## BLOCKER: Auth Session nicht persistent
+
+**Problem:** Login funktioniert, aber Cookies werden nicht gesetzt → User wird nach Redirect ausgeloggt.
+
+**Session-Doc:** `.planning/sessions/2026-04-16-auth-debugging.md`
+
+**Aktueller Stand:**
+- 10+ Commits versucht
+- Supabase Dashboard konfiguriert (Site URL, Email Template)
+- Debug-Endpoint zeigt: `cookieCount: 0`
+- `setAll` Cookie-Handler wird nie aufgerufen
+
+**Letzter Versuch:** Direktes Cookie-Setzen nach Login (`4389ac3`)
 
 ## Progress
 
