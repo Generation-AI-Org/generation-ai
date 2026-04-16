@@ -109,7 +109,7 @@ function parseResponse(raw: string, items: ContentItem[]): RecommendationRespons
   // Fallback: Text ohne JSON — aber JSON-Artefakte entfernen
   if (trimmed) {
     // Entferne häufige JSON-Artefakte die der LLM manchmal hinzufügt
-    let cleanedText = trimmed
+    const cleanedText = trimmed
       // Entferne "sources: []" und "recommendedSlugs: []" Fragmente
       .replace(/\s*sources:\s*\[\s*\]\s*/gi, '')
       .replace(/\s*recommendedSlugs:\s*\[\s*\]\s*/gi, '')
