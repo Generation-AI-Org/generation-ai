@@ -29,7 +29,7 @@ export async function proxy(request: NextRequest) {
   requestHeaders.set('x-nonce', nonce)
 
   // 4. Create response with modified request headers
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request: { headers: requestHeaders },
   })
 
