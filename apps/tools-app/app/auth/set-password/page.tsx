@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/browser'
+import { createBrowserClient } from '@genai/auth'
 import Link from 'next/link'
 
 export default function SetPasswordPage() {
@@ -26,7 +26,7 @@ export default function SetPasswordPage() {
     setLoading(true)
     setMessage(null)
 
-    const supabase = createClient()
+    const supabase = createBrowserClient()
     const { error } = await supabase.auth.updateUser({ password })
 
     setLoading(false)

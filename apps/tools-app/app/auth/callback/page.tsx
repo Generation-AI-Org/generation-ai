@@ -1,127 +1,51 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/browser'
+import { createBrowserClient } from '@genai/auth'
 
+/**
+ * Legacy fallback callback page.
+ *
+ * The canonical magic link flow goes through /auth/confirm/route.ts
+ * (server-side verifyOtp with token_hash). This page only handles:
+ *  - Error redirects from Supabase (missing template params, etc.)
+ *  - Legacy hash-based implicit flow (very old magic links)
+ */
 export default function AuthCallbackPage() {
-  const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing')
+  const [status, setStatus] = useState<'processing' | 'error'>('processing')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    const handleAuth = async () => {
-      const supabase = createClient()
+    const handle = async () => {
+      const params = new URLSearchParams(window.location.search)
+      const errorParam = params.get('error')
+      const errorDescription = params.get('error_description')
 
-      // Get URL parameters
-      const urlParams = new URLSearchParams(window.location.search)
-      const code = urlParams.get('code')
-      const tokenHash = urlParams.get('token_hash')
-      const type = urlParams.get('type')
-      const error = urlParams.get('error')
-      const errorDescription = urlParams.get('error_description')
-
-      // Handle error from Supabase
-      if (error) {
-        console.error('Auth callback error:', error, errorDescription)
+      if (errorParam) {
+        const msg = errorDescription || errorParam
         setStatus('error')
-        setErrorMessage(errorDescription || error)
+        setErrorMessage(msg)
         setTimeout(() => {
-          window.location.href = `/login?error=${encodeURIComponent(error)}`
+          window.location.href = `/login?error=${encodeURIComponent(errorParam)}`
         }, 2000)
         return
       }
 
-      // Magic Link / Email OTP flow: verify token_hash
-      // This works CROSS-DEVICE - no code_verifier needed!
-      if (tokenHash && type) {
-        console.log('Verifying OTP token_hash...')
-
-        const { error: verifyError } = await supabase.auth.verifyOtp({
-          token_hash: tokenHash,
-          type: type as 'email' | 'magiclink' | 'recovery' | 'signup' | 'invite' | 'email_change',
-        })
-
-        if (verifyError) {
-          console.error('OTP verification error:', verifyError)
-          setStatus('error')
-          setErrorMessage(verifyError.message)
-          setTimeout(() => {
-            window.location.href = '/login?error=verify_failed'
-          }, 2000)
-          return
-        }
-
-        console.log('OTP verified successfully')
-        setStatus('success')
-
-        if (type === 'recovery') {
-          window.location.href = '/auth/set-password'
-          return
-        }
-
-        setTimeout(() => {
-          window.location.href = '/'
-        }, 100)
-        return
-      }
-
-      // OAuth PKCE flow: exchange code for session
-      // IMPORTANT: This requires same browser/device (code_verifier in cookies)
-      if (code) {
-        console.log('Exchanging code for session...')
-
-        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
-
-        if (exchangeError) {
-          console.error('Code exchange error:', exchangeError)
-          setStatus('error')
-          setErrorMessage(exchangeError.message)
-          setTimeout(() => {
-            window.location.href = '/login?error=exchange_failed'
-          }, 2000)
-          return
-        }
-
-        if (!data.session) {
-          console.error('No session after exchange')
-          setStatus('error')
-          setErrorMessage('Session konnte nicht erstellt werden')
-          setTimeout(() => {
-            window.location.href = '/login?error=no_session'
-          }, 2000)
-          return
-        }
-
-        console.log('Session established for user:', data.user?.email)
-        setStatus('success')
-
-        if (type === 'recovery') {
-          window.location.href = '/auth/set-password'
-          return
-        }
-
-        setTimeout(() => {
-          window.location.href = '/'
-        }, 100)
-        return
-      }
-
-      // Fallback: Check hash for legacy implicit flow
+      // Legacy hash-based implicit flow
       const hashParams = new URLSearchParams(window.location.hash.substring(1))
       const accessToken = hashParams.get('access_token')
       const refreshToken = hashParams.get('refresh_token')
 
       if (accessToken && refreshToken) {
-        console.log('Using legacy hash flow...')
-
-        const { error: sessionError } = await supabase.auth.setSession({
+        const supabase = createBrowserClient()
+        const { error } = await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: refreshToken,
         })
 
-        if (sessionError) {
-          console.error('Set session error:', sessionError)
+        if (error) {
           setStatus('error')
-          setErrorMessage(sessionError.message)
+          setErrorMessage(error.message)
           setTimeout(() => {
             window.location.href = '/login?error=session_failed'
           }, 2000)
@@ -129,28 +53,15 @@ export default function AuthCallbackPage() {
         }
 
         const hashType = hashParams.get('type')
-        if (hashType === 'recovery') {
-          window.location.href = '/auth/set-password'
-          return
-        }
-
-        setStatus('success')
-        setTimeout(() => {
-          window.location.href = '/'
-        }, 100)
+        window.location.href = hashType === 'recovery' ? '/auth/set-password' : '/'
         return
       }
 
-      // No code or tokens - something went wrong
-      console.error('No code or tokens in callback URL')
-      setStatus('error')
-      setErrorMessage('Keine Authentifizierungsdaten gefunden')
-      setTimeout(() => {
-        window.location.href = '/login?error=no_tokens'
-      }, 2000)
+      // No params — session may already be set. Go home.
+      window.location.href = '/'
     }
 
-    handleAuth()
+    handle()
   }, [])
 
   return (
@@ -160,16 +71,6 @@ export default function AuthCallbackPage() {
           <>
             <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-[var(--text-muted)] text-sm">Anmeldung wird verarbeitet...</p>
-          </>
-        )}
-        {status === 'success' && (
-          <>
-            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <p className="text-green-400 text-sm">Erfolgreich angemeldet!</p>
           </>
         )}
         {status === 'error' && (

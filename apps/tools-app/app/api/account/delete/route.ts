@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient as createAuthClient } from '@genai/auth'
 import { createServerClient } from '@/lib/supabase'
 
 export async function DELETE() {
   try {
     // 1. Get current user via session-based server client
-    const supabase = await createClient()
+    const supabase = await createAuthClient()
     const { data: { user }, error: userError } = await supabase.auth.getUser()
 
     if (userError || !user) {

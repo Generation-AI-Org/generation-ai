@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@genai/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   // Check for Supabase cookies specifically
   const sbCookies = allCookies.filter(c => c.name.startsWith('sb-'))
 
-  const supabase = await createClient()
+  const supabase = await createServerClient()
   const { data: { user }, error } = await supabase.auth.getUser()
   const { data: { session } } = await supabase.auth.getSession()
 

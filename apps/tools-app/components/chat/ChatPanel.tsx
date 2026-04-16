@@ -183,8 +183,8 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
             </a>
             <button
               onClick={async () => {
-                const { createClient } = await import('@/lib/supabase/browser')
-                const supabase = createClient()
+                const { createBrowserClient } = await import('@genai/auth')
+                const supabase = createBrowserClient()
                 await supabase.auth.signOut()
                 window.location.reload()
               }}

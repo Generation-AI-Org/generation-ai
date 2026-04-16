@@ -1,25 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/browser'
+import { createBrowserClient } from '@genai/auth'
 import Link from 'next/link'
 
-// Direct cookie save function
-function saveSessionCookie(session: { access_token: string; refresh_token: string }) {
-  const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL?.match(/\/\/([^.]+)/)?.[1] || 'unknown'
-  const cookieName = `sb-${projectRef}-auth-token`
-  const sessionData = JSON.stringify({
-    access_token: session.access_token,
-    refresh_token: session.refresh_token,
-  })
-  const encoded = btoa(sessionData)
-  const maxAge = 60 * 60 * 24 * 365
-  document.cookie = `${cookieName}=${encoded}; path=/; max-age=${maxAge}; SameSite=Lax`
-  console.log('[Login] Saved session cookie directly:', cookieName)
-}
-
 export default function LoginPage() {
-  const supabase = createClient()
+  const supabase = createBrowserClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -56,10 +42,7 @@ export default function LoginPage() {
     setLoading(true)
     setMessage(null)
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       setLoading(false)
@@ -67,22 +50,8 @@ export default function LoginPage() {
       return
     }
 
-    // Session should be in data.session
-    if (!data.session) {
-      setLoading(false)
-      setMessage({ type: 'error', text: 'Session konnte nicht etabliert werden.' })
-      return
-    }
-
-    console.log('[Login] Password login successful, session:', data.session.user?.email)
-
-    // Save session cookie DIRECTLY - don't rely on onAuthStateChange
-    saveSessionCookie(data.session)
-
-    // Small delay to ensure cookie is written
-    await new Promise(resolve => setTimeout(resolve, 100))
-
-    // Success - redirect to home
+    // Session cookie is set automatically by @supabase/ssr.
+    // Redirect triggers server-side session read on the next page.
     window.location.href = '/'
   }
 

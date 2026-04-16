@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { User } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/browser'
+import { createBrowserClient } from '@genai/auth'
 
 type AuthContextType = {
   user: User | null
@@ -22,7 +22,7 @@ export function AuthProvider({
 }) {
   const [user, setUser] = useState<User | null>(initialUser)
   const [isLoading, setIsLoading] = useState(false) // false! initialUser is ready
-  const supabase = createClient()
+  const supabase = createBrowserClient()
 
   useEffect(() => {
     // Sync with initialUser on SSR navigation
