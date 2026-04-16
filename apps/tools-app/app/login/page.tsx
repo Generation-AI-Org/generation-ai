@@ -4,6 +4,20 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/browser'
 import Link from 'next/link'
 
+// Direct cookie save function
+function saveSessionCookie(session: { access_token: string; refresh_token: string }) {
+  const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL?.match(/\/\/([^.]+)/)?.[1] || 'unknown'
+  const cookieName = `sb-${projectRef}-auth-token`
+  const sessionData = JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+  })
+  const encoded = btoa(sessionData)
+  const maxAge = 60 * 60 * 24 * 365
+  document.cookie = `${cookieName}=${encoded}; path=/; max-age=${maxAge}; SameSite=Lax`
+  console.log('[Login] Saved session cookie directly:', cookieName)
+}
+
 export default function LoginPage() {
   const supabase = createClient()
   const [email, setEmail] = useState('')
@@ -62,8 +76,11 @@ export default function LoginPage() {
 
     console.log('[Login] Password login successful, session:', data.session.user?.email)
 
-    // Wait for onAuthStateChange to fire and save cookies
-    await new Promise(resolve => setTimeout(resolve, 500))
+    // Save session cookie DIRECTLY - don't rely on onAuthStateChange
+    saveSessionCookie(data.session)
+
+    // Small delay to ensure cookie is written
+    await new Promise(resolve => setTimeout(resolve, 100))
 
     // Success - redirect to home
     window.location.href = '/'
