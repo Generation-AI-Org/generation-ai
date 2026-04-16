@@ -8,14 +8,7 @@ export function createClient() {
 
   client = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        // Use implicit flow instead of PKCE
-        // PKCE requires same browser/device which breaks cross-device magic links
-        flowType: 'implicit',
-      },
-    }
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
   return client

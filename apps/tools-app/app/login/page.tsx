@@ -31,7 +31,7 @@ export default function LoginPage() {
     if (error) {
       setMessage({ type: 'error', text: error.message })
     } else {
-      setMessage({ type: 'success', text: 'Check deine Mails! Wir haben dir einen Login-Link geschickt.' })
+      setMessage({ type: 'success', text: 'Check deine Mails! Wichtig: Öffne den Link auf DIESEM Gerät/Browser.' })
     }
   }
 

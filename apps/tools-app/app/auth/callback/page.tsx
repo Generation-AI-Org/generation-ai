@@ -14,6 +14,7 @@ export default function AuthCallbackPage() {
       // Get URL parameters
       const urlParams = new URLSearchParams(window.location.search)
       const code = urlParams.get('code')
+      const tokenHash = urlParams.get('token_hash')
       const type = urlParams.get('type')
       const error = urlParams.get('error')
       const errorDescription = urlParams.get('error_description')
@@ -29,9 +30,42 @@ export default function AuthCallbackPage() {
         return
       }
 
-      // PKCE flow: exchange code for session
-      // IMPORTANT: This MUST happen client-side because the code verifier
-      // is stored in the browser by createBrowserClient
+      // Magic Link / Email OTP flow: verify token_hash
+      // This works CROSS-DEVICE - no code_verifier needed!
+      if (tokenHash && type) {
+        console.log('Verifying OTP token_hash...')
+
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: type as 'email' | 'magiclink' | 'recovery' | 'signup' | 'invite' | 'email_change',
+        })
+
+        if (verifyError) {
+          console.error('OTP verification error:', verifyError)
+          setStatus('error')
+          setErrorMessage(verifyError.message)
+          setTimeout(() => {
+            window.location.href = '/login?error=verify_failed'
+          }, 2000)
+          return
+        }
+
+        console.log('OTP verified successfully')
+        setStatus('success')
+
+        if (type === 'recovery') {
+          window.location.href = '/auth/set-password'
+          return
+        }
+
+        setTimeout(() => {
+          window.location.href = '/'
+        }, 100)
+        return
+      }
+
+      // OAuth PKCE flow: exchange code for session
+      // IMPORTANT: This requires same browser/device (code_verifier in cookies)
       if (code) {
         console.log('Exchanging code for session...')
 
@@ -47,7 +81,6 @@ export default function AuthCallbackPage() {
           return
         }
 
-        // Verify session is actually established
         if (!data.session) {
           console.error('No session after exchange')
           setStatus('error')
@@ -61,14 +94,11 @@ export default function AuthCallbackPage() {
         console.log('Session established for user:', data.user?.email)
         setStatus('success')
 
-        // Handle password recovery flow
         if (type === 'recovery') {
           window.location.href = '/auth/set-password'
           return
         }
 
-        // Success - redirect to home
-        // Small delay to ensure cookies are written
         setTimeout(() => {
           window.location.href = '/'
         }, 100)
