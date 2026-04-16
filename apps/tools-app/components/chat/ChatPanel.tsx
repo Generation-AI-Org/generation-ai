@@ -152,7 +152,12 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
               </span>
             )}
           </div>
-          <p className="text-text-muted text-xs">Findet die richtigen Tools für dich</p>
+          <p className="text-text-muted text-xs">
+            Findet die richtigen Tools für dich
+            <span className="ml-2 font-mono opacity-50">
+              v{process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'dev'}
+            </span>
+          </p>
         </div>
         {/* Login/Settings/Logout */}
         {mode === 'public' ? (

@@ -6,6 +6,11 @@ import './lib/env'
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Expose Vercel Git SHA to client for version display
+  env: {
+    NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: process.env.VERCEL_GIT_COMMIT_SHA || 'dev',
+  },
+
   // Image Optimization
   images: {
     remotePatterns: [
