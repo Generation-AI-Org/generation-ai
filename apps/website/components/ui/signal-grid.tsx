@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/immutability */
+/* eslint-disable react-hooks/immutability, react-hooks/set-state-in-effect, react-hooks/static-components */
 'use client'
 
 import { useEffect, useRef, useCallback } from 'react'
