@@ -8,20 +8,45 @@ export default function AuthCallbackPage() {
     const handleAuth = async () => {
       const supabase = createClient()
 
-      // Parse URL hash for tokens (Magic Link implicit flow)
-      const hashParams = new URLSearchParams(window.location.hash.substring(1))
-      const accessToken = hashParams.get('access_token')
-      const refreshToken = hashParams.get('refresh_token')
-      const error = hashParams.get('error')
+      // Check for PKCE code in query params (modern Supabase flow)
+      const urlParams = new URLSearchParams(window.location.search)
+      const code = urlParams.get('code')
+      const type = urlParams.get('type')
 
-      // Check for error first
+      // Check for error in query or hash
+      const error = urlParams.get('error')
       if (error) {
-        console.error('Auth error:', error, hashParams.get('error_description'))
+        console.error('Auth error:', error, urlParams.get('error_description'))
         window.location.href = `/login?error=${error}`
         return
       }
 
-      // If we have tokens, manually set the session
+      // PKCE flow: exchange code for session
+      if (code) {
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+
+        if (exchangeError) {
+          console.error('Code exchange error:', exchangeError)
+          window.location.href = '/login?error=exchange_failed'
+          return
+        }
+
+        // Check if this is a password recovery flow
+        if (type === 'recovery') {
+          window.location.href = '/auth/set-password'
+          return
+        }
+
+        // Success - redirect to home
+        window.location.href = '/'
+        return
+      }
+
+      // Fallback: Check hash for legacy implicit flow
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      const accessToken = hashParams.get('access_token')
+      const refreshToken = hashParams.get('refresh_token')
+
       if (accessToken && refreshToken) {
         const { error: sessionError } = await supabase.auth.setSession({
           access_token: accessToken,
@@ -34,19 +59,17 @@ export default function AuthCallbackPage() {
           return
         }
 
-        // Check if this is a password recovery flow
-        const type = hashParams.get('type')
-        if (type === 'recovery') {
+        const hashType = hashParams.get('type')
+        if (hashType === 'recovery') {
           window.location.href = '/auth/set-password'
           return
         }
 
-        // Success - redirect to home
         window.location.href = '/'
         return
       }
 
-      // No tokens in hash - check if already signed in
+      // No code or tokens - check if already signed in
       const { data: { session } } = await supabase.auth.getSession()
       if (session) {
         window.location.href = '/'
