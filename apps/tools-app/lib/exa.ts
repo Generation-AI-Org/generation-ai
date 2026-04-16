@@ -71,6 +71,7 @@ export async function searchTrustedSources(
 
     const data = await response.json()
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const citations: ExaCitation[] = (data.citations || []).map((c: any) => ({
       url: c.url || '',
       title: c.title || 'Quelle'
