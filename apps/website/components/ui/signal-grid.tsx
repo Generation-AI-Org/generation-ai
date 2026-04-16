@@ -70,7 +70,7 @@ export function SignalGrid({
     pointsRef.current = grid
   }, [gridSpacing])
 
-  // eslint-disable-next-line react-hooks/immutability -- self-referencing RAF loop is intentional
+  /* eslint-disable react-hooks/immutability -- self-referencing RAF loop is intentional */
   const draw = useCallback((timestamp: number) => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -174,6 +174,7 @@ export function SignalGrid({
 
     animationRef.current = requestAnimationFrame(draw)
   }, [gridSpacing, dotSize, dotOpacity])
+  /* eslint-enable react-hooks/immutability */
 
   useEffect(() => {
     const canvas = canvasRef.current

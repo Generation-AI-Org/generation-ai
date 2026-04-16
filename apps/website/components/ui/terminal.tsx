@@ -349,7 +349,7 @@ export function Terminal({
     }
   }, [phase, charIdx, currentCommand, typingSpeed, down, up]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- state machine transition is intentional
+  /* eslint-disable react-hooks/rules-of-hooks -- state machine transitions are intentional */
   useEffect(() => {
     if (phase !== "executing") return;
 
@@ -365,6 +365,7 @@ export function Terminal({
       setPhase("pausing");
     }
   }, [phase, currentCommand, currentOutputs.length, isLastCommand]);
+  /* eslint-enable react-hooks/rules-of-hooks */
 
   useEffect(() => {
     if (phase !== "outputting") return;
