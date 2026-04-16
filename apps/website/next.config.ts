@@ -52,6 +52,12 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Expose env vars to client bundle at build time
+  env: {
+    // Cookie domain must be inlined at build time for browser client
+    NEXT_PUBLIC_COOKIE_DOMAIN: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || '',
+  },
+
   async headers() {
     return [
       {

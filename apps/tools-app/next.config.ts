@@ -6,9 +6,11 @@ import './lib/env'
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Expose Vercel Git SHA to client for version display
+  // Expose env vars to client bundle at build time
   env: {
     NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: process.env.VERCEL_GIT_COMMIT_SHA || 'dev',
+    // Cookie domain must be inlined at build time for browser client
+    NEXT_PUBLIC_COOKIE_DOMAIN: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || '',
   },
 
   // Image Optimization
