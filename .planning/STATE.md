@@ -5,23 +5,35 @@
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** AUTH DEBUGGING (Blocker)
-**Last Updated:** 2026-04-16T13:20
-**Site Status:** ⚠️ ONLINE aber Auth broken (tools.generation-ai.org)
+**Phase:** 12 Auth Rewrite (Code complete, pending deploy + Supabase Dashboard settings)
+**Last Updated:** 2026-04-16T16:15
+**Site Status:** ⚠️ Auth broken auf Live-Prod — Fix liegt lokal auf `main`, noch nicht gepusht
 
-## BLOCKER: Auth Session nicht persistent
+## BLOCKER: Auth Session nicht persistent → FIX READY (not yet deployed)
 
-**Problem:** Login funktioniert, aber Cookies werden nicht gesetzt → User wird nach Redirect ausgeloggt.
+**Root Cause (diagnosed):**
+- Manueller `btoa(JSON.stringify(...))` Cookie-Write im tools-app inkompatibel mit `@supabase/ssr` native Base64-URL/Chunked-Encoding
+- Doppel-Write Race zwischen custom `setAll` und `saveSessionToCookie`
+- 3 parallele Auth-Implementierungen im Monorepo (packages/auth ungenutzt, zwei kaputte lokale Versionen)
 
-**Session-Doc:** `.planning/sessions/2026-04-16-auth-debugging.md`
+**Fix (Phase 12, lokal fertig):**
+- `@genai/auth` als canonical implementation konsolidiert
+- `updateSession()` middleware helper (Supabase canonical pattern)
+- Alle manuellen `document.cookie`-Hacks entfernt (−360 Zeilen broken code)
+- Cross-domain cookies via `NEXT_PUBLIC_COOKIE_DOMAIN=.generation-ai.org`
+- Beide Apps: build ✓, tests 24/24 ✓, lint (nur pre-existing warnings)
 
-**Aktueller Stand:**
-- 10+ Commits versucht
-- Supabase Dashboard konfiguriert (Site URL, Email Template)
-- Debug-Endpoint zeigt: `cookieCount: 0`
-- `setAll` Cookie-Handler wird nie aufgerufen
+**Commits (auf main, nicht gepusht):**
+- `728386d` feat(auth): canonical @supabase/ssr helpers + cross-domain cookies
+- `902f389` refactor(tools-app): migrate auth to @genai/auth, remove cookie hacks
+- `4d3977d` refactor(website): migrate auth to @genai/auth + add session-refresh proxy
+- `8cdc931` fix(auth): client-safe barrel, server code imports from subpath
 
-**Letzter Versuch:** Direktes Cookie-Setzen nach Login (`4389ac3`)
+**Pending für Full Resolution:**
+1. `git push` (User OK) → Preview-Deploy
+2. Supabase Dashboard settings (siehe `.planning/phases/12-auth-rewrite/SETTINGS-TODO.md`)
+3. Playwright live-test auf Preview
+4. Prod-Deploy
 
 ## Progress
 
@@ -34,6 +46,7 @@ Phase 8: [██████████] Performance & A11y COMPLETE
 Phase 9: [██████████] Floating Chat Bubble COMPLETE
 Phase 10: [████████░░] Voice Input (Code ✓, Testing pending)
 Phase 11: [██████████] Performance Polish COMPLETE
+Phase 12: [█████████░] Auth Rewrite (Code ✓, Settings + Deploy pending)
 ```
 
 ## v2.0 Production Hardening — COMPLETE ✓

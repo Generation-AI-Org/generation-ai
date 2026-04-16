@@ -94,16 +94,20 @@ User auf Website → Sign-up Formular → POST /api/auth/signup
 └────────────────────────────────────────────────────────────┘
 ```
 
-**Flow A: Magic Link (Default)**
+**Flow A: Magic Link (Default, canonical since Phase 12)**
 ```
 1. User gibt Email ein
 2. Klickt "Magic Link senden"
-3. supabase.auth.signInWithOtp({ email })
-4. Email mit Link kommt an
-5. Link: tools.generation-ai.org/auth/callback#access_token=...&type=magiclink
-6. Callback setzt Session
+3. supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: '.../auth/callback' } })
+4. Email mit Link kommt an — Link zeigt auf /auth/confirm?token_hash=...&type=email
+   (Template im Supabase Dashboard, siehe SETTINGS-TODO.md)
+5. Server-Route /auth/confirm (route.ts) verifiziert token_hash via verifyOtp
+6. Cookie wird server-side geschrieben (über @supabase/ssr native cookie handling)
 7. Redirect zu /
 ```
+
+**Legacy Fallback:** `/auth/callback` ist weiterhin vorhanden für alte Hash-basierte
+Magic-Links und Error-Redirects. Neue Links gehen über `/auth/confirm`.
 
 **Flow B: Passwort**
 ```
@@ -275,19 +279,48 @@ CREATE TABLE chat_messages (
 
 ## Session-Management
 
-### Browser Client
+**Canonical pattern (Phase 12 Rewrite):** Alle Auth-Clients kommen aus `@genai/auth`.
+Keine manuellen `document.cookie`-Writes. `@supabase/ssr` managed Cookies selbst
+(Chunking, Base64-URL-Encoding, `base64-` prefix).
 
-**Datei:** `apps/tools-app/lib/supabase/browser.ts`
+### Shared Package: `@genai/auth`
 
-Erstellt Supabase-Client fuer Client-Komponenten.
-Session wird in Cookies gespeichert.
+| Export | Subpath | Kontext |
+|--------|---------|---------|
+| `createBrowserClient` | `@genai/auth` (barrel) | Client Components |
+| `createAdminClient` | `@genai/auth` (barrel) | Service Role (API Routes) |
+| `createClient` | `@genai/auth/server` | Server Components, Route Handlers |
+| `updateSession` | `@genai/auth/middleware` | proxy.ts (Next.js 16) |
+| `getUser`, `getSession` | `@genai/auth/helpers` | Server-side auth checks |
 
-### Server Client
+**Wichtig:** Der Barrel (`@genai/auth`) ist client-safe. Server-Imports MÜSSEN
+vom Subpath kommen, sonst zieht `next/headers` ins Client-Bundle → Build-Fehler.
 
-**Datei:** `apps/tools-app/lib/supabase/server.ts`
+### Cookie-Domain (cross-domain Session)
 
-Erstellt Supabase-Client fuer Server-Komponenten/API-Routes.
-Liest Session aus Cookies.
+```bash
+NEXT_PUBLIC_COOKIE_DOMAIN=.generation-ai.org
+```
+
+Setzt die Domain der Supabase-Session-Cookies. Alle Subdomains (tools,
+community, www) teilen sich dadurch die Session. Ohne env var fällt das
+Package auf den aktuellen Host zurück (für localhost dev).
+
+### Session-Refresh via proxy.ts
+
+Beide Apps haben ein `proxy.ts` am Root (Next.js 16 — früher `middleware.ts`):
+
+```ts
+import { updateSession } from '@genai/auth/middleware'
+
+export async function proxy(request: NextRequest) {
+  return updateSession(request)
+}
+```
+
+`updateSession` läuft auf jedem matching Request, refresht expired Sessions
+und propagiert Set-Cookie-Header in die Response. Das ist der Teil, den
+das alte Setup zerstört hatte (Response-Recreation in custom `setAll`).
 
 ### AuthProvider
 
@@ -297,6 +330,7 @@ Liest Session aus Cookies.
 const { user, isLoading } = useAuth()
 ```
 
+- Nutzt `createBrowserClient` aus `@genai/auth`
 - Reagiert auf `onAuthStateChange`
 - Synchronisiert mit SSR `initialUser`
 
