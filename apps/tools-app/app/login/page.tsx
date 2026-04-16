@@ -53,24 +53,17 @@ export default function LoginPage() {
       return
     }
 
-    // Verify session is actually established before redirect
-    // This ensures cookies are properly set
+    // Session should be in data.session
     if (!data.session) {
       setLoading(false)
       setMessage({ type: 'error', text: 'Session konnte nicht etabliert werden.' })
       return
     }
 
-    // Double-check by fetching the session
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
-      setLoading(false)
-      setMessage({ type: 'error', text: 'Session-Verifikation fehlgeschlagen.' })
-      return
-    }
+    console.log('[Login] Password login successful, session:', data.session.user?.email)
 
-    // Small delay to ensure cookies are written
-    await new Promise(resolve => setTimeout(resolve, 100))
+    // Wait for onAuthStateChange to fire and save cookies
+    await new Promise(resolve => setTimeout(resolve, 500))
 
     // Success - redirect to home
     window.location.href = '/'
