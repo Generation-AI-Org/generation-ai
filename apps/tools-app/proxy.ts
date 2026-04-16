@@ -34,19 +34,20 @@ export async function proxy(request: NextRequest) {
   })
 
   // 5. Execute Supabase Auth (can modify response via cookies)
-  const { supabase, response: updatedResponse } = createClient(request, response)
-  response = updatedResponse
+  // Keep client reference so we can access the getter AFTER getUser() runs
+  const client = createClient(request, response)
 
   // CRITICAL: Use getUser(), not getSession() — validates JWT against Supabase
-  // This refreshes the session if needed
-  await supabase.auth.getUser()
+  // This refreshes the session if needed and may update cookies via setAll
+  await client.supabase.auth.getUser()
 
   // 6. CSP temporarily disabled - caused 500s on Vercel Edge Runtime
   // The CSP header value was rejected as invalid by Headers.set()
   // TODO: Fix CSP format for Edge Runtime compatibility
   // response.headers.set('Content-Security-Policy-Report-Only', cspHeader)
 
-  return response
+  // Access getter AFTER getUser() to get the final response with updated cookies
+  return client.response
 }
 
 export const config = {
