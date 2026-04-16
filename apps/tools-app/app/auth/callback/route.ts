@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url)
@@ -23,27 +22,34 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=no_code`)
   }
 
-  // Create Supabase client with cookie access
-  const cookieStore = await cookies()
+  // Determine redirect URL based on type
+  const redirectUrl = type === 'recovery'
+    ? `${origin}/auth/set-password`
+    : origin
 
+  // Create response FIRST - cookies will be set on this response
+  const response = NextResponse.redirect(redirectUrl)
+
+  // Create Supabase client that sets cookies directly on the response
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {
-          return cookieStore.getAll()
+          return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
+          // CRITICAL: Set cookies on the RESPONSE, not cookieStore
           cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options)
+            response.cookies.set(name, value, options)
           })
         },
       },
     }
   )
 
-  // Exchange PKCE code for session
+  // Exchange PKCE code for session - this triggers setAll with auth cookies
   const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
 
   if (exchangeError) {
@@ -51,21 +57,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=exchange_failed`)
   }
 
-  // Verify session was actually established
-  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  console.log('Auth callback success, redirecting to:', redirectUrl)
 
-  if (userError || !user) {
-    console.error('Session verification failed:', userError?.message)
-    return NextResponse.redirect(`${origin}/login?error=session_failed`)
-  }
-
-  console.log('Auth callback success: user', user.id, 'type:', type)
-
-  // Handle password recovery flow
-  if (type === 'recovery') {
-    return NextResponse.redirect(`${origin}/auth/set-password`)
-  }
-
-  // Success - redirect to home
-  return NextResponse.redirect(origin)
+  // Return response WITH cookies attached
+  return response
 }
