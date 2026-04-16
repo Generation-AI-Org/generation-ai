@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createServerClient as createAuthClient } from '@genai/auth'
+import { createClient as createAuthClient } from '@genai/auth/server'
 import { createServerClient } from '@/lib/supabase'
 
 export async function DELETE() {

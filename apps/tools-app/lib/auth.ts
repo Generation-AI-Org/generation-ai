@@ -1,4 +1,4 @@
-import { createServerClient } from '@genai/auth'
+import { createClient as createServerClient } from '@genai/auth/server'
 
 export async function getUser() {
   const supabase = await createServerClient()

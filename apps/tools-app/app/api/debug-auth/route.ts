@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
-import { createServerClient } from '@genai/auth'
+import { createClient as createServerClient } from '@genai/auth/server'
 
 export const dynamic = 'force-dynamic'
 

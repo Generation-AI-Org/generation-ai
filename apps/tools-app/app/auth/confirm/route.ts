@@ -1,6 +1,6 @@
 import { type EmailOtpType } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@genai/auth'
+import { createClient as createServerClient } from '@genai/auth/server'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)

@@ -1,5 +1,9 @@
+// Client-safe barrel.
+//
+// Server-only helpers use `next/headers` / `NextRequest` and must be imported
+// directly from their subpath to avoid bundling them into client components:
+//   - @genai/auth/server      — createClient with cookies() (route handlers, server components)
+//   - @genai/auth/helpers     — getUser, getSession
+//   - @genai/auth/middleware  — updateSession (for proxy.ts)
 export { createClient as createBrowserClient } from './browser'
-export { createClient as createServerClient } from './server'
 export { createAdminClient } from './admin'
-export { getUser, getSession } from './helpers'
-export { updateSession } from './middleware'

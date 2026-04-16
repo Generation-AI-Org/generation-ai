@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createServerClient } from '@genai/auth'
+import { createClient as createServerClient } from '@genai/auth/server'
 
 async function handleSignOut() {
   const supabase = await createServerClient()
