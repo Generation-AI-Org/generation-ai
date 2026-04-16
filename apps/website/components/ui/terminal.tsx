@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -349,7 +350,6 @@ export function Terminal({
     }
   }, [phase, charIdx, currentCommand, typingSpeed, down, up]);
 
-  /* eslint-disable react-hooks/rules-of-hooks -- state machine transitions are intentional */
   useEffect(() => {
     if (phase !== "executing") return;
 
@@ -365,7 +365,6 @@ export function Terminal({
       setPhase("pausing");
     }
   }, [phase, currentCommand, currentOutputs.length, isLastCommand]);
-  /* eslint-enable react-hooks/rules-of-hooks */
 
   useEffect(() => {
     if (phase !== "outputting") return;
