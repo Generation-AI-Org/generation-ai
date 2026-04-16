@@ -349,6 +349,7 @@ export function Terminal({
     }
   }, [phase, charIdx, currentCommand, typingSpeed, down, up]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- state machine transition is intentional
   useEffect(() => {
     if (phase !== "executing") return;
 

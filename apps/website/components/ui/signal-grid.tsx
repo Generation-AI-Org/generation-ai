@@ -70,6 +70,7 @@ export function SignalGrid({
     pointsRef.current = grid
   }, [gridSpacing])
 
+  // eslint-disable-next-line react-hooks/immutability -- self-referencing RAF loop is intentional
   const draw = useCallback((timestamp: number) => {
     const canvas = canvasRef.current
     if (!canvas) return
