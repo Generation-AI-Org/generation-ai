@@ -42,19 +42,38 @@ export default function LoginPage() {
     setLoading(true)
     setMessage(null)
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
-    setLoading(false)
-
     if (error) {
+      setLoading(false)
       setMessage({ type: 'error', text: error.message })
-    } else {
-      // Redirect to home on success
-      window.location.href = '/'
+      return
     }
+
+    // Verify session is actually established before redirect
+    // This ensures cookies are properly set
+    if (!data.session) {
+      setLoading(false)
+      setMessage({ type: 'error', text: 'Session konnte nicht etabliert werden.' })
+      return
+    }
+
+    // Double-check by fetching the session
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      setLoading(false)
+      setMessage({ type: 'error', text: 'Session-Verifikation fehlgeschlagen.' })
+      return
+    }
+
+    // Small delay to ensure cookies are written
+    await new Promise(resolve => setTimeout(resolve, 100))
+
+    // Success - redirect to home
+    window.location.href = '/'
   }
 
   return (
