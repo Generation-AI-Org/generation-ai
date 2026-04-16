@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/proxy'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // 1. Generate nonce for CSP
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
 
