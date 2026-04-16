@@ -12,7 +12,8 @@
     "./browser": "./src/browser.ts",
     "./server": "./src/server.ts",
     "./admin": "./src/admin.ts",
-    "./helpers": "./src/helpers.ts"
+    "./helpers": "./src/helpers.ts",
+    "./middleware": "./src/middleware.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
