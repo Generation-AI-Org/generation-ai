@@ -1,15 +1,3 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
-
-// Admin client with service role for API routes
-export function createAdminClient() {
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    }
-  )
-}
+// Thin shim over the shared @genai/auth package.
+// Kept as a stable import path for code that used to live in this app.
+export { createAdminClient } from '@genai/auth'
