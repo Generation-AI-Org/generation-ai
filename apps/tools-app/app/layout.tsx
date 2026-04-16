@@ -12,6 +12,7 @@ const cascadiaCode = localFont({
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthProvider";
+import { VersionBadge } from "@/components/ui/VersionBadge";
 import { getUser } from "@/lib/auth";
 
 const inter = Inter({
@@ -112,6 +113,7 @@ export default async function RootLayout({
           </AuthProvider>
         </ThemeProvider>
         <SpeedInsights />
+        <VersionBadge />
       </body>
     </html>
   );
