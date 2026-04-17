@@ -496,6 +496,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
         <div className="shrink-0 p-4">
           <div className="relative overflow-hidden rounded-xl bg-[var(--border)]/20">
             <textarea
+              ref={textareaRef}
               value={message}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
