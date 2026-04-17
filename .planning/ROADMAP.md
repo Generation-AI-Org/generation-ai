@@ -1,5 +1,16 @@
 # Roadmap — Generation AI
 
+## Status
+
+- ✅ **v1.0 Monorepo Migration** — shipped 2026-04-14
+- ✅ **v2.0 Production Hardening** — shipped 2026-04-17 (Release v4.1.0)
+- 🚧 **v3.0 UX Polish & Feature Expansion** — Phases 14-19 (in progress)
+
+---
+
+<details>
+<summary>Milestone v1.0: Monorepo Migration ✅ COMPLETE</summary>
+
 ## Milestone v1.0: Monorepo Migration ✅ COMPLETE
 
 | Phase | Name | Status |
@@ -8,9 +19,14 @@
 | 2 | Shared Packages | ✅ Complete |
 | 3 | Deploy & Archive | ✅ Complete |
 
+</details>
+
 ---
 
-## Milestone v2.0: Production Hardening (Current)
+<details>
+<summary>Milestone v2.0: Production Hardening ✅ COMPLETE (Release v4.1.0)</summary>
+
+## Milestone v2.0: Production Hardening ✅ COMPLETE
 
 | Phase | Name | Goal | Requirements |
 |-------|------|------|--------------|
@@ -283,6 +299,8 @@ Plans:
 - [x] 13-04-PLAN.md — Wave 2: website CSP Report-Only → Enforced via proxy.ts nonce (non-autonomous)
 - [x] 13-05-PLAN.md — Wave 2: tools-app CSP neu via proxy.ts nonce (non-autonomous)
 - [x] 13-06-PLAN.md — Wave 3: docs/AUTH-FLOW.md final mit Mermaid + ARCHITECTURE.md Cross-Link
+
+</details>
 
 ---
 
