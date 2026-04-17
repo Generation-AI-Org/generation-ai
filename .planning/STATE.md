@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Monorepo Migration ✅ COMPLETE
-current_plan: Phase 13 MERGED → Stufe 3 Simplify-Pass als nächstes
+current_plan: Phase 13 + Chat-Agent-Fix MERGED → Stufe 3 Simplify-Pass als nächstes
 status: phase_13_merged
-last_updated: "2026-04-17T09:15:00.000Z"
+last_updated: "2026-04-17T10:20:00.000Z"
 progress:
   total_phases: 13
   completed_phases: 6
@@ -21,26 +21,23 @@ progress:
 
 **Milestone:** v2.0 Production Hardening
 **Phase:** 13 Auth-Flow-Audit + CSP ✅ MERGED (PR #2 → main, Commit 9de4d54)
-**Offener PR:** #3 `fix/chat-agent-recovery` — defensiver Synthesis-Fallback, Root Cause noch **nicht** identifiziert.
-**Last Updated:** 2026-04-17T10:00
-**Site Status:** ✅ Live — CSP A+, Auth stabil. **Member-Chat liefert aktuell Fallback-Text** (Bug unten).
+**Chat-Agent-Bug:** ✅ FIXED & MERGED (PR #3 → main, Commit fb884fc, 2026-04-17)
+**Last Updated:** 2026-04-17T10:20
+**Site Status:** ✅ Live — CSP A+, Auth stabil, Member-Chat antwortet zuverlässig (KB- und Web-Queries beide grün auf Preview verifiziert).
 
-## ⚠️ Next Session — Aufgabe
+## Chat-Agent-Bug — Root Cause + Fix (PR #3, 2026-04-17)
 
-**Root-Cause finden:** Warum bleibt der Member-Chat-Agent (`apps/tools-app/lib/agent.ts`) im Tool-Call-Loop hängen statt zur finalen Antwort zu kommen?
+**Root Cause:** Gemini 3 Flash hat **nicht-abschaltbares Thinking**. Ohne `reasoning_effort`-Parameter läuft Default-Effort → das Modell überplant und fordert immer weitere Tool-Calls statt zu synthesisieren → `finish_reason: stop` feuert nie → Loop bis maxIterations. Zusätzlich war `/api/chat` recommendedSlugs für member-Mode hartverdrahtet auf `[]`, daher kein Tool-Highlighting in der UI.
 
-**Kontext / Leitplanken:**
-- Luca sagt explizit: **Gemini 3 Flash Preview ist stabil**, hat vorher funktioniert, **nicht** das Modell beschuldigen.
-- Lead: Gemini's internes `<think>...</think>` Reasoning frisst Tokens. Bei `max_tokens: 2000` könnte die finale Antwort abgeschnitten werden → Agent sieht partielle Response + Tool-Calls → loopt weiter bis maxIterations = 5.
-- Offener PR #3 ist defensiv (synthesis-only Call nach max iter). Nicht mergen bevor root cause klar — oder mergen als Safety-Net und Root-Cause separat.
-- Findings auf Prod via Vercel Logs: Jeder `/api/chat` mit `mode: "member"` macht 5 Gemini-Calls, alle 200, aber nie `finish_reason: stop` ohne tool_calls.
-- Git history: letzte Agent-Changes `4b50740`, `2f95d33`, `2b1372a` (2026-04-14). Davor funktionierte es laut Luca.
+**Fix (3 Schichten):**
+1. `reasoning_effort: 'low'` + `max_completion_tokens: 8000` (inkl. Reasoning-Tokens) statt `max_tokens: 2000`.
+2. System-Prompt: Tool-Budget auf 3 Calls gekappt, "keine Re-Queries mit Mini-Varianten".
+3. Safety-Net: Nach maxIter ein Synthesis-Call mit expliziter User-Instruktion "antworte jetzt basierend auf bisher Recherchiertem".
+4. `recommendedSlugs` in `/api/chat` wird jetzt aus `sources.map(s => s.slug)` abgeleitet.
 
-**Wo anfangen:**
-1. Diff der agent.ts / kb-tools.ts / openai SDK Version zwischen "letzter funktionierender Zustand" und jetzt.
-2. Gemini OpenAI-compat: Wie Thinking deaktivieren/begrenzen? (reasoning_effort? thinking_budget? extra_body?) Context7 nutzen für aktuelle Doku.
-3. Token-Counts loggen: `response.usage.completion_tokens_details` oft enthält Thinking-Anteil separat.
-4. Kurzer A/B-Test: `max_tokens: 8000` ODER thinking off → loopt es dann noch?
+**Verifiziert auf Preview `tools-7tax1ypz9`:**
+- "Was ist ChatGPT?" → KB-Treffer `was-ist-chatgpt`, Source korrekt angezeigt.
+- "Tools zum Zusammenfassen von Vorlesungen" → web_search, strukturierte Antwort mit URL-Quellen.
 
 ## Session-Drop-Bug (f5f9cb7, 2026-04-17)
 
