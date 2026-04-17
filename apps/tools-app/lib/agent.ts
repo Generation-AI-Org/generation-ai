@@ -70,6 +70,12 @@ Du hast Zugriff auf:
 3. Kein KB-Treffer? → web_search() für externe Recherche (nur KI/Tech-Themen!)
 4. Antworte basierend auf den Recherche-Ergebnissen
 
+## Tool-Budget (WICHTIG)
+
+- **Max 3 Tool-Calls insgesamt pro Antwort.** Nach 3 Recherchen MUSST du antworten, auch wenn die Info unvollständig ist.
+- Nach kb_search: Wähle das 1-2 relevanteste Item und lies nur das via kb_read. Liste nicht alle auf.
+- Wiederhole kb_list/kb_search nicht mit minimal anderen Queries — wenn die erste Suche nichts Brauchbares ergab, ist das Thema nicht in der KB.
+
 ## Antwort-Format
 
 **Bei KB-Treffer:**
@@ -199,10 +205,19 @@ export async function runAgent(
   }
 
   // Max iterations reached — force a final synthesis call without tools.
-  // Without this, Gemini keeps calling tools indefinitely and we show the fallback.
+  // Append an explicit user instruction so the model knows it MUST answer now,
+  // otherwise low-reasoning Gemini sometimes replies with empty content.
   console.log(`[Timing] === Agent max iterations reached, forcing synthesis ===`)
+  const synthMessages: OpenAI.ChatCompletionMessageParam[] = [
+    ...messages,
+    {
+      role: 'user',
+      content:
+        'Tool-Budget erschöpft. Antworte jetzt final auf meine ursprüngliche Frage, basierend auf den bisher recherchierten Infos. Wenn die Infos unvollständig sind, sag das offen — aber gib trotzdem eine Antwort. Keine weiteren Recherchen.',
+    },
+  ]
   const synthStart = Date.now()
-  const { response: synthResponse } = await createCompletion(messages, [])
+  const { response: synthResponse } = await createCompletion(synthMessages, [])
   console.log(`[Timing] Synthesis call completed in ${Date.now() - synthStart}ms`)
 
   const synthText = stripThinkTags(synthResponse.choices[0]?.message?.content || '')
