@@ -17,6 +17,36 @@
 
 **Verifiziert via Playwright gegen Prod:** Login setzt Cookie, Reload persistiert, Navigation zu /settings hält Session.
 
+## Next Up (geplant für nächste Session — nach /clear)
+
+Luca möchte tools-app hochziehen als Basis für künftige Features. Dreistufiger Plan:
+
+**Stufe 1 — Codebase-Map (als nächstes starten):**
+- Command: `/gsd-map-codebase`
+- Produziert strukturierte Docs in `.planning/intel/` (Tech-Stack, Architektur, Qualität, Pain-Points)
+- Ergebnis: jede künftige Session kann Projekt in 80% verstehen ohne zu grep'en
+
+**Stufe 2 — Auth-Flow-Audit (nach Stufe 1):**
+- Jeden Auth-Pfad systematisch testen: Login (Passwort), Magic Link, Session-Refresh, Signout, Password-Reset, Cross-Domain (Website ↔ tools-app)
+- Playwright-gestützt gegen Prod
+- Ergebnis: `docs/AUTH-FLOW.md` mit Diagrammen + Bugs falls gefunden gefixt
+- Als GSD-Phase planen (/gsd-plan-phase)
+
+**Stufe 3 — Simplify-Pass tools-app (nach Stufe 2):**
+- Tote Files löschen, inkonsistente Patterns vereinheitlichen, Naming fixen
+- Basiert auf Findings aus Stufe 1+2
+
+**Feature-Ideen für später (Luca hat Interesse):**
+- Google OAuth-Login (UX-Win, ~1 Tag)
+- Circle-Member-Status → Pro-Modus automatisch
+- Smart-Links "Weiter im Circle"
+- Password-Reset end-to-end testen (Code da, nie verifiziert)
+
+**Wichtig für Claude bei Start:**
+- Luca ist No-Code, braucht Erklärungen
+- Bei Tech-Entscheidungen: Option zeigen, Tradeoff nennen, Empfehlung — nicht einfach machen
+- Signup ist auf 503 disabled — nicht wieder aktivieren ohne expliziten Auftrag
+
 ## Auth Rewrite — DEPLOYED
 
 **Root Cause (fixed):**

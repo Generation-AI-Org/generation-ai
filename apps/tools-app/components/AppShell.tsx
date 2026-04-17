@@ -148,7 +148,7 @@ export default function AppShell({ items, mode }: AppShellProps) {
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className={`group p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 ${
+          className={`group p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 active:scale-95 ${
             theme === 'dark'
               ? 'bg-white/10 hover:bg-white/15'
               : 'bg-black/20 hover:bg-black/25'
@@ -157,11 +157,11 @@ export default function AppShell({ items, mode }: AppShellProps) {
           aria-pressed={theme === 'dark'}
         >
           {theme === 'dark' ? (
-            <svg className="w-5 h-5 text-white transition-transform duration-300 group-hover:rotate-45 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-white transition-transform duration-300 group-hover:rotate-45 group-hover:scale-110 group-active:rotate-45 group-active:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           ) : (
-            <svg className="w-5 h-5 text-white transition-transform duration-300 group-hover:rotate-[-20deg] group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-white transition-transform duration-300 group-hover:rotate-[-20deg] group-hover:scale-110 group-active:rotate-[-20deg] group-active:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
             </svg>
           )}
@@ -171,7 +171,7 @@ export default function AppShell({ items, mode }: AppShellProps) {
         {mode === 'public' ? (
           <Link
             href="/login"
-            className={`group md:hidden p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 ${
+            className={`group md:hidden p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 active:scale-95 ${
               theme === 'dark'
                 ? 'bg-[var(--accent)] hover:bg-[var(--accent)]/90'
                 : 'bg-[var(--accent)] hover:bg-[var(--accent)]/90'
@@ -184,22 +184,41 @@ export default function AppShell({ items, mode }: AppShellProps) {
             </svg>
           </Link>
         ) : (
-          <form action="/auth/signout" method="POST" className="md:hidden">
-            <button
-              type="submit"
-              className={`group p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 ${
+          <>
+            {/* Settings - use <a> to bypass router cache */}
+            <a
+              href="/settings"
+              className={`group md:hidden p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 active:scale-95 ${
                 theme === 'dark'
-                  ? 'bg-white/10 hover:bg-red-500/20'
-                  : 'bg-black/20 hover:bg-red-500/20'
+                  ? 'bg-white/10 hover:bg-white/15'
+                  : 'bg-black/20 hover:bg-black/25'
               }`}
-              aria-label="Abmelden"
+              aria-label="Einstellungen"
             >
-              <svg className="w-5 h-5 text-white group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7" />
+              <svg className="w-5 h-5 text-white transition-transform duration-500 group-hover:rotate-90 group-active:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-            </button>
-          </form>
+            </a>
+
+            <form action="/auth/signout" method="POST" className="md:hidden">
+              <button
+                type="submit"
+                className={`group p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 active:scale-95 ${
+                  theme === 'dark'
+                    ? 'bg-white/10 hover:bg-red-500/20'
+                    : 'bg-black/20 hover:bg-red-500/20'
+                }`}
+                aria-label="Abmelden"
+              >
+                <svg className="w-5 h-5 text-white group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                </svg>
+              </button>
+            </form>
+          </>
         )}
 
         {/* Legal Links - Desktop only, visible in header */}

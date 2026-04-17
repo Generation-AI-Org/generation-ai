@@ -98,14 +98,12 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
           setMessage(data.draft)
           setCharCount(data.draft.length)
         }
-        const lastAssistant = [...(data.messages || [])].reverse().find((m: ChatMessage) => m.role === 'assistant')
-        if (lastAssistant?.recommendedSlugs?.length > 0) {
-          onHighlight(lastAssistant.recommendedSlugs)
-        }
+        // Highlights are transient — only shown right after a fresh response,
+        // never re-applied from persisted history (refresh, back-navigation, etc.).
       }
     } catch {}
     setIsHydrated(true)
-  }, [onHighlight])
+  }, [])
 
   // Save to sessionStorage on changes
   useEffect(() => {
@@ -428,7 +426,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
             </span>
             <button
               onClick={toggleExpand}
-              className="p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110"
+              className="p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110 active:scale-95"
               aria-label="Minimieren"
             >
               <Minimize2 className="w-4 h-4 text-[var(--text-muted)]" />
@@ -496,6 +494,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
         <div className="shrink-0 p-4">
           <div className="relative overflow-hidden rounded-xl bg-[var(--border)]/20">
             <textarea
+              ref={textareaRef}
               value={message}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
@@ -526,7 +525,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                 <div className="relative" data-attachment-dropdown>
                   <button
                     onClick={() => setShowAttachments(!showAttachments)}
-                    className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105"
+                    className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105 active:scale-95"
                     title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhang hinzufügen'}
                   >
                     <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-15deg] ${
@@ -653,7 +652,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                   className={`group relative p-3 rounded-xl transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed ${
                     isLoading
                       ? 'bg-[var(--accent)]/15 border border-[var(--accent)]/40 text-[var(--accent)] hover:bg-[var(--accent)]/25'
-                      : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2'
+                      : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2 active:scale-95'
                   }`}
                   style={{
                     boxShadow: isLoading ? undefined : '0 0 15px var(--accent-glow)',
@@ -760,7 +759,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
       {isOpen && (
         <div
           ref={chatRef}
-          className="fixed top-[148px] bottom-[96px] right-4 md:right-6 w-[calc(100vw-2rem)] md:w-[420px] max-w-[420px] transition-all duration-300 origin-bottom-right"
+          className="fixed top-[148px] bottom-[96px] left-4 right-4 md:left-auto md:right-6 md:w-[420px] md:max-w-[420px] transition-all duration-300 origin-bottom-right"
           style={{
             animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
           }}
@@ -793,7 +792,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                 </span>
                 <button
                   onClick={toggleExpand}
-                  className="p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110"
+                  className="p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110 active:scale-95"
                   aria-label="Maximieren"
                 >
                   <Maximize2 className="w-4 h-4 text-[var(--text-muted)]" />
@@ -893,7 +892,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                     <div className="relative">
                       <button
                         onClick={() => setShowAttachments(!showAttachments)}
-                        className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105"
+                        className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105 active:scale-95"
                         title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhang hinzufügen'}
                       >
                         <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-15deg] ${
@@ -1019,7 +1018,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                     className={`group relative p-3 rounded-xl transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 ${
                       isLoading
                         ? 'bg-[var(--accent)]/15 border border-[var(--accent)]/40 text-[var(--accent)] hover:bg-[var(--accent)]/25'
-                        : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2'
+                        : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2 active:scale-95'
                     }`}
                     style={{
                       boxShadow: isLoading ? undefined : '0 10px 15px -3px rgba(0,0,0,0.1), 0 0 0 0 var(--accent-glow)',
