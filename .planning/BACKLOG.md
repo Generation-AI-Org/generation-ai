@@ -68,6 +68,13 @@
 - [ ] **Tool-Cards: Echte Summary statt Text-Anfang** — aktuell schneidet die Card den Intro-Text an. Cards brauchen eigenes Preview-Feld: Kernnutzen + Target-Group in 1–2 Sätzen, damit User entscheiden kann "lohnt sich das Klicken?"
 - [ ] **Tool-Detail-Seiten: Artikel-Qualität** — aktuell zu knapp/proprietär. Pro Tool: Use-Cases, Beispiele, Alternativen, Pricing-Details. Eigener Content-Workstream, nicht Feature-Arbeit.
 
+### 🎬 Micro-Animations (Desktop ausbauen + Mobile bringen)
+
+- [ ] **Sonnen-Rotation im Theme-Toggle** — aktuell nur auf Desktop? Auch auf Mobile bringen.
+- [ ] **Diktier-Button Animation** (Audio-Bars) — auf Mobile verfügbar machen, falls nicht schon.
+- [ ] **Paperclip / Attachment-Animation** — Polish.
+- [ ] **Allgemein: Mobile-Parity für alle Desktop-Micro-Interactions** — durchgehen, Liste machen, portieren. Subtile Animations erhöhen Wertigkeit enorm.
+
 ### 💡 Feature-Ideen (zum Mitnehmen)
 
 - [ ] **Smart-Links zu Circle** (Luca: "geile Idee") — jedes Tool zeigt, wo im Circle darüber diskutiert wird. Link zu Space/Thread mit Discussions.
