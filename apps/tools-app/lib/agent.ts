@@ -34,15 +34,22 @@ async function createCompletion(
   const startTime = Date.now()
 
   console.log(`[Timing] Gemini 3 Flash request starting...`)
+  // reasoning_effort: 'low' — Gemini 3 thinking cannot be disabled; default effort
+  // makes the model over-plan and keep requesting more tool calls instead of
+  // synthesizing. "low" still thinks, just less, and emits finish_reason: stop reliably.
+  // max_completion_tokens (not max_tokens) is the OpenAI-compat param that includes
+  // reasoning tokens for thinking models — 8000 leaves headroom for reasoning + answer.
   const response = await getGeminiClient().chat.completions.create({
     model: MODEL,
-    max_tokens: 2000,
-    tools,
+    max_completion_tokens: 8000,
+    reasoning_effort: 'low',
+    tools: tools.length ? tools : undefined,
     messages,
   })
   const elapsed = Date.now() - startTime
   const usage = response.usage
-  console.log(`[Timing] Gemini completed in ${elapsed}ms | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out`)
+  const reasoning = usage?.completion_tokens_details?.reasoning_tokens
+  console.log(`[Timing] Gemini completed in ${elapsed}ms | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out (reasoning: ${reasoning ?? '?'})`)
   return { response, model: MODEL }
 }
 
