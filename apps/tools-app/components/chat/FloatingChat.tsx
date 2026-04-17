@@ -759,13 +759,13 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
       {isOpen && (
         <div
           ref={chatRef}
-          className="fixed top-[148px] bottom-[96px] left-4 right-4 md:left-auto md:right-6 md:w-[420px] md:max-w-[420px] transition-all duration-300 origin-bottom-right"
+          className="fixed inset-0 md:inset-auto md:top-[148px] md:bottom-[96px] md:left-auto md:right-6 md:w-[420px] md:max-w-[420px] transition-all duration-300 origin-bottom-right"
           style={{
             animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
           }}
         >
           <div
-            className="relative flex flex-col h-full rounded-2xl md:rounded-3xl border shadow-2xl backdrop-blur-xl overflow-hidden"
+            className="relative flex flex-col h-full rounded-none md:rounded-3xl border-0 md:border shadow-2xl backdrop-blur-xl overflow-hidden"
             style={{
               background: 'var(--bg-card)',
               borderColor: 'var(--border)',
