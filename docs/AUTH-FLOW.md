@@ -180,3 +180,84 @@ Target rating: A or A+
 ### Violations observed
 
 None (verified via build + local tests). Preview verification pending Luca review.
+
+---
+
+## CSP Rollout — tools-app (Plan 13-05)
+
+Date deployed to branch: 2026-04-17
+Branch: feat/auth-flow-audit
+Commits: `64e845c` (lib/csp.ts), `8b6868d` (proxy.ts)
+
+### What Changed
+
+| File | Change |
+|------|--------|
+| `apps/tools-app/lib/csp.ts` | NEW — `buildCspDirectives(nonce, isDev)` with extended host list |
+| `apps/tools-app/proxy.ts` | UPDATED — nonce generated per-request, CSP + x-nonce set on `updateSession` response |
+
+### CSP Directives (enforced)
+
+```
+default-src 'self';
+script-src 'self' 'nonce-{per-request}' 'strict-dynamic' https://va.vercel-scripts.com;
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: blob: https://logo.clearbit.com;
+font-src 'self';
+connect-src 'self' https://wbohulnuwqrhystaamjc.supabase.co wss://wbohulnuwqrhystaamjc.supabase.co https://o4511218002362368.ingest.de.sentry.io https://api.deepgram.com wss://api.deepgram.com https://va.vercel-scripts.com https://vitals.vercel-insights.com;
+object-src 'none';
+base-uri 'self';
+form-action 'self';
+frame-ancestors 'none';
+upgrade-insecure-requests
+```
+
+Notes:
+- tools-app has additional hosts vs. website: Sentry DE-Region, Deepgram (HTTPS + WSS), Clearbit (img)
+- Sentry DSN: exact org-subdomain `o4511218002362368.ingest.de.sentry.io` (DE-Region, no wildcard)
+- Deepgram WSS explicitly allowed: Voice feature uses `wss://api.deepgram.com`
+- Clearbit img-src: ToolLogo component loads `https://logo.clearbit.com/{domain}`
+- Auth cookies preserved: CSP set on `updateSession()` response (Pitfall 1 — same response, no new NextResponse)
+- Prefetch excluded from matcher (Threat T-13-23: nonce-cache collision)
+
+### Static Security Headers (unchanged, via next.config.ts)
+
+```
+strict-transport-security: max-age=63072000; includeSubDomains; preload
+x-content-type-options: nosniff
+x-frame-options: DENY
+```
+
+### Rollback
+
+```bash
+git revert 8b6868d 64e845c
+git push origin feat/auth-flow-audit
+```
+
+### Prod Verification (pending Luca's merge to main)
+
+After prod deploy, verify with:
+```bash
+curl -sI https://tools.generation-ai.org | grep -i "content-security-policy"
+# Expected: content-security-policy: default-src 'self'; script-src ... nonce- ...
+curl -sI https://tools.generation-ai.org | grep -i "content-security-policy" | grep -q "o4511218002362368"
+# Expected: Sentry DE-Region host present
+curl -sI https://tools.generation-ai.org | grep -i "content-security-policy" | grep -q "api.deepgram.com"
+# Expected: Deepgram host present
+```
+
+securityheaders.com: https://securityheaders.com/?q=https%3A%2F%2Ftools.generation-ai.org
+Target rating: A or A+
+
+### Feature Verification
+
+- [ ] Auth: Login/Logout funktional
+- [ ] Chat: Streaming funktional
+- [ ] Voice: Deepgram WSS connect erfolgreich
+- [ ] Sentry: Test-Event erreicht Dashboard
+- [ ] ToolLogo: Clearbit-Images laden
+
+### Violations observed
+
+None (verified via TypeScript check + unit tests). Production verification pending Luca's merge approval (CLAUDE.md: no prod deploy without OK).
