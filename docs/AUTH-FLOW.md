@@ -5,7 +5,59 @@
 
 ---
 
-<!-- Plan 02 (Auth-Flow Diagrams + Playwright Audit) will prepend or append its sections here -->
+## Phase 13 E2E Audit (Plan 13-02)
+
+Status: **COMPLETE**
+Audit-Date: 2026-04-17
+Test-User: movo.fitness@gmail.com (production Supabase account)
+E2E Suite: `packages/e2e-tools/tests/auth.spec.ts` — 10 active tests, 2 intentional skips
+
+## Paths Audited
+
+| # | Path | Method | Status | Notes |
+|---|------|--------|--------|-------|
+| 1 | Login via Email+Passwort | Automated E2E | verified-ok | Cookie set, domain=.generation-ai.org, session persists across reload |
+| 2 | Magic Link (admin-generated) | Automated E2E | verified-ok | hashed_token PKCE flow; Supabase action_link is implicit (hash-redirect) — test uses confirm URL directly |
+| 3 | Session-Refresh (token rotation) | Manual-only | verified-ok | See Manual-Only Evidence below |
+| 4 | Signout POST-only (regression) | Automated E2E | verified-ok | GET → 405, POST → clears cookies; prefetch regression f5f9cb7 intact |
+| 5 | Password-Reset End-to-End | Automated E2E | verified-ok | generateRecoveryLink → /auth/confirm → /auth/set-password → updateUser → re-login |
+| 6 | Cross-Domain Cookie | Automated E2E | verified-ok | domain=.generation-ai.org cookie covers both subdomains |
+
+## Findings
+
+| # | Path | Finding | Severity | Status | Fix/Backlog |
+|---|------|---------|----------|--------|-------------|
+| F1 | Pfad 1 | sb- session cookie is `httpOnly: false` — @supabase/ssr browser client intentionally sets this so JS can read the token. XSS could steal session. | medium | backlog'd | See BACKLOG.md "Auth — httpOnly cookie hardening" |
+| F2 | Pfad 2 | generateLink admin API returns action_link pointing to supabase.co/auth/v1/verify which redirects back with hash fragment — /auth/confirm only handles query-param token_hash, so action_link causes `error=missing_params`. | small | fixed | Commit 582cd63 — supabase-admin.ts now builds PKCE confirm URL from hashed_token directly |
+
+## Signup (disabled by design)
+
+Per D-17: `/api/auth/signup` returns 503. Intentionally disabled. Verified: `curl -X POST https://generation-ai.org/api/auth/signup` → 503.
+See STATE.md for rationale: signup disabled until explicitly re-enabled.
+
+## Manual-Only Evidence
+
+### Pfad 3 — Session Refresh
+
+Token rotation is handled by `packages/auth/src/middleware.ts` → `updateSession()`, called on every request via `apps/tools-app/proxy.ts`. This is the canonical `@supabase/ssr` pattern:
+
+```ts
+// proxy.ts
+import { updateSession } from '@genai/auth/middleware'
+export async function proxy(request: NextRequest) {
+  return updateSession(request)
+}
+```
+
+`updateSession` calls `supabase.auth.getUser()` on every matching request. `@supabase/ssr` internally checks if the access token is expired (< 60s remaining) and if so, calls `/auth/v1/token?grant_type=refresh_token` to obtain a fresh pair. New tokens are written back via `setAll` into `supabaseResponse.cookies`.
+
+Manual verification (2026-04-17): Login on tools.generation-ai.org, inspected network in browser DevTools. The `sb-wbohulnuwqrhystaamjc-auth-token` cookie has `expires` ~400 days (long-lived client cookie). Access token TTL is 1h (Supabase default). The middleware refresh path is exercised on every server-rendered navigation — confirmed via proxy.ts call chain.
+
+Automated simulation of token expiry not feasible in short tests (access tokens valid for 1h, cannot be shortened without Supabase Dashboard config changes). Marked as manual-only.
+
+### Pfad 4 — Prefetch Regression Check
+
+The `f5f9cb7` fix converted `<Link href="/auth/signout">` to `<form method="POST">` throughout the codebase. GET requests to `/auth/signout` return 405 — verified by automated regression test. No accidental prefetch of the signout route detected in production navigation flows.
 
 ---
 
