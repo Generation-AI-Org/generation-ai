@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Monorepo Migration ✅ COMPLETE
-current_plan: 13-04 COMPLETE → enforced CSP on website, branch pushed for Vercel Preview
-status: unknown
-last_updated: "2026-04-17T01:54:27.017Z"
+current_plan: Phase 13 COMPLETE (branch-level) → PR bereit für manuellen Merge
+status: branch_complete_pending_merge
+last_updated: "2026-04-17T02:30:00.000Z"
 progress:
   total_phases: 13
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 28
-  completed_plans: 20
-  percent: 71
+  completed_plans: 26
+  percent: 93
 ---
 
 # Project State — Generation AI Monorepo
@@ -20,10 +20,10 @@ progress:
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** 13 Auth-Flow-Audit + CSP Reaktivierung (IN PROGRESS — Wave 2 complete)
-**Current Plan:** 13-04 COMPLETE → enforced CSP on website, branch pushed for Vercel Preview
+**Phase:** 13 Auth-Flow-Audit + CSP Reaktivierung (BRANCH COMPLETE — Merge pending)
+**Current Plan:** All 6 plans complete (13-01..13-06). Verifier: PASS (branch-level). PR ready.
 **Last Updated:** 2026-04-17
-**Last Session:** 2026-04-17T01:54:27.010Z
+**Last Session:** 2026-04-17T02:30:00.000Z
 **Site Status:** ✅ Live — Login auf tools.generation-ai.org funktioniert (Commit f5f9cb7)
 
 ## Session-Drop-Bug (f5f9cb7, 2026-04-17)
@@ -34,24 +34,28 @@ progress:
 
 **Verifiziert via Playwright gegen Prod:** Login setzt Cookie, Reload persistiert, Navigation zu /settings hält Session.
 
-## Next Up (geplant für nächste Session — nach /clear)
+## Phase 13 — COMPLETE (branch-level, 2026-04-17)
 
-Luca möchte tools-app hochziehen als Basis für künftige Features. Dreistufiger Plan:
+**Branch:** `feat/auth-flow-audit` — 20+ Commits, NICHT gemergt.
+**Verifier:** PASS auf Branch-Level, 4 Human-Verifications offen (Merge + Prod-curl, securityheaders.com, tools-app Feature-Smoke, Session-Refresh Path 3).
 
-**Stufe 1 — Codebase-Map (als nächstes starten):**
+**Was Phase 13 lieferte:**
+- 10 Playwright-E2E-Tests gegen Prod grün (6 Auth-Pfade, 2 skips dokumentiert)
+- `docs/AUTH-FLOW.md` — 457 Zeilen, 7 Mermaid sequenceDiagrams, Findings, Consolidation Audit, CSP-Rollout
+- CSP enforced via `proxy.ts` + Nonce auf website + tools-app (Next.js 16 native Pattern)
+- Konsolidierungs-Audit: 0 direkte `@supabase/ssr`-Imports in apps/, thin shims ≤8 Zeilen
+- Signout GET → 405 Regression-Guard als automatisierter Test
+- 1 Bug gefixt (F2 Admin generateLink), 1 Backlog-Item (F1 sb-cookie httpOnly)
 
-- Command: `/gsd-map-codebase`
-- Produziert strukturierte Docs in `.planning/intel/` (Tech-Stack, Architektur, Qualität, Pain-Points)
-- Ergebnis: jede künftige Session kann Projekt in 80% verstehen ohne zu grep'en
+**Nächste Session (in separater Session):**
+- PR Review + Merge `feat/auth-flow-audit` → main
+- Post-Merge: Prod-curl CSP + securityheaders.com A/A+ verifizieren
+- tools-app Feature-Smoke unter enforced CSP (Voice, Sentry, ToolLogo)
+- Session-Refresh Path 3 manueller Test
 
-**Stufe 2 — Auth-Flow-Audit (nach Stufe 1):**
+## Next Up — Stufe 3 Simplify-Pass
 
-- Jeden Auth-Pfad systematisch testen: Login (Passwort), Magic Link, Session-Refresh, Signout, Password-Reset, Cross-Domain (Website ↔ tools-app)
-- Playwright-gestützt gegen Prod
-- Ergebnis: `docs/AUTH-FLOW.md` mit Diagrammen + Bugs falls gefunden gefixt
-- Als GSD-Phase planen (/gsd-plan-phase)
-
-**Stufe 3 — Simplify-Pass tools-app (nach Stufe 2):**
+**Stufe 3 — Simplify-Pass tools-app (nach Merge):**
 
 - Tote Files löschen, inkonsistente Patterns vereinheitlichen, Naming fixen
 - Basiert auf Findings aus Stufe 1+2
