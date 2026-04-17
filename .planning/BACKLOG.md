@@ -4,10 +4,8 @@
 
 ## Entscheidungen
 
-- [ ] **Vercel Pro upgraden?** — $20/Monat, löst DPA + Commercial-Usage Grauzone
-  - Hobby hat kein DPA (nur Privacy Policy)
-  - Hobby ist nur für "non-commercial personal use"
-  - Pro = sauber für Community-Plattform
+- [x] **Vercel Pro upgraden?** — Entschieden: NEIN (2026-04-17). Plattform ist nicht-kommerziell (keine Einnahmen, nur Services ~200€/Monat Outlay). Hobby ist OK.
+- [ ] **CSP Header aktivieren** — Content-Security-Policy schützt vor XSS. Aktuell Report-Only (website) / fehlt ganz (tools-app). Edge-Runtime war Blocker. Wichtig, aber kein Notfall.
 
 ## DPAs
 
