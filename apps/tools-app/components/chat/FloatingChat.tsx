@@ -401,6 +401,13 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
   // Total: ~146px, use 148px to align exactly with FilterBar bottom edge
   if (isExpanded && isOpen) {
     return (
+      <>
+        {/* Mobile backdrop — blur unter Header, Footer darf mit geblurrt werden */}
+        <div
+          className="fixed top-[77px] bottom-0 left-0 right-0 md:hidden bg-black/40 backdrop-blur-md z-30"
+          onClick={() => { setIsOpen(false); setIsExpanded(false); }}
+          aria-hidden="true"
+        />
       <div
         ref={chatRef}
         className="fixed top-[77px] bottom-[96px] left-0 right-0 md:inset-auto md:right-0 md:top-[148px] md:bottom-0 w-full md:w-[35%] flex flex-col rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none border-t md:border-l md:border-t border-[var(--border)] bg-[var(--bg)] md:bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in"
@@ -680,11 +687,21 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
           </div>
         </div>
       </div>
+      </>
     )
   }
 
   // Floating bubble mode
   return (
+    <>
+      {/* Mobile backdrop — blur unter Header, Footer darf mit geblurrt werden */}
+      {isOpen && (
+        <div
+          className="fixed top-[77px] bottom-0 left-0 right-0 md:hidden bg-black/40 backdrop-blur-md z-30"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
     <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50">
       {/* Floating Kiwi Button */}
       <button
@@ -1108,5 +1125,6 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
         }}
       />
     </div>
+    </>
   )
 }
