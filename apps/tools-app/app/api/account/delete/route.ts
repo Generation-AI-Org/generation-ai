@@ -29,7 +29,7 @@ export async function DELETE() {
     if (messagesError) {
       console.error('Failed to delete chat_messages:', messagesError)
       return NextResponse.json(
-        { error: 'Fehler beim Loeschen der Nachrichten' },
+        { error: 'Fehler beim Löschen der Nachrichten' },
         { status: 500 }
       )
     }
@@ -43,7 +43,7 @@ export async function DELETE() {
     if (sessionsError) {
       console.error('Failed to delete chat_sessions:', sessionsError)
       return NextResponse.json(
-        { error: 'Fehler beim Loeschen der Sessions' },
+        { error: 'Fehler beim Löschen der Sessions' },
         { status: 500 }
       )
     }
@@ -54,7 +54,7 @@ export async function DELETE() {
     if (authError) {
       console.error('Failed to delete auth user:', authError)
       return NextResponse.json(
-        { error: 'Fehler beim Loeschen des Accounts' },
+        { error: 'Fehler beim Löschen des Accounts' },
         { status: 500 }
       )
     }

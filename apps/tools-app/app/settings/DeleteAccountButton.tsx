@@ -18,7 +18,7 @@ export function DeleteAccountButton() {
       const data = await res.json()
 
       if (!res.ok) {
-        throw new Error(data.error || 'Loeschung fehlgeschlagen')
+        throw new Error(data.error || 'Löschung fehlgeschlagen')
       }
 
       // Redirect to homepage after successful deletion
@@ -36,7 +36,7 @@ export function DeleteAccountButton() {
         onClick={() => setIsConfirming(true)}
         className="px-4 py-2 text-red-500 border border-red-500 rounded-lg hover:bg-red-500/10 transition-colors"
       >
-        Account loeschen
+        Account löschen
       </button>
     )
   }
@@ -44,7 +44,7 @@ export function DeleteAccountButton() {
   return (
     <div className="space-y-4 p-4 border border-red-500/30 rounded-lg bg-red-500/5">
       <p className="text-sm text-red-400">
-        Bist du sicher? Diese Aktion loescht deinen Account und alle deine Daten unwiderruflich.
+        Bist du sicher? Diese Aktion löscht deinen Account und alle deine Daten unwiderruflich.
       </p>
       {error && <p className="text-sm text-red-500">{error}</p>}
       <div className="flex gap-3">
@@ -60,7 +60,7 @@ export function DeleteAccountButton() {
           disabled={isDeleting}
           className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
         >
-          {isDeleting ? 'Wird geloescht...' : 'Endgueltig loeschen'}
+          {isDeleting ? 'Wird gelöscht…' : 'Endgültig löschen'}
         </button>
       </div>
     </div>

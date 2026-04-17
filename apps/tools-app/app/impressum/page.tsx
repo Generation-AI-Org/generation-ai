@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function Impressum() {
   return (
-    <main className="min-h-screen bg-bg pt-24 pb-16 px-4">
-      <div className="max-w-3xl mx-auto">
+    <main className="min-h-screen bg-bg pt-24 pb-16 px-5">
+      <div className="max-w-2xl mx-auto">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-text-muted hover:text-text mb-8 transition-colors"
@@ -17,23 +17,25 @@ export default function Impressum() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          Zurueck zur Startseite
+          Zurück zur Startseite
         </Link>
 
-        <h1 className="text-4xl font-bold text-text mb-8">Impressum</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-text mb-10 break-words hyphens-auto leading-tight">
+          Impressum
+        </h1>
 
-        <div className="prose prose-invert max-w-none space-y-8">
+        <div className="prose prose-invert max-w-none space-y-8 leading-relaxed">
           <section>
-            <h2 className="text-xl font-semibold text-text mb-4">Angaben gemaess Paragraph 5 DDG</h2>
+            <h2 className="text-xl font-semibold text-text mb-3">Angaben gemäß § 5 DDG</h2>
             <p className="text-text-secondary">
               Generation AI e.V. (i.Gr.)<br />
-              Feuerbachstrasse 26<br />
+              Feuerbachstraße 26<br />
               71254 Ditzingen
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-text mb-4">Vertreten durch</h2>
+            <h2 className="text-xl font-semibold text-text mb-3">Vertreten durch</h2>
             <p className="text-text-secondary">
               Janna Schweigmann (Vorsitzende)<br />
               Simon Vetter (Vorsitzender)
@@ -41,7 +43,7 @@ export default function Impressum() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-text mb-4">Kontakt</h2>
+            <h2 className="text-xl font-semibold text-text mb-3">Kontakt</h2>
             <p className="text-text-secondary">
               Telefon: +49 160 7080308<br />
               E-Mail: info@generation-ai.org
@@ -49,23 +51,23 @@ export default function Impressum() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-text mb-4">Verantwortlich fuer den Inhalt nach Paragraph 18 Abs. 2 MStV</h2>
+            <h2 className="text-xl font-semibold text-text mb-3">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
             <p className="text-text-secondary">
               Janna Schweigmann<br />
-              Feuerbachstrasse 26<br />
+              Feuerbachstraße 26<br />
               71254 Ditzingen
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-text mb-4">EU-Streitschlichtung</h2>
+            <h2 className="text-xl font-semibold text-text mb-3">EU-Streitschlichtung</h2>
             <p className="text-text-secondary">
-              Die Europaeische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:{' '}
+              Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:{' '}
               <a
                 href="https://ec.europa.eu/consumers/odr/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-accent hover:underline"
+                className="text-accent hover:underline break-all"
               >
                 https://ec.europa.eu/consumers/odr/
               </a>
@@ -77,32 +79,32 @@ export default function Impressum() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-text mb-4">Haftung fuer Inhalte</h2>
+            <h2 className="text-xl font-semibold text-text mb-3">Haftung für Inhalte</h2>
             <p className="text-text-secondary">
-              Als Diensteanbieter sind wir gemaess Paragraph 7 Abs.1 TMG fuer eigene Inhalte auf diesen Seiten
-              nach den allgemeinen Gesetzen verantwortlich. Nach Paragraph 8 bis 10 TMG sind wir als
-              Diensteanbieter jedoch nicht verpflichtet, uebermittelte oder gespeicherte fremde
-              Informationen zu ueberwachen oder nach Umstaenden zu forschen, die auf eine rechtswidrige
-              Taetigkeit hinweisen.
+              Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen Seiten
+              nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als
+              Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde
+              Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige
+              Tätigkeit hinweisen.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-text mb-4">Haftung fuer Links</h2>
+            <h2 className="text-xl font-semibold text-text mb-3">Haftung für Links</h2>
             <p className="text-text-secondary">
-              Unser Angebot enthaelt Links zu externen Websites Dritter, auf deren Inhalte wir keinen
-              Einfluss haben. Deshalb koennen wir fuer diese fremden Inhalte auch keine Gewaehr uebernehmen.
-              Fuer die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der
+              Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen
+              Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen.
+              Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der
               Seiten verantwortlich.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-text mb-4">Urheberrecht</h2>
+            <h2 className="text-xl font-semibold text-text mb-3">Urheberrecht</h2>
             <p className="text-text-secondary">
               Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen
-              dem deutschen Urheberrecht. Die Vervielfaeltigung, Bearbeitung, Verbreitung und jede Art
-              der Verwertung ausserhalb der Grenzen des Urheberrechtes beduerfen der schriftlichen
+              dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art
+              der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen
               Zustimmung des jeweiligen Autors bzw. Erstellers.
             </p>
           </section>

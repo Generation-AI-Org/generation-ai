@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function Datenschutz() {
   return (
-    <main className="min-h-screen bg-bg pt-24 pb-16 px-4">
-      <div className="max-w-3xl mx-auto">
+    <main className="min-h-screen bg-bg pt-24 pb-16 px-5">
+      <div className="max-w-2xl mx-auto">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-text-muted hover:text-text mb-8 transition-colors"
@@ -20,7 +20,7 @@ export default function Datenschutz() {
           Zurück zur Startseite
         </Link>
 
-        <h1 className="text-4xl font-bold text-text mb-8">Datenschutzerklärung</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-text mb-10 break-words hyphens-auto leading-tight">Datenschutz&shy;erklärung</h1>
 
         <div className="prose prose-invert max-w-none space-y-8">
           <section>

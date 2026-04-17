@@ -16,6 +16,7 @@
 
 - [ ] **Sentry Account** — sentry.io → Free → DSN holen
 - [ ] **Better Stack Account** — betterstack.com → Uptime Monitors
+- [ ] **Email-Umleitung info@generation-ai.org** — Forwarding auf Luca's Postfach einrichten (Domain-Provider / Resend / Google Workspace — je nach Setup). Wichtig: Legal-Seiten nennen die Adresse.
 
 ## Code-Fixes
 
@@ -72,6 +73,7 @@
 ### 📄 Content tools-app
 
 - [ ] **Tool-Cards: Echte Summary statt Text-Anfang** — aktuell schneidet die Card den Intro-Text an. Cards brauchen eigenes Preview-Feld: Kernnutzen + Target-Group in 1–2 Sätzen, damit User entscheiden kann "lohnt sich das Klicken?"
+- [ ] **Umlaut-Audit DB-Content** — alle Tool-Artikel in Supabase `content_items` (title, summary, use_cases, full-text) nach ae/oe/ue/ss scannen und auf echte Umlaute (ö/ä/ü/ß) umstellen. Code ist gefixt (Phase 14 Follow-up), DB noch nicht.
 - [ ] **Tool-Detail-Seiten: Artikel-Qualität** — aktuell zu knapp/proprietär. Pro Tool: Use-Cases, Beispiele, Alternativen, Pricing-Details. Eigener Content-Workstream, nicht Feature-Arbeit.
 
 ### 🎬 Micro-Animations (Desktop ausbauen + Mobile bringen)

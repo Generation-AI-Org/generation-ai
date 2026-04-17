@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function Impressum() {
   return (
-    <main className="min-h-screen bg-bg pt-24 pb-16 px-4">
-      <div className="max-w-3xl mx-auto">
+    <main className="min-h-screen bg-bg pt-24 pb-16 px-5">
+      <div className="max-w-2xl mx-auto">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-text-muted hover:text-text mb-8 transition-colors"

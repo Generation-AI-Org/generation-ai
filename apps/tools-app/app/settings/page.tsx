@@ -28,7 +28,7 @@ export default async function SettingsPage() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          Zurueck
+          Zurück
         </Link>
 
         <h1 className="text-3xl font-bold text-[var(--text)] mb-8">Einstellungen</h1>
@@ -56,10 +56,10 @@ export default async function SettingsPage() {
         <section>
           <h2 className="text-xl font-semibold text-red-400 mb-4">Gefahrenzone</h2>
           <div className="p-4 bg-[var(--surface)] rounded-lg border border-red-500/30">
-            <h3 className="text-lg font-medium text-[var(--text)] mb-2">Account loeschen</h3>
+            <h3 className="text-lg font-medium text-[var(--text)] mb-2">Account löschen</h3>
             <p className="text-[var(--text-secondary)] mb-4">
-              Loescht deinen Account und alle zugehoerigen Daten (Chat-Verlauf, Sessions).
-              Diese Aktion kann nicht rueckgaengig gemacht werden.
+              Löscht deinen Account und alle zugehörigen Daten (Chat-Verlauf, Sessions).
+              Diese Aktion kann nicht rückgängig gemacht werden.
             </p>
             <DeleteAccountButton />
           </div>
