@@ -41,6 +41,17 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
   const abortControllerRef = useRef<AbortController | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
+  // Single source of truth for textarea auto-resize (DRY): invoked by both
+  // onChange and the [message, isExpanded] useEffect so voice/programmatic
+  // updates grow the textarea just like manual typing.
+  const resizeTextarea = useCallback(() => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+    textarea.style.height = 'auto'
+    const maxHeight = 120
+    textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`
+  }, [])
+
   // Voice input hook (Deepgram API)
   const {
     isRecording,
@@ -212,15 +223,12 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
     }
   }, [isOpen])
 
-  // Auto-resize textarea when message changes (e.g. from voice input)
+  // Auto-resize textarea when message changes (voice input, paste, programmatic
+  // clears after send). isExpanded in deps: re-runs after mount of the other
+  // render path so the freshly mounted textarea gets the correct height.
   useEffect(() => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current
-      textarea.style.height = 'auto'
-      const maxHeight = 120
-      textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`
-    }
-  }, [message])
+    resizeTextarea()
+  }, [message, isExpanded, resizeTextarea])
 
   function stopGeneration() {
     if (abortControllerRef.current) {
@@ -318,12 +326,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
     const value = e.target.value
     setMessage(value)
     setCharCount(value.length)
-
-    // Auto-resize textarea
-    const textarea = e.target
-    textarea.style.height = 'auto'
-    const maxHeight = 120 // ~4 lines
-    textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`
+    // Resize handled by useEffect on [message, isExpanded]
   }
 
   function handleSend() {

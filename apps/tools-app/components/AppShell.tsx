@@ -337,13 +337,17 @@ export default function AppShell({ items, mode }: AppShellProps) {
         mode={mode}
       />
 
-      {/* Mobile Legal Footer */}
-      <footer className="lg:hidden flex items-center justify-center gap-4 py-2 border-t border-[var(--border)] bg-[var(--bg-header)] text-xs text-text-muted shrink-0">
-        <Link href="/impressum" className="hover:text-text transition-colors">
+      {/* Mobile Legal Footer — hidden while chat is mobile-fullscreen expanded */}
+      <footer
+        className={`lg:hidden items-center justify-center gap-4 py-2 border-t border-[var(--border)] bg-[var(--bg-header)] text-xs text-[var(--text-muted)] shrink-0 ${
+          isChatExpanded ? 'hidden' : 'flex'
+        }`}
+      >
+        <Link href="/impressum" className="hover:text-[var(--text)] transition-colors">
           Impressum
         </Link>
         <span>|</span>
-        <Link href="/datenschutz" className="hover:text-text transition-colors">
+        <Link href="/datenschutz" className="hover:text-[var(--text)] transition-colors">
           Datenschutz
         </Link>
       </footer>
