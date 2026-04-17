@@ -5,9 +5,10 @@
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** 13 Auth-Flow-Audit + CSP Reaktivierung (IN PROGRESS — Wave 0 complete)
-**Current Plan:** 13-01 COMPLETE → Wave 1 wartet auf .env.test.local von Luca
+**Phase:** 13 Auth-Flow-Audit + CSP Reaktivierung (IN PROGRESS — Wave 1 complete)
+**Current Plan:** 13-02 COMPLETE → Wave 1 done, all 6 auth paths audited
 **Last Updated:** 2026-04-17
+**Last Session:** Completed 13-02-PLAN.md (E2E Auth Audit)
 **Site Status:** ✅ Live — Login auf tools.generation-ai.org funktioniert (Commit f5f9cb7)
 
 ## Session-Drop-Bug (f5f9cb7, 2026-04-17)
@@ -209,3 +210,4 @@ Manuelles Testing auf verschiedenen Browsern.
 - Phase 13 added: Auth-Flow-Audit + CSP Reaktivierung (2026-04-17)
 - Roadmap retroaktiv aktualisiert: Phase 11+12 als COMPLETE nachgetragen (2026-04-17)
 - Phase 13 Plan 01 COMPLETE: Test-Infrastructure Scaffold (Wave 0) — fixtures, helpers, auth.spec.ts skeleton, 4 tests grün gegen Prod (2026-04-17)
+- Phase 13 Plan 02 COMPLETE: E2E Auth Audit — 10 active tests, all 6 auth paths verified against production, 2 findings (F1 backlogged, F2 fixed in 582cd63), docs/AUTH-FLOW.md audit section created (2026-04-17)
