@@ -403,7 +403,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
     return (
       <div
         ref={chatRef}
-        className="fixed inset-0 md:inset-auto md:right-0 md:top-[148px] md:bottom-0 w-full md:w-[35%] flex flex-col md:rounded-l-2xl md:border-l md:border-t border-[var(--border)] bg-[var(--bg)] md:bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in"
+        className="fixed top-[77px] bottom-[96px] left-0 right-0 md:inset-auto md:right-0 md:top-[148px] md:bottom-0 w-full md:w-[35%] flex flex-col rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none border-t md:border-l md:border-t border-[var(--border)] bg-[var(--bg)] md:bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
@@ -759,13 +759,13 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
       {isOpen && (
         <div
           ref={chatRef}
-          className="fixed inset-0 md:inset-auto md:top-[148px] md:bottom-[96px] md:left-auto md:right-6 md:w-[420px] md:max-w-[420px] transition-all duration-300 origin-bottom-right"
+          className="fixed top-[77px] bottom-[96px] left-0 right-0 md:inset-auto md:top-[148px] md:bottom-[96px] md:left-auto md:right-6 md:w-[420px] md:max-w-[420px] transition-all duration-300 origin-bottom-right"
           style={{
             animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
           }}
         >
           <div
-            className="relative flex flex-col h-full rounded-none md:rounded-3xl border-0 md:border shadow-2xl backdrop-blur-xl overflow-hidden"
+            className="relative flex flex-col h-full rounded-t-2xl md:rounded-3xl border-t md:border shadow-2xl backdrop-blur-xl overflow-hidden"
             style={{
               background: 'var(--bg-card)',
               borderColor: 'var(--border)',
