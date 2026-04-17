@@ -426,7 +426,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
             </span>
             <button
               onClick={toggleExpand}
-              className="p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110"
+              className="p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110 active:scale-95"
               aria-label="Minimieren"
             >
               <Minimize2 className="w-4 h-4 text-[var(--text-muted)]" />
@@ -525,7 +525,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                 <div className="relative" data-attachment-dropdown>
                   <button
                     onClick={() => setShowAttachments(!showAttachments)}
-                    className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105"
+                    className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105 active:scale-95"
                     title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhang hinzufügen'}
                   >
                     <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-15deg] ${
@@ -652,7 +652,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                   className={`group relative p-3 rounded-xl transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed ${
                     isLoading
                       ? 'bg-[var(--accent)]/15 border border-[var(--accent)]/40 text-[var(--accent)] hover:bg-[var(--accent)]/25'
-                      : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2'
+                      : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2 active:scale-95'
                   }`}
                   style={{
                     boxShadow: isLoading ? undefined : '0 0 15px var(--accent-glow)',
@@ -792,7 +792,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                 </span>
                 <button
                   onClick={toggleExpand}
-                  className="p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110"
+                  className="p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110 active:scale-95"
                   aria-label="Maximieren"
                 >
                   <Maximize2 className="w-4 h-4 text-[var(--text-muted)]" />
@@ -892,7 +892,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                     <div className="relative">
                       <button
                         onClick={() => setShowAttachments(!showAttachments)}
-                        className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105"
+                        className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105 active:scale-95"
                         title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhang hinzufügen'}
                       >
                         <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-15deg] ${
@@ -1018,7 +1018,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                     className={`group relative p-3 rounded-xl transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 ${
                       isLoading
                         ? 'bg-[var(--accent)]/15 border border-[var(--accent)]/40 text-[var(--accent)] hover:bg-[var(--accent)]/25'
-                        : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2'
+                        : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2 active:scale-95'
                     }`}
                     style={{
                       boxShadow: isLoading ? undefined : '0 10px 15px -3px rgba(0,0,0,0.1), 0 0 0 0 var(--accent-glow)',
