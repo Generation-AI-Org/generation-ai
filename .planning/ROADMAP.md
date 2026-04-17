@@ -274,14 +274,14 @@ Plans:
 **Goal:** Systematische E2E-Validierung aller Auth-Pfade (Login/Passwort, Magic Link, Session-Refresh, Signout, Password-Reset, Cross-Domain Website↔tools-app) + CSP von Report-Only auf enforced heben und auf tools-app implementieren. Edge-Runtime-Blocker klären.
 **Requirements:** AUTH-AUDIT-01..06, CONSOL-01, CSP-01..03, DOC-01
 **Depends on:** Phase 12
-**Plans:** 6 plans
+**Plans:** 5/6 plans executed
 
 Plans:
-- [ ] 13-01-PLAN.md — Wave 0: E2E Test-Infrastructure (fixtures, admin helper, CSP assertions, auth.spec.ts skeleton)
-- [ ] 13-02-PLAN.md — Wave 1: Audit aller 6 Auth-Pfade + Findings-Triage + Inline-Fixes (non-autonomous)
-- [ ] 13-03-PLAN.md — Wave 1: Konsolidierungs-Check (grep-basiert, read-only)
-- [ ] 13-04-PLAN.md — Wave 2: website CSP Report-Only → Enforced via proxy.ts nonce (non-autonomous)
-- [ ] 13-05-PLAN.md — Wave 2: tools-app CSP neu via proxy.ts nonce (non-autonomous)
+- [x] 13-01-PLAN.md — Wave 0: E2E Test-Infrastructure (fixtures, admin helper, CSP assertions, auth.spec.ts skeleton)
+- [x] 13-02-PLAN.md — Wave 1: Audit aller 6 Auth-Pfade + Findings-Triage + Inline-Fixes (non-autonomous)
+- [x] 13-03-PLAN.md — Wave 1: Konsolidierungs-Check (grep-basiert, read-only)
+- [x] 13-04-PLAN.md — Wave 2: website CSP Report-Only → Enforced via proxy.ts nonce (non-autonomous)
+- [x] 13-05-PLAN.md — Wave 2: tools-app CSP neu via proxy.ts nonce (non-autonomous)
 - [ ] 13-06-PLAN.md — Wave 3: docs/AUTH-FLOW.md final mit Mermaid + ARCHITECTURE.md Cross-Link
 
 ---
