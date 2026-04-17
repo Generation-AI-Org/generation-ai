@@ -403,7 +403,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
     return (
       <div
         ref={chatRef}
-        className="fixed right-0 top-[148px] bottom-0 w-full md:w-[35%] flex flex-col rounded-l-2xl border-l border-t border-[var(--border)] bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in"
+        className="fixed inset-0 md:inset-auto md:right-0 md:top-[148px] md:bottom-0 w-full md:w-[35%] flex flex-col md:rounded-l-2xl md:border-l md:border-t border-[var(--border)] bg-[var(--bg)] md:bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">

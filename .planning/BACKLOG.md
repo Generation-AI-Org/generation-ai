@@ -56,15 +56,15 @@
 
 ### 🐛 Bugs tools-app
 
-- [ ] **Tool-Highlighting kaputt** — KI gibt "string" statt der Tool-Liste aus. Highlight-Mechanismus funktioniert nicht mehr. Regression-Check.
-- [ ] **Mobile Chat-Width springt auf ~80 %** — wenn Chat geöffnet wird, werden die Ränder abgeschnitten statt volle Breite zu nutzen.
+- [x] **Tool-Highlighting kaputt** — gefixt in v4.1.0 (recommendedSlugs-Pass-Through im `/api/chat` member-mode).
+- [x] **Mobile Chat-Width springt auf ~80 %** — gefixt 2026-04-17: expanded Chat auf Mobile jetzt full-screen (`inset-0` + deckender `bg-[var(--bg)]`), Desktop bleibt 35%-Sidebar. FloatingChat.tsx:406.
 - [ ] **Mobile Shift+Enter** — Luca glaubt gefixt, verifizieren.
 - [ ] **Desktop Chat-Input wächst nicht bei Transkription** — Normales Tippen + Enter expandiert das Input-Feld korrekt. Wenn stattdessen ein langer Text per Diktat reinkommt, bleibt das Feld klein/schmal → nervig zu lesen/editieren. Auto-Resize muss auch bei programmatischen Text-Writes triggern.
 
 ### 🎨 UI tools-app
 
-- [ ] **Mobile Header: Login/Logout-Button sichtbar im Header** — aktuell nicht klar auffindbar. Beide rund, aber visueller Unterschied (z. B. Farbe) zeigen was was ist.
-- [ ] **Login-Seite: Logo statt grünem Punkt** — entweder Terminal-Logo (das im Terminal/App-Header benutzt wird) über "Bei Generation AI anmelden", oder die Terminal-Ansicht vom Home als kleines schwebendes Element.
+- [x] **Mobile Header: Login/Logout-Button sichtbar im Header** — bereits erledigt (vor Audit 2026-04-17): `AppShell.tsx:170-222` hat farblich differenzierte Buttons — Login = accent-grün, Logout = neutral mit rotem Hover-State.
+- [x] **Login-Seite: Logo statt grünem Punkt** — bereits erledigt (vor Audit 2026-04-17): `app/login/page.tsx:66-76` nutzt theme-aware Logo (`logo-blue-neon-new.jpg` / `logo-pink-red.jpg`) über dem Heading.
 - [ ] **Mobile-Polish allgemein** — einmal durchgehen, Luca nutzt es auf Handy auch oft.
 - [ ] **Mobile Chat: Hintergrund deckend oder blurred** — wenn Chat offen ist, schimmert die Page darunter durch (CardGrid/Akzentfarben sichtbar) → ablenkend. Entweder (a) Chat-Panel opaque `bg-[var(--bg)]` statt `bg-[var(--bg-card)]` mit Transparenz, oder (b) zusätzliches Backdrop-Element `fixed inset-0 bg-black/40 backdrop-blur-md z-30` hinter dem Panel. Option (b) ist der Modal-Sheet-Standard und fühlt sich „richtiger" an. Nur Mobile (lg:hidden) — Desktop bleibt Sidebar. Datei: `apps/tools-app/components/chat/FloatingChat.tsx:406`.
 - [ ] **Mobile Legal Footer: Sichtbarkeit + Schriftfarbe** — aktueller Code `AppShell.tsx:340-349` nutzt `text-text-muted` (dunkle Schrift) statt Theme-aware hell. Außerdem erscheint der Footer inkonsistent (mal sichtbar, mal weg). Entweder konsistent immer sichtbar (unter CardGrid angeheftet, nicht floating) oder konsistent weg und Legal-Links nur im Header-Menü. Luca-Tendenz: immer sichtbar, aber hell im Darkmode. Auch prüfen: verdeckt Chat-Expand den Footer unabsichtlich?
