@@ -761,7 +761,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
       {isOpen && (
         <div
           ref={chatRef}
-          className="fixed top-[148px] bottom-[96px] right-4 md:right-6 w-[calc(100vw-2rem)] md:w-[420px] max-w-[420px] transition-all duration-300 origin-bottom-right"
+          className="fixed top-[148px] bottom-[96px] left-4 right-4 md:left-auto md:right-6 md:w-[420px] md:max-w-[420px] transition-all duration-300 origin-bottom-right"
           style={{
             animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
           }}
