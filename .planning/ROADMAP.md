@@ -244,6 +244,46 @@ Plans:
 **User Setup Required:**
 - `DEEPGRAM_API_KEY` in .env.local und Vercel Env-Vars
 
+### Phase 11: Performance Polish ✅ COMPLETE
+
+**Goal:** Chat-UI Performance-Optimierungen (React.memo, GPU-beschleunigte Animationen, Cleanup)
+**Status:** COMPLETE (2026-04-15)
+- Console.logs entfernt (Client-side dev noise)
+- MarkdownContent + ContentCard memoized
+- Audio-Bars: Framer Motion → CSS scaleY (GPU)
+- Inline animation styles → CSS Utility-Klassen
+- will-change Hints für Animationen
+
+---
+
+### Phase 12: Auth Rewrite ✅ COMPLETE
+
+**Goal:** Auth-Stack konsolidieren auf `@genai/auth` mit canonical @supabase/ssr Pattern; Session-Drop-Bug fixen
+**Status:** COMPLETE (2026-04-17)
+- @genai/auth als canonical implementation
+- updateSession() middleware helper
+- Manuelle document.cookie Hacks entfernt (-360 Zeilen)
+- Cross-domain cookies via NEXT_PUBLIC_COOKIE_DOMAIN
+- Session-Drop-Bug fixed (signout route GET→POST, f5f9cb7)
+- Beide Apps: build ✓, tests 24/24 ✓
+
+---
+
+### Phase 13: Auth-Flow-Audit + CSP Reaktivierung
+
+**Goal:** Systematische E2E-Validierung aller Auth-Pfade (Login/Passwort, Magic Link, Session-Refresh, Signout, Password-Reset, Cross-Domain Website↔tools-app) + CSP von Report-Only auf enforced heben und auf tools-app implementieren. Edge-Runtime-Blocker klären.
+**Requirements:** AUTH-AUDIT-01..06, CONSOL-01, CSP-01..03, DOC-01
+**Depends on:** Phase 12
+**Plans:** 6/6 plans complete
+
+Plans:
+- [x] 13-01-PLAN.md — Wave 0: E2E Test-Infrastructure (fixtures, admin helper, CSP assertions, auth.spec.ts skeleton)
+- [x] 13-02-PLAN.md — Wave 1: Audit aller 6 Auth-Pfade + Findings-Triage + Inline-Fixes (non-autonomous)
+- [x] 13-03-PLAN.md — Wave 1: Konsolidierungs-Check (grep-basiert, read-only)
+- [x] 13-04-PLAN.md — Wave 2: website CSP Report-Only → Enforced via proxy.ts nonce (non-autonomous)
+- [x] 13-05-PLAN.md — Wave 2: tools-app CSP neu via proxy.ts nonce (non-autonomous)
+- [x] 13-06-PLAN.md — Wave 3: docs/AUTH-FLOW.md final mit Mermaid + ARCHITECTURE.md Cross-Link
+
 ---
 
 *v2.0 Roadmap erstellt: 2026-04-13*
@@ -253,3 +293,6 @@ Plans:
 *Phase 7 geplant: 2026-04-14*
 *Phase 8 geplant: 2026-04-14*
 *Phase 10 geplant: 2026-04-15*
+*Phase 11 COMPLETE: 2026-04-15*
+*Phase 12 COMPLETE: 2026-04-17*
+*Phase 13 hinzugefügt: 2026-04-17*

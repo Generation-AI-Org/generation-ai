@@ -1,22 +1,6 @@
 import type { NextConfig } from "next";
 
-const isDev = process.env.NODE_ENV === "development";
-
-// CSP Direktiven für statische Website
-// Report-Only Mode: Violations werden geloggt, nicht geblockt
-const cspDirectives = [
-  "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' blob: data:",
-  "font-src 'self'",
-  "connect-src 'self' https://wbohulnuwqrhystaamjc.supabase.co",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
-].join("; ");
+// CSP moved to proxy.ts (Phase 13) — nonce-based via Next.js 16 Middleware Pattern
 
 const securityHeaders = [
   // HSTS: 2 Jahre, includeSubDomains für alle Subdomains, preload für Browser-Listen
@@ -43,11 +27,6 @@ const securityHeaders = [
   {
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=()",
-  },
-  // CSP in Report-Only Mode zum Testen (Violations werden geloggt, nichts geblockt)
-  {
-    key: "Content-Security-Policy-Report-Only",
-    value: cspDirectives,
   },
 ];
 

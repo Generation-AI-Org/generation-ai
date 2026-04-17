@@ -112,6 +112,8 @@ Keine echte Single Sign-On, aber gleiche Email verknuepft Identitaeten.
 - Alle Subdomains koennen Session lesen
 - Middleware prueft Session in jeder App
 
+> Detaillierte Auth-Flows, Mermaid-Sequenzdiagramme aller 6 Pfade und Findings aus dem Phase-13-Audit: siehe [docs/AUTH-FLOW.md](./AUTH-FLOW.md).
+
 ---
 
 ## Datenbank-Schema

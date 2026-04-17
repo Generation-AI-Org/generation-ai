@@ -37,4 +37,5 @@ coverage/
 # TypeScript
 *.tsbuildinfo
 .vercel
+.env.test.local
 .playwright-mcp/

@@ -5,7 +5,7 @@
 ## Entscheidungen
 
 - [x] **Vercel Pro upgraden?** — Entschieden: NEIN (2026-04-17). Plattform ist nicht-kommerziell (keine Einnahmen, nur Services ~200€/Monat Outlay). Hobby ist OK.
-- [ ] **CSP Header aktivieren** — Content-Security-Policy schützt vor XSS. Aktuell Report-Only (website) / fehlt ganz (tools-app). Edge-Runtime war Blocker. Wichtig, aber kein Notfall.
+- [x] **CSP Header aktivieren** — Content-Security-Policy schützt vor XSS. Aktuell Report-Only (website) / fehlt ganz (tools-app). Edge-Runtime war Blocker. Wichtig, aber kein Notfall. **Erledigt Phase 13 (13-04 + 13-05): enforced CSP mit nonce + strict-dynamic auf beiden Apps.**
 
 ## DPAs
 
@@ -21,7 +21,7 @@
 
 - [x] **Telefonnummer** — +49 160 7080308 in allen Legal-Seiten
 - [x] **SpeedInsights** — wieder aktiviert, lokal getestet ✓
-- [ ] **CSP Edge Runtime** — proxy.ts fixen (braucht Testing)
+- [x] **CSP Edge Runtime** — proxy.ts fixen (braucht Testing). **Erledigt Phase 13 (13-04 + 13-05): nonce-per-request in proxy.ts, prefetch aus matcher ausgeschlossen.**
 - [x] **LLM Keys auf Vercel** — ZHIPU_API_KEY gelöscht ✓
 
 ---
@@ -29,6 +29,11 @@
 ## Backlog — Neu aufgenommen 2026-04-17
 
 > Gesammelt in der Session nach dem Session-Drop-Fix. Luca-Input, noch nicht priorisiert.
+
+### 🔐 Auth — Aus Phase 13 Audit (13-02)
+
+- [ ] **Auth cookie httpOnly hardening (F1)** — gefunden in Phase 13 Audit, siehe docs/AUTH-FLOW.md Finding F1. `sb-` session cookie hat `httpOnly: false` weil `@supabase/ssr` Browser-Client den Token JS-seitig lesen muss. XSS könnte Session stehlen. Impact: medium (kein unmittelbarer Exploit ohne XSS-Vektor, aber schwaches Härtungsdefizit). Fix approach: Supabase SSR v2 "tokens-only" mode evaluieren (lagert Token in localStorage, setzt nur opaque cookie server-side) ODER HttpOnly-Proxy-Cookie-Pattern. Requires Supabase SSR research + migration.
+- [x] **generateLink action_link hash-redirect (F2)** — gefunden in Phase 13 Audit, inline gefixt in Commit 582cd63. supabase-admin.ts baut jetzt PKCE confirm URL aus hashed_token statt rohem action_link.
 
 ### 🔐 Auth — Passwort-Flow vervollständigen (wichtig für Luca)
 
