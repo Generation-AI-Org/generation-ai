@@ -83,6 +83,36 @@
 
 - [ ] **Smart-Links zu Circle** (Luca: "geile Idee") — jedes Tool zeigt, wo im Circle darüber diskutiert wird. Link zu Space/Thread mit Discussions.
 
+### 💬 Chat überall — global Agent + Context-aware
+
+> Aufgenommen 2026-04-17. Luca: „wenn ich auf eine Toolseite gehe, wird der Agent nicht mehr angezeigt. Auch über Tools im Startseitefenster sinnvoll. Bei langen Artikeln Markdown nach links schieben, Agent rechts."
+
+**Problem:** `FloatingChat` hängt nur im `AppShell`, und `AppShell` rendert nur `/`. Auf `/[slug]` (Tool-Detail) gibt es keinen Chat → UX-Bruch, User verliert Zugriff zum Agent genau dann wenn er fachliche Fragen hätte.
+
+**Scope:**
+1. **Chat global** verfügbar auf allen Routen (Home, Detail, Settings, Login bleibt bewusst ohne).
+2. **Desktop Detail-Layout bei expanded Chat:** Artikel-Column schrumpft (z. B. `max-w-3xl` → `max-w-2xl`), Chat wird ~400px Sidebar rechts statt Floating. Beim Collapse zurück auf volle Breite. Vorbild: Notion AI, ChatGPT Canvas.
+3. **Mobile:** Floating-Behavior wie bisher, Bottom-Sheet über Artikel. Kein Split.
+4. **Agent-Context:** aktueller Slug/Title als Extra-System-Message an `/api/chat` → Antworten im Kontext des gerade gelesenen Tools.
+
+**Architektur-Plan (grob):**
+- `AppShell` splitten in `GlobalLayout` (Header + FloatingChat) + `HomeLayout` (Filter + CardGrid).
+- `GlobalLayout` in `app/layout.tsx` oder als Wrapper in `(group)/layout.tsx`.
+- Detail-Route `/[slug]` nutzt nur `GlobalLayout` (Header + Chat), Content ist der Artikel.
+- `FloatingChat` prop `context?: { slug, title, type }` — bei Detail-Route gesetzt, bei Home null.
+- Tool-Highlighting no-op wenn kein CardGrid präsent (`onHighlight` ignorieren).
+- Session-ID persistieren (SessionStorage) damit Chat Navigation überlebt.
+
+**Nebenbei mitbedenken:**
+- Empty-State pro Route (Detail: „Fragen zu [ToolName]?" statt generisch).
+- FloatingChat bleibt `next/dynamic`, `requestIdleCallback`-Preload für schnellen ersten Open.
+- Analytics-Event `chat_opened_from_route` → nach 2 Wochen nutzungsbasiert entscheiden ob Feature-Scope ausweiten.
+- Desktop Chat-Input auto-resize bei Transkription (separater Backlog-Eintrag) sollte vor oder gleichzeitig gefixt werden — sonst schwebt der Bug in den neuen Layouts mit.
+
+**Nicht-Ziele in der ersten Runde:**
+- Cross-Session-Chat-Historie in UI (zeige keine Past-Sessions-List) — separater Scope.
+- Pro-Only vs. Public-Chat-Logik auf Detail-Seiten — vermutlich gleiche Mode-Detection wie Home.
+
 ### 🧱 Fundament-Stufen (aus STATE.md)
 
 - [ ] **Stufe 1:** `/gsd-map-codebase` laufen lassen

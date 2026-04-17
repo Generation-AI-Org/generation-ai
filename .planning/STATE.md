@@ -22,8 +22,9 @@ progress:
 **Milestone:** v2.0 Production Hardening
 **Phase:** 13 Auth-Flow-Audit + CSP ✅ MERGED (PR #2 → main, Commit 9de4d54)
 **Chat-Agent-Bug:** ✅ FIXED & MERGED (PR #3 → main, Commit fb884fc, 2026-04-17)
-**Last Updated:** 2026-04-17T10:20
-**Site Status:** ✅ Live — CSP A+, Auth stabil, Member-Chat antwortet zuverlässig (KB- und Web-Queries beide grün auf Preview verifiziert).
+**Last Updated:** 2026-04-17T10:45
+**Site Status:** ✅ Live — CSP A+, Auth stabil, Member-Chat antwortet zuverlässig. Release **v4.1.0** auf GitHub published (Tag + CHANGELOGs + Release-Page).
+**Next Session:** Feature „Chat überall — global Agent + Context-aware". Detailplan in BACKLOG.md § 💬 Chat überall. Kurz: `FloatingChat` aus AppShell-lock lösen, auf `/[slug]` mit Desktop-Layout-Shift (Artikel schmaler, Chat als 400px-Sidebar) + `context={slug,title,type}` ans /api/chat durchreichen. Mobile bleibt Floating.
 
 ## Chat-Agent-Bug — Root Cause + Fix (PR #3, 2026-04-17)
 
