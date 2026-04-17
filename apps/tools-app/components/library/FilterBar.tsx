@@ -71,9 +71,10 @@ export default function FilterBar({ active, onChange, mode = 'public' }: FilterB
             </svg>
           </a>
 
-          {/* Logout */}
-          <Link
-            href="/auth/signout"
+          {/* Logout — POST form (never GET, to avoid <Link> prefetch destroying the session) */}
+          <form action="/auth/signout" method="POST" className="shrink-0">
+            <button
+            type="submit"
             className="group shrink-0 px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium bg-[var(--border)] text-[var(--text-muted)] hover:bg-red-500/10 hover:text-red-400 transition-all duration-300 flex items-center gap-2 hover:scale-[1.02]"
             title="Abmelden"
           >
@@ -84,7 +85,8 @@ export default function FilterBar({ active, onChange, mode = 'public' }: FilterB
               <path className="transition-transform duration-300 -translate-x-1 group-hover:translate-x-1" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7" />
             </svg>
             <span className="hidden sm:inline">Abmelden</span>
-          </Link>
+            </button>
+          </form>
         </div>
       )}
     </div>

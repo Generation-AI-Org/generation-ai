@@ -184,20 +184,22 @@ export default function AppShell({ items, mode }: AppShellProps) {
             </svg>
           </Link>
         ) : (
-          <Link
-            href="/auth/signout"
-            className={`group md:hidden p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 ${
-              theme === 'dark'
-                ? 'bg-white/10 hover:bg-red-500/20'
-                : 'bg-black/20 hover:bg-red-500/20'
-            }`}
-            aria-label="Abmelden"
-          >
-            <svg className="w-5 h-5 text-white group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7" />
-            </svg>
-          </Link>
+          <form action="/auth/signout" method="POST" className="md:hidden">
+            <button
+              type="submit"
+              className={`group p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 ${
+                theme === 'dark'
+                  ? 'bg-white/10 hover:bg-red-500/20'
+                  : 'bg-black/20 hover:bg-red-500/20'
+              }`}
+              aria-label="Abmelden"
+            >
+              <svg className="w-5 h-5 text-white group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7" />
+              </svg>
+            </button>
+          </form>
         )}
 
         {/* Legal Links - Desktop only, visible in header */}
