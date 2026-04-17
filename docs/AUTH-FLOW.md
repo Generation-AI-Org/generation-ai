@@ -106,3 +106,77 @@ The package is actively used and must NOT be removed.
 Per D-13/D-14: Konsolidierung ist vollständig. Kein Non-Trivial-Refactor in Phase 13. Keine Fixes nötig.
 
 Phase-12 rewrite goal achieved: one canonical auth implementation (`@genai/auth`) across the entire monorepo.
+
+---
+
+## CSP Rollout — website (Plan 13-04)
+
+Date deployed to branch: 2026-04-17
+Branch: feat/auth-flow-audit
+Commits: `334384d` (lib/csp.ts), `09cdc90` (proxy.ts + next.config.ts)
+
+### What Changed
+
+| File | Change |
+|------|--------|
+| `apps/website/lib/csp.ts` | NEW — pure `buildCspDirectives(nonce, isDev)` function |
+| `apps/website/proxy.ts` | UPDATED — nonce generated per-request, CSP set on `updateSession` response |
+| `apps/website/next.config.ts` | CLEANED — `Content-Security-Policy-Report-Only` removed, `cspDirectives` const removed |
+
+### CSP Directives (enforced)
+
+```
+default-src 'self';
+script-src 'self' 'nonce-{per-request}' 'strict-dynamic' https://va.vercel-scripts.com;
+style-src 'self' 'unsafe-inline';
+img-src 'self' blob: data:;
+font-src 'self';
+connect-src 'self' https://wbohulnuwqrhystaamjc.supabase.co wss://wbohulnuwqrhystaamjc.supabase.co https://va.vercel-scripts.com https://vitals.vercel-insights.com;
+object-src 'none';
+base-uri 'self';
+form-action 'self';
+frame-ancestors 'none';
+upgrade-insecure-requests
+```
+
+Notes:
+- `'unsafe-inline'` intentionally present in `style-src` only (Tailwind v4 inline styles)
+- `'unsafe-inline'` removed from `script-src` — replaced by nonce + strict-dynamic
+- Auth cookies preserved: CSP is set on `updateSession()` response, not a new NextResponse (Pitfall 1)
+- Prefetch excluded from matcher: prevents cached nonce collisions (T-13-17)
+
+### Static Security Headers (unchanged, via next.config.ts)
+
+```
+strict-transport-security: max-age=63072000; includeSubDomains; preload
+x-content-type-options: nosniff
+x-frame-options: DENY
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: camera=(), microphone=(), geolocation=()
+```
+
+### Rollback
+
+```bash
+git revert 09cdc90 334384d
+git push origin feat/auth-flow-audit
+```
+
+Vercel re-deploys automatically on push — reverts to Report-Only CSP within minutes.
+
+### Prod Verification (pending Luca's merge to main)
+
+After prod deploy, verify with:
+```bash
+curl -sI https://generation-ai.org | grep -i "content-security-policy"
+# Expected: content-security-policy: default-src 'self'; script-src ... (not report-only)
+curl -sI https://generation-ai.org | grep -i "strict-transport-security"
+# Expected: strict-transport-security: max-age=63072000; ...
+```
+
+securityheaders.com: https://securityheaders.com/?q=https%3A%2F%2Fgeneration-ai.org
+Target rating: A or A+
+
+### Violations observed
+
+None (verified via build + local tests). Preview verification pending Luca review.
