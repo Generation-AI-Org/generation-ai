@@ -30,6 +30,11 @@
 
 > Gesammelt in der Session nach dem Session-Drop-Fix. Luca-Input, noch nicht priorisiert.
 
+### 🔐 Auth — Aus Phase 13 Audit (13-02)
+
+- [ ] **Auth cookie httpOnly hardening (F1)** — gefunden in Phase 13 Audit, siehe docs/AUTH-FLOW.md Finding F1. `sb-` session cookie hat `httpOnly: false` weil `@supabase/ssr` Browser-Client den Token JS-seitig lesen muss. XSS könnte Session stehlen. Impact: medium (kein unmittelbarer Exploit ohne XSS-Vektor, aber schwaches Härtungsdefizit). Fix approach: Supabase SSR v2 "tokens-only" mode evaluieren (lagert Token in localStorage, setzt nur opaque cookie server-side) ODER HttpOnly-Proxy-Cookie-Pattern. Requires Supabase SSR research + migration.
+- [x] **generateLink action_link hash-redirect (F2)** — gefunden in Phase 13 Audit, inline gefixt in Commit 582cd63. supabase-admin.ts baut jetzt PKCE confirm URL aus hashed_token statt rohem action_link.
+
 ### 🔐 Auth — Passwort-Flow vervollständigen (wichtig für Luca)
 
 - [ ] **Passwort-Setzen-UI für User** — aktuell nur Magic-Link, nutzer kann Passwort nicht selbst setzen. Flow: Settings → "Passwort setzen/ändern" → Reset-Mail → neues Passwort.
