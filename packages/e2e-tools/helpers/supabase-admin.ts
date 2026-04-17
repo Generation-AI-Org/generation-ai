@@ -18,29 +18,51 @@ function adminClient(): SupabaseClient {
   })
 }
 
-export async function generateMagicLink(email: string, redirectTo?: string) {
+/**
+ * Build the app-side PKCE confirm URL from a hashed token.
+ * Use this instead of the raw action_link (which goes to supabase.co and
+ * returns the session in a hash fragment that /auth/confirm cannot parse).
+ *
+ * The /auth/confirm route expects: ?token_hash=...&type=...
+ */
+function buildConfirmUrl(appConfirmBase: string, hashedToken: string, type: string): string {
+  const url = new URL(appConfirmBase)
+  url.searchParams.set("token_hash", hashedToken)
+  url.searchParams.set("type", type)
+  return url.toString()
+}
+
+export async function generateMagicLink(email: string, appConfirmUrl?: string) {
   const { data, error } = await adminClient().auth.admin.generateLink({
     type: "magiclink",
     email,
-    options: redirectTo ? { redirectTo } : undefined,
+    options: appConfirmUrl ? { redirectTo: appConfirmUrl } : undefined,
   })
   if (error) throw error
+  const hashedToken = data.properties.hashed_token as string
   return {
-    actionLink: data.properties.action_link as string,
-    hashedToken: data.properties.hashed_token as string,
+    // actionLink goes to supabase.co/auth/v1/verify — use confirmUrl for app-side PKCE flow
+    actionLink: appConfirmUrl
+      ? buildConfirmUrl(appConfirmUrl, hashedToken, "magiclink")
+      : (data.properties.action_link as string),
+    hashedToken,
   }
 }
 
-export async function generateRecoveryLink(email: string, redirectTo?: string) {
+export async function generateRecoveryLink(email: string, appConfirmUrl?: string) {
   const { data, error } = await adminClient().auth.admin.generateLink({
     type: "recovery",
     email,
-    options: redirectTo ? { redirectTo } : undefined,
+    options: appConfirmUrl ? { redirectTo: appConfirmUrl } : undefined,
   })
   if (error) throw error
+  const hashedToken = data.properties.hashed_token as string
   return {
-    actionLink: data.properties.action_link as string,
-    hashedToken: data.properties.hashed_token as string,
+    // actionLink goes to supabase.co/auth/v1/verify — use confirmUrl for app-side PKCE flow
+    actionLink: appConfirmUrl
+      ? buildConfirmUrl(appConfirmUrl, hashedToken, "recovery")
+      : (data.properties.action_link as string),
+    hashedToken,
   }
 }
 
