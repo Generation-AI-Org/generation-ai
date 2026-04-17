@@ -66,6 +66,8 @@
 - [ ] **Mobile Header: Login/Logout-Button sichtbar im Header** — aktuell nicht klar auffindbar. Beide rund, aber visueller Unterschied (z. B. Farbe) zeigen was was ist.
 - [ ] **Login-Seite: Logo statt grünem Punkt** — entweder Terminal-Logo (das im Terminal/App-Header benutzt wird) über "Bei Generation AI anmelden", oder die Terminal-Ansicht vom Home als kleines schwebendes Element.
 - [ ] **Mobile-Polish allgemein** — einmal durchgehen, Luca nutzt es auf Handy auch oft.
+- [ ] **Mobile Chat: Hintergrund deckend oder blurred** — wenn Chat offen ist, schimmert die Page darunter durch (CardGrid/Akzentfarben sichtbar) → ablenkend. Entweder (a) Chat-Panel opaque `bg-[var(--bg)]` statt `bg-[var(--bg-card)]` mit Transparenz, oder (b) zusätzliches Backdrop-Element `fixed inset-0 bg-black/40 backdrop-blur-md z-30` hinter dem Panel. Option (b) ist der Modal-Sheet-Standard und fühlt sich „richtiger" an. Nur Mobile (lg:hidden) — Desktop bleibt Sidebar. Datei: `apps/tools-app/components/chat/FloatingChat.tsx:406`.
+- [ ] **Mobile Legal Footer: Sichtbarkeit + Schriftfarbe** — aktueller Code `AppShell.tsx:340-349` nutzt `text-text-muted` (dunkle Schrift) statt Theme-aware hell. Außerdem erscheint der Footer inkonsistent (mal sichtbar, mal weg). Entweder konsistent immer sichtbar (unter CardGrid angeheftet, nicht floating) oder konsistent weg und Legal-Links nur im Header-Menü. Luca-Tendenz: immer sichtbar, aber hell im Darkmode. Auch prüfen: verdeckt Chat-Expand den Footer unabsichtlich?
 
 ### 📄 Content tools-app
 
