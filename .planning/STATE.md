@@ -203,3 +203,7 @@ Manuelles Testing auf verschiedenen Browsern.
 - Phase 9 COMPLETE: Floating Chat implemented (2026-04-15)
 - Phase 11 added: Performance Polish (2026-04-15)
 - Phase 11 COMPLETE: All optimizations applied (2026-04-15)
+- Phase 12 added: Auth Rewrite (2026-04-16)
+- Phase 12 COMPLETE: @genai/auth canonical + Session-Drop-Fix (2026-04-17)
+- Phase 13 added: Auth-Flow-Audit + CSP Reaktivierung (2026-04-17)
+- Roadmap retroaktiv aktualisiert: Phase 11+12 als COMPLETE nachgetragen (2026-04-17)
