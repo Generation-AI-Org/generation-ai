@@ -5,8 +5,9 @@
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** 12 Auth Rewrite (COMPLETE — Session-Drop-Bug gefixt)
-**Last Updated:** 2026-04-17T02:10
+**Phase:** 13 Auth-Flow-Audit + CSP Reaktivierung (IN PROGRESS — Wave 0 complete)
+**Current Plan:** 13-01 COMPLETE → Wave 1 wartet auf .env.test.local von Luca
+**Last Updated:** 2026-04-17
 **Site Status:** ✅ Live — Login auf tools.generation-ai.org funktioniert (Commit f5f9cb7)
 
 ## Session-Drop-Bug (f5f9cb7, 2026-04-17)
@@ -207,3 +208,4 @@ Manuelles Testing auf verschiedenen Browsern.
 - Phase 12 COMPLETE: @genai/auth canonical + Session-Drop-Fix (2026-04-17)
 - Phase 13 added: Auth-Flow-Audit + CSP Reaktivierung (2026-04-17)
 - Roadmap retroaktiv aktualisiert: Phase 11+12 als COMPLETE nachgetragen (2026-04-17)
+- Phase 13 Plan 01 COMPLETE: Test-Infrastructure Scaffold (Wave 0) — fixtures, helpers, auth.spec.ts skeleton, 4 tests grün gegen Prod (2026-04-17)
