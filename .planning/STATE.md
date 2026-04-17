@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Monorepo Migration ✅ COMPLETE
-current_plan: Phase 13 COMPLETE (branch-level) → PR bereit für manuellen Merge
-status: branch_complete_pending_merge
-last_updated: "2026-04-17T02:30:00.000Z"
+current_plan: Phase 13 MERGED → Stufe 3 Simplify-Pass als nächstes
+status: phase_13_merged
+last_updated: "2026-04-17T09:15:00.000Z"
 progress:
   total_phases: 13
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 28
-  completed_plans: 26
-  percent: 93
+  completed_plans: 28
+  percent: 100
 ---
 
 # Project State — Generation AI Monorepo
@@ -20,11 +20,10 @@ progress:
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** 13 Auth-Flow-Audit + CSP Reaktivierung (BRANCH COMPLETE — Merge pending)
-**Current Plan:** All 6 plans complete (13-01..13-06). Verifier: PASS (branch-level). PR ready.
-**Last Updated:** 2026-04-17
-**Last Session:** 2026-04-17T02:30:00.000Z
-**Site Status:** ✅ Live — Login auf tools.generation-ai.org funktioniert (Commit f5f9cb7)
+**Phase:** 13 Auth-Flow-Audit + CSP Reaktivierung ✅ MERGED (PR #2 → main, Commit 9de4d54)
+**Current Plan:** Phase 13 abgeschlossen. Stufe 3 Simplify-Pass wartet.
+**Last Updated:** 2026-04-17T09:15
+**Site Status:** ✅ Live — Website + tools-app mit enforced CSP deployed
 
 ## Session-Drop-Bug (f5f9cb7, 2026-04-17)
 
