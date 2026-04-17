@@ -3,12 +3,16 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "test": "playwright test",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "e2e:headed": "playwright test --headed"
   },
   "devDependencies": {
+    "@genai/auth": "workspace:*",
     "@playwright/test": "^1.52.0",
+    "@supabase/supabase-js": "^2.103.0",
+    "dotenv": "^16.4.5",
     "typescript": "^5"
   }
 }

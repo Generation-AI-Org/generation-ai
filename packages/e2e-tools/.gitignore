@@ -1,0 +1,4 @@
+.env.test.local
+test-results/
+playwright-report/
+.playwright/
