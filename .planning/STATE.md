@@ -24,7 +24,22 @@ progress:
 **Chat-Agent-Bug:** ✅ FIXED & MERGED (PR #3 → main, Commit fb884fc, 2026-04-17)
 **Last Updated:** 2026-04-17T10:45
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Member-Chat antwortet zuverlässig. Release **v4.1.0** auf GitHub published (Tag + CHANGELOGs + Release-Page).
-**Next Session:** Feature „Chat überall — global Agent + Context-aware". Detailplan in BACKLOG.md § 💬 Chat überall. Kurz: `FloatingChat` aus AppShell-lock lösen, auf `/[slug]` mit Desktop-Layout-Shift (Artikel schmaler, Chat als 400px-Sidebar) + `context={slug,title,type}` ans /api/chat durchreichen. Mobile bleibt Floating.
+**Next Sessions (autonom fahrbar, 6 Phasen in v3.0 Milestone angelegt):**
+
+Phasen 14-19 stehen in `ROADMAP.md` unter Milestone v3.0. Empfohlene Reihenfolge:
+
+1. **Phase 14 — Mobile Quick-Win-Polish** (klein, ~1h, patch) — 3 Mobile-Bugs fixen
+2. **Phase 15 — Chat überall + Context-aware** (GSD-Phase, ~halber Tag, minor v4.2.0) — FloatingChat auf alle Routen
+3. **Phase 16 — Micro-Animations Mobile-Parity** (~2h, patch)
+4. **Phase 17 — Passwort-Flow** (teil-autonom, Supabase-Dashboard)
+5. **Phase 18 — Simplify-Pass** (nach `/gsd-map-codebase`)
+6. **Phase 19 — OAuth Google + Apple** (teil-autonom, Cloud-Setups)
+
+**Session-Start-Commands (aus BACKLOG.md + ROADMAP.md ableiten):**
+
+- Vor Phase 15/18: einmalig `/gsd-map-codebase` (erzeugt `.planning/codebase/`, Basis für Researcher)
+- Pro Phase: `/gsd-autonomous --only N --interactive` (pausiert bei Architektur-Fragen, läuft dann durch)
+- Zwei Sessions parallel: gehen wenn die Phasen keine gleichen Files anfassen (14 + 16 ✅, 14 + 15 ❌)
 
 ## Chat-Agent-Bug — Root Cause + Fix (PR #3, 2026-04-17)
 

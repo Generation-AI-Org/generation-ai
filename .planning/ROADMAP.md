@@ -269,7 +269,7 @@ Plans:
 
 ---
 
-### Phase 13: Auth-Flow-Audit + CSP Reaktivierung
+### Phase 13: Auth-Flow-Audit + CSP Reaktivierung ✅ COMPLETE
 
 **Goal:** Systematische E2E-Validierung aller Auth-Pfade (Login/Passwort, Magic Link, Session-Refresh, Signout, Password-Reset, Cross-Domain Website↔tools-app) + CSP von Report-Only auf enforced heben und auf tools-app implementieren. Edge-Runtime-Blocker klären.
 **Requirements:** AUTH-AUDIT-01..06, CONSOL-01, CSP-01..03, DOC-01
@@ -283,6 +283,151 @@ Plans:
 - [x] 13-04-PLAN.md — Wave 2: website CSP Report-Only → Enforced via proxy.ts nonce (non-autonomous)
 - [x] 13-05-PLAN.md — Wave 2: tools-app CSP neu via proxy.ts nonce (non-autonomous)
 - [x] 13-06-PLAN.md — Wave 3: docs/AUTH-FLOW.md final mit Mermaid + ARCHITECTURE.md Cross-Link
+
+---
+
+## Milestone v3.0: UX Polish & Feature Expansion (2026-04-17+)
+
+| Phase | Name | Goal | Autonom-fähig |
+|-------|------|------|---------------|
+| 14 | Mobile Quick-Win-Polish | 3 offene Mobile-Bugs fixen (Shift+Enter, Auto-Resize, Legal Footer) | ✅ Ja |
+| 15 | Chat überall — global + Context-aware | FloatingChat auf alle Routen, Desktop Layout-Shift, Agent-Context | ✅ Ja |
+| 16 | Micro-Animations Mobile-Parity | Desktop-Micro-Interactions auf Mobile portieren | ✅ Ja |
+| 17 | Passwort-Flow vervollständigen | Passwort-Setzen-UI + Reset-Test + Email-Templates | ⚠️ Teil-autonom (Supabase-Dashboard) |
+| 18 | Simplify-Pass tools-app | Tote Files, inkonsistente Patterns, Naming-Cleanup | ✅ Ja (nach Map) |
+| 19 | OAuth Logins — Google + Apple | SSO für Studierende (Google → Apple) | ⚠️ Teil-autonom (Cloud-Setups) |
+
+---
+
+### Phase 14: Mobile Quick-Win-Polish
+
+**Goal:** 3 offene Mobile-UI-Bugs in einem kleinen patch-Release fixen. Kein Feature-Scope, nur gezielte Fixes.
+**Depends on:** keine
+**Scope:**
+1. **Mobile Shift+Enter** — verifizieren ob der Fix aus früherer Session hält, ggf. re-apply. Playwright-Test gegen Mobile-Viewport.
+2. **Desktop Chat-Input Auto-Resize bei Transkription** — `FloatingChat.tsx` Input-Field wächst nur bei normalem Typing, nicht bei programmatischen Text-Writes (Diktat). Textarea-Resize-Logic muss auch auf `value`-Changes außerhalb von `onChange` triggern.
+3. **Mobile Legal Footer — Darkmode-Farbe + Sichtbarkeit** — `AppShell.tsx:340-349` nutzt `text-text-muted` (nicht theme-aware). Fix: helle Farbe im Darkmode. Außerdem: Footer erscheint inkonsistent — prüfen ob immer sichtbar (gewünscht) und nicht vom Chat-Expand verdeckt.
+
+**Success Criteria:**
+- [ ] Shift+Enter auf Mobile erzeugt zuverlässig Zeilenumbruch (Playwright-Test grün)
+- [ ] Desktop Chat-Input wächst auch bei Voice-Input / programmatischen Text-Writes
+- [ ] Mobile Legal Footer im Darkmode hell sichtbar und nie vom Chat überdeckt
+
+**Release:** patch (v4.1.x)
+
+---
+
+### Phase 15: Chat überall — global + Context-aware
+
+**Goal:** FloatingChat aus AppShell-Lock lösen — Chat ist auf allen Routen (Home, Detail, Settings) verfügbar. Desktop-Detail-Seiten: Artikel schrumpft, Chat wird 400px-Sidebar rechts (Notion-AI-Style). Agent bekommt Kontext des aktuell gelesenen Tools mit.
+**Depends on:** Phase 14 (FloatingChat sauber vor Umbau)
+**Detailplan:** siehe `BACKLOG.md § 💬 Chat überall` (vollständig ausformuliert)
+
+**Scope (Kurzform):**
+1. `AppShell` splitten in `GlobalLayout` (Header + FloatingChat) + `HomeLayout` (Filter + CardGrid)
+2. `GlobalLayout` auf allen Routen außer /login
+3. Desktop Detail-Route `/[slug]`: Artikel-Column `max-w-3xl → max-w-2xl` bei expanded Chat, Sidebar-Layout
+4. Mobile bleibt Floating/Bottom-Sheet — kein Split
+5. `FloatingChat` prop `context?: { slug, title, type }` → wird als System-Message an `/api/chat` durchgereicht
+6. Tool-Highlighting no-op wenn kein CardGrid da
+7. Session-ID über SessionStorage persistiert (Navigation überlebt Chat)
+
+**Success Criteria:**
+- [ ] Chat auf Home, Detail, Settings sichtbar; /login ausgenommen
+- [ ] Desktop /[slug]: Layout-Shift bei Chat-Expand, Collapse zurück auf 100%
+- [ ] Agent-Antwort auf Detail-Seite referenziert das aktuelle Tool im Kontext
+- [ ] Session überlebt Page-Navigation (kein Reset)
+- [ ] Analytics-Event `chat_opened_from_route` erfasst
+
+**Release:** minor (v4.2.0)
+
+---
+
+### Phase 16: Micro-Animations Mobile-Parity
+
+**Goal:** Subtile Animations die Wertigkeit erhöhen — Desktop hat einige, Mobile fehlen sie. Parität herstellen.
+**Depends on:** Phase 15 (damit neue Layouts nicht mit Animation-Changes kollidieren)
+
+**Scope:**
+- Sonnen-Rotation im Theme-Toggle auch auf Mobile
+- Diktier-Button Audio-Bars Animation Mobile-verfügbar
+- Paperclip/Attachment-Animation Polish
+- Kompletter Durchgang: Liste aller Desktop-Micro-Interactions erstellen, Mobile-Parity prüfen, portieren was fehlt
+
+**Success Criteria:**
+- [ ] Alle in der Liste erfassten Micro-Animations funktionieren auf Mobile gleichwertig
+- [ ] Keine Performance-Regression (bleibt 60fps)
+- [ ] Kein Layout-Shift beim Animation-Trigger
+
+**Release:** patch (v4.2.x)
+
+---
+
+### Phase 17: Passwort-Flow vervollständigen
+
+**Goal:** User kann Passwort selbst setzen/ändern (aktuell nur Magic-Link-Flow aktiv). E2E-Test für Reset. Email-Templates in Systemfarbe (Darkmode).
+**Depends on:** keine
+**⚠️ Manual Steps (Luca):** Supabase Dashboard → Auth → Email Templates customizen, Rate-Limit zurückstellen auf normale Werte.
+
+**Scope:**
+1. **Passwort-Setzen-UI** in Settings (Flow: "Passwort setzen/ändern" → Reset-Mail → neues Passwort)
+2. **Passwort-Reset e2e-Test** — Code existiert seit Phase 13, nie verifiziert. Playwright gegen Prod.
+3. **Supabase Email-Templates** — Darkmode-kompatibel, Systemfarbe
+4. **Rate-Limit auf Login zurückstellen** — während Tests hochgestellt, jetzt normalisieren
+
+**Success Criteria:**
+- [ ] User kann in Settings neues Passwort setzen
+- [ ] E2E-Test Passwort-Reset grün
+- [ ] Reset-Email in Darkmode korrekt gerendert
+- [ ] Login-Rate-Limit auf Prod-Werten
+
+**Release:** minor (v4.3.0)
+
+---
+
+### Phase 18: Simplify-Pass tools-app
+
+**Goal:** Tote Files löschen, inkonsistente Patterns vereinheitlichen, Naming fixen. Basiert auf Findings aus `.planning/codebase/` (Output von `/gsd-map-codebase`).
+**Depends on:** `/gsd-map-codebase` muss gelaufen sein, Phase 15 fertig (damit neue Architektur als Baseline dient)
+
+**Scope:**
+- Orphan-Dateien identifizieren (keine Imports)
+- Inkonsistente Namings (z.B. `ContentCard` vs `ToolCard`) harmonisieren
+- Duplicate/ähnliche Helper zusammenführen
+- Alte Dev-Artefakte (.playwright-mcp Screenshots etc.) aus Repo räumen
+- Commented-out Code löschen
+
+**Success Criteria:**
+- [ ] `.planning/codebase/CONCERNS.md` Findings adressiert
+- [ ] `knip` / unused-exports-check grün
+- [ ] Keine Feature-Regression (alle E2E-Tests grün)
+
+**Release:** patch (v4.3.x)
+
+---
+
+### Phase 19: OAuth Logins — Google + Apple
+
+**Goal:** 3-Klick-Login für Studierende. Google priorisiert (größte UX-Win), Apple zweit (iPhone-User).
+**Depends on:** Phase 17 (Passwort-Flow sauber vorher)
+**⚠️ Manual Steps (Luca):**
+- Google Cloud Console → OAuth Client erstellen
+- Apple Developer → Sign in with Apple Service-ID
+- Supabase Dashboard → Auth → Providers enablen + Client-IDs eintragen
+
+**Scope:**
+1. Google OAuth-Integration (`supabase.auth.signInWithOAuth`)
+2. Apple OAuth-Integration
+3. Circle-Member-Erkennung: Email-Lookup via Circle-API → `profiles.is_circle_member = true` → Pro-Modus automatisch (siehe BACKLOG.md)
+4. Login-UI updaten mit Provider-Buttons
+
+**Success Criteria:**
+- [ ] Google-Login funktioniert Ende-zu-Ende (Prod-verifiziert)
+- [ ] Apple-Login funktioniert Ende-zu-Ende (Prod-verifiziert)
+- [ ] Circle-Member beim OAuth-Signup automatisch zu Pro upgraded
+- [ ] Login-UI konsistent mit Theme
+
+**Release:** minor (v4.4.0)
 
 ---
 
