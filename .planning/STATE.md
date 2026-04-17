@@ -5,9 +5,17 @@
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** 12 Auth Rewrite (DEPLOYING TO PRODUCTION)
-**Last Updated:** 2026-04-16T16:45
-**Site Status:** 🚀 Deploying — Auth Rewrite pushed to main, Vercel building
+**Phase:** 12 Auth Rewrite (COMPLETE — Session-Drop-Bug gefixt)
+**Last Updated:** 2026-04-17T02:10
+**Site Status:** ✅ Live — Login auf tools.generation-ai.org funktioniert (Commit f5f9cb7)
+
+## Session-Drop-Bug (f5f9cb7, 2026-04-17)
+
+**Root Cause:** `apps/tools-app/app/auth/signout/route.ts` hatte GET-Handler → Next.js `<Link href="/auth/signout">` in AppShell + FilterBar wurde automatisch prefetched → Server rief `signOut()` bei jedem Page-Render auf → Session wurde ~1s nach Login zerstört.
+
+**Fix:** Signout-Route auf POST-only, Links durch `<form method="POST">` ersetzt. Canonical Supabase-Pattern.
+
+**Verifiziert via Playwright gegen Prod:** Login setzt Cookie, Reload persistiert, Navigation zu /settings hält Session.
 
 ## Auth Rewrite — DEPLOYED
 
