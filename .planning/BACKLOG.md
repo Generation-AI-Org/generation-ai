@@ -56,6 +56,7 @@
 - [ ] **Tool-Highlighting kaputt** — KI gibt "string" statt der Tool-Liste aus. Highlight-Mechanismus funktioniert nicht mehr. Regression-Check.
 - [ ] **Mobile Chat-Width springt auf ~80 %** — wenn Chat geöffnet wird, werden die Ränder abgeschnitten statt volle Breite zu nutzen.
 - [ ] **Mobile Shift+Enter** — Luca glaubt gefixt, verifizieren.
+- [ ] **Desktop Chat-Input wächst nicht bei Transkription** — Normales Tippen + Enter expandiert das Input-Feld korrekt. Wenn stattdessen ein langer Text per Diktat reinkommt, bleibt das Feld klein/schmal → nervig zu lesen/editieren. Auto-Resize muss auch bei programmatischen Text-Writes triggern.
 
 ### 🎨 UI tools-app
 
