@@ -6,11 +6,11 @@ current_plan: Phase 14 — Mobile Quick-Win-Polish (start)
 status: milestone_v3_ready
 last_updated: "2026-04-17T11:45:00.000Z"
 progress:
-  total_phases: 19
+  total_phases: 17
   completed_phases: 13
   total_plans: 28
   completed_plans: 28
-  percent: 68
+  percent: 76
 ---
 
 # Project State — Generation AI Monorepo
@@ -24,22 +24,26 @@ progress:
 **Chat-Agent-Bug:** ✅ FIXED & MERGED (PR #3 → main, Commit fb884fc, 2026-04-17)
 **Last Updated:** 2026-04-17T10:45
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Member-Chat antwortet zuverlässig. Release **v4.1.0** auf GitHub published (Tag + CHANGELOGs + Release-Page).
-**Next Sessions (autonom fahrbar, 6 Phasen in v3.0 Milestone angelegt):**
+**Next Sessions (autonom fahrbar, 4 Phasen in v3.0 Milestone — konsolidiert von 6 auf 4 am 2026-04-17):**
 
-Phasen 14-19 stehen in `ROADMAP.md` unter Milestone v3.0. Empfohlene Reihenfolge:
+Phasen 14-17 stehen in `ROADMAP.md` unter Milestone v3.0. Empfohlene Reihenfolge:
 
-1. **Phase 14 — Mobile Quick-Win-Polish** (klein, ~1h, patch) — 3 Mobile-Bugs fixen
+1. **Phase 14 — Mobile Polish** (patch v4.2.x) — Quick-Wins (Auto-Resize ✅, Footer ✅, Shift+Enter pending) + Micro-Animations Mobile-Parity
 2. **Phase 15 — Chat überall + Context-aware** (GSD-Phase, ~halber Tag, minor v4.2.0) — FloatingChat auf alle Routen
-3. **Phase 16 — Micro-Animations Mobile-Parity** (~2h, patch)
-4. **Phase 17 — Passwort-Flow** (teil-autonom, Supabase-Dashboard)
-5. **Phase 18 — Simplify-Pass** (nach `/gsd-map-codebase`)
-6. **Phase 19 — OAuth Google + Apple** (teil-autonom, Cloud-Setups)
+3. **Phase 16 — Auth Extensions** (teil-autonom, minor v4.3.0) — Passwort-Flow + OAuth Google/Apple, zusammen weil gleiche Cloud-Setups
+4. **Phase 17 — Simplify-Pass** (patch v4.3.x) — nach `/gsd-map-codebase`
+
+**Konsolidierungs-Rationale (2026-04-17):**
+- Alt 14 + alt 16 → neu 14 (beide Mobile-UX, zusammen 3h, zu klein für 2 GSD-Phasen)
+- Alt 17 + alt 19 → neu 16 (Auth-Block, gleiche Dashboard-/Cloud-Setups, gleiche E2E-Pfade)
+- Alt 15 unverändert (echte Architektur-Phase) → neu 15
+- Alt 18 → neu 17 (Simplify bleibt eigenständig, depends on map-codebase)
 
 **Session-Start-Commands (aus BACKLOG.md + ROADMAP.md ableiten):**
 
-- Vor Phase 15/18: einmalig `/gsd-map-codebase` (erzeugt `.planning/codebase/`, Basis für Researcher)
+- Vor Phase 15/17: einmalig `/gsd-map-codebase` (erzeugt `.planning/codebase/`, Basis für Researcher)
 - Pro Phase: `/gsd-autonomous --only N --interactive` (pausiert bei Architektur-Fragen, läuft dann durch)
-- Zwei Sessions parallel: gehen wenn die Phasen keine gleichen Files anfassen (14 + 16 ✅, 14 + 15 ❌)
+- Zwei Sessions parallel: gehen wenn die Phasen keine gleichen Files anfassen (14 + 17 ✅, 14 + 15 ❌)
 
 ## Chat-Agent-Bug — Root Cause + Fix (PR #3, 2026-04-17)
 

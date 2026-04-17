@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 Monorepo Migration** — shipped 2026-04-14
 - ✅ **v2.0 Production Hardening** — shipped 2026-04-17 (Release v4.1.0)
-- 🚧 **v3.0 UX Polish & Feature Expansion** — Phases 14-19 (in progress)
+- 🚧 **v3.0 UX Polish & Feature Expansion** — Phases 14-17 (in progress)
 
 ---
 
@@ -308,30 +308,37 @@ Plans:
 
 | Phase | Name | Goal | Autonom-fähig |
 |-------|------|------|---------------|
-| 14 | Mobile Quick-Win-Polish | 3 offene Mobile-Bugs fixen (Shift+Enter, Auto-Resize, Legal Footer) | ✅ Ja |
+| 14 | Mobile Polish | Mobile Quick-Win-Bugs + Micro-Animations Parity zu Desktop | ✅ Ja |
 | 15 | Chat überall — global + Context-aware | FloatingChat auf alle Routen, Desktop Layout-Shift, Agent-Context | ✅ Ja |
-| 16 | Micro-Animations Mobile-Parity | Desktop-Micro-Interactions auf Mobile portieren | ✅ Ja |
-| 17 | Passwort-Flow vervollständigen | Passwort-Setzen-UI + Reset-Test + Email-Templates | ⚠️ Teil-autonom (Supabase-Dashboard) |
-| 18 | Simplify-Pass tools-app | Tote Files, inkonsistente Patterns, Naming-Cleanup | ✅ Ja (nach Map) |
-| 19 | OAuth Logins — Google + Apple | SSO für Studierende (Google → Apple) | ⚠️ Teil-autonom (Cloud-Setups) |
+| 16 | Auth Extensions | Passwort-Flow vervollständigen + OAuth Google/Apple | ⚠️ Teil-autonom (Supabase/Cloud-Setups) |
+| 17 | Simplify-Pass tools-app | Tote Files, inkonsistente Patterns, Naming-Cleanup | ✅ Ja (nach Map) |
 
 ---
 
-### Phase 14: Mobile Quick-Win-Polish
+### Phase 14: Mobile Polish
 
-**Goal:** 3 offene Mobile-UI-Bugs in einem kleinen patch-Release fixen. Kein Feature-Scope, nur gezielte Fixes.
+**Goal:** Mobile UI auf Desktop-Parität heben — offene Quick-Win-Bugs fixen und fehlende Micro-Animations portieren. Ein zusammenhängender Mobile-Polish-Block statt zwei Mini-Phasen.
 **Depends on:** keine
-**Scope:**
-1. **Mobile Shift+Enter** — verifizieren ob der Fix aus früherer Session hält, ggf. re-apply. Playwright-Test gegen Mobile-Viewport.
-2. **Desktop Chat-Input Auto-Resize bei Transkription** — `FloatingChat.tsx` Input-Field wächst nur bei normalem Typing, nicht bei programmatischen Text-Writes (Diktat). Textarea-Resize-Logic muss auch auf `value`-Changes außerhalb von `onChange` triggern.
-3. **Mobile Legal Footer — Darkmode-Farbe + Sichtbarkeit** — `AppShell.tsx:340-349` nutzt `text-text-muted` (nicht theme-aware). Fix: helle Farbe im Darkmode. Außerdem: Footer erscheint inkonsistent — prüfen ob immer sichtbar (gewünscht) und nicht vom Chat-Expand verdeckt.
+
+**Scope — Teil A: Quick-Win-Bugs (teils erledigt)**
+1. **Desktop Chat-Input Auto-Resize bei Transkription** ✅ — committed (d22b452). `FloatingChat.tsx` Input-Field wächst jetzt auch bei programmatischen `value`-Changes (Diktat).
+2. **Mobile Legal Footer — Darkmode-Farbe + Sichtbarkeit** ✅ — committed (d22b452). `AppShell.tsx` Footer theme-aware, nicht vom Chat-Expand verdeckt.
+3. **Mobile Shift+Enter** — verifizieren ob Fix aus früherer Session hält, ggf. re-apply. Playwright-Test gegen Mobile-Viewport.
+
+**Scope — Teil B: Micro-Animations Mobile-Parity**
+- Sonnen-Rotation im Theme-Toggle auch auf Mobile
+- Diktier-Button Audio-Bars Animation Mobile-verfügbar
+- Paperclip/Attachment-Animation Polish
+- Kompletter Durchgang: Liste aller Desktop-Micro-Interactions erstellen, Mobile-Parity prüfen, portieren was fehlt
 
 **Success Criteria:**
+- [x] Desktop Chat-Input wächst auch bei Voice-Input / programmatischen Text-Writes
+- [x] Mobile Legal Footer im Darkmode hell sichtbar und nie vom Chat überdeckt
 - [ ] Shift+Enter auf Mobile erzeugt zuverlässig Zeilenumbruch (Playwright-Test grün)
-- [ ] Desktop Chat-Input wächst auch bei Voice-Input / programmatischen Text-Writes
-- [ ] Mobile Legal Footer im Darkmode hell sichtbar und nie vom Chat überdeckt
+- [ ] Alle erfassten Micro-Animations funktionieren auf Mobile gleichwertig
+- [ ] Keine Performance-Regression (bleibt 60fps), kein Layout-Shift beim Trigger
 
-**Release:** patch (v4.1.x)
+**Release:** patch (v4.2.x)
 
 ---
 
@@ -361,49 +368,43 @@ Plans:
 
 ---
 
-### Phase 16: Micro-Animations Mobile-Parity
+### Phase 16: Auth Extensions
 
-**Goal:** Subtile Animations die Wertigkeit erhöhen — Desktop hat einige, Mobile fehlen sie. Parität herstellen.
-**Depends on:** Phase 15 (damit neue Layouts nicht mit Animation-Changes kollidieren)
+**Goal:** Auth-Flow vollständig machen — Passwort-Flow end-to-end + OAuth (Google, Apple). Zusammenhängender Auth-Block, weil beide Cloud-Setups, gleiche Test-Pfade, gleiche Email-Template-Arbeit.
+**Depends on:** Phase 15 empfohlen (damit Chat-Context im Login-Redirect nicht kollidiert) — optional
+**⚠️ Manual Steps (Luca):**
+- Supabase Dashboard → Auth → Email Templates customizen, Rate-Limit auf Prod-Werte normalisieren
+- Supabase Dashboard → Auth → Providers (Google, Apple) enablen + Client-IDs eintragen
+- Google Cloud Console → OAuth Client erstellen
+- Apple Developer → Sign in with Apple Service-ID
 
-**Scope:**
-- Sonnen-Rotation im Theme-Toggle auch auf Mobile
-- Diktier-Button Audio-Bars Animation Mobile-verfügbar
-- Paperclip/Attachment-Animation Polish
-- Kompletter Durchgang: Liste aller Desktop-Micro-Interactions erstellen, Mobile-Parity prüfen, portieren was fehlt
-
-**Success Criteria:**
-- [ ] Alle in der Liste erfassten Micro-Animations funktionieren auf Mobile gleichwertig
-- [ ] Keine Performance-Regression (bleibt 60fps)
-- [ ] Kein Layout-Shift beim Animation-Trigger
-
-**Release:** patch (v4.2.x)
-
----
-
-### Phase 17: Passwort-Flow vervollständigen
-
-**Goal:** User kann Passwort selbst setzen/ändern (aktuell nur Magic-Link-Flow aktiv). E2E-Test für Reset. Email-Templates in Systemfarbe (Darkmode).
-**Depends on:** keine
-**⚠️ Manual Steps (Luca):** Supabase Dashboard → Auth → Email Templates customizen, Rate-Limit zurückstellen auf normale Werte.
-
-**Scope:**
+**Scope — Teil A: Passwort-Flow**
 1. **Passwort-Setzen-UI** in Settings (Flow: "Passwort setzen/ändern" → Reset-Mail → neues Passwort)
-2. **Passwort-Reset e2e-Test** — Code existiert seit Phase 13, nie verifiziert. Playwright gegen Prod.
+2. **Passwort-Reset E2E-Test** — Code existiert seit Phase 13, nie verifiziert. Playwright gegen Prod.
 3. **Supabase Email-Templates** — Darkmode-kompatibel, Systemfarbe
-4. **Rate-Limit auf Login zurückstellen** — während Tests hochgestellt, jetzt normalisieren
+4. **Rate-Limit auf Login zurückstellen**
+
+**Scope — Teil B: OAuth Google + Apple**
+5. Google OAuth-Integration (`supabase.auth.signInWithOAuth`) — priorisiert, größter UX-Win
+6. Apple OAuth-Integration — zweit, iPhone-User
+7. Circle-Member-Erkennung: Email-Lookup via Circle-API → `profiles.is_circle_member = true` → Pro-Modus automatisch
+8. Login-UI updaten mit Provider-Buttons (Email/Passwort bleibt Fallback)
 
 **Success Criteria:**
 - [ ] User kann in Settings neues Passwort setzen
 - [ ] E2E-Test Passwort-Reset grün
 - [ ] Reset-Email in Darkmode korrekt gerendert
 - [ ] Login-Rate-Limit auf Prod-Werten
+- [ ] Google-Login Ende-zu-Ende Prod-verifiziert
+- [ ] Apple-Login Ende-zu-Ende Prod-verifiziert
+- [ ] Circle-Member beim OAuth-Signup automatisch zu Pro upgraded
+- [ ] Login-UI konsistent mit Theme
 
 **Release:** minor (v4.3.0)
 
 ---
 
-### Phase 18: Simplify-Pass tools-app
+### Phase 17: Simplify-Pass tools-app
 
 **Goal:** Tote Files löschen, inkonsistente Patterns vereinheitlichen, Naming fixen. Basiert auf Findings aus `.planning/codebase/` (Output von `/gsd-map-codebase`).
 **Depends on:** `/gsd-map-codebase` muss gelaufen sein, Phase 15 fertig (damit neue Architektur als Baseline dient)
@@ -421,31 +422,6 @@ Plans:
 - [ ] Keine Feature-Regression (alle E2E-Tests grün)
 
 **Release:** patch (v4.3.x)
-
----
-
-### Phase 19: OAuth Logins — Google + Apple
-
-**Goal:** 3-Klick-Login für Studierende. Google priorisiert (größte UX-Win), Apple zweit (iPhone-User).
-**Depends on:** Phase 17 (Passwort-Flow sauber vorher)
-**⚠️ Manual Steps (Luca):**
-- Google Cloud Console → OAuth Client erstellen
-- Apple Developer → Sign in with Apple Service-ID
-- Supabase Dashboard → Auth → Providers enablen + Client-IDs eintragen
-
-**Scope:**
-1. Google OAuth-Integration (`supabase.auth.signInWithOAuth`)
-2. Apple OAuth-Integration
-3. Circle-Member-Erkennung: Email-Lookup via Circle-API → `profiles.is_circle_member = true` → Pro-Modus automatisch (siehe BACKLOG.md)
-4. Login-UI updaten mit Provider-Buttons
-
-**Success Criteria:**
-- [ ] Google-Login funktioniert Ende-zu-Ende (Prod-verifiziert)
-- [ ] Apple-Login funktioniert Ende-zu-Ende (Prod-verifiziert)
-- [ ] Circle-Member beim OAuth-Signup automatisch zu Pro upgraded
-- [ ] Login-UI konsistent mit Theme
-
-**Release:** minor (v4.4.0)
 
 ---
 
