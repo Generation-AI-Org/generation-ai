@@ -86,7 +86,7 @@ export async function POST(req: Request) {
       return NextResponse.json({
         sessionId: activeSessionId,
         text: result.text,
-        recommendedSlugs: [], // V2 nutzt sources statt recommendedSlugs
+        recommendedSlugs: result.sources.map((s) => s.slug),
         sources: result.sources,
       })
     } else {

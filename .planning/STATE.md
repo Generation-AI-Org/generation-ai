@@ -20,10 +20,27 @@ progress:
 ## Current Status
 
 **Milestone:** v2.0 Production Hardening
-**Phase:** 13 Auth-Flow-Audit + CSP Reaktivierung ✅ MERGED (PR #2 → main, Commit 9de4d54)
-**Current Plan:** Phase 13 abgeschlossen. Stufe 3 Simplify-Pass wartet.
-**Last Updated:** 2026-04-17T09:15
-**Site Status:** ✅ Live — Website + tools-app mit enforced CSP deployed
+**Phase:** 13 Auth-Flow-Audit + CSP ✅ MERGED (PR #2 → main, Commit 9de4d54)
+**Offener PR:** #3 `fix/chat-agent-recovery` — defensiver Synthesis-Fallback, Root Cause noch **nicht** identifiziert.
+**Last Updated:** 2026-04-17T10:00
+**Site Status:** ✅ Live — CSP A+, Auth stabil. **Member-Chat liefert aktuell Fallback-Text** (Bug unten).
+
+## ⚠️ Next Session — Aufgabe
+
+**Root-Cause finden:** Warum bleibt der Member-Chat-Agent (`apps/tools-app/lib/agent.ts`) im Tool-Call-Loop hängen statt zur finalen Antwort zu kommen?
+
+**Kontext / Leitplanken:**
+- Luca sagt explizit: **Gemini 3 Flash Preview ist stabil**, hat vorher funktioniert, **nicht** das Modell beschuldigen.
+- Lead: Gemini's internes `<think>...</think>` Reasoning frisst Tokens. Bei `max_tokens: 2000` könnte die finale Antwort abgeschnitten werden → Agent sieht partielle Response + Tool-Calls → loopt weiter bis maxIterations = 5.
+- Offener PR #3 ist defensiv (synthesis-only Call nach max iter). Nicht mergen bevor root cause klar — oder mergen als Safety-Net und Root-Cause separat.
+- Findings auf Prod via Vercel Logs: Jeder `/api/chat` mit `mode: "member"` macht 5 Gemini-Calls, alle 200, aber nie `finish_reason: stop` ohne tool_calls.
+- Git history: letzte Agent-Changes `4b50740`, `2f95d33`, `2b1372a` (2026-04-14). Davor funktionierte es laut Luca.
+
+**Wo anfangen:**
+1. Diff der agent.ts / kb-tools.ts / openai SDK Version zwischen "letzter funktionierender Zustand" und jetzt.
+2. Gemini OpenAI-compat: Wie Thinking deaktivieren/begrenzen? (reasoning_effort? thinking_budget? extra_body?) Context7 nutzen für aktuelle Doku.
+3. Token-Counts loggen: `response.usage.completion_tokens_details` oft enthält Thinking-Anteil separat.
+4. Kurzer A/B-Test: `max_tokens: 8000` ODER thinking off → loopt es dann noch?
 
 ## Session-Drop-Bug (f5f9cb7, 2026-04-17)
 
