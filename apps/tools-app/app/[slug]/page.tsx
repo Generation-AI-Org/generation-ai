@@ -116,7 +116,7 @@ export default async function ItemPage({ params }: Props) {
               href={item.external_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-[var(--accent)] text-[var(--text-on-accent)] font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-colors text-base w-full sm:w-auto min-h-[48px]"
+              className="inline-flex items-center justify-center gap-2 bg-[var(--accent)] text-[var(--text-on-accent)] font-semibold px-6 py-3 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all duration-150 text-base w-full sm:w-auto min-h-[48px]"
             >
               {item.title} öffnen ↗
             </a>

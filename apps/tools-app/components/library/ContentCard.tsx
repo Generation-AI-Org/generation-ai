@@ -22,6 +22,7 @@ const ContentCard = memo(function ContentCard({ item, isHighlighted, isDimmed, a
       className={`
         group block rounded-2xl border p-4 md:p-5 transition-all duration-300 cursor-pointer min-h-[120px]
         hover:scale-[1.015] hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)]
+        active:scale-[0.98] active:transition-transform active:duration-75
         ${isHighlighted
           ? 'bg-bg-card border-2 border-[var(--accent)] shadow-[0_0_24px_var(--accent-glow)] animate-pulse-once z-10'
           : 'bg-bg-card border border-[var(--border)] hover:border-[var(--accent)]/30 hover:bg-bg-card/80'
@@ -54,6 +55,14 @@ const ContentCard = memo(function ContentCard({ item, isHighlighted, isDimmed, a
       <p className="text-text-secondary text-[14px] md:text-[13px] leading-relaxed line-clamp-2">
         {item.summary}
       </p>
+
+      {/* Quick Win — der Hook, der zum Klick einlädt */}
+      {item.quick_win && (
+        <p className="mt-3 pt-3 border-t border-[var(--border)]/60 text-[var(--accent)]/85 text-[12px] md:text-[12px] leading-snug line-clamp-2 flex gap-1.5">
+          <span aria-hidden="true" className="shrink-0">✨</span>
+          <span>{item.quick_win}</span>
+        </p>
+      )}
     </Link>
   )
 })

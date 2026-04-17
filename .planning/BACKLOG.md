@@ -5,7 +5,7 @@
 ## Entscheidungen
 
 - [x] **Vercel Pro upgraden?** — Entschieden: NEIN (2026-04-17). Plattform ist nicht-kommerziell (keine Einnahmen, nur Services ~200€/Monat Outlay). Hobby ist OK.
-- [x] **CSP Header aktivieren** — Content-Security-Policy schützt vor XSS. Aktuell Report-Only (website) / fehlt ganz (tools-app). Edge-Runtime war Blocker. Wichtig, aber kein Notfall. **Erledigt Phase 13 (13-04 + 13-05): enforced CSP mit nonce + strict-dynamic auf beiden Apps, branch feat/auth-flow-audit wartet auf Merge.**
+- [x] **CSP Header aktivieren** — Content-Security-Policy schützt vor XSS. Aktuell Report-Only (website) / fehlt ganz (tools-app). Edge-Runtime war Blocker. Wichtig, aber kein Notfall. **Erledigt Phase 13 (13-04 + 13-05): enforced CSP mit nonce + strict-dynamic auf beiden Apps.**
 
 ## DPAs
 

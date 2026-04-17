@@ -34,10 +34,10 @@ progress:
 
 **Verifiziert via Playwright gegen Prod:** Login setzt Cookie, Reload persistiert, Navigation zu /settings hält Session.
 
-## Phase 13 — COMPLETE (branch-level, 2026-04-17)
+## Phase 13 — COMPLETE & MERGED (2026-04-17)
 
-**Branch:** `feat/auth-flow-audit` — 20+ Commits, NICHT gemergt.
-**Verifier:** PASS auf Branch-Level, 4 Human-Verifications offen (Merge + Prod-curl, securityheaders.com, tools-app Feature-Smoke, Session-Refresh Path 3).
+**Branch:** `feat/auth-flow-audit` — gemergt in main via `--merge` (granulare Commits erhalten für ggf. Revert via `git revert -m 1`).
+**Verifier:** PASS, 4 Post-Merge-Human-Verifications: Prod-curl CSP, securityheaders.com, tools-app Feature-Smoke, Session-Refresh Path 3.
 
 **Was Phase 13 lieferte:**
 - 10 Playwright-E2E-Tests gegen Prod grün (6 Auth-Pfade, 2 skips dokumentiert)
@@ -46,12 +46,6 @@ progress:
 - Konsolidierungs-Audit: 0 direkte `@supabase/ssr`-Imports in apps/, thin shims ≤8 Zeilen
 - Signout GET → 405 Regression-Guard als automatisierter Test
 - 1 Bug gefixt (F2 Admin generateLink), 1 Backlog-Item (F1 sb-cookie httpOnly)
-
-**Nächste Session (in separater Session):**
-- PR Review + Merge `feat/auth-flow-audit` → main
-- Post-Merge: Prod-curl CSP + securityheaders.com A/A+ verifizieren
-- tools-app Feature-Smoke unter enforced CSP (Voice, Sentry, ToolLogo)
-- Session-Refresh Path 3 manueller Test
 
 ## Next Up — Stufe 3 Simplify-Pass
 

@@ -38,3 +38,4 @@ coverage/
 *.tsbuildinfo
 .vercel
 .env.test.local
+.playwright-mcp/

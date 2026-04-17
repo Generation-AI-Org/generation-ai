@@ -3,9 +3,12 @@
 import { useState } from 'react'
 import { createBrowserClient } from '@genai/auth'
 import Link from 'next/link'
+import Image from 'next/image'
+import { useTheme } from '@/components/ThemeProvider'
 
 export default function LoginPage() {
   const supabase = createBrowserClient()
+  const { theme } = useTheme()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -61,9 +64,15 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-[var(--accent)]/15 flex items-center justify-center mx-auto">
-              <span className="w-3 h-3 rounded-full bg-[var(--accent)] shadow-[0_0_12px_var(--accent-glow)]" />
-            </div>
+            <Image
+              src={theme === 'dark' ? '/logo-blue-neon-new.jpg' : '/logo-pink-red.jpg'}
+              alt="Generation AI"
+              width={180}
+              height={60}
+              className="h-12 w-auto object-contain mx-auto hover:opacity-90 transition-opacity"
+              priority
+              key={theme}
+            />
           </Link>
           <h1 className="text-xl font-semibold text-[var(--text)]">Bei Generation AI anmelden</h1>
           <p className="text-sm text-[var(--text-muted)] mt-1">
