@@ -41,6 +41,18 @@ export default async function SettingsPage() {
           </div>
         </section>
 
+        <section className="mb-12">
+          <h2 className="text-xl font-semibold text-[var(--text)] mb-4">Rechtliches</h2>
+          <div className="p-4 bg-[var(--surface)] rounded-lg border border-[var(--border)] flex flex-col gap-2">
+            <Link href="/impressum" className="text-[var(--text)] hover:text-[var(--accent)] transition-colors">
+              Impressum
+            </Link>
+            <Link href="/datenschutz" className="text-[var(--text)] hover:text-[var(--accent)] transition-colors">
+              Datenschutz
+            </Link>
+          </div>
+        </section>
+
         <section>
           <h2 className="text-xl font-semibold text-red-400 mb-4">Gefahrenzone</h2>
           <div className="p-4 bg-[var(--surface)] rounded-lg border border-red-500/30">

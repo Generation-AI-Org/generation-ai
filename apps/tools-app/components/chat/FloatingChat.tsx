@@ -436,7 +436,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
             </span>
             <button
               onClick={toggleExpand}
-              className="p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110 active:scale-95"
+              className="hidden lg:inline-flex p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110 active:scale-95"
               aria-label="Minimieren"
             >
               <Minimize2 className="w-4 h-4 text-[var(--text-muted)]" />
@@ -812,7 +812,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
                 </span>
                 <button
                   onClick={toggleExpand}
-                  className="p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="hidden lg:inline-flex p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110 active:scale-95"
                   aria-label="Maximieren"
                 >
                   <Maximize2 className="w-4 h-4 text-[var(--text-muted)]" />
