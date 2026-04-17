@@ -110,6 +110,18 @@ textarea:focus-visible,
   box-shadow: none !important;
 }
 
+/* Prevent iOS Safari from zooming the viewport when focusing a textarea.
+   Anything under 16px triggers the zoom; keep base size 16px on mobile,
+   restore 14px from md upwards to match the surrounding typography. */
+.chat-textarea {
+  font-size: 16px;
+}
+@media (min-width: 768px) {
+  .chat-textarea {
+    font-size: 14px;
+  }
+}
+
 /* ─── Micro-interactions & Easter Eggs ────────────────────────────────────── */
 
 /* Dropdown slide up animation */
