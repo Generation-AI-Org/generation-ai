@@ -191,11 +191,19 @@ export async function runAgent(
     }
   }
 
-  // Max iterations reached
-  console.log(`[Timing] === Agent max iterations reached in ${Date.now() - agentStart}ms ===`)
+  // Max iterations reached — force a final synthesis call without tools.
+  // Without this, Gemini keeps calling tools indefinitely and we show the fallback.
+  console.log(`[Timing] === Agent max iterations reached, forcing synthesis ===`)
+  const synthStart = Date.now()
+  const { response: synthResponse } = await createCompletion(messages, [])
+  console.log(`[Timing] Synthesis call completed in ${Date.now() - synthStart}ms`)
+
+  const synthText = stripThinkTags(synthResponse.choices[0]?.message?.content || '')
+  console.log(`[Timing] === Agent finished in ${Date.now() - agentStart}ms (${iterations} iterations + synthesis) ===`)
+
   return {
-    text: 'Ich konnte keine vollständige Antwort finden. Bitte versuche es mit einer anderen Frage.',
+    text: synthText || 'Ich konnte keine vollständige Antwort finden. Bitte versuche es mit einer anderen Frage.',
     sources,
-    iterations
+    iterations,
   }
 }
