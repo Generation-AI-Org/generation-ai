@@ -98,14 +98,12 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode }: Floa
           setMessage(data.draft)
           setCharCount(data.draft.length)
         }
-        const lastAssistant = [...(data.messages || [])].reverse().find((m: ChatMessage) => m.role === 'assistant')
-        if (lastAssistant?.recommendedSlugs?.length > 0) {
-          onHighlight(lastAssistant.recommendedSlugs)
-        }
+        // Highlights are transient — only shown right after a fresh response,
+        // never re-applied from persisted history (refresh, back-navigation, etc.).
       }
     } catch {}
     setIsHydrated(true)
-  }, [onHighlight])
+  }, [])
 
   // Save to sessionStorage on changes
   useEffect(() => {
