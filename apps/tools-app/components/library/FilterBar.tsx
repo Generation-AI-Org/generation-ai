@@ -29,7 +29,7 @@ export default function FilterBar({ active, onChange, mode = 'public' }: FilterB
           key={f.value}
           onClick={() => onChange(f.value)}
           className={`
-            shrink-0 px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium transition-all duration-150 cursor-pointer
+            shrink-0 px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium transition-all duration-150 cursor-pointer active:scale-95
             ${active === f.value
               ? 'bg-[var(--accent)] text-bg shadow-[0_0_12px_var(--accent-glow)]'
               : 'bg-[var(--border)] text-text-muted hover:bg-[var(--accent)]/10 hover:text-text border border-[var(--border)]'

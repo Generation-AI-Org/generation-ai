@@ -48,6 +48,30 @@ body {
 .light ::-webkit-scrollbar-thumb { background: rgba(245, 19, 59, 0.2); }
 .light ::-webkit-scrollbar-thumb:hover { background: rgba(245, 19, 59, 0.35); }
 
+/* ─── Mobile Tap Feedback ─────────────────────────────────────────────────── */
+
+/* Kill the grey iOS tap-highlight flash; scale/opacity feedback replaces it. */
+button,
+a,
+[role="button"],
+input[type="submit"],
+input[type="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Respect user motion preferences — disable transform-based animations,
+   keep opacity/color transitions which don't trigger vestibular issues. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ─── Accessibility ───────────────────────────────────────────────────────── */
 
 /* Skip to content link - visible on focus only */
