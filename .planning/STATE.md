@@ -35,10 +35,23 @@ progress:
 - Vorab: einmalig `/gsd-map-codebase` falls `.planning/codebase/` älter als letzter Merge
 - Kommando: `/gsd-autonomous --only 15 --interactive`
 
-**Phase 16 — Auth Extensions** (separat, wenn 15 durch)
+**Phase 16 — Auth Extensions** (Teil A zuerst, separate Session)
 
-- Scope ZURÜCKGESCHNITTEN: nur **Password-Flow E2E testen + verifizieren** (Code existiert seit Phase 9-12, nie verifiziert)
-- OAuth (Google + Apple) → komplett ins Backlog, später eigene Phase
+**Teil A — Scope 2026-04-18 angepasst (nach Phase 15 durch):**
+
+- ~~E2E-Test Passwort-Reset~~ — manuell verifiziert am 2026-04-18, funktioniert. Kein E2E nötig.
+- ~~Passwort-Setzen-UI in Settings~~ — Reset-Flow reicht, separate UI nicht mehr zwingend.
+- **Email-Templates vereinheitlichen** — Hauptjob. Alle Supabase-Templates (Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite) auf ein konsistentes Design: gleicher Header, Darkmode-kompatibel (System-Background-Fallback, keine `#fff`-Hardcodes), deutsche Copy mit Umlauten, Brand-Farben/Logo.
+- **Rate-Limit** auf Prod-Werte zurück (falls noch auf Phase-13-Test-Werten).
+
+**Teil A — Manual-Steps Luca:**
+
+- Supabase Dashboard → Auth → Email Templates: finale HTMLs einspielen (Claude liefert Files, Luca klickt ein).
+- Supabase Dashboard → Auth → Rate Limits: Prod-Werte setzen.
+- Claude braucht vorab: Design-Vorlage (Brand-Header? Resend-Template als Referenz?), Farben/Logo, Zugang zu Dashboard (Luca selbst).
+
+**Teil B — OAuth (Google + Apple):** separate Session nach Teil A, eigener Scope.
+
 - Push: OK · Changeset: minor (v4.3.0)
 - Kommando: `/gsd-autonomous --only 16 --interactive`
 
