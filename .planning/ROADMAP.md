@@ -309,7 +309,7 @@ Plans:
 | Phase | Name | Goal | Autonom-fähig |
 |-------|------|------|---------------|
 | 14 | Mobile Polish | Mobile Quick-Win-Bugs + Micro-Animations Parity zu Desktop | ✅ Ja |
-| 15 | Chat überall — global + Context-aware | FloatingChat auf alle Routen, Desktop Layout-Shift, Agent-Context | ✅ Ja |
+| 15 | 3/3 | Complete   | 2026-04-18 |
 | 16 | Auth Extensions | Passwort-Flow vervollständigen + OAuth Google/Apple | ⚠️ Teil-autonom (Supabase/Cloud-Setups) |
 | 17 | Simplify-Pass tools-app | Tote Files, inkonsistente Patterns, Naming-Cleanup | ✅ Ja (nach Map) |
 
@@ -358,20 +358,20 @@ Plans:
 7. Session-ID über SessionStorage persistiert (Navigation überlebt Chat)
 
 **Success Criteria:**
-- [ ] Chat auf Home, Detail, Settings sichtbar; /login ausgenommen
-- [ ] Desktop /[slug]: Layout-Shift bei Chat-Expand, Collapse zurück auf 100%
-- [ ] Agent-Antwort auf Detail-Seite referenziert das aktuelle Tool im Kontext
-- [ ] Session überlebt Page-Navigation (kein Reset)
-- [ ] Analytics-Event `chat_opened_from_route` erfasst
+- [x] Chat auf Home, Detail, Settings sichtbar; /login ausgenommen
+- [x] Desktop /[slug]: Layout-Shift bei Chat-Expand, Collapse zurück auf 100%
+- [x] Agent-Antwort auf Detail-Seite referenziert das aktuelle Tool im Kontext
+- [x] Session überlebt Page-Navigation (kein Reset)
+- [x] Analytics-Event `chat_opened_from_route` erfasst
 
 **Release:** minor (v4.2.0)
 
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 
 Plans:
-- [ ] 15-01-PLAN.md — AppShell-Split: GlobalLayout + HomeLayout (Refactor, kein Verhaltens-Change)
-- [ ] 15-02-PLAN.md — FloatingChat context-prop + Desktop Sidebar-Mode (400px, max-w-2xl shrink)
-- [ ] 15-03-PLAN.md — /[slug] Integration: Agent-Context, Empty-State-Chips, Session, Analytics
+- [x] 15-01-PLAN.md — AppShell-Split: GlobalLayout + HomeLayout (Refactor, kein Verhaltens-Change)
+- [x] 15-02-PLAN.md — FloatingChat context-prop + Desktop Sidebar-Mode (400px, max-w-2xl shrink)
+- [x] 15-03-PLAN.md — /[slug] Integration: Agent-Context, Empty-State-Chips, Session, Analytics
 
 ---
 
