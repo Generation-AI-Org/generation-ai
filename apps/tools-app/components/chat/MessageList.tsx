@@ -77,7 +77,7 @@ export default function MessageList({ messages, isLoading, onSourceClick }: Mess
           className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
         >
           <div
-            className={`max-w-[88%] rounded-2xl px-4 py-3 text-[15px] md:text-sm leading-relaxed font-mono ${
+            className={`max-w-[88%] rounded-2xl px-4 py-3 text-[15px] md:text-sm leading-relaxed ${
               msg.role === 'user'
                 ? 'bg-[var(--bg-elevated)] text-text rounded-br-md'
                 : 'bg-bg-card border border-[var(--accent)]/20 text-text-secondary rounded-bl-md'

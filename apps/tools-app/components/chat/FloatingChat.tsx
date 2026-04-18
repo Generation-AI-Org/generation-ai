@@ -464,7 +464,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
         ref={chatRef}
         className={`fixed top-[77px] bottom-[96px] left-0 right-0 md:inset-auto md:right-0 md:bottom-0 w-full ${
           isSidebarMode ? 'md:top-[77px] lg:w-[400px]' : 'md:top-[148px] md:w-[35%]'
-        } flex flex-col rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none border-t md:border-l md:border-t border-[var(--border)] bg-[var(--bg)] md:bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in font-mono`}
+        } flex flex-col rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none border-t md:border-l md:border-t border-[var(--border)] bg-[var(--bg)] md:bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
@@ -565,7 +565,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
               onKeyDown={handleKeyDown}
               rows={1}
               maxLength={maxChars}
-              className="chat-textarea w-full px-4 py-3 bg-transparent border-none outline-none resize-none text-sm leading-relaxed text-[var(--text)] placeholder-[var(--text-muted)] font-mono"
+              className="chat-textarea w-full px-4 py-3 bg-transparent border-none outline-none resize-none text-sm leading-relaxed text-[var(--text)] placeholder-[var(--text-muted)]"
               placeholder={isLoading ? "Tippe weiter oder Enter zum Abbrechen..." : "Was möchtest du wissen?"}
               style={{ minHeight: '44px', maxHeight: '120px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             />
@@ -944,7 +944,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                 onKeyDown={handleKeyDown}
                 rows={1}
                 maxLength={maxChars}
-                className="chat-textarea w-full px-4 py-3 bg-transparent border-none outline-none resize-none text-sm leading-relaxed text-[var(--text)] placeholder-[var(--text-muted)] font-mono"
+                className="chat-textarea w-full px-4 py-3 bg-transparent border-none outline-none resize-none text-sm leading-relaxed text-[var(--text)] placeholder-[var(--text-muted)]"
                 placeholder={isLoading ? "Tippe weiter oder Enter zum Abbrechen..." : "Was möchtest du wissen?"}
                 style={{ minHeight: '44px', maxHeight: '120px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               />
