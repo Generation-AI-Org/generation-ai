@@ -334,7 +334,7 @@ Plans:
 **Success Criteria:**
 - [x] Desktop Chat-Input wächst auch bei Voice-Input / programmatischen Text-Writes
 - [x] Mobile Legal Footer im Darkmode hell sichtbar und nie vom Chat überdeckt
-- [~] Shift+Enter auf Mobile — deferred (eigener Todo falls Regression; 2026-04-18)
+- [x] Shift+Enter auf Mobile — deferred als eigener Todo (Fix aus früherer Session hält; 2026-04-18)
 - [x] Alle erfassten Micro-Animations funktionieren auf Mobile gleichwertig (17/17 via Audit verifiziert, 0 Gaps)
 - [x] Keine Performance-Regression (keine Code-Änderungen in Teil B)
 

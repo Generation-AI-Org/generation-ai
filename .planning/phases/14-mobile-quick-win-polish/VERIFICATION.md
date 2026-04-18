@@ -23,8 +23,8 @@ Success criteria:
 - [x] Build green (`pnpm -F tools-app build` — 46/46 pages)
 - [x] Lint clean (no new errors/warnings)
 - [x] No refs/struct changes to the two textarea render paths
-- [ ] Voice-input live growth — **needs human smoke-test on mobile**
-- [ ] Post-send shrink back to 44px — **needs human smoke-test**
+- [x] Voice-input live growth — human-verified on mobile (2026-04-18)
+- [x] Post-send shrink back to 44px — human-verified (2026-04-18)
 
 ## Plan 14-02: Legal Footer Hide on Expanded + Darkmode (D-03)
 
@@ -40,8 +40,8 @@ Success criteria:
 - [x] Build green
 - [x] Lint clean
 - [x] Desktop unchanged (`lg:hidden` preserved)
-- [ ] Mobile chat expanded -> footer visually gone — **needs human smoke-test**
-- [ ] Darkmode toggle -> footer still readable — **needs human smoke-test**
+- [x] Mobile chat expanded -> footer visually gone — human-verified (2026-04-18)
+- [x] Darkmode toggle -> footer still readable — human-verified (2026-04-18)
 
 ## Plan 14-03: Micro-Animations Mobile-Parity Audit (Teil B)
 

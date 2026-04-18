@@ -24,12 +24,24 @@ progress:
 **Chat-Agent-Bug:** ✅ FIXED & MERGED (PR #3 → main, Commit fb884fc, 2026-04-17)
 **Last Updated:** 2026-04-17T10:45
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Member-Chat antwortet zuverlässig. Release **v4.1.0** auf GitHub published (Tag + CHANGELOGs + Release-Page).
-**Phase 14 — Pre-Approved für Autonomous-Run (2026-04-18):**
-- Scope: Shift+Enter im Chat-Input + Mobile Micro-Animations Parity (Audit + Fixes)
-- Push am Ende: OK
-- Changeset: patch (v4.2.1)
-- Rest nach Ermessen — Ziel: Phase 14 fertig
-- Kommando für neue Session: `/gsd-autonomous --only 14 --interactive`
+**Pre-Approved für Autonomous-Runs (2026-04-18):**
+
+**Phase 15 — Chat überall + Context-aware** (morgen)
+- Scope-A: FloatingChat nur auf Produkt-Routen (Bibliothek, Tool-Detail, Dashboard) — auf Legal/Auth/Settings AUS
+- Scope-B: Context = Route + Tool-Slug + Title + Kategorie (keine Page-Content-Stuffung)
+- Scope-C: Chat schließt bei Navigation, Verlauf bleibt für Re-Open (Session-Storage)
+- Scope-D: public + member je nach Login bleiben beide
+- Push: OK · Changeset: minor (v4.2.0)
+- Vorab: einmalig `/gsd-map-codebase` falls `.planning/codebase/` älter als letzter Merge
+- Kommando: `/gsd-autonomous --only 15 --interactive`
+
+**Phase 16 — Auth Extensions** (separat, wenn 15 durch)
+- Scope ZURÜCKGESCHNITTEN: nur **Password-Flow E2E testen + verifizieren** (Code existiert seit Phase 9-12, nie verifiziert)
+- OAuth (Google + Apple) → komplett ins Backlog, später eigene Phase
+- Push: OK · Changeset: minor (v4.3.0)
+- Kommando: `/gsd-autonomous --only 16 --interactive`
+
+**Reihenfolge:** 14 ✅ → 15 morgen → 16 separat → 17 später
 
 **Next Sessions (autonom fahrbar, 4 Phasen in v3.0 Milestone — konsolidiert von 6 auf 4 am 2026-04-17):**
 
