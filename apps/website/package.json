@@ -14,6 +14,7 @@
     "@base-ui/react": "^1.3.0",
     "@genai/auth": "workspace:*",
     "@genai/types": "workspace:*",
+    "@genai/ui": "workspace:*",
     "@supabase/ssr": "catalog:",
     "@supabase/supabase-js": "catalog:",
     "@vercel/speed-insights": "^2.0.0",

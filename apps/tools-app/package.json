@@ -17,6 +17,7 @@
     "@genai/auth": "workspace:*",
     "@genai/config": "workspace:*",
     "@genai/types": "workspace:*",
+    "@genai/ui": "workspace:*",
     "@mozilla/readability": "^0.6.0",
     "@sentry/nextjs": "^10",
     "@supabase/ssr": "^0.10.2",
