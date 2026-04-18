@@ -9,7 +9,7 @@ import UrlInputModal from './UrlInputModal'
 import { type Attachment } from './AttachmentsPanel'
 import { useDeepgramVoice } from '@/hooks/useDeepgramVoice'
 import { useCallback } from 'react'
-import type { ChatMessage, ChatMode } from '@/lib/types'
+import type { ChatMessage, ChatMode, ChatContext } from '@/lib/types'
 
 const STORAGE_KEY = 'genai-chat-session'
 
@@ -17,9 +17,11 @@ interface FloatingChatProps {
   onHighlight: (slugs: string[]) => void
   onExpandChange?: (expanded: boolean) => void
   mode: ChatMode
+  // In 15-03 wired from /[slug] page; undefined on Home/Settings.
+  context?: ChatContext
 }
 
-export default function FloatingChat({ onHighlight, onExpandChange, mode }: FloatingChatProps) {
+export default function FloatingChat({ onHighlight, onExpandChange, mode, context }: FloatingChatProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)

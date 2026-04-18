@@ -22,6 +22,13 @@ export interface ChatMessage {
 
 export type ChatMode = 'public' | 'member'
 
+export interface ChatContext {
+  slug: string
+  title: string
+  type: string
+  summary: string
+}
+
 export interface RecommendationResponse {
   text: string
   recommendedSlugs: string[]

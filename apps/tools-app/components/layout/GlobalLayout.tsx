@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTheme } from '@/components/ThemeProvider'
-import type { ChatMode } from '@/lib/types'
+import type { ChatMode, ChatContext } from '@/lib/types'
 
 // Lazy load chat - not needed for initial render, reduces bundle
 const FloatingChat = dynamic(() => import('@/components/chat/FloatingChat'), {
@@ -50,9 +50,11 @@ export function useSearchContext(): SearchContextValue | null {
 interface GlobalLayoutProps {
   mode: ChatMode
   children: ReactNode
+  // Set by /[slug] in 15-03 via client provider; undefined on Home/Settings/Legal.
+  chatContext?: ChatContext
 }
 
-export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
+export default function GlobalLayout({ mode, children, chatContext }: GlobalLayoutProps) {
   const { theme, toggleTheme } = useTheme()
 
   const [highlightedSlugs, setHighlightedSlugs] = useState<string[]>([])
@@ -230,7 +232,13 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
           {/* Main Content — children provide route-specific content */}
           <main
             id="main-content"
-            className={`flex flex-col flex-1 overflow-hidden transition-all duration-300 ${isChatExpanded ? 'md:mr-[35%]' : ''}`}
+            className={`flex flex-col flex-1 overflow-hidden transition-all duration-300 ${
+              isChatExpanded
+                ? chatContext
+                  ? 'lg:mr-[400px]'
+                  : 'md:mr-[35%]'
+                : ''
+            }`}
           >
             {children}
           </main>
@@ -240,6 +248,7 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
             onHighlight={setHighlightedSlugs}
             onExpandChange={setIsChatExpanded}
             mode={mode}
+            context={chatContext}
           />
         </div>
       </SearchContext.Provider>
