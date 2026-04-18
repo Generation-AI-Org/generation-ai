@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 import GlobalLayout from '@/components/layout/GlobalLayout'
+import { ChatContextProvider } from '@/components/layout/ChatContextProvider'
 import type { ChatMode } from '@/lib/types'
 
 /**
@@ -24,5 +25,9 @@ export default function ConditionalGlobalLayout({ mode, children }: Props) {
   )
 
   if (isBare) return <>{children}</>
-  return <GlobalLayout mode={mode}>{children}</GlobalLayout>
+  return (
+    <ChatContextProvider>
+      <GlobalLayout mode={mode}>{children}</GlobalLayout>
+    </ChatContextProvider>
+  )
 }

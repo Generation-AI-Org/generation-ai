@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { getItemBySlug, getPublishedTools } from '@/lib/content'
 import Badge from '@/components/ui/Badge'
 import ToolLogo from '@/components/ui/ToolLogo'
-import DetailHeaderLogo from '@/components/ui/DetailHeaderLogo'
 import MarkdownContent from '@/components/ui/MarkdownContent'
+import DetailPageShell from '@/components/detail/DetailPageShell'
 import type { Metadata } from 'next'
 
 interface Props {
@@ -31,30 +31,17 @@ export default async function ItemPage({ params }: Props) {
   const item = await getItemBySlug(slug)
   if (!item) notFound()
 
-  const logoUrl = item.logo_domain
-    ? `https://logo.clearbit.com/${item.logo_domain}`
-    : null
-
   return (
-    <div className="bg-bg min-h-screen">
-      {/* Header */}
-      <div className="bg-[var(--bg-header)] px-6 py-3 flex items-center justify-between border-b border-[var(--border)]">
-        <a href="https://community.generation-ai.org" target="_blank" rel="noopener noreferrer">
-          <DetailHeaderLogo />
-        </a>
-        <span className="text-white/60 text-xs hidden md:block tracking-wide">tools.generation-ai.org</span>
-      </div>
-      {/* Back */}
-      <div className="px-6 pt-6">
+    <DetailPageShell item={item}>
+      <div className="max-w-2xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 overflow-y-auto h-full">
+        {/* Back */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-text-muted text-sm hover:text-text transition-colors"
+          className="inline-flex items-center gap-2 text-text-muted text-sm hover:text-text transition-colors mb-6"
         >
           ← Zurück zur Bibliothek
         </Link>
-      </div>
 
-      <div className="max-w-2xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-24">
         {/* Hero */}
         <div className="flex items-start gap-5 mb-8">
           <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0">
@@ -123,6 +110,6 @@ export default async function ItemPage({ params }: Props) {
           </div>
         )}
       </div>
-    </div>
+    </DetailPageShell>
   )
 }

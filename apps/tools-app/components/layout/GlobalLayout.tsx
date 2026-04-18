@@ -5,7 +5,8 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTheme } from '@/components/ThemeProvider'
-import type { ChatMode, ChatContext } from '@/lib/types'
+import { useChatContext } from '@/components/layout/ChatContextProvider'
+import type { ChatMode } from '@/lib/types'
 
 // Lazy load chat - not needed for initial render, reduces bundle
 const FloatingChat = dynamic(() => import('@/components/chat/FloatingChat'), {
@@ -50,12 +51,13 @@ export function useSearchContext(): SearchContextValue | null {
 interface GlobalLayoutProps {
   mode: ChatMode
   children: ReactNode
-  // Set by /[slug] in 15-03 via client provider; undefined on Home/Settings/Legal.
-  chatContext?: ChatContext
 }
 
-export default function GlobalLayout({ mode, children, chatContext }: GlobalLayoutProps) {
+export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
   const { theme, toggleTheme } = useTheme()
+  // chatContext is populated by DetailPageShell (on /[slug]) via ChatContextProvider.
+  // On Home/Settings/Legal it stays null → FloatingChat stays in floating/popup mode.
+  const { chatContext } = useChatContext()
 
   const [highlightedSlugs, setHighlightedSlugs] = useState<string[]>([])
   const [isChatExpanded, setIsChatExpanded] = useState(false)
@@ -248,7 +250,7 @@ export default function GlobalLayout({ mode, children, chatContext }: GlobalLayo
             onHighlight={setHighlightedSlugs}
             onExpandChange={setIsChatExpanded}
             mode={mode}
-            context={chatContext}
+            context={chatContext ?? undefined}
           />
         </div>
       </SearchContext.Provider>

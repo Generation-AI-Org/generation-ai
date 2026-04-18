@@ -430,8 +430,8 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
         />
       <div
         ref={chatRef}
-        className={`fixed top-[77px] bottom-[96px] left-0 right-0 md:inset-auto md:right-0 md:top-[148px] md:bottom-0 w-full ${
-          isSidebarMode ? 'lg:w-[400px]' : 'md:w-[35%]'
+        className={`fixed top-[77px] bottom-[96px] left-0 right-0 md:inset-auto md:right-0 md:bottom-0 w-full ${
+          isSidebarMode ? 'md:top-[77px] lg:w-[400px]' : 'md:top-[148px] md:w-[35%]'
         } flex flex-col rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none border-t md:border-l md:border-t border-[var(--border)] bg-[var(--bg)] md:bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in`}
       >
         {/* Header */}
