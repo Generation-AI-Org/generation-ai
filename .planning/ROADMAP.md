@@ -366,6 +366,13 @@ Plans:
 
 **Release:** minor (v4.2.0)
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 15-01-PLAN.md — AppShell-Split: GlobalLayout + HomeLayout (Refactor, kein Verhaltens-Change)
+- [ ] 15-02-PLAN.md — FloatingChat context-prop + Desktop Sidebar-Mode (400px, max-w-2xl shrink)
+- [ ] 15-03-PLAN.md — /[slug] Integration: Agent-Context, Empty-State-Chips, Session, Analytics
+
 ---
 
 ### Phase 16: Auth Extensions
