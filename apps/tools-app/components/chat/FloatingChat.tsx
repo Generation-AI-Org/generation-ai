@@ -13,6 +13,10 @@ import type { ChatMessage, ChatMode, ChatContext } from '@/lib/types'
 import { trackEvent } from '@/lib/analytics'
 
 const STORAGE_KEY = 'genai-chat-session'
+// Cap persisted history to keep sessionStorage well under the 5 MB quota even
+// with long tool-output/markdown messages. API-side we already only send the
+// last 6 turns to the LLM — persistence can be similarly bounded.
+const MAX_PERSISTED_MESSAGES = 30
 
 interface FloatingChatProps {
   onHighlight: (slugs: string[]) => void
@@ -130,7 +134,11 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
         // Highlights are transient — only shown right after a fresh response,
         // never re-applied from persisted history (refresh, back-navigation, etc.).
       }
-    } catch {}
+    } catch (err) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[FloatingChat] sessionStorage read failed:', err)
+      }
+    }
     setIsHydrated(true)
   }, [])
 
@@ -138,8 +146,19 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
   useEffect(() => {
     if (!isHydrated) return
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ messages, sessionId, draft: message }))
-    } catch {}
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          messages: messages.slice(-MAX_PERSISTED_MESSAGES),
+          sessionId,
+          draft: message,
+        })
+      )
+    } catch (err) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[FloatingChat] sessionStorage write failed:', err)
+      }
+    }
   }, [messages, sessionId, message, isHydrated])
 
   // Notify parent about expand changes
