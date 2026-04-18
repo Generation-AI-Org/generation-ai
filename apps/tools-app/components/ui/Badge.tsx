@@ -36,7 +36,7 @@ const typeConfig: Record<string, { label: string; style: string }> = {
 
 export default function Badge({ variant, value, className = '' }: BadgeProps) {
   let label = value
-  let style = 'bg-white/5 text-[#888] border border-white/8'
+  let style = 'bg-white/5 text-[var(--text-muted)] border border-white/8'
 
   if (variant === 'pricing') {
     const config = pricingConfig[value]

@@ -71,7 +71,7 @@ export default function UrlInputModal({ isOpen, onClose, onExtracted }: UrlInput
       onExtracted(data)
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten')
+      setError(err instanceof Error ? err.message : "Ups, da ist was schiefgelaufen. Probier's nochmal!")
     } finally {
       setIsLoading(false)
     }

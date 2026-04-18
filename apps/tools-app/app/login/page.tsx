@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { createBrowserClient } from '@genai/auth'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useTheme } from '@/components/ThemeProvider'
+import { Logo } from '@genai/ui'
 
 export default function LoginPage() {
   const supabase = createBrowserClient()
@@ -63,16 +63,8 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-4">
-            <Image
-              src={theme === 'dark' ? '/logo-blue-neon-new.jpg' : '/logo-pink-red.jpg'}
-              alt="Generation AI"
-              width={180}
-              height={60}
-              className="h-12 w-auto object-contain mx-auto hover:opacity-90 transition-opacity"
-              priority
-              key={theme}
-            />
+          <Link href="/" className="inline-block mb-4 hover:opacity-90 transition-opacity">
+            <Logo context="header" theme={theme} size="lg" />
           </Link>
           <h1 className="text-xl font-semibold text-[var(--text)]">Bei Generation AI anmelden</h1>
           <p className="text-sm text-[var(--text-muted)] mt-1">
@@ -141,7 +133,7 @@ export default function LoginPage() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                Wird geladen...
+                Einen Moment…
               </span>
             ) : showPassword ? (
               'Anmelden'

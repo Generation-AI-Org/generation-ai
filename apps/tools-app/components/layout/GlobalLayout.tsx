@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import dynamic from 'next/dynamic'
-import Image from 'next/image'
 import Link from 'next/link'
+import { Logo } from '@genai/ui'
 import { useTheme } from '@/components/ThemeProvider'
 import { useChatContext } from '@/components/layout/ChatContextProvider'
 import type { ChatMode } from '@/lib/types'
@@ -79,16 +79,8 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
             className="flex items-center gap-4 px-4 md:px-6 py-3 md:py-4 border-b border-[var(--border)] shrink-0 bg-[var(--bg-header)]"
             onClick={() => setHighlightedSlugs([])}
           >
-            <a href="https://community.generation-ai.org" target="_blank" rel="noopener noreferrer" className="shrink-0">
-              <Image
-                src={theme === 'dark' ? '/logo-blue-neon-new.jpg' : '/logo-pink-red.jpg'}
-                alt="Generation AI"
-                width={150}
-                height={50}
-                className="h-9 md:h-11 w-auto object-contain hover:opacity-90 transition-opacity"
-                priority
-                key={theme}
-              />
+            <a href="https://community.generation-ai.org" target="_blank" rel="noopener noreferrer" className="shrink-0 hover:opacity-90 transition-opacity">
+              <Logo context="header" theme={theme} size="md" />
             </a>
             <div className="w-px h-6 md:h-7 bg-white/20 hidden md:block" />
             <span className="text-white/90 text-sm md:text-base font-semibold tracking-wide hidden md:block">

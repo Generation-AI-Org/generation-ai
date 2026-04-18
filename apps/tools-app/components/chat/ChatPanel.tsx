@@ -224,7 +224,7 @@ export default function ChatPanel({ onHighlight, mode }: ChatPanelProps) {
                       href="/login"
                       className="text-[var(--accent)] hover:underline font-medium"
                     >
-                      Jetzt anmelden
+                      Anmelden
                     </a>
                   </p>
                 </div>
