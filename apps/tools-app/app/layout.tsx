@@ -13,7 +13,9 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthProvider";
 import { VersionBadge } from "@/components/ui/VersionBadge";
+import ConditionalGlobalLayout from "@/components/layout/ConditionalGlobalLayout";
 import { getUser } from "@/lib/auth";
+import type { ChatMode } from "@/lib/types";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -100,6 +102,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getUser()
+  const mode: ChatMode = user ? 'member' : 'public'
 
   return (
     <html lang="de" className={`${inter.variable} ${cascadiaCode.variable}`} suppressHydrationWarning>
@@ -109,7 +112,9 @@ export default async function RootLayout({
         </a>
         <ThemeProvider>
           <AuthProvider initialUser={user}>
-            {children}
+            <ConditionalGlobalLayout mode={mode}>
+              {children}
+            </ConditionalGlobalLayout>
           </AuthProvider>
         </ThemeProvider>
         <SpeedInsights />

@@ -19,7 +19,7 @@ export default async function SettingsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] pt-24 pb-16 px-4">
+    <div className="flex-1 overflow-y-auto bg-[var(--bg)] pt-8 pb-16 px-4">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"
@@ -65,6 +65,6 @@ export default async function SettingsPage() {
           </div>
         </section>
       </div>
-    </main>
+    </div>
   )
 }
