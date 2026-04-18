@@ -11,5 +11,9 @@
   "executor_model": "sonnet",
   "verifier_model": "sonnet",
   "created": "2026-04-13",
-  "project_type": "monorepo-migration"
+  "project_type": "monorepo-migration",
+  "workflow": {
+    "_auto_chain_active": false,
+    "use_worktrees": false
+  }
 }
