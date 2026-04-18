@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
 status: milestone_v3_ready
-last_updated: "2026-04-18T08:29:30.986Z"
+last_updated: "2026-04-18T12:00:00.000Z"
 progress:
   total_phases: 4
-  completed_phases: 1
-  total_plans: 6
-  completed_plans: 3
-  percent: 50
+  completed_phases: 2
+  total_plans: 9
+  completed_plans: 6
+  percent: 75
 ---
 
 # Project State — Generation AI Monorepo
@@ -42,7 +42,7 @@ progress:
 - Push: OK · Changeset: minor (v4.3.0)
 - Kommando: `/gsd-autonomous --only 16 --interactive`
 
-**Reihenfolge:** 14 ✅ → 15 morgen → 16 separat → 17 später
+**Reihenfolge:** 14 ✅ → 15 ✅ (2026-04-18, commits 863d6f4…eae1f8c, v4.2.0 candidate) → 16 separat → 17 später
 
 **Next Sessions (autonom fahrbar, 4 Phasen in v3.0 Milestone — konsolidiert von 6 auf 4 am 2026-04-17):**
 
