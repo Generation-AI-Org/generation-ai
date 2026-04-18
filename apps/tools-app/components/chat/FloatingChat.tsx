@@ -298,6 +298,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
           message: fullMessage,
           sessionId,
           mode,
+          context, // undefined on Home/Settings, set on /[slug]
           history: newMessages.slice(-6).map((m) => ({
             role: m.role,
             content: m.content,
@@ -475,9 +476,13 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
           {isEmpty ? (
             <div className="flex flex-col p-4 gap-3">
               <p className="text-[var(--text-muted)] text-sm leading-relaxed text-center">
-                Beschreib deinen Use Case — ich finde die passenden Tools.
+                {context ? `Fragen zu ${context.title}?` : 'Beschreib deinen Use Case — ich finde die passenden Tools.'}
               </p>
-              <QuickActions onPick={(text) => send(text)} />
+              <QuickActions
+                onPick={(text) => send(text)}
+                variant={context ? 'detail' : 'generic'}
+                context={context}
+              />
             </div>
           ) : (
             <MessageList
@@ -851,9 +856,13 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
               {isEmpty ? (
                 <div className="flex flex-col p-4 gap-3">
                   <p className="text-[var(--text-muted)] text-sm leading-relaxed text-center">
-                    Beschreib deinen Use Case — ich finde die passenden Tools.
+                    {context ? `Fragen zu ${context.title}?` : 'Beschreib deinen Use Case — ich finde die passenden Tools.'}
                   </p>
-                  <QuickActions onPick={(text) => send(text)} />
+                  <QuickActions
+                    onPick={(text) => send(text)}
+                    variant={context ? 'detail' : 'generic'}
+                    context={context}
+                  />
                 </div>
               ) : (
                 <MessageList

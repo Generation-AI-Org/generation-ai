@@ -1,6 +1,8 @@
 'use client'
 
-const QUICK_ACTIONS = [
+import type { ChatContext } from '@/lib/types'
+
+const GENERIC_QUICK_ACTIONS = [
   {
     id: 'thesis',
     label: 'Ich schreibe meine Thesis',
@@ -23,14 +25,43 @@ const QUICK_ACTIONS = [
   },
 ]
 
-interface QuickActionsProps {
-  onPick: (prompt: string) => void
+// LOCKED copy from CONTEXT.md D-04 — do not reformulate. {ToolName} interpolated
+// from context.title.
+function buildDetailActions(context: ChatContext) {
+  return [
+    {
+      id: 'compare',
+      label: 'Wie unterscheidet sich das von ähnlichen Tools?',
+      prompt: 'Wie unterscheidet sich das von ähnlichen Tools?',
+    },
+    {
+      id: 'usecase',
+      label: `Für welche Use-Cases passt ${context.title}?`,
+      prompt: `Für welche Use-Cases passt ${context.title}?`,
+    },
+    {
+      id: 'start',
+      label: 'Wie fange ich an?',
+      prompt: 'Wie fange ich an?',
+    },
+  ]
 }
 
-export default function QuickActions({ onPick }: QuickActionsProps) {
+interface QuickActionsProps {
+  onPick: (prompt: string) => void
+  variant?: 'generic' | 'detail'
+  context?: ChatContext
+}
+
+export default function QuickActions({ onPick, variant = 'generic', context }: QuickActionsProps) {
+  const actions =
+    variant === 'detail' && context
+      ? buildDetailActions(context)
+      : GENERIC_QUICK_ACTIONS
+
   return (
     <div className="flex flex-col gap-2 w-full">
-      {QUICK_ACTIONS.map((action) => (
+      {actions.map((action) => (
         <button
           key={action.id}
           onClick={() => onPick(action.prompt)}
