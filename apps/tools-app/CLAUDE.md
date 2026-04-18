@@ -1,3 +1,6 @@
+@AGENTS.md
+@../../LEARNINGS.md
+
 # Claude Code — Tools App
 
 > KI-Tool-Bibliothek + Chat-Assistent für Studierende

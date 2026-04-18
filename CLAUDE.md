@@ -9,9 +9,10 @@
 **Bei jeder neuen Session zuerst:**
 
 1. `.planning/STATE.md` lesen — aktueller Projekt-Status
-2. `docs/ARCHITECTURE.md` scannen — System-Uebersicht
-3. Bei API-Arbeit: `docs/API.md`
-4. Bei Deploy: `docs/DEPLOYMENT.md`
+2. `LEARNINGS.md` lesen — harte Lektionen aus Prod-Incidents (PFLICHT vor CSP/Proxy/Middleware-Änderungen)
+3. `docs/ARCHITECTURE.md` scannen — System-Uebersicht
+4. Bei API-Arbeit: `docs/API.md`
+5. Bei Deploy: `docs/DEPLOYMENT.md`
 
 ---
 
