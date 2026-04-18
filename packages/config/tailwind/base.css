@@ -239,6 +239,10 @@ kbd {
 .light ::-webkit-scrollbar-thumb { background: rgba(245, 19, 59, 0.2); }
 .light ::-webkit-scrollbar-thumb:hover { background: rgba(245, 19, 59, 0.35); }
 
+/* Scrollbar hide — horizontal filter bars, chip rails etc. */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+
 /* ─── Component Standards ─────────────────────────────────────────────────── */
 /* Use these CSS custom properties + Tailwind classes for consistent UI        */
 
