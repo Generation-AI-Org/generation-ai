@@ -10,5 +10,8 @@
   "devDependencies": {
     "eslint": "catalog:",
     "eslint-config-next": "catalog:"
+  },
+  "dependencies": {
+    "@radix-ui/colors": "^3.0.0"
   }
 }
