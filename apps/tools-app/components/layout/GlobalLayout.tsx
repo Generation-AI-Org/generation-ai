@@ -28,6 +28,9 @@ export function useHighlightContext(): HighlightContextValue {
   if (!ctx) {
     // Fallback no-op on routes without HighlightContext (shouldn't happen
     // inside GlobalLayout children, but keeps hook safe to call).
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[GlobalLayout] useHighlightContext called outside provider — returning no-op.')
+    }
     return { highlightedSlugs: [], setHighlightedSlugs: () => {} }
   }
   return ctx

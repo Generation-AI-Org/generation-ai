@@ -27,6 +27,9 @@ export function ChatContextProvider({ children }: { children: ReactNode }) {
 export function useChatContext(): ChatContextValue {
   const v = useContext(Ctx)
   if (!v) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[ChatContextProvider] useChatContext called outside provider — returning no-op.')
+    }
     return { chatContext: null, setChatContext: () => {} }
   }
   return v
