@@ -5,7 +5,6 @@ import { X, Send, Square, Info, Maximize2, Minimize2, Paperclip } from 'lucide-r
 import { VoiceInputButton } from '@/components/ui/VoiceInputButton'
 import QuickActions from './QuickActions'
 import MessageList from './MessageList'
-import UrlInputModal from './UrlInputModal'
 import { type Attachment } from './AttachmentsPanel'
 import { useDeepgramVoice } from '@/hooks/useDeepgramVoice'
 import { useCallback } from 'react'
@@ -36,7 +35,6 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
   const [charCount, setCharCount] = useState(0)
   const [isExpanded, setIsExpanded] = useState(false)
   const [isDesktop, setIsDesktop] = useState(false)
-  const [isUrlModalOpen, setIsUrlModalOpen] = useState(false)
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const [showAttachments, setShowAttachments] = useState(false)
   const [inlineUrlInput, setInlineUrlInput] = useState('')
@@ -1174,20 +1172,6 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
         </div>
       )}
 
-      {/* URL Input Modal */}
-      <UrlInputModal
-        isOpen={isUrlModalOpen}
-        onClose={() => setIsUrlModalOpen(false)}
-        onExtracted={(extracted) => {
-          const newAttachment: Attachment = {
-            id: crypto.randomUUID(),
-            type: 'url',
-            ...extracted,
-          }
-          setAttachments(prev => [...prev, newAttachment])
-          setShowAttachments(true)
-        }}
-      />
     </div>
     </>
   )
