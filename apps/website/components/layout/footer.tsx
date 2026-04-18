@@ -13,24 +13,24 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo - resolved via colorway="auto" + theme */}
           <Link href="/" className="flex items-center" aria-label="Generation AI - Startseite">
-            <Logo context="footer" theme={theme} size="md" />
+            <Logo context="footer" theme={theme} colorway={theme === "dark" ? "neon" : "auto"} size="md" />
           </Link>
 
           {/* Legal Links */}
           <nav className="flex items-center gap-6">
-            <Link href="/impressum" className="text-text-on-header text-sm hover:text-text-on-header-hover transition-colors">
+            <Link href="/impressum" className="text-[var(--accent)] text-sm font-mono hover:text-[var(--accent-hover)] transition-colors">
               Impressum
             </Link>
-            <Link href="/datenschutz" className="text-text-on-header text-sm hover:text-text-on-header-hover transition-colors">
+            <Link href="/datenschutz" className="text-[var(--accent)] text-sm font-mono hover:text-[var(--accent-hover)] transition-colors">
               Datenschutz
             </Link>
-            <a href="mailto:info@generation-ai.org" className="text-text-on-header text-sm hover:text-text-on-header-hover transition-colors">
+            <a href="mailto:info@generation-ai.org" className="text-[var(--accent)] text-sm font-mono hover:text-[var(--accent-hover)] transition-colors">
               Kontakt
             </a>
           </nav>
 
           {/* Copyright */}
-          <p className="text-text-on-header text-sm">
+          <p className="text-[var(--accent)] text-sm font-mono">
             &copy; {new Date().getFullYear()} Generation AI
           </p>
         </div>

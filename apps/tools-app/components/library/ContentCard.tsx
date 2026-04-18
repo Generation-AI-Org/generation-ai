@@ -42,7 +42,7 @@ const ContentCard = memo(function ContentCard({ item, isHighlighted, isDimmed, a
       </div>
 
       {/* Title */}
-      <h3 className="text-text font-bold text-[15px] leading-snug mb-1 group-hover:text-[var(--accent)] transition-colors duration-150">
+      <h3 className="text-text font-bold font-mono text-[15px] leading-snug mb-1 group-hover:text-[var(--accent)] transition-colors duration-150">
         {item.title}
       </h3>
 

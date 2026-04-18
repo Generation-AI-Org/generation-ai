@@ -192,6 +192,42 @@ body {
   background-color: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  /* Disable Ligaturen in UI-Text per UI-SPEC §B */
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+/* ─── Typography roles per UI-SPEC §B (Phase 16) ───────────────────────── */
+
+/* H1 / Display — Geist Mono */
+h1 {
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+/* H2 Section — Geist Sans per UI-SPEC §B */
+h2 {
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+/* H3 — Geist Sans per UI-SPEC §B */
+h3 {
+  line-height: 1.3;
+}
+
+
+/* Buttons — Geist Mono per UI-SPEC §B */
+button {
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+/* Kbd — Micro/Tag treatment */
+kbd {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  font-weight: 700;
 }
 
 /* Scrollbar */

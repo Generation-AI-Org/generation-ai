@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import Image from 'next/image'
+import { Logo } from '@genai/ui'
 
 interface TerminalSplashProps {
   onComplete: () => void
@@ -404,16 +404,11 @@ export function TerminalSplash({
               >
                 {/* Floating Logo */}
                 <div className="relative mb-8 animate-float">
-                  <Image
-                    src="/logos/generationai-blau-neon-transparent.png"
+                  <Logo
+                    colorway="blue-neon"
+                    height={140}
                     alt="Generation AI"
-                    width={220}
-                    height={220}
-                    className="w-[180px] sm:w-[220px] rounded"
-                    style={{
-                      filter: 'contrast(1.2) saturate(1.1) drop-shadow(0 0 12px rgba(150, 212, 97, 0.25))',
-                    }}
-                    priority
+                    className="max-w-[380px] sm:max-w-[480px]"
                   />
                   {/* Subtle scanlines */}
                   <div
