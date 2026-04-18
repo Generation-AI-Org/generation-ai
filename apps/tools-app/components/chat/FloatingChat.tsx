@@ -30,6 +30,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
   const [message, setMessage] = useState('')
   const [charCount, setCharCount] = useState(0)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
   const [isUrlModalOpen, setIsUrlModalOpen] = useState(false)
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const [showAttachments, setShowAttachments] = useState(false)
@@ -98,6 +99,20 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
 
   // Eye tracking state
   const [eyeOffset, setEyeOffset] = useState({ x: 0, y: 0 })
+
+  // Desktop detection for Sidebar-Mode gate (lg breakpoint, consistent with
+  // Maximize/Minimize button visibility). Mobile < lg always stays floating/sheet.
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const update = () => setIsDesktop(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
+  // Sidebar-Mode: only Desktop + context + expanded triggers the 400px right-rail.
+  // Mobile is explicitly excluded by the isDesktop gate.
+  const isSidebarMode = !!context && isExpanded && isOpen && isDesktop
 
   // Load from sessionStorage on mount
   useEffect(() => {
@@ -415,7 +430,9 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
         />
       <div
         ref={chatRef}
-        className="fixed top-[77px] bottom-[96px] left-0 right-0 md:inset-auto md:right-0 md:top-[148px] md:bottom-0 w-full md:w-[35%] flex flex-col rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none border-t md:border-l md:border-t border-[var(--border)] bg-[var(--bg)] md:bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in"
+        className={`fixed top-[77px] bottom-[96px] left-0 right-0 md:inset-auto md:right-0 md:top-[148px] md:bottom-0 w-full ${
+          isSidebarMode ? 'lg:w-[400px]' : 'md:w-[35%]'
+        } flex flex-col rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none border-t md:border-l md:border-t border-[var(--border)] bg-[var(--bg)] md:bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
