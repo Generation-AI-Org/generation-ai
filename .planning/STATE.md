@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
 status: unknown
-last_updated: "2026-04-18T16:04:12.551Z"
+last_updated: "2026-04-18T16:09:16.753Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 12
-  completed_plans: 6
-  percent: 50
+  completed_plans: 7
+  percent: 58
 ---
 
 # Project State — Generation AI Monorepo
@@ -19,8 +19,8 @@ progress:
 ## Current Status
 
 **Milestone:** v3.0 UX Polish & Feature Expansion
-**Phase:** 16 Brand System Foundation — Plan 03 ✅ COMPLETE (Logo component, 11 SVGs distributed, 17 vitest tests green, @genai/ui wired in both apps)
-**Last Updated:** 2026-04-18T18:02
+**Phase:** 16 Brand System Foundation — Plan 04 ✅ COMPLETE (website migration: Geist fonts, Logo in header/footer, focus-ring --text, VOICE.md microcopy, umlauts restored)
+**Last Updated:** 2026-04-18T16:08Z
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat jetzt global verfügbar (Home, Detail, Settings). /login + /impressum + /datenschutz bleiben bare. Release **v4.2.0** candidate — Changeset liegt bereit, GitHub-Release noch zu erstellen wenn gewünscht.
 
 **Phase 15 — DONE 2026-04-18:**
