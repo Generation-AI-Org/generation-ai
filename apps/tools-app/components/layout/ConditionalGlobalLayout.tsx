@@ -8,10 +8,9 @@ import type { ChatMode } from '@/lib/types'
 
 /**
  * Routes that should render WITHOUT the GlobalLayout (no Header, no Chat).
- * Currently: `/login`. Legal-Seiten + Settings bekommen bewusst den globalen
- * Shell — Chat ist dort hilfreich statt störend.
+ * Legal-Seiten sind reading-only — kein Chat-Noise.
  */
-const BARE_ROUTES = ['/login']
+const BARE_ROUTES = ['/login', '/impressum', '/datenschutz']
 
 interface Props {
   mode: ChatMode
