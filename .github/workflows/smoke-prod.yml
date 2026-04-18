@@ -1,0 +1,63 @@
+name: Prod Smoke
+
+# Fängt Regressionen wie den 2026-04-18 Incident (CSP → schwarze Seite).
+# Läuft gegen die echten Prod-URLs:
+#   - nach jedem main-Push (mit 3-min-Sleep, damit Vercel promoted hat)
+#   - stündlich via cron (fängt auch externe Ausfälle)
+#   - manuell via workflow_dispatch
+# Bei Failure: Workflow wird rot → GitHub sendet Email an repo-admins.
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('packages/e2e-tools/package.json') }}
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @genai/e2e-tools exec playwright install --with-deps chromium
+
+      # Bei main-Push: auf Vercel-Deploy warten (Promotion dauert ~1-2 min).
+      - name: Wait for Vercel deploy
+        if: github.event_name == 'push'
+        run: sleep 180
+
+      - name: Run smoke tests
+        run: pnpm --filter @genai/e2e-tools exec playwright test smoke.spec.ts
+
+      - name: Upload report on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: smoke-report-${{ github.run_id }}
+          path: packages/e2e-tools/playwright-report/
+          retention-days: 14
