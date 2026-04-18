@@ -310,7 +310,7 @@ Plans:
 |-------|------|------|---------------|
 | 14 | Mobile Polish | Mobile Quick-Win-Bugs + Micro-Animations Parity zu Desktop | ✅ Ja |
 | 15 | 3/3 | Complete   | 2026-04-18 |
-| 16 | Auth Extensions | Passwort-Flow vervollständigen + OAuth Google/Apple | ⚠️ Teil-autonom (Supabase/Cloud-Setups) |
+| 16 | Auth Extensions | Email-Templates vereinheitlichen + Rate-Limits auf Prod | ⚠️ Teil-autonom (Supabase Dashboard) |
 | 17 | Simplify-Pass tools-app | Tote Files, inkonsistente Patterns, Naming-Cleanup | ✅ Ja (nach Map) |
 
 ---
@@ -377,35 +377,25 @@ Plans:
 
 ### Phase 16: Auth Extensions
 
-**Goal:** Auth-Flow vollständig machen — Passwort-Flow end-to-end + OAuth (Google, Apple). Zusammenhängender Auth-Block, weil beide Cloud-Setups, gleiche Test-Pfade, gleiche Email-Template-Arbeit.
-**Depends on:** Phase 15 empfohlen (damit Chat-Context im Login-Redirect nicht kollidiert) — optional
+**Goal:** Email-Templates aller Auth-Flows vereinheitlichen (Brand, Darkmode, Umlaute) + Rate-Limits auf Prod-Werte setzen. Scope am 2026-04-18 reduziert — OAuth ist ins Backlog verschoben.
+**Depends on:** Phase 15 empfohlen — optional
 **⚠️ Manual Steps (Luca):**
-- Supabase Dashboard → Auth → Email Templates customizen, Rate-Limit auf Prod-Werte normalisieren
-- Supabase Dashboard → Auth → Providers (Google, Apple) enablen + Client-IDs eintragen
-- Google Cloud Console → OAuth Client erstellen
-- Apple Developer → Sign in with Apple Service-ID
+- Supabase Dashboard → Auth → Email Templates: finale HTMLs einspielen (Claude liefert Files)
+- Supabase Dashboard → Auth → Rate Limits: Prod-Werte setzen
 
-**Scope — Teil A: Passwort-Flow**
-1. **Passwort-Setzen-UI** in Settings (Flow: "Passwort setzen/ändern" → Reset-Mail → neues Passwort)
-2. **Passwort-Reset E2E-Test** — Code existiert seit Phase 13, nie verifiziert. Playwright gegen Prod.
-3. **Supabase Email-Templates** — Darkmode-kompatibel, Systemfarbe
-4. **Rate-Limit auf Login zurückstellen**
+**Scope:**
+1. **Supabase Email-Templates vereinheitlichen** — Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite. Gemeinsamer Brand-Header, Darkmode-kompatibel (kein hardcoded `#fff`), deutsche Copy mit Umlauten.
+2. **Rate-Limit** auf Prod-Werte zurück (falls noch auf Phase-13-Test-Werten).
 
-**Scope — Teil B: OAuth Google + Apple**
-5. Google OAuth-Integration (`supabase.auth.signInWithOAuth`) — priorisiert, größter UX-Win
-6. Apple OAuth-Integration — zweit, iPhone-User
-7. Circle-Member-Erkennung: Email-Lookup via Circle-API → `profiles.is_circle_member = true` → Pro-Modus automatisch
-8. Login-UI updaten mit Provider-Buttons (Email/Passwort bleibt Fallback)
+**Aus Scope entfernt (2026-04-18):**
+- ~~Passwort-Setzen-UI in Settings~~ — Reset-Flow reicht, separate UI nicht mehr zwingend
+- ~~E2E-Test Passwort-Reset~~ — manuell verifiziert, funktioniert
+- ~~OAuth Google + Apple~~ → `BACKLOG.md` "Auth — OAuth-Login (Circle-Integration)"
 
 **Success Criteria:**
-- [ ] User kann in Settings neues Passwort setzen
-- [ ] E2E-Test Passwort-Reset grün
-- [ ] Reset-Email in Darkmode korrekt gerendert
+- [ ] Alle 6 Email-Templates einheitliches Design (Brand-Header, Darkmode, Umlaute)
+- [ ] Reset-Email + Confirm-Email in Darkmode korrekt gerendert (manuell verifiziert)
 - [ ] Login-Rate-Limit auf Prod-Werten
-- [ ] Google-Login Ende-zu-Ende Prod-verifiziert
-- [ ] Apple-Login Ende-zu-Ende Prod-verifiziert
-- [ ] Circle-Member beim OAuth-Signup automatisch zu Pro upgraded
-- [ ] Login-UI konsistent mit Theme
 
 **Release:** minor (v4.3.0)
 

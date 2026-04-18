@@ -33,22 +33,22 @@ progress:
 
 **Pre-Approved für Autonomous-Runs:**
 
-**Phase 16 — Auth Extensions** (Teil A zuerst, separate Session)
+**Phase 16 — Auth Extensions (Email-Templates + Rate-Limits)** — aktiver Scope nur noch Teil A; Teil B (OAuth) ist ins BACKLOG verschoben (2026-04-18).
 
-**Teil A — Scope 2026-04-18 angepasst (nach Phase 15 durch):**
+**Scope 2026-04-18 angepasst (nach Phase 15 durch):**
 
 - ~~E2E-Test Passwort-Reset~~ — manuell verifiziert am 2026-04-18, funktioniert. Kein E2E nötig.
 - ~~Passwort-Setzen-UI in Settings~~ — Reset-Flow reicht, separate UI nicht mehr zwingend.
 - **Email-Templates vereinheitlichen** — Hauptjob. Alle Supabase-Templates (Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite) auf ein konsistentes Design: gleicher Header, Darkmode-kompatibel (System-Background-Fallback, keine `#fff`-Hardcodes), deutsche Copy mit Umlauten, Brand-Farben/Logo.
 - **Rate-Limit** auf Prod-Werte zurück (falls noch auf Phase-13-Test-Werten).
 
-**Teil A — Manual-Steps Luca:**
+**Manual-Steps Luca:**
 
 - Supabase Dashboard → Auth → Email Templates: finale HTMLs einspielen (Claude liefert Files, Luca klickt ein).
 - Supabase Dashboard → Auth → Rate Limits: Prod-Werte setzen.
 - Claude braucht vorab: Design-Vorlage (Brand-Header? Resend-Template als Referenz?), Farben/Logo, Zugang zu Dashboard (Luca selbst).
 
-**Teil B — OAuth (Google + Apple):** separate Session nach Teil A, eigener Scope.
+**OAuth (Google + Apple)** — nicht mehr Teil dieser Phase. Siehe `BACKLOG.md` → "Auth — OAuth-Login (Circle-Integration)". Wird erst wieder aktiv wenn Luca es priorisiert.
 
 - Push: OK · Changeset: minor (v4.3.0)
 - Kommando: `/gsd-autonomous --only 16 --interactive`
@@ -61,7 +61,7 @@ Phasen 14-17 stehen in `ROADMAP.md` unter Milestone v3.0. Empfohlene Reihenfolge
 
 1. **Phase 14 — Mobile Polish** (patch v4.2.x) — Quick-Wins (Auto-Resize ✅, Footer ✅, Shift+Enter pending) + Micro-Animations Mobile-Parity
 2. **Phase 15 — Chat überall + Context-aware** (GSD-Phase, ~halber Tag, minor v4.2.0) — FloatingChat auf alle Routen
-3. **Phase 16 — Auth Extensions** (teil-autonom, minor v4.3.0) — Passwort-Flow + OAuth Google/Apple, zusammen weil gleiche Cloud-Setups
+3. **Phase 16 — Auth Extensions** (teil-autonom, minor v4.3.0) — Email-Templates vereinheitlichen + Rate-Limits auf Prod. OAuth (Google/Apple) ist ins BACKLOG verschoben.
 4. **Phase 17 — Simplify-Pass** (patch v4.3.x) — nach `/gsd-map-codebase`
 
 **Konsolidierungs-Rationale (2026-04-17):**
