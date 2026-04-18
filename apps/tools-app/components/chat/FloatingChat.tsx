@@ -10,6 +10,7 @@ import { type Attachment } from './AttachmentsPanel'
 import { useDeepgramVoice } from '@/hooks/useDeepgramVoice'
 import { useCallback } from 'react'
 import type { ChatMessage, ChatMode, ChatContext } from '@/lib/types'
+import { trackEvent } from '@/lib/analytics'
 
 const STORAGE_KEY = 'genai-chat-session'
 
@@ -414,6 +415,19 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
     setIsExpanded(!isExpanded)
   }
 
+  // Fire analytics once per Open-transition (not per render). Called from the
+  // Kiwi button's onClick; skipped on close to avoid double-counting.
+  function handleKiwiClick() {
+    if (!isOpen) {
+      trackEvent('chat_opened_from_route', {
+        route: typeof window !== 'undefined' ? window.location.pathname : '/',
+        context_slug: context?.slug,
+        mode,
+      })
+    }
+    setIsOpen(!isOpen)
+  }
+
   const isEmpty = messages.length === 0
 
   // In expanded mode, render as a fixed sidebar panel (below header + filterbar)
@@ -736,7 +750,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
         className={`floating-ai-button relative w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-500 transform bg-transparent border-none ${
           isOpen ? 'rotate-90 scale-95' : 'rotate-0 scale-100'
         }`}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleKiwiClick}
         aria-label={isOpen ? 'Chat schließen' : 'Chat öffnen'}
         style={{
           boxShadow: isOpen ? 'none' : `0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow), 0 4px 12px rgba(0,0,0,0.3)`,
