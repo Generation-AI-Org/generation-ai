@@ -33,6 +33,16 @@ export const metadata: Metadata = {
   },
   description:
     "Die erste kostenlose KI-Community für Studierende im DACH-Raum",
+
+  icons: {
+    icon: [
+      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   keywords: [
     "KI",
     "AI",
