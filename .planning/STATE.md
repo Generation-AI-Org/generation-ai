@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
 status: unknown
-last_updated: "2026-04-18T16:16:05.373Z"
+last_updated: "2026-04-18T16:58:07.705Z"
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 12
-  completed_plans: 8
-  percent: 67
+  completed_plans: 9
+  percent: 75
 ---
 
 # Project State — Generation AI Monorepo
@@ -19,9 +19,18 @@ progress:
 ## Current Status
 
 **Milestone:** v3.0 UX Polish & Feature Expansion
-**Phase:** 16 Brand System Foundation — Plan 05 ✅ COMPLETE (tools-app migration: Geist fonts, Logo in GlobalLayout/DetailHeaderLogo/login, focus-ring --text, VOICE.md microcopy, hex audit)
-**Last Updated:** 2026-04-18T16:15Z
-**Site Status:** ✅ Live — CSP A+, Auth stabil, Chat jetzt global verfügbar (Home, Detail, Settings). /login + /impressum + /datenschutz bleiben bare. Release **v4.2.0** candidate — Changeset liegt bereit, GitHub-Release noch zu erstellen wenn gewünscht.
+**Phase:** 17 Auth Extensions — NEXT UP
+**Last Updated:** 2026-04-18
+**Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global verfügbar. Brand System v4.3.0 deployed: Geist Mono/Sans, Radix Colors, `<Logo />` component, VOICE.md microcopy.
+
+**Phase 16 — DONE 2026-04-18:**
+
+- 6/6 Plans / Brand System Foundation vollständig
+- Radix Colors Tokens + Geist Mono/Sans + `<Logo />` 11 Varianten + Website + tools-app migriert
+- Visual-Regression-Gate geschlossen: 12 intentional diffs (font swap), 0 unintentional
+- Builds grün, Smoke + Unit Tests grün
+- Changeset für v4.3.0 minor release erstellt
+- Artifacts: `.planning/phases/16-brand-system-foundation/` (CONTEXT, 6× PLAN, 6× SUMMARY, VERIFICATION, UI-SPEC, VOICE, VISUAL-DIFF-REPORT)
 
 **Phase 15 — DONE 2026-04-18:**
 
@@ -31,7 +40,7 @@ progress:
 - Artifacts: `.planning/phases/15-chat-ueberall-global-context-aware/` (CONTEXT, 3× PLAN, 3× SUMMARY, VERIFICATION, REVIEW)
 - Zusätzlicher Post-Fix: Legal-Seiten (`/impressum`, `/datenschutz`) aus GlobalLayout entfernt (Commit `42916e0`)
 
-**Next Up: Phase 16 — Brand System Foundation (neu, 2026-04-18)**
+**Next Up: Phase 17 — Auth Extensions**
 
 **Scope:** Brand-Entscheidungen aus Workshop-Session (2026-04-18) in Code überführen. Source of Truth liegt in `brand/DESIGN.md`, `brand/VOICE.md`, `brand/tokens.json`, `brand/logos/` (11 Varianten).
 
