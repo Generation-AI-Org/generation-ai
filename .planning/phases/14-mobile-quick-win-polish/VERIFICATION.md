@@ -1,14 +1,14 @@
 ---
 phase: 14
 status: passed
-verified_at: 2026-04-17
+verified_at: 2026-04-18
 ---
 
 # Phase 14 — Verification
 
-## Status: PASSED (automated gates)
+## Status: PASSED (automated gates + audit)
 
-Visual mobile smoke-tests require a human on device; automated gates (build, lint, type-check via Next build) are green.
+Visual mobile smoke-tests require a human on device; automated gates (build, lint, type-check via Next build) are green. Teil B (Micro-Animations Mobile-Parity) via Audit verifiziert — keine Gaps.
 
 ## Plan 14-01: Auto-Resize fuer Diktat-Input (D-02)
 
@@ -43,7 +43,24 @@ Success criteria:
 - [ ] Mobile chat expanded -> footer visually gone — **needs human smoke-test**
 - [ ] Darkmode toggle -> footer still readable — **needs human smoke-test**
 
+## Plan 14-03: Micro-Animations Mobile-Parity Audit (Teil B)
+
+**Deliverable:** Audit-Report in `14-03-PLAN.md`
+
+Findings:
+- 17 Desktop Micro-Animations katalogisiert + gegen Mobile-Viewport abgeglichen
+- **0 Mobile-Parity-Gaps gefunden**
+- ROADMAP-Annahmen (Sonne/Audio-Bars/Paperclip fehlen auf Mobile) widerlegt — funktionieren bereits
+- Globale `prefers-reduced-motion`-Regel (`globals.css:64-73`) deckt A11y für alle animations ab
+- Login-Arrow ist via `hidden md:flex` Desktop-only, kein Touch-Kontext
+
+Success criteria:
+- [x] Audit-Coverage: 17/17 Animations geprüft
+- [x] Keine Code-Änderungen nötig (keine Gaps)
+- [x] Build bleibt grün (keine Änderungen am Source)
+
 ## Out of Scope / Follow-ups
 
-- Fade transition on footer hide (deferred to Phase 16 Micro-Animations).
-- Shift+Enter verification (D-01, excluded per CONTEXT).
+- Fade transition on footer hide (optional, kein Bug).
+- Shift+Enter verification (deferred per User-Entscheidung 2026-04-18 — eigener Todo falls Regression).
+- Performance-Profiling Sidebar Backdrop-Blur (kein konkreter Bug-Report).

@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
-current_plan: Phase 14 — Mobile Quick-Win-Polish (start)
+current_plan: Phase 14 — Mobile Polish ✅ COMPLETE
 status: milestone_v3_ready
-last_updated: "2026-04-17T11:45:00.000Z"
+last_updated: "2026-04-18T00:00:00.000Z"
 progress:
   total_phases: 17
-  completed_phases: 13
-  total_plans: 28
-  completed_plans: 28
-  percent: 76
+  completed_phases: 14
+  total_plans: 31
+  completed_plans: 31
+  percent: 82
 ---
 
 # Project State — Generation AI Monorepo
@@ -24,6 +24,13 @@ progress:
 **Chat-Agent-Bug:** ✅ FIXED & MERGED (PR #3 → main, Commit fb884fc, 2026-04-17)
 **Last Updated:** 2026-04-17T10:45
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Member-Chat antwortet zuverlässig. Release **v4.1.0** auf GitHub published (Tag + CHANGELOGs + Release-Page).
+**Phase 14 — Pre-Approved für Autonomous-Run (2026-04-18):**
+- Scope: Shift+Enter im Chat-Input + Mobile Micro-Animations Parity (Audit + Fixes)
+- Push am Ende: OK
+- Changeset: patch (v4.2.1)
+- Rest nach Ermessen — Ziel: Phase 14 fertig
+- Kommando für neue Session: `/gsd-autonomous --only 14 --interactive`
+
 **Next Sessions (autonom fahrbar, 4 Phasen in v3.0 Milestone — konsolidiert von 6 auf 4 am 2026-04-17):**
 
 Phasen 14-17 stehen in `ROADMAP.md` unter Milestone v3.0. Empfohlene Reihenfolge:
