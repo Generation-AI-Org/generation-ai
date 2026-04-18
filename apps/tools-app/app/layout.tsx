@@ -1,14 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
-import localFont from "next/font/local";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-
-const cascadiaCode = localFont({
-  src: "./fonts/CascadiaCode.woff2",
-  variable: "--font-mono",
-  display: "swap",
-  preload: true,
-});
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthProvider";
@@ -16,13 +9,6 @@ import { VersionBadge } from "@/components/ui/VersionBadge";
 import ConditionalGlobalLayout from "@/components/layout/ConditionalGlobalLayout";
 import { getUser } from "@/lib/auth";
 import type { ChatMode } from "@/lib/types";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-  preload: true,
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -105,7 +91,7 @@ export default async function RootLayout({
   const mode: ChatMode = user ? 'member' : 'public'
 
   return (
-    <html lang="de" className={`${inter.variable} ${cascadiaCode.variable}`} suppressHydrationWarning>
+    <html lang="de" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <body className="bg-bg text-text antialiased font-sans">
         <a href="#main-content" className="skip-link">
           Zum Hauptinhalt springen

@@ -20,7 +20,7 @@
 }
 
 body {
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* Highlight Animation für empfohlene Cards — nutzt CSS-Variablen für Theme-Support */
@@ -97,8 +97,8 @@ input[type="button"] {
 
 /* Global focus-visible styles */
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
 }
 
 /* Remove default focus for mouse users, keep for keyboard */
@@ -113,8 +113,8 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 [role="button"]:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
   border-radius: 4px;
 }
 
