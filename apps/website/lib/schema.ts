@@ -34,7 +34,7 @@ export function buildOrganizationSchema(): JsonLdOrganization {
     url: "https://generation-ai.org",
     logo: "https://generation-ai.org/og-image.jpg",
     description:
-      "Die erste kostenlose KI-Community fuer Studierende im DACH-Raum",
+      "Die erste kostenlose KI-Community für Studierende im DACH-Raum",
     sameAs: [],
   };
 }
@@ -49,7 +49,7 @@ export function buildWebSiteSchema(): JsonLdWebSite {
     name: "Generation AI",
     url: "https://generation-ai.org",
     description:
-      "Die erste kostenlose KI-Community fuer Studierende im DACH-Raum",
+      "Die erste kostenlose KI-Community für Studierende im DACH-Raum",
     inLanguage: "de-DE",
   };
 }

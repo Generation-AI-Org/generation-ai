@@ -1,8 +1,8 @@
 'use client'
 
-import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "@/components/ThemeProvider";
+import { Logo } from "@genai/ui";
 
 export function Footer() {
   const { theme } = useTheme();
@@ -11,16 +11,9 @@ export function Footer() {
     <footer className="bg-bg-header border-t border-white/10 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Logo - switches based on theme */}
-          <Link href="/" className="flex items-center">
-            <Image
-              src={theme === 'dark' ? '/logos/generationai-blau-neon-transparent.png' : '/logos/generationai-pink-rot-transparent.png'}
-              alt="Generation AI"
-              width={150}
-              height={40}
-              className="h-8 md:h-10 w-auto object-contain"
-              key={theme}
-            />
+          {/* Logo - resolved via colorway="auto" + theme */}
+          <Link href="/" className="flex items-center" aria-label="Generation AI - Startseite">
+            <Logo context="footer" theme={theme} size="md" />
           </Link>
 
           {/* Legal Links */}

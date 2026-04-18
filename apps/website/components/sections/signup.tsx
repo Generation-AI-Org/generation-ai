@@ -95,12 +95,12 @@ export function Signup() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Ein Fehler ist aufgetreten.')
+        throw new Error(data.error || "Ups, da ist was schiefgelaufen. Probier's nochmal!")
       }
 
       setFormState('success')
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten.')
+      setErrorMessage(err instanceof Error ? err.message : "Ups, da ist was schiefgelaufen. Probier's nochmal!")
       setFormState('error')
     }
   }
