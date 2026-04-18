@@ -25,7 +25,7 @@ findings:
   low: 5
   info: 3
   total: 10
-status: findings
+status: clean
 ---
 
 # Phase 15: Code Review Report
@@ -139,3 +139,20 @@ if (!v) {
 _Reviewed: 2026-04-18_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: standard_
+
+---
+
+## CODE-FIX-SUMMARY (2026-04-18)
+
+**Fixed (5):**
+- **MR-01** — sessionStorage read/write catch-Blöcke loggen jetzt in Dev (`console.warn`), Best-effort-Semantik bleibt. Commit `4f82d6f`.
+- **MR-02** — Persistierte Messages werden per `slice(-MAX_PERSISTED_MESSAGES)` (30) gekappt. Verhindert Quota-Exceeded bei langen Chats. Commit `4f82d6f` (kombiniert mit MR-01, da gleicher Code-Block).
+- **LR-01** — Dead Code entfernt: `isUrlModalOpen`-State, `UrlInputModal`-Render und zugehöriger Import aus `FloatingChat.tsx`. Commit `19695b6`.
+- **LR-02** — Popup-Branch-Input hat jetzt `ref={urlInputRef}`; Popup-Branch-Button ruft dasselbe `setTimeout(() => urlInputRef.current?.focus(), 50)` wie der expanded-Branch. Beide Branches rendern nie gleichzeitig, Ref-Sharing ist sicher. Commit `57ce949`.
+- **LR-03** — `useChatContext` und `useHighlightContext` warnen in Dev (`console.warn`) wenn außerhalb des Providers aufgerufen; No-Op-Fallback bleibt für Bare-Routes. Commit `3041ff2`.
+
+**Deferred (2):**
+- **LR-04** (QuickActions detail-variant label === prompt) — Reviewer selbst: "Status quo ist vertretbar". Kein funktionaler Bug, Interface-Shape-Konsistenz hat Wert. Nicht angefasst.
+- **LR-05** (ChatBody-Extract für expanded/popup) — ~450 Zeilen Refactor, Reviewer selbst: "Eigener Task, nicht in Phase 15 aufräumen". Zu groß für surgical fix. LR-02 (eigentlicher UX-Bug aus der Duplikation) ist separat gefixt.
+
+**Build verification:** `pnpm --filter tools-app build` → green (Next.js 16.2.3, 46/46 static pages, TypeScript clean).
