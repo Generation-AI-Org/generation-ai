@@ -3,16 +3,22 @@ import { type NextRequest } from "next/server"
 import { buildCspDirectives } from "./lib/csp"
 
 export async function proxy(request: NextRequest) {
-  // Phase-12 Pattern: Session-Refresh zuerst; response trägt Auth-Cookies.
-  // Phase-13: CSP-Header wird auf DIESE Response gesetzt (Pitfall 1 aus RESEARCH: keine neue Response!).
-  const response = await updateSession(request)
-
+  // Nonce + CSP müssen auf den REQUEST-Headers liegen, BEVOR gerendert wird.
+  // Next.js liest CSP vom Request-Header, extrahiert den Nonce und hängt ihn
+  // automatisch an Framework- + Page-Script-Tags. Ohne das: keine nonce-Attribute
+  // im HTML → strict-dynamic blockt alle Chunks → schwarze Seite.
+  // updateSession() ruft intern NextResponse.next({ request }) — die mutierten
+  // Request-Headers werden dabei durchgereicht (Phase-13 Pitfall 1: keine neue Response!).
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64")
   const isDev = process.env.NODE_ENV === "development"
   const csp = buildCspDirectives(nonce, isDev)
 
+  request.headers.set("x-nonce", nonce)
+  request.headers.set("Content-Security-Policy", csp)
+
+  const response = await updateSession(request)
+
   response.headers.set("Content-Security-Policy", csp)
-  response.headers.set("x-nonce", nonce)
 
   return response
 }

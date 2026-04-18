@@ -1,4 +1,11 @@
 import type { Metadata, Viewport } from "next";
+
+// CSP mit Nonce erfordert dynamic rendering — sonst wird HTML zur Build-Zeit
+// ohne Nonce gebaut, und der per-request-Nonce in den Script-Tags fehlt →
+// strict-dynamic blockt alle Chunks.
+// Doc: next.js content-security-policy "all pages must be dynamically rendered".
+export const dynamic = "force-dynamic";
+
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
