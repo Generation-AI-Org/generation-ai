@@ -6,28 +6,15 @@ import type { Metadata, Viewport } from "next";
 // Doc: next.js content-security-policy "all pages must be dynamically rendered".
 export const dynamic = "force-dynamic";
 
-import { Inter } from "next/font/google";
-import localFont from "next/font/local";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-
-const cascadiaCode = localFont({
-  src: "./fonts/CascadiaCode.woff2",
-  variable: "--font-mono",
-  display: "swap",
-  preload: true,
-});
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import {
   buildOrganizationSchema,
   buildWebSiteSchema,
 } from "@/lib/schema";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -45,7 +32,7 @@ export const metadata: Metadata = {
     template: "%s | Generation AI",
   },
   description:
-    "Die erste kostenlose KI-Community fuer Studierende im DACH-Raum",
+    "Die erste kostenlose KI-Community für Studierende im DACH-Raum",
   keywords: [
     "KI",
     "AI",
@@ -53,7 +40,7 @@ export const metadata: Metadata = {
     "Community",
     "DACH",
     "kostenlos",
-    "Kuenstliche Intelligenz",
+    "Künstliche Intelligenz",
   ],
   authors: [{ name: "Generation AI" }],
   creator: "Generation AI",
@@ -61,9 +48,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "de_DE",
     siteName: "Generation AI",
-    title: "Generation AI - Die KI-Community fuer Studierende",
+    title: "Generation AI - Die KI-Community für Studierende",
     description:
-      "Die erste kostenlose KI-Community fuer Studierende im DACH-Raum. Tools, Wissen und Austausch.",
+      "Die erste kostenlose KI-Community für Studierende im DACH-Raum. Tools, Wissen und Austausch.",
     url: "https://generation-ai.org",
     images: [
       {
@@ -76,9 +63,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Generation AI - Die KI-Community fuer Studierende",
+    title: "Generation AI - Die KI-Community für Studierende",
     description:
-      "Die erste kostenlose KI-Community fuer Studierende im DACH-Raum. Tools, Wissen und Austausch.",
+      "Die erste kostenlose KI-Community für Studierende im DACH-Raum. Tools, Wissen und Austausch.",
     images: ["/og-image.jpg"],
   },
   robots: {
@@ -101,7 +88,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="de" className={`${inter.variable} ${cascadiaCode.variable}`}>
+    <html lang="de" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body className="antialiased min-h-screen">
         <script
           type="application/ld+json"
