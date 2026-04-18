@@ -1003,6 +1003,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                                 </svg>
                               </div>
                               <input
+                                ref={urlInputRef}
                                 type="url"
                                 value={inlineUrlInput}
                                 onChange={(e) => setInlineUrlInput(e.target.value)}
@@ -1032,6 +1033,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                             <button
                               onClick={() => {
                                 setIsEditingUrl(true)
+                                setTimeout(() => urlInputRef.current?.focus(), 50)
                               }}
                               className="group w-full flex items-center gap-3 px-3 py-2.5 text-sm text-[var(--text)] hover:bg-[var(--accent)]/10 transition-all duration-200 rounded-lg mx-1 hover:mx-0 hover:px-4"
                               style={{ width: 'calc(100% - 8px)' }}
