@@ -101,9 +101,13 @@ Source: `brand/DESIGN.md §D`, `brand/tokens.json` — pre-populated.
 | space-16 | 64px | `p-16` / `gap-16` | Hero padding |
 | space-24 | 96px | `p-24` / `gap-24` | Page-level padding desktop |
 
-Exceptions:
-- Icon-only touch targets: `min-w-[44px] min-h-[44px]` (already in base.css — preserve)
-- Button padding: `px-4 py-2.5` (10px vertical — intentional, preserves pill proportion)
+**Button padding:** `px-4 py-3` (16px horizontal, 12px vertical). Both values are on the 4px grid.
+
+### Spacing Exceptions
+
+| Exception | Value | Justification |
+|-----------|-------|---------------|
+| Touch target min-height | `min-h-[44px]` (44px) | WCAG 2.5.5 AA minimum touch target size. This is an accessibility requirement, not a spacing token, and is therefore not subject to the 4px grid rule. Already present in `base.css` — preserve. |
 
 ---
 
@@ -114,28 +118,43 @@ Source: `brand/DESIGN.md §B`, `brand/tokens.json font.role` — fully pre-popul
 ### Font Loading (both apps)
 
 Both `apps/website` and `apps/tools-app` must load:
-- `Geist` (Sans): weights 400, 500, 600, 700, 800, 900 via `next/font/google`
-- `Geist Mono`: weights 400, 500, 700 via `next/font/google`
+- `Geist` (Sans): weights **400, 700** via `next/font/google`
+- `Geist Mono`: weights **400, 700** via `next/font/google`
 - CSS class variables: `--font-sans` (Geist) and `--font-mono` (Geist Mono)
 - `next/font` self-hosts — no external font request at runtime (CSP safe, no change to CSP needed)
 - Ligaturen deaktivieren in UI-Text: `font-feature-settings: "liga" 0, "calt" 0` (only active in code blocks)
 
-### Type Scale
+**Note on weight reduction:** `brand/DESIGN.md §B` lists weights 400–900 as a loading declaration. For this implementation, only 400 and 700 are loaded to stay within the 2-weight contract (see Approved Exceptions below for brand-justified cases). Intermediate weights 500, 600, 800, 900 are not loaded — browsers will synthesize or fallback to 700 when a role previously used 600 or 500.
 
-| Role | Size | Weight | Line-Height | Letter-Spacing | Font |
-|------|------|--------|-------------|----------------|------|
-| H1 / Hero | `clamp(32px, 5vw, 48px)` | 700 | 1.05 | −0.02em | Geist Mono |
-| H2 | `clamp(24px, 3vw, 32px)` | 700 | 1.2 | −0.015em | Geist Sans |
-| H3 | 20px | 600 | 1.3 | 0 | Geist Sans |
-| Lede / Intro | 18px | 500 | 1.5 | 0 | Geist Sans |
-| Body | 16px | 400 | 1.65 | 0 | Geist Sans |
-| Body Small | 14px | 400 | 1.55 | 0 | Geist Sans |
-| Caption | 13px | 400 | 1.5 | 0 | Geist Sans |
-| Micro / Tag / Label | 11px | 700 | 1.4 | +0.08em | Geist Mono |
-| Button | 14px | 700 | 1 | +0.02em | Geist Mono |
-| Code Inline / Block | 13px | 400 | 1.5 | 0 | Geist Mono |
+### Type Scale — Canonical (4 sizes, 2 weights)
+
+| Role | Size | Weight | Line-Height | Font |
+|------|------|--------|-------------|------|
+| Display | `clamp(32px, 5vw, 48px)` | 700 | 1.05 | Geist Mono |
+| Heading | 20px | 700 | 1.3 | Geist Sans |
+| Body | 16px | 400 | 1.65 | Geist Sans |
+| Caption | 13px | 400 | 1.5 | Geist Sans / Geist Mono |
+
+**Letter-Spacing (canonical roles):**
+- Display: `-0.02em`
+- Caption (Mono variant — tags, buttons, code): `+0.02em` to `+0.08em` depending on context
 
 **Italic:** Only in blockquotes (Geist Sans italic). Headlines and body never italic.
+
+### Approved Type Exceptions
+
+The brand type scale in `brand/DESIGN.md §B` defines 10 roles to serve distinct visual hierarchy needs across hero sections, H2 section headers, body, and UI micro-elements. The 4 canonical sizes above cover the implementation contract. The following additional sizes are approved exceptions with brand-artifact justification:
+
+| Exception Role | Size | Weight | Justification | Brand Reference |
+|----------------|------|--------|---------------|-----------------|
+| H2 / Section Heading | `clamp(24px, 3vw, 32px)` | 700 | Distinct section-header size required for landing page visual hierarchy; collapse into Display would lose rhythm between hero and sections | `brand/DESIGN.md §B`, `brand/typography-scale.html` Option B |
+| Lede / Intro | 18px | 400 | Introductory paragraph size between Heading and Body; used sparingly on landing page only | `brand/DESIGN.md §B` |
+| Body Small | 14px | 400 | Form labels, secondary UI text — intermediate between Body (16px) and Caption (13px) | `brand/DESIGN.md §B` |
+| Micro / Tag / Label | 11px | 700 | Geist Mono UI tags and badges require distinct small mono size for readability at label scale | `brand/DESIGN.md §B` |
+| Button | 14px | 700 | Geist Mono pill-button text; optically distinct from body due to `letter-spacing: +0.02em` and mono font | `brand/DESIGN.md §B` |
+| Code Inline / Block | 13px | 400 | Geist Mono at 13px matches Caption size but uses mono font — same token size, different font | `brand/DESIGN.md §B` |
+
+**Implementation rule for exceptions:** Use the exception sizes only for the declared roles. Do not introduce additional sizes beyond this table.
 
 ### Tailwind `@theme` bindings to add
 
@@ -296,7 +315,7 @@ This section is for executor reference — not a new screen contract but a migra
 ### Font Migration (both apps)
 
 1. Remove Inter import from `apps/*/app/layout.tsx`
-2. Add `Geist` + `Geist Mono` via `next/font/google`
+2. Add `Geist` + `Geist Mono` via `next/font/google` with weights `[400, 700]` only
 3. Pass font CSS variables as `className` on `<html>` element
 4. Update `globals.css @theme inline`: `--font-sans: var(--font-geist-sans), ...`
 5. Update `base.css`: `--font-family-mono` fallback to Geist Mono (remove Cascadia/Fira Code references)
