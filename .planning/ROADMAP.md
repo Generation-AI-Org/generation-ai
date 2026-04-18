@@ -310,8 +310,9 @@ Plans:
 |-------|------|------|---------------|
 | 14 | Mobile Polish | Mobile Quick-Win-Bugs + Micro-Animations Parity zu Desktop | ✅ Ja |
 | 15 | 3/3 | Complete   | 2026-04-18 |
-| 16 | Auth Extensions | Email-Templates vereinheitlichen + Rate-Limits auf Prod | ⚠️ Teil-autonom (Supabase Dashboard) |
-| 17 | Simplify-Pass tools-app | Tote Files, inkonsistente Patterns, Naming-Cleanup | ✅ Ja (nach Map) |
+| 16 | 1/6 | In Progress|  |
+| 17 | Auth Extensions | Email-Templates (React Email) + Rate-Limits auf Prod | ⚠️ Teil-autonom (Supabase Dashboard) |
+| 18 | Simplify-Pass tools-app | Tote Files, inkonsistente Patterns, Naming-Cleanup | ✅ Ja (nach Map) |
 
 ---
 
@@ -375,36 +376,80 @@ Plans:
 
 ---
 
-### Phase 16: Auth Extensions
+### Phase 16: Brand System Foundation
 
-**Goal:** Email-Templates aller Auth-Flows vereinheitlichen (Brand, Darkmode, Umlaute) + Rate-Limits auf Prod-Werte setzen. Scope am 2026-04-18 reduziert — OAuth ist ins Backlog verschoben.
-**Depends on:** Phase 15 empfohlen — optional
-**⚠️ Manual Steps (Luca):**
-- Supabase Dashboard → Auth → Email Templates: finale HTMLs einspielen (Claude liefert Files)
-- Supabase Dashboard → Auth → Rate Limits: Prod-Werte setzen
+**Goal:** Brand-Entscheidungen aus `brand/DESIGN.md` in Code überführen — Radix Colors + Geist-Fonts + Design Tokens etablieren, Website + tools-app auf neue Tokens migrieren. Basis für alles Folgende (Mails, zukünftige UI).
+**Depends on:** Phase 15 fertig (neue Architektur als Baseline)
+**Source of Truth:** `brand/DESIGN.md`, `brand/VOICE.md`, `brand/tokens.json`, `brand/logos/`
 
 **Scope:**
-1. **Supabase Email-Templates vereinheitlichen** — Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite. Gemeinsamer Brand-Header, Darkmode-kompatibel (kein hardcoded `#fff`), deutsche Copy mit Umlauten.
-2. **Rate-Limit** auf Prod-Werte zurück (falls noch auf Phase-13-Test-Werten).
+1. **Packages installieren**: `@radix-ui/colors` (Neutral-Skala). Geist via `next/font/google`.
+2. **`packages/config/tailwind/base.css` erweitern**: Radix slate + slate-dark imports, semantische Zuordnung nach DESIGN.md §C, font-family auf Geist. Bestehendes Welt-Mapping (Light = Rosa/Rot, Dark = Blau/Neon) bleibt.
+3. **Logo-Component** `<Logo />` in `packages/ui/` mit `colorway="auto"` + Kontext-Prop (header, footer, mail). 11 Varianten aus `brand/logos/` verdrahten. Aktuell verwendete Logos in beiden Apps austauschen.
+4. **Website migrieren**: Inter raus, Geist rein. Components auf neue Radix-Tokens (muted-text = slate-11, borders = slate-6/7 etc.). Hardcoded Hex-Werte raus. Primary-Button Fix bereits drin (`--color-primary: var(--accent)`).
+5. **tools-app migrieren**: gleich wie Website.
+6. **Microcopy-Pass**: bestehende UI-Strings (Buttons, Errors, Empty-States, Toasts) gegen `brand/VOICE.md` Microcopy-Library abgleichen und ersetzen. Schwerpunkt: sichtbare Utility-Texte — nicht Marketing-Copy (das bleibt wie es ist).
+7. **Visual-Regression-Check**: Playwright-Screenshots beider Apps (Home, Detail, Settings, Login, /legal) in Light + Dark **vor** Migration als Baseline speichern, **nach** Migration gegen Baseline vergleichen. Absichtliche Änderungen dokumentieren, ungewollte Regressions fixen.
 
-**Aus Scope entfernt (2026-04-18):**
-- ~~Passwort-Setzen-UI in Settings~~ — Reset-Flow reicht, separate UI nicht mehr zwingend
-- ~~E2E-Test Passwort-Reset~~ — manuell verifiziert, funktioniert
-- ~~OAuth Google + Apple~~ → `BACKLOG.md` "Auth — OAuth-Login (Circle-Integration)"
+**Plans:** 1/6 plans executed
+
+Plans:
+- [x] 16-01-foundation-install-baseline-PLAN.md — Install @radix-ui/colors + geist, bootstrap packages/ui, capture Playwright baseline screenshots
+- [ ] 16-02-tokens-base-css-PLAN.md — Extend packages/config/tailwind/base.css with Radix slate imports, Geist font bindings, semantic status tokens
+- [ ] 16-03-logo-component-PLAN.md — Implement <Logo /> in @genai/ui with 11 colorway variants + colorway="auto" matrix + Vitest suite; stage 11 SVGs into both apps' public dirs
+- [ ] 16-04-website-migration-PLAN.md — Migrate apps/website: Inter→Geist, Logo swap in header/footer/terminal-splash, focus-ring fix, neutral-hex audit, microcopy pass, umlauts in metadata
+- [ ] 16-05-tools-app-migration-PLAN.md — Migrate apps/tools-app: Inter→Geist, Logo swap in GlobalLayout/DetailHeaderLogo/login, focus-ring fix, neutral-hex audit, microcopy pass
+- [ ] 16-06-visual-regression-verify-PLAN.md — Playwright diff vs baseline, generate diff report, human checkpoint, update baseline post-approval, final build verify both apps
+
+**Manual Steps (Luca):** keine — rein Code.
 
 **Success Criteria:**
-- [ ] Alle 6 Email-Templates einheitliches Design (Brand-Header, Darkmode, Umlaute)
-- [ ] Reset-Email + Confirm-Email in Darkmode korrekt gerendert (manuell verifiziert)
-- [ ] Login-Rate-Limit auf Prod-Werten
+- [ ] `pnpm build` beider Apps grün
+- [ ] Light/Dark-Toggle-Visual-Check: Header, Buttons, Body-Text, Cards — nichts gebrochen
+- [ ] Typografie visuell = Geist (H1 Mono, H2 Sans) wie in `brand/typography-scale.html` Option B
+- [ ] Radix-Tokens greifen (kein Hardcoded Hex mehr in Component-Files für Neutrals)
+- [ ] Logo-Component ersetzt alle hardcoded Logo-Paths in Website + tools-app
+- [ ] Microcopy aus `brand/VOICE.md` durchgängig eingesetzt (Buttons, Errors, Toasts, Empty-States)
+- [ ] Visual-Regression-Screenshots: nur gewollte Änderungen, keine ungewollten Layout-Bruchstellen
+- [ ] Alle E2E-Tests grün
 
 **Release:** minor (v4.3.0)
 
 ---
 
-### Phase 17: Simplify-Pass tools-app
+### Phase 17: Auth Extensions
+
+**Goal:** 6 Supabase-Email-Templates auf **React Email** vereinheitlichen — nutzt Design-Tokens aus Phase 16, Darkmode via `prefers-color-scheme`, deutsche Copy aus `brand/VOICE.md`. + Rate-Limits auf Prod-Werte setzen.
+**Depends on:** Phase 16 (Design-Tokens + Logo-Component sind da)
+**⚠️ Manual Steps (Luca):**
+- Supabase Dashboard → Auth → Email Templates: finale HTMLs einspielen (Claude liefert Files)
+- Supabase Dashboard → Auth → Rate Limits: Prod-Werte setzen
+
+**Scope:**
+1. **React Email Setup**: `@react-email/components` + `react-email` dev-CLI. Shared-Layout-Wrapper mit Logo + Footer.
+2. **6 Templates bauen**: Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite. Copy aus `brand/VOICE.md`. Theme-adaptive via `@media (prefers-color-scheme: dark)`.
+3. **Rate-Limit** auf Prod-Werte zurück (falls noch auf Phase-13-Test-Werten).
+
+**Aus Scope entfernt (2026-04-18):**
+- ~~Passwort-Setzen-UI in Settings~~ — Reset-Flow reicht
+- ~~E2E-Test Passwort-Reset~~ — manuell verifiziert, funktioniert
+- ~~OAuth Google + Apple~~ → `BACKLOG.md` "Auth — OAuth-Login (Circle-Integration)"
+
+**Success Criteria:**
+- [ ] Alle 6 Templates in React Email, gemeinsamer Layout-Wrapper
+- [ ] Darkmode adaptiv (Gmail Light + Dark, Apple Mail Light + Dark manuell verifiziert)
+- [ ] Brand-Logo korrekt (red/neon je nach Theme)
+- [ ] Copy aus VOICE.md Microcopy-Library übernommen
+- [ ] Login-Rate-Limit auf Prod-Werten
+
+**Release:** patch (v4.3.x)
+
+---
+
+### Phase 18: Simplify-Pass tools-app
 
 **Goal:** Tote Files löschen, inkonsistente Patterns vereinheitlichen, Naming fixen. Basiert auf Findings aus `.planning/codebase/` (Output von `/gsd-map-codebase`).
-**Depends on:** `/gsd-map-codebase` muss gelaufen sein, Phase 15 fertig (damit neue Architektur als Baseline dient)
+**Depends on:** `/gsd-map-codebase` muss gelaufen sein, Phase 16 fertig (damit neue Brand-Tokens als Baseline dienen)
 
 **Scope:**
 - Orphan-Dateien identifizieren (keine Imports)

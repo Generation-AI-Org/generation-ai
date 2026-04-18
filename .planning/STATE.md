@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
-status: milestone_v3_ready
-last_updated: "2026-04-18T12:00:00.000Z"
+status: Executing Phase 16
+last_updated: "2026-04-18T16:00:00.000Z"
 progress:
-  total_phases: 4
-  completed_phases: 2
-  total_plans: 9
-  completed_plans: 6
-  percent: 75
+  total_phases: 5
+  completed_phases: 1
+  total_plans: 12
+  completed_plans: 4
+  percent: 33
 ---
 
 # Project State — Generation AI Monorepo
@@ -19,8 +19,8 @@ progress:
 ## Current Status
 
 **Milestone:** v3.0 UX Polish & Feature Expansion
-**Phase:** 15 Chat überall + Context-aware ✅ COMPLETE & PUSHED (commits 863d6f4…42916e0 → origin/main, 2026-04-18)
-**Last Updated:** 2026-04-18T12:00
+**Phase:** 16 Brand System Foundation — Plan 01 ✅ COMPLETE (packages installed, 14 visual baselines captured)
+**Last Updated:** 2026-04-18T16:00
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat jetzt global verfügbar (Home, Detail, Settings). /login + /impressum + /datenschutz bleiben bare. Release **v4.2.0** candidate — Changeset liegt bereit, GitHub-Release noch zu erstellen wenn gewünscht.
 
 **Phase 15 — DONE 2026-04-18:**
@@ -31,38 +31,63 @@ progress:
 - Artifacts: `.planning/phases/15-chat-ueberall-global-context-aware/` (CONTEXT, 3× PLAN, 3× SUMMARY, VERIFICATION, REVIEW)
 - Zusätzlicher Post-Fix: Legal-Seiten (`/impressum`, `/datenschutz`) aus GlobalLayout entfernt (Commit `42916e0`)
 
-**Pre-Approved für Autonomous-Runs:**
+**Next Up: Phase 16 — Brand System Foundation (neu, 2026-04-18)**
 
-**Phase 16 — Auth Extensions (Email-Templates + Rate-Limits)** — aktiver Scope nur noch Teil A; Teil B (OAuth) ist ins BACKLOG verschoben (2026-04-18).
+**Scope:** Brand-Entscheidungen aus Workshop-Session (2026-04-18) in Code überführen. Source of Truth liegt in `brand/DESIGN.md`, `brand/VOICE.md`, `brand/tokens.json`, `brand/logos/` (11 Varianten).
 
-**Scope 2026-04-18 angepasst (nach Phase 15 durch):**
+**Kernaufgaben:**
 
-- ~~E2E-Test Passwort-Reset~~ — manuell verifiziert am 2026-04-18, funktioniert. Kein E2E nötig.
-- ~~Passwort-Setzen-UI in Settings~~ — Reset-Flow reicht, separate UI nicht mehr zwingend.
-- **Email-Templates vereinheitlichen** — Hauptjob. Alle Supabase-Templates (Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite) auf ein konsistentes Design: gleicher Header, Darkmode-kompatibel (System-Background-Fallback, keine `#fff`-Hardcodes), deutsche Copy mit Umlauten, Brand-Farben/Logo.
-- **Rate-Limit** auf Prod-Werte zurück (falls noch auf Phase-13-Test-Werten).
+1. `@radix-ui/colors` installieren + Geist via `next/font/google` laden
+2. `packages/config/tailwind/base.css` erweitern (Radix slate + slate-dark, Geist-Fontfamilies)
+3. `<Logo />` Component in `packages/ui/` (11 Varianten, colorway="auto")
+4. Website + tools-app migrieren: Inter → Geist, Hex-Hardcodes → Radix-Tokens, Logo-Swap überall
+5. Microcopy-Pass: UI-Strings gegen `brand/VOICE.md` Library
+6. Visual-Regression-Check via Playwright (Before/After Screenshots)
+
+**Vorab-Kontext für Session:**
+
+- Brand-Workshop durchgeführt 2026-04-18 — alle Design-Entscheidungen stehen in `brand/DESIGN.md`
+- Globals.css Primary-Fix bereits drin (`--color-primary: var(--accent)`, `--color-ring: var(--text)`) — Commit unbedingt gleich mitziehen
+- Siehe `brand/IMPLEMENTATION-TODO.md` für detaillierten Schritt-Plan
+
+**Pre-Approved für Autonomous-Run:**
+
+- Keine Manual-Steps nötig (rein Code)
+- Push: OK · PR auf feat-Branch OK
+- Changeset: minor (v4.3.0)
+- Visual-Regression-Gate: wenn Playwright-Diffs ungewollt, Phase pausiert für Luca-Review
+- Dev-Server-Smoke-Test in beiden Apps vor Commit (Light + Dark)
+
+**Kommando:** `/gsd-autonomous --only 16`
+
+---
+
+**Phase 17 — Auth Extensions (nach Phase 16)**
+
+Email-Templates + Rate-Limits. Nutzt Design-Tokens aus Phase 16.
+
+**Hauptjob:** 6 Supabase-Templates auf **React Email** (Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite). Theme-adaptiv via `prefers-color-scheme`. Copy aus `brand/VOICE.md`.
 
 **Manual-Steps Luca:**
 
-- Supabase Dashboard → Auth → Email Templates: finale HTMLs einspielen (Claude liefert Files, Luca klickt ein).
-- Supabase Dashboard → Auth → Rate Limits: Prod-Werte setzen.
-- Claude braucht vorab: Design-Vorlage (Brand-Header? Resend-Template als Referenz?), Farben/Logo, Zugang zu Dashboard (Luca selbst).
+- Supabase Dashboard → Email Templates: finale HTMLs einspielen
+- Supabase Dashboard → Rate Limits: Prod-Werte setzen
 
-**OAuth (Google + Apple)** — nicht mehr Teil dieser Phase. Siehe `BACKLOG.md` → "Auth — OAuth-Login (Circle-Integration)". Wird erst wieder aktiv wenn Luca es priorisiert.
+**OAuth** (Google/Apple) bleibt im `BACKLOG.md`.
 
-- Push: OK · Changeset: minor (v4.3.0)
-- Kommando: `/gsd-autonomous --only 16 --interactive`
+Kommando: `/gsd-autonomous --only 17 --interactive` · Changeset: patch (v4.3.x)
 
-**Reihenfolge:** 14 ✅ → 15 ✅ (2026-04-18, commits 863d6f4…eae1f8c, v4.2.0 candidate) → 16 separat → 17 später
+**Reihenfolge:** 14 ✅ → 15 ✅ (2026-04-18, v4.2.0 candidate) → **16 Brand** → 17 Auth Emails → 18 Simplify
 
-**Next Sessions (autonom fahrbar, 4 Phasen in v3.0 Milestone — konsolidiert von 6 auf 4 am 2026-04-17):**
+**Next Sessions (autonom fahrbar, 5 Phasen in v3.0 Milestone — Brand-Phase 16 neu eingefügt am 2026-04-18):**
 
-Phasen 14-17 stehen in `ROADMAP.md` unter Milestone v3.0. Empfohlene Reihenfolge:
+Phasen 14-18 stehen in `ROADMAP.md` unter Milestone v3.0. Empfohlene Reihenfolge:
 
-1. **Phase 14 — Mobile Polish** (patch v4.2.x) — Quick-Wins (Auto-Resize ✅, Footer ✅, Shift+Enter pending) + Micro-Animations Mobile-Parity
-2. **Phase 15 — Chat überall + Context-aware** (GSD-Phase, ~halber Tag, minor v4.2.0) — FloatingChat auf alle Routen
-3. **Phase 16 — Auth Extensions** (teil-autonom, minor v4.3.0) — Email-Templates vereinheitlichen + Rate-Limits auf Prod. OAuth (Google/Apple) ist ins BACKLOG verschoben.
-4. **Phase 17 — Simplify-Pass** (patch v4.3.x) — nach `/gsd-map-codebase`
+1. **Phase 14 — Mobile Polish** ✅ COMPLETE
+2. **Phase 15 — Chat überall + Context-aware** ✅ COMPLETE (minor v4.2.0)
+3. **Phase 16 — Brand System Foundation** (neu, minor v4.3.0) — Radix Colors + Geist + Design Tokens + Migration Website/tools-app. Source of Truth: `brand/DESIGN.md` + `brand/VOICE.md` + `brand/tokens.json`.
+4. **Phase 17 — Auth Extensions** (teil-autonom, patch v4.3.x) — 6 Supabase-Templates auf React Email mit neuen Brand-Tokens + Rate-Limits. OAuth bleibt im BACKLOG.
+5. **Phase 18 — Simplify-Pass** (patch v4.3.x) — nach `/gsd-map-codebase`
 
 **Konsolidierungs-Rationale (2026-04-17):**
 
