@@ -2,15 +2,14 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
-current_plan: Phase 14 — Mobile Polish ✅ COMPLETE
 status: milestone_v3_ready
-last_updated: "2026-04-18T00:00:00.000Z"
+last_updated: "2026-04-18T08:29:30.986Z"
 progress:
-  total_phases: 17
-  completed_phases: 14
-  total_plans: 31
-  completed_plans: 31
-  percent: 82
+  total_phases: 4
+  completed_phases: 1
+  total_plans: 6
+  completed_plans: 3
+  percent: 50
 ---
 
 # Project State — Generation AI Monorepo
@@ -27,6 +26,7 @@ progress:
 **Pre-Approved für Autonomous-Runs (2026-04-18):**
 
 **Phase 15 — Chat überall + Context-aware** (morgen)
+
 - Scope-A: FloatingChat nur auf Produkt-Routen (Bibliothek, Tool-Detail, Dashboard) — auf Legal/Auth/Settings AUS
 - Scope-B: Context = Route + Tool-Slug + Title + Kategorie (keine Page-Content-Stuffung)
 - Scope-C: Chat schließt bei Navigation, Verlauf bleibt für Re-Open (Session-Storage)
@@ -36,6 +36,7 @@ progress:
 - Kommando: `/gsd-autonomous --only 15 --interactive`
 
 **Phase 16 — Auth Extensions** (separat, wenn 15 durch)
+
 - Scope ZURÜCKGESCHNITTEN: nur **Password-Flow E2E testen + verifizieren** (Code existiert seit Phase 9-12, nie verifiziert)
 - OAuth (Google + Apple) → komplett ins Backlog, später eigene Phase
 - Push: OK · Changeset: minor (v4.3.0)
@@ -53,6 +54,7 @@ Phasen 14-17 stehen in `ROADMAP.md` unter Milestone v3.0. Empfohlene Reihenfolge
 4. **Phase 17 — Simplify-Pass** (patch v4.3.x) — nach `/gsd-map-codebase`
 
 **Konsolidierungs-Rationale (2026-04-17):**
+
 - Alt 14 + alt 16 → neu 14 (beide Mobile-UX, zusammen 3h, zu klein für 2 GSD-Phasen)
 - Alt 17 + alt 19 → neu 16 (Auth-Block, gleiche Dashboard-/Cloud-Setups, gleiche E2E-Pfade)
 - Alt 15 unverändert (echte Architektur-Phase) → neu 15
@@ -69,12 +71,14 @@ Phasen 14-17 stehen in `ROADMAP.md` unter Milestone v3.0. Empfohlene Reihenfolge
 **Root Cause:** Gemini 3 Flash hat **nicht-abschaltbares Thinking**. Ohne `reasoning_effort`-Parameter läuft Default-Effort → das Modell überplant und fordert immer weitere Tool-Calls statt zu synthesisieren → `finish_reason: stop` feuert nie → Loop bis maxIterations. Zusätzlich war `/api/chat` recommendedSlugs für member-Mode hartverdrahtet auf `[]`, daher kein Tool-Highlighting in der UI.
 
 **Fix (3 Schichten):**
+
 1. `reasoning_effort: 'low'` + `max_completion_tokens: 8000` (inkl. Reasoning-Tokens) statt `max_tokens: 2000`.
 2. System-Prompt: Tool-Budget auf 3 Calls gekappt, "keine Re-Queries mit Mini-Varianten".
 3. Safety-Net: Nach maxIter ein Synthesis-Call mit expliziter User-Instruktion "antworte jetzt basierend auf bisher Recherchiertem".
 4. `recommendedSlugs` in `/api/chat` wird jetzt aus `sources.map(s => s.slug)` abgeleitet.
 
 **Verifiziert auf Preview `tools-7tax1ypz9`:**
+
 - "Was ist ChatGPT?" → KB-Treffer `was-ist-chatgpt`, Source korrekt angezeigt.
 - "Tools zum Zusammenfassen von Vorlesungen" → web_search, strukturierte Antwort mit URL-Quellen.
 
@@ -92,6 +96,7 @@ Phasen 14-17 stehen in `ROADMAP.md` unter Milestone v3.0. Empfohlene Reihenfolge
 **Verifier:** PASS, 4 Post-Merge-Human-Verifications: Prod-curl CSP, securityheaders.com, tools-app Feature-Smoke, Session-Refresh Path 3.
 
 **Was Phase 13 lieferte:**
+
 - 10 Playwright-E2E-Tests gegen Prod grün (6 Auth-Pfade, 2 skips dokumentiert)
 - `docs/AUTH-FLOW.md` — 457 Zeilen, 7 Mermaid sequenceDiagrams, Findings, Consolidation Audit, CSP-Rollout
 - CSP enforced via `proxy.ts` + Nonce auf website + tools-app (Next.js 16 native Pattern)
