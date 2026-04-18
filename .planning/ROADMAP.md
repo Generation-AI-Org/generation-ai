@@ -310,7 +310,7 @@ Plans:
 |-------|------|------|---------------|
 | 14 | Mobile Polish | Mobile Quick-Win-Bugs + Micro-Animations Parity zu Desktop | ✅ Ja |
 | 15 | 3/3 | Complete   | 2026-04-18 |
-| 16 | 1/6 | In Progress|  |
+| 16 | 2/6 | In Progress|  |
 | 17 | Auth Extensions | Email-Templates (React Email) + Rate-Limits auf Prod | ⚠️ Teil-autonom (Supabase Dashboard) |
 | 18 | Simplify-Pass tools-app | Tote Files, inkonsistente Patterns, Naming-Cleanup | ✅ Ja (nach Map) |
 
@@ -391,11 +391,11 @@ Plans:
 6. **Microcopy-Pass**: bestehende UI-Strings (Buttons, Errors, Empty-States, Toasts) gegen `brand/VOICE.md` Microcopy-Library abgleichen und ersetzen. Schwerpunkt: sichtbare Utility-Texte — nicht Marketing-Copy (das bleibt wie es ist).
 7. **Visual-Regression-Check**: Playwright-Screenshots beider Apps (Home, Detail, Settings, Login, /legal) in Light + Dark **vor** Migration als Baseline speichern, **nach** Migration gegen Baseline vergleichen. Absichtliche Änderungen dokumentieren, ungewollte Regressions fixen.
 
-**Plans:** 1/6 plans executed
+**Plans:** 2/6 plans executed
 
 Plans:
 - [x] 16-01-foundation-install-baseline-PLAN.md — Install @radix-ui/colors + geist, bootstrap packages/ui, capture Playwright baseline screenshots
-- [ ] 16-02-tokens-base-css-PLAN.md — Extend packages/config/tailwind/base.css with Radix slate imports, Geist font bindings, semantic status tokens
+- [x] 16-02-tokens-base-css-PLAN.md — Extend packages/config/tailwind/base.css with Radix slate imports, Geist font bindings, semantic status tokens
 - [ ] 16-03-logo-component-PLAN.md — Implement <Logo /> in @genai/ui with 11 colorway variants + colorway="auto" matrix + Vitest suite; stage 11 SVGs into both apps' public dirs
 - [ ] 16-04-website-migration-PLAN.md — Migrate apps/website: Inter→Geist, Logo swap in header/footer/terminal-splash, focus-ring fix, neutral-hex audit, microcopy pass, umlauts in metadata
 - [ ] 16-05-tools-app-migration-PLAN.md — Migrate apps/tools-app: Inter→Geist, Logo swap in GlobalLayout/DetailHeaderLogo/login, focus-ring fix, neutral-hex audit, microcopy pass

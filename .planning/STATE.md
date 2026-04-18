@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
-status: Executing Phase 16
-last_updated: "2026-04-18T16:00:00.000Z"
+status: unknown
+last_updated: "2026-04-18T15:58:40.433Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 12
-  completed_plans: 4
-  percent: 33
+  completed_plans: 5
+  percent: 42
 ---
 
 # Project State — Generation AI Monorepo
@@ -19,8 +19,8 @@ progress:
 ## Current Status
 
 **Milestone:** v3.0 UX Polish & Feature Expansion
-**Phase:** 16 Brand System Foundation — Plan 01 ✅ COMPLETE (packages installed, 14 visual baselines captured)
-**Last Updated:** 2026-04-18T16:00
+**Phase:** 16 Brand System Foundation — Plan 02 ✅ COMPLETE (Radix slate tokens, Geist font bindings, semantic status vars in base.css)
+**Last Updated:** 2026-04-18T15:58
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat jetzt global verfügbar (Home, Detail, Settings). /login + /impressum + /datenschutz bleiben bare. Release **v4.2.0** candidate — Changeset liegt bereit, GitHub-Release noch zu erstellen wenn gewünscht.
 
 **Phase 15 — DONE 2026-04-18:**
@@ -64,18 +64,44 @@ progress:
 
 **Phase 17 — Auth Extensions (nach Phase 16)**
 
-Email-Templates + Rate-Limits. Nutzt Design-Tokens aus Phase 16.
+Email-Templates + Rate-Limits. Nutzt Design-Tokens aus Phase 16. **CONTEXT.md angelegt** (`.planning/phases/17-auth-extensions/CONTEXT.md`).
 
 **Hauptjob:** 6 Supabase-Templates auf **React Email** (Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite). Theme-adaptiv via `prefers-color-scheme`. Copy aus `brand/VOICE.md`.
 
-**Manual-Steps Luca:**
+**Pre-Approved für Autonomous-Run:**
 
-- Supabase Dashboard → Email Templates: finale HTMLs einspielen
+- Code-Generation + Package-Install: voll autonom
+- Push + Changeset patch (v4.3.x): OK
+- Stop-Gate: Manual-Steps am Ende (HTML-Export → Luca spielt in Supabase ein + setzt Rate-Limits)
+- Interactive-Modus nur nötig bei Rate-Limit-Klärung
+
+**Kommando:** `/gsd-autonomous --only 17` (oder `--interactive` bei offenen Rate-Limit-Werten)
+
+**Manual-Steps Luca (nach Auto-Run):**
+
+- Supabase Dashboard → Email Templates: HTMLs aus `apps/website/emails/dist/*.html` einspielen
 - Supabase Dashboard → Rate Limits: Prod-Werte setzen
 
 **OAuth** (Google/Apple) bleibt im `BACKLOG.md`.
 
-Kommando: `/gsd-autonomous --only 17 --interactive` · Changeset: patch (v4.3.x)
+---
+
+**Phase 18 — Simplify-Pass tools-app (nach Phase 17)**
+
+Code-Housekeeping. **CONTEXT.md angelegt** (`.planning/phases/18-simplify-pass-tools-app/CONTEXT.md`).
+
+**Pre-Req vor Planning:** `/gsd-map-codebase` ausführen — erzeugt `.planning/codebase/CONCERNS.md` als Input.
+
+**Scope:** Orphan-Files löschen, Naming-Harmonisierung, Duplicate-Helpers konsolidieren, Dev-Artefakte raus, auskommentierten Code entfernen. Kein Feature-Change.
+
+**Pre-Approved für Autonomous-Run:**
+
+- Rein Code, keine Manual-Steps
+- Push + Changeset patch (v4.3.x): OK
+- Stop-Gate: ambivalente Renames pausieren für Luca-Input
+- Hard Stop: Test-Break nach Rename → keine Blindfixes
+
+**Kommando:** `/gsd-autonomous --only 18` (empfohlen `--interactive` wegen Rename-Ambiguitäten)
 
 **Reihenfolge:** 14 ✅ → 15 ✅ (2026-04-18, v4.2.0 candidate) → **16 Brand** → 17 Auth Emails → 18 Simplify
 
