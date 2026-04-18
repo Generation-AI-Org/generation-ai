@@ -18,22 +18,20 @@ progress:
 
 ## Current Status
 
-**Milestone:** v2.0 Production Hardening
-**Phase:** 13 Auth-Flow-Audit + CSP ✅ MERGED (PR #2 → main, Commit 9de4d54)
-**Chat-Agent-Bug:** ✅ FIXED & MERGED (PR #3 → main, Commit fb884fc, 2026-04-17)
-**Last Updated:** 2026-04-17T10:45
-**Site Status:** ✅ Live — CSP A+, Auth stabil, Member-Chat antwortet zuverlässig. Release **v4.1.0** auf GitHub published (Tag + CHANGELOGs + Release-Page).
-**Pre-Approved für Autonomous-Runs (2026-04-18):**
+**Milestone:** v3.0 UX Polish & Feature Expansion
+**Phase:** 15 Chat überall + Context-aware ✅ COMPLETE & PUSHED (commits 863d6f4…42916e0 → origin/main, 2026-04-18)
+**Last Updated:** 2026-04-18T12:00
+**Site Status:** ✅ Live — CSP A+, Auth stabil, Chat jetzt global verfügbar (Home, Detail, Settings). /login + /impressum + /datenschutz bleiben bare. Release **v4.2.0** candidate — Changeset liegt bereit, GitHub-Release noch zu erstellen wenn gewünscht.
 
-**Phase 15 — Chat überall + Context-aware** (morgen)
+**Phase 15 — DONE 2026-04-18:**
 
-- Scope-A: FloatingChat nur auf Produkt-Routen (Bibliothek, Tool-Detail, Dashboard) — auf Legal/Auth/Settings AUS
-- Scope-B: Context = Route + Tool-Slug + Title + Kategorie (keine Page-Content-Stuffung)
-- Scope-C: Chat schließt bei Navigation, Verlauf bleibt für Re-Open (Session-Storage)
-- Scope-D: public + member je nach Login bleiben beide
-- Push: OK · Changeset: minor (v4.2.0)
-- Vorab: einmalig `/gsd-map-codebase` falls `.planning/codebase/` älter als letzter Merge
-- Kommando: `/gsd-autonomous --only 15 --interactive`
+- 3 Waves / 3 Plans / 8/8 Must-haves verifiziert / 0 Gaps / REVIEW clean (2 medium + 3 low gefixt)
+- Build grün, Verifier grün, Code-Review grün
+- Dev-Server smoke-getestet (Home, Detail, Settings, Legal, Login) — alle Routes korrekt
+- Artifacts: `.planning/phases/15-chat-ueberall-global-context-aware/` (CONTEXT, 3× PLAN, 3× SUMMARY, VERIFICATION, REVIEW)
+- Zusätzlicher Post-Fix: Legal-Seiten (`/impressum`, `/datenschutz`) aus GlobalLayout entfernt (Commit `42916e0`)
+
+**Pre-Approved für Autonomous-Runs:**
 
 **Phase 16 — Auth Extensions** (Teil A zuerst, separate Session)
 
