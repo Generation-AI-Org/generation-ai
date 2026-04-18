@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Generation AI — Geist Typography</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6F6F6;
+    --card: #FFFFFF;
+    --ink: #141414;
+    --muted: #6b6b6b;
+    --line: #e6e6e6;
+    --accent-pink: #FC78FE;
+    --accent-red: #F5133B;
+    --accent-blue: #3A3AFF;
+    --accent-neon: #CEFF32;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+  body{font-family:Geist,system-ui,sans-serif}
+  .page{max-width:1600px;margin:0 auto;padding:40px 24px 80px}
+  .intro{max-width:720px;margin:0 auto 40px;text-align:center}
+  .intro h1{font-size:28px;margin:0 0 8px;letter-spacing:-0.01em;font-weight:700}
+  .intro p{color:var(--muted);margin:0;font-size:15px}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+  @media (min-width:1280px){ .grid{grid-template-columns:repeat(4,1fr)} }
+
+  .variant{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:28px 24px;display:flex;flex-direction:column;gap:0;min-height:640px}
+  .variant.dark{background:#141414;color:#F6F6F6;border-color:#222}
+
+  .label{font-family:"Geist Mono",monospace;font-size:10px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+  .variant.dark .label{color:#888}
+  .name{font-family:"Geist Mono",monospace;font-size:13px;font-weight:700;margin:0 0 20px;
+    color:var(--ink)}
+  .variant.dark .name{color:#F6F6F6}
+
+  .hero-band{padding:18px 16px;border-radius:10px;margin:0 0 20px;background:var(--accent-pink)}
+  .variant.dark .hero-band{background:var(--accent-blue)}
+  .hero-band .tag{display:inline-block;padding:3px 10px;background:#fff;color:var(--ink);
+    border-radius:999px;font-size:11px;font-weight:700;margin:0 0 8px}
+  .variant.dark .hero-band .tag{background:var(--accent-neon);color:#141414}
+
+  h2.hero{font-size:clamp(28px,3vw,38px);line-height:1.05;margin:0 0 10px;
+    letter-spacing:-0.02em;color:#fff}
+  .variant.dark h2.hero{color:#fff}
+  .lede{font-size:15px;line-height:1.5;margin:0;color:rgba(255,255,255,0.9)}
+
+  h3.sub{font-size:20px;line-height:1.2;margin:0 0 8px}
+  .body{font-size:15px;line-height:1.65;margin:0 0 16px}
+  .body + .body{margin-top:12px}
+
+  .btn{display:inline-block;padding:11px 18px;background:var(--accent-red);color:#fff;
+    border-radius:999px;font-weight:700;font-size:14px;text-decoration:none;
+    letter-spacing:.02em;margin:0 0 20px}
+  .variant.dark .btn{background:var(--accent-neon);color:#141414}
+
+  .mono-sample{font-family:"Geist Mono",monospace;font-size:12px;
+    background:#f2f2f1;padding:10px 12px;border-radius:8px;margin:0 0 16px;color:var(--ink)}
+  .variant.dark .mono-sample{background:#1c1c1c;color:#CEFF32}
+
+  ul.bullets{margin:0;padding:0 0 0 18px;font-size:14px;line-height:1.7}
+  ul.bullets li{margin:0 0 4px}
+
+  .italic-sample{font-style:italic;font-size:14px;color:var(--muted);margin:14px 0 0}
+  .variant.dark .italic-sample{color:#aaa}
+
+  /* VARIANT 1 — Geist Sans überall, subtile Weight-Variation */
+  .v1 *{font-family:Geist,sans-serif}
+  .v1 h2.hero{font-weight:600}
+  .v1 h3.sub{font-weight:600}
+  .v1 .btn{font-weight:600}
+  .v1 .body, .v1 .lede, .v1 ul.bullets{font-weight:400}
+  .v1 .mono-sample{font-family:"Geist Mono",monospace}
+  .v1 .label, .v1 .name{font-family:"Geist Mono",monospace}
+
+  /* VARIANT 2 — Geist Sans mit starkem Weight-Kontrast (Black Hero + Regular Body) */
+  .v2 *{font-family:Geist,sans-serif}
+  .v2 h2.hero{font-weight:900;letter-spacing:-0.035em}
+  .v2 h3.sub{font-weight:800}
+  .v2 .btn{font-weight:700}
+  .v2 .body, .v2 .lede, .v2 ul.bullets{font-weight:400}
+  .v2 .mono-sample{font-family:"Geist Mono",monospace}
+  .v2 .label, .v2 .name{font-family:"Geist Mono",monospace}
+
+  /* VARIANT 3 — Geist Mono Hero + Geist Sans Body */
+  .v3 h2.hero, .v3 h3.sub, .v3 .btn {font-family:"Geist Mono",monospace;font-weight:700}
+  .v3 .body, .v3 .lede, .v3 ul.bullets, .v3 .italic-sample{font-family:Geist,sans-serif;font-weight:400}
+  .v3 .mono-sample{font-family:"Geist Mono",monospace}
+  .v3 .label, .v3 .name{font-family:"Geist Mono",monospace}
+
+  /* VARIANT 4 — Geist Sans dominant, Geist Mono als Akzent (Labels, Tags, Buttons) */
+  .v4 h2.hero{font-family:Geist,sans-serif;font-weight:800;letter-spacing:-0.03em}
+  .v4 h3.sub{font-family:Geist,sans-serif;font-weight:700}
+  .v4 .body, .v4 .lede, .v4 ul.bullets, .v4 .italic-sample{font-family:Geist,sans-serif;font-weight:400}
+  .v4 .btn{font-family:"Geist Mono",monospace;font-weight:700;letter-spacing:.02em}
+  .v4 .hero-band .tag{font-family:"Geist Mono",monospace}
+  .v4 .mono-sample{font-family:"Geist Mono",monospace}
+  .v4 .label, .v4 .name{font-family:"Geist Mono",monospace}
+
+  footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:13px;text-align:center;font-family:"Geist Mono",monospace}
+
+  .toggle{display:flex;justify-content:center;gap:8px;margin:0 0 24px}
+  .toggle button{font-family:"Geist Mono",monospace;font-size:12px;padding:8px 16px;
+    border-radius:999px;border:1px solid var(--line);background:var(--card);cursor:pointer;
+    font-weight:700;letter-spacing:.05em}
+  .toggle button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="intro">
+  <h1>Geist-only Typography — Generation AI</h1>
+  <p>Vier Geist-Kombinationen. Welche fühlt sich für Generation AI richtig an? Toggle wechselt Light/Dark.</p>
+</div>
+
+<div class="toggle">
+  <button class="active" onclick="setMode('light', event)">Light (Rosa/Rot)</button>
+  <button onclick="setMode('dark', event)">Dark (Blau/Grün)</button>
+</div>
+
+<div class="grid" id="grid">
+
+  <!-- VARIANT 1 -->
+  <div class="variant v1">
+    <p class="label">Variant 1</p>
+    <h3 class="name">Geist Sans überall (SemiBold Headlines)</h3>
+    <div class="hero-band">
+      <span class="tag">FÜR STUDIERENDE</span>
+      <h2 class="hero">KI, die dich wirklich weiterbringt.</h2>
+      <p class="lede">Die erste KI-Community für Studierende im DACH-Raum.</p>
+    </div>
+    <h3 class="sub">Was du bekommst</h3>
+    <p class="body">Generation AI ist mehr als ein Chatbot-Baukasten. Wir verbinden Studierende mit Tools, Workshops und einer Community, die KI wirklich versteht.</p>
+    <ul class="bullets">
+      <li>Zugriff auf 50+ kuratierte KI-Tools</li>
+      <li>Wöchentliche Events mit Praxis-Expertinnen</li>
+      <li>Job-Board für KI-nahe Werkstudentenjobs</li>
+    </ul>
+    <div class="mono-sample">npm install @genai/sdk</div>
+    <p class="italic-sample">„Endlich KI, die mich ernst nimmt." — Mara, BWL Mannheim</p>
+    <a href="#" class="btn">Jetzt anmelden →</a>
+  </div>
+
+  <!-- VARIANT 2 -->
+  <div class="variant v2">
+    <p class="label">Variant 2</p>
+    <h3 class="name">Geist Sans Black Hero + Regular Body</h3>
+    <div class="hero-band">
+      <span class="tag">FÜR STUDIERENDE</span>
+      <h2 class="hero">KI, die dich wirklich weiterbringt.</h2>
+      <p class="lede">Die erste KI-Community für Studierende im DACH-Raum.</p>
+    </div>
+    <h3 class="sub">Was du bekommst</h3>
+    <p class="body">Generation AI ist mehr als ein Chatbot-Baukasten. Wir verbinden Studierende mit Tools, Workshops und einer Community, die KI wirklich versteht.</p>
+    <ul class="bullets">
+      <li>Zugriff auf 50+ kuratierte KI-Tools</li>
+      <li>Wöchentliche Events mit Praxis-Expertinnen</li>
+      <li>Job-Board für KI-nahe Werkstudentenjobs</li>
+    </ul>
+    <div class="mono-sample">npm install @genai/sdk</div>
+    <p class="italic-sample">„Endlich KI, die mich ernst nimmt." — Mara, BWL Mannheim</p>
+    <a href="#" class="btn">Jetzt anmelden →</a>
+  </div>
+
+  <!-- VARIANT 3 -->
+  <div class="variant v3">
+    <p class="label">Variant 3</p>
+    <h3 class="name">Geist Mono Hero + Geist Sans Body</h3>
+    <div class="hero-band">
+      <span class="tag">FÜR STUDIERENDE</span>
+      <h2 class="hero">KI, die dich wirklich weiterbringt.</h2>
+      <p class="lede">Die erste KI-Community für Studierende im DACH-Raum.</p>
+    </div>
+    <h3 class="sub">Was du bekommst</h3>
+    <p class="body">Generation AI ist mehr als ein Chatbot-Baukasten. Wir verbinden Studierende mit Tools, Workshops und einer Community, die KI wirklich versteht.</p>
+    <ul class="bullets">
+      <li>Zugriff auf 50+ kuratierte KI-Tools</li>
+      <li>Wöchentliche Events mit Praxis-Expertinnen</li>
+      <li>Job-Board für KI-nahe Werkstudentenjobs</li>
+    </ul>
+    <div class="mono-sample">npm install @genai/sdk</div>
+    <p class="italic-sample">„Endlich KI, die mich ernst nimmt." — Mara, BWL Mannheim</p>
+    <a href="#" class="btn">Jetzt anmelden →</a>
+  </div>
+
+  <!-- VARIANT 4 -->
+  <div class="variant v4">
+    <p class="label">Variant 4</p>
+    <h3 class="name">Geist Sans dominant + Mono als Akzent (Tag/Button)</h3>
+    <div class="hero-band">
+      <span class="tag">FÜR STUDIERENDE</span>
+      <h2 class="hero">KI, die dich wirklich weiterbringt.</h2>
+      <p class="lede">Die erste KI-Community für Studierende im DACH-Raum.</p>
+    </div>
+    <h3 class="sub">Was du bekommst</h3>
+    <p class="body">Generation AI ist mehr als ein Chatbot-Baukasten. Wir verbinden Studierende mit Tools, Workshops und einer Community, die KI wirklich versteht.</p>
+    <ul class="bullets">
+      <li>Zugriff auf 50+ kuratierte KI-Tools</li>
+      <li>Wöchentliche Events mit Praxis-Expertinnen</li>
+      <li>Job-Board für KI-nahe Werkstudentenjobs</li>
+    </ul>
+    <div class="mono-sample">npm install @genai/sdk</div>
+    <p class="italic-sample">„Endlich KI, die mich ernst nimmt." — Mara, BWL Mannheim</p>
+    <a href="#" class="btn">Jetzt anmelden →</a>
+  </div>
+
+</div>
+
+<footer>
+  Generation AI · Geist Typography Mockup · 2026-04-18
+</footer>
+
+</div>
+
+<script>
+  function setMode(mode, ev){
+    const variants = document.querySelectorAll('.variant');
+    variants.forEach(v => {
+      if(mode==='dark') v.classList.add('dark'); else v.classList.remove('dark');
+    });
+    document.querySelectorAll('.toggle button').forEach(b=>b.classList.remove('active'));
+    if(ev) ev.target.classList.add('active');
+    document.body.style.background = mode==='dark' ? '#0a0a0a' : '#F6F6F6';
+  }
+</script>
+
+</body>
+</html>

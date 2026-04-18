@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Generation AI — Brand System Backlog</title>
+<style>
+  :root{
+    --bg:#fafaf9; --surface:#ffffff; --ink:#141414; --muted:#6b6b6b;
+    --line:#e6e6e6; --soft:#f2f2f1;
+    --p0:#F5133B; --p1:#ff7a1a; --p2:#b8860b; --p3:#2f9e44;
+    --accent:#3A3AFF; --accent2:#FC78FE;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:56px 32px 120px}
+  header{padding:48px 0 32px;border-bottom:1px solid var(--line);margin-bottom:48px}
+  h1{font-size:40px;line-height:1.1;margin:0 0 14px;letter-spacing:-0.02em}
+  .lede{color:var(--muted);font-size:17px;max-width:640px;margin:0}
+  .meta{margin-top:18px;font-size:13px;color:var(--muted);letter-spacing:.02em;text-transform:uppercase}
+
+  h2{font-size:26px;margin:56px 0 8px;letter-spacing:-0.01em;line-height:1.2}
+  h2 .num{color:var(--muted);font-weight:600;margin-right:12px}
+  h3{font-size:18px;margin:28px 0 6px;display:flex;align-items:center;gap:10px;line-height:1.3}
+  h2 + .section-lead{color:var(--muted);margin:0 0 8px}
+
+  .tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:999px;
+    color:#fff;line-height:1.6}
+  .tag.p0{background:var(--p0)} .tag.p1{background:var(--p1)}
+  .tag.p2{background:var(--p2)} .tag.p3{background:var(--p3)}
+
+  ul.checks{margin:10px 0 0;padding:0;list-style:none}
+  ul.checks li{position:relative;padding:4px 0 4px 26px;color:var(--ink)}
+  ul.checks li::before{content:"";position:absolute;left:0;top:11px;width:14px;height:14px;
+    border:1.5px solid #bcbcbc;border-radius:4px;background:#fff}
+
+  .qa{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:var(--radius);padding:16px 20px;margin:14px 0 0}
+  .qa p{margin:0}
+  .qa p + p{margin-top:8px}
+  .qa .label{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+  .qa.src{border-left-color:var(--accent2)}
+  .qa.src .label{color:var(--accent2)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+  .legend div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;
+    font-size:13px;display:flex;align-items:center;gap:8px}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .dot.p0{background:var(--p0)} .dot.p1{background:var(--p1)}
+  .dot.p2{background:var(--p2)} .dot.p3{background:var(--p3)}
+
+  table{width:100%;border-collapse:collapse;margin-top:12px;background:#fff;
+    border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);font-size:14.5px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--soft);font-weight:600;font-size:12px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--muted)}
+  tr:last-child td{border-bottom:0}
+  code{font-family:"SF Mono",Consolas,monospace;background:var(--soft);padding:1px 6px;
+    border-radius:5px;font-size:.92em}
+  .callout{background:#fff6e5;border:1px solid #f3d48a;border-radius:var(--radius);
+    padding:18px 22px;margin:24px 0}
+  .callout strong{color:#7a4a00}
+  nav.toc{background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 22px;margin:0 0 40px}
+  nav.toc h4{margin:0 0 10px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  nav.toc ol{margin:0;padding-left:22px;columns:2;column-gap:28px}
+  nav.toc a{color:var(--ink);text-decoration:none;line-height:1.9}
+  nav.toc a:hover{color:var(--accent)}
+  footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:13px}
+
+  @media print{
+    body{background:#fff}
+    .wrap{max-width:none;padding:20px}
+    nav.toc{break-inside:avoid}
+    h2{break-after:avoid;page-break-after:avoid}
+    h3{break-after:avoid}
+    .qa{break-inside:avoid}
+  }
+  @media (max-width:640px){
+    .wrap{padding:28px 18px 80px}
+    h1{font-size:30px}
+    nav.toc ol{columns:1}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Generation AI — Brand System Backlog</h1>
+  <p class="lede">Vollständige Arbeitsliste, um aus dem aktuellen Brand-Moodboard (CI-PDF, April 2026) ein produktionsreifes Design-System zu machen. Zu jedem Punkt: die offenen Fragen und woher die Antworten kommen.</p>
+  <p class="meta">Version 1.0 · Stand 2026-04-18 · Scope: generation-ai.org, tools-app, Circle, Marketing, Decks</p>
+  <div class="legend">
+    <div><span class="dot p0"></span><strong>P0</strong>&nbsp;Blocker</div>
+    <div><span class="dot p1"></span><strong>P1</strong>&nbsp;Wichtig</div>
+    <div><span class="dot p2"></span><strong>P2</strong>&nbsp;Qualität</div>
+    <div><span class="dot p3"></span><strong>P3</strong>&nbsp;Später</div>
+  </div>
+</header>
+
+<nav class="toc">
+  <h4>Inhalt</h4>
+  <ol>
+    <li><a href="#s1">Typografie</a></li>
+    <li><a href="#s2">Farbsystem</a></li>
+    <li><a href="#s3">Accessibility</a></li>
+    <li><a href="#s4">Kontext → Welt</a></li>
+    <li><a href="#s5">Logo-Assets</a></li>
+    <li><a href="#s6">Logo-Nutzungsregeln</a></li>
+    <li><a href="#s7">Voice &amp; Tone</a></li>
+    <li><a href="#s8">Spacing &amp; Layout</a></li>
+    <li><a href="#s9">Komponenten</a></li>
+    <li><a href="#s10">Motion</a></li>
+    <li><a href="#s11">Templates &amp; Tools</a></li>
+    <li><a href="#s12">Dokumentation &amp; Ops</a></li>
+    <li><a href="#s13">Rechtliches</a></li>
+    <li><a href="#s14">Implementation</a></li>
+    <li><a href="#s15">Sprint-Plan</a></li>
+  </ol>
+</nav>
+
+<!-- 1 TYPOGRAFIE -->
+<h2 id="s1"><span class="num">1</span>Typografie</h2>
+<p class="section-lead">Cascadia Code ist gesetzt — Skala, Rollen und ggf. Zweit-Font offen.</p>
+
+<h3>1.1 Cascadia Code einbinden <span class="tag p0">P0</span></h3>
+<ul class="checks">
+  <li>Font laden via <code>next/font/google</code> oder self-hosted</li>
+  <li>Weights: Regular 400, Bold 700 (Italic optional)</li>
+  <li>Fallback-Stack: <code>ui-monospace, SFMono-Regular, Menlo, …</code></li>
+  <li>Lizenz-Hinweis im Repo (OFL, unkritisch)</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Google-Font-Import oder self-hosted? Welche Weights wirklich nötig? Italic ja/nein?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Default-Empfehlung: <code>next/font/google</code>, Regular + Bold. Italic nur wenn im Designentwurf verwendet. Entscheidung liegt bei Luca — reine Perf-/Aufwandsfrage.</p></div>
+
+<h3>1.2 Größen-Skala <span class="tag p0">P0</span></h3>
+<ul class="checks">
+  <li>Modular Scale wählen (z. B. 1.250 Major Third)</li>
+  <li>px-Werte für H1–H6, Body, Body-Small, Caption, Micro</li>
+  <li>Line-Heights (Headlines 1.1–1.3, Body 1.5–1.7)</li>
+  <li>Letter-Spacing pro Ebene</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Welche Ratio (1.200 / 1.250 / 1.333)? Basis 16 px oder 17 px? Fluid-Typography mit <code>clamp()</code> oder feste Breakpoint-Sprünge?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Tool: <code>type-scale.com</code> zum Durchprobieren · Referenz: Tailwind-Default, Shadcn-Defaults · Luca entscheidet nach 2–3 Preview-Screens (Landing-Hero + Artikel + Mail).</p></div>
+
+<h3>1.3 Body-Reading-Font <span class="tag p1">P1</span></h3>
+<ul class="checks">
+  <li>Cascadia auch für lange Fließtexte — oder Zweit-Sans (Inter/Geist/IBM Plex)?</li>
+  <li>Kontexte definieren, wo welche Font greift</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Ist Cascadia (Monospace) in 14–16 px auf 600+ Wörtern angenehm, oder kippt es ins „Tech-Demo“-Gefühl?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>User-Test: 1 Bibliotheks-Artikel in Cascadia vs. Inter rendern, 3 Leser vergleichen lassen · Referenz: Vercel (Geist Sans + Mono Dual). Luca entscheidet.</p></div>
+
+<h3>1.4 Display-Stil für Headlines <span class="tag p2">P2</span></h3>
+<ul class="checks">
+  <li>Reicht Cascadia Bold als Display? Oder ergänzender Display-Font für Marketing?</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Hat Cascadia Bold in großen Größen genug Impact für Hero-Headlines?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Prototyp-Hero bauen, Screenshot-Vergleich gegen aktuelle Landing-Page. Luca entscheidet visuell.</p></div>
+
+<!-- 2 FARBSYSTEM -->
+<h2 id="s2"><span class="num">2</span>Farbsystem</h2>
+<p class="section-lead">6 Brand-Farben + 2 Neutrals — UI braucht Rollen, Skala und States.</p>
+
+<h3>2.1 Farb-Rollen <span class="tag p0">P0</span></h3>
+<table>
+  <tr><th>Hex</th><th>Name</th><th>Welt</th></tr>
+  <tr><td><code>#FC78FE</code></td><td>Rosa</td><td>Education</td></tr>
+  <tr><td><code>#F5133B</code></td><td>Rot</td><td>Education</td></tr>
+  <tr><td><code>#3A3AFF</code></td><td>Blau</td><td>Business</td></tr>
+  <tr><td><code>#CEFF32</code></td><td>Neon-Grün</td><td>Business</td></tr>
+  <tr><td><code>#F6F6F6</code></td><td>Light-Neutral</td><td>—</td></tr>
+  <tr><td><code>#141414</code></td><td>Dark-Neutral</td><td>—</td></tr>
+</table>
+<ul class="checks">
+  <li>Primary Action pro Welt festlegen</li>
+  <li>Secondary &amp; Brand-Accent</li>
+  <li>Error-State (Rot ist Brand → Konflikt; eigenes Error-Rot?)</li>
+  <li>Success-State (Neon-Grün zu hell; eigenes Success-Grün?)</li>
+  <li>Warning-State (kein Orange in Palette → neu)</li>
+  <li>Info-State (Blau ist Brand → ggf. eigenes Info-Blau)</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Welche Brand-Farbe wird zu Primary pro Welt? Separate semantische States oder Brand-Farben recyclen?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Konvention: Semantic-States sind üblicherweise <strong>nicht</strong> Brand-Farben, damit der Brand-Moment nicht mit „Fehler!“ assoziiert wird. Referenzen: Stripe, Linear, Vercel — alle haben separates Error-Rot. Quelle: Shopify Polaris Doku &amp; IBM Carbon als Best Practice. Luca entscheidet final nach Prototyping.</p></div>
+
+<h3>2.2 Neutrals-Skala <span class="tag p0">P0</span></h3>
+<ul class="checks">
+  <li>Skala 50 / 100 / 200 / 300 / 400 / 500 / 600 / 700 / 800 / 900</li>
+  <li>Passend zu Light- und Dark-Mode</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Neutral-Farbton: reines Grau, warm (bräunlich) oder kühl (bläulich)?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Tool: <code>uicolors.app</code> oder Tailwind-Palette als Startpunkt · Referenz: Radix Colors (professionelle 12-Step-Skalen) · Entscheidung per Preview: Tone auf Sample-Screen matchen.</p></div>
+
+<h3>2.3 Interaction-States <span class="tag p1">P1</span></h3>
+<ul class="checks">
+  <li>Hover / Active / Focus / Disabled / Selected pro Rolle</li>
+  <li>Focus-Ring-Farbe (A11y-kritisch)</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Wie stark shiften wir bei Hover — Darken (-5 %), Saturate, oder Alpha-Overlay?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Pattern: „-10 % Lightness on Hover, -20 % on Active“ ist Standard (Tailwind/Radix). Luca bestätigt oder passt an.</p></div>
+
+<h3>2.4 Dark-Mode-Mapping <span class="tag p1">P1</span></h3>
+<ul class="checks">
+  <li>Brightness/Saturation-Anpassung der Brand-Farben?</li>
+  <li>Neon-Grün gedämpft auf Dark?</li>
+  <li>Rosa/Rot auf Dark funktioniert anders als auf Light</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Unverändert übernehmen oder Dark-Variant pro Brand-Farbe definieren?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Visual-Review in Figma/Prototyp · Referenz: Material 3 „Tonal Palettes“ · Neon-Grün auf Dark-BG wird typischerweise nicht verändert, erzeugt aber Blending-Probleme bei Text — testweise auf Screen setzen.</p></div>
+
+<!-- 3 A11Y -->
+<h2 id="s3"><span class="num">3</span>Accessibility <span class="tag p1">P1</span></h2>
+
+<h3>3.1 WCAG-Kontrast-Audit</h3>
+<ul class="checks">
+  <li>Alle Brand-Kombinationen auf WCAG 2.2 AA (4.5:1 Body, 3:1 Large)</li>
+  <li>Kritisch: Neon-Grün auf Hell, Rot auf Rosa</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Welche Farbpaare sind Body-tauglich, welche nur Display, welche tabu?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Tools: <code>webaim.org/resources/contrastchecker</code>, <code>colorable.jxnblk.com</code>, Chrome DevTools · Matrix-Ergebnis in <code>DESIGN.md</code> als Referenz-Tabelle verankern.</p></div>
+
+<h3>3.2 Focus-Indikatoren</h3>
+<ul class="checks">
+  <li>Ring-Farbe, Breite, Offset</li>
+  <li>Nicht nur farbbasiert (Color-Blindness)</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Einheitlicher Focus-Ring über beide Welten oder welt-spezifisch?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Empfehlung: neutraler, kontraststarker Ring (z. B. Dark-Neutral auf Light, Neon-Grün auf Dark). Referenz: WAI-ARIA Authoring Practices.</p></div>
+
+<h3>3.3 BFSG-Compliance</h3>
+<ul class="checks">
+  <li>Text-Skalierbarkeit bis 200 %</li>
+  <li>Bedienung ohne Maus</li>
+  <li>Fehler-Identifikation nicht nur über Farbe</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Fallen Website + tools-app unter BFSG (B2C-Dienstleistung)? Welche Konformitätsstufe?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>BFSG gilt seit 28.06.2025 für digitale Produkte im B2C. Offizielle Quelle: <code>bfsg-gesetz.de</code>, BITV 2.0 · Juristische Einschätzung (Luca oder Anwalt) ob tools-app als „Dienstleistung im elektronischen Geschäftsverkehr“ zählt.</p></div>
+
+<h3>3.4 Color-Blindness-Check</h3>
+<ul class="checks">
+  <li>Palette gegen Protanopia / Deuteranopia / Tritanopia prüfen</li>
+  <li>Semantic-States auch ohne Farbe unterscheidbar (Icons + Text)</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Sind Rot und Rosa für Deuteranopes noch unterscheidbar?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Tool: Stark (Figma-Plugin), Sim Daltonism (macOS), Chrome DevTools „Emulate vision deficiencies“.</p></div>
+
+<!-- 4 KONTEXT → WELT -->
+<h2 id="s4"><span class="num">4</span>Kontext → Welt Mapping <span class="tag p0">P0</span></h2>
+<p class="section-lead">Die stärkste Idee des CI — aktuell undefiniert. Muss explizit gemappt werden.</p>
+<table>
+  <tr><th>Kontext</th><th>Welche Welt?</th><th>Status</th></tr>
+  <tr><td>Website <code>generation-ai.org</code></td><td>?</td><td>offen</td></tr>
+  <tr><td>tools-app</td><td>?</td><td>offen</td></tr>
+  <tr><td>Circle-Community</td><td>?</td><td>offen</td></tr>
+  <tr><td>Auth-Emails (Utility)</td><td>?</td><td>offen</td></tr>
+  <tr><td>Marketing-Emails (Newsletter)</td><td>?</td><td>offen</td></tr>
+  <tr><td>Pitch-Deck Investoren</td><td>vermutl. Blau/Grün</td><td>zu bestätigen</td></tr>
+  <tr><td>Sales-Deck Hochschulen</td><td>vermutl. Rosa/Rot</td><td>zu bestätigen</td></tr>
+  <tr><td>Social (Instagram, LinkedIn)</td><td>? Mix?</td><td>offen</td></tr>
+  <tr><td>Business Cards</td><td>?</td><td>offen</td></tr>
+  <tr><td>Video / Explainer</td><td>?</td><td>offen</td></tr>
+</table>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Ist die „Trennung“ strikt (Education → Studenten, Business → Corporate) oder fließend (Website mixt beides, je nach Landing)? Welche Welt-Regel gilt für neutrale Touchpoints (Auth-Mails, Legal)?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Kernentscheidung von Luca — kein Tool ersetzt das. Referenz-Workshops: „Brand Architecture“-Framework (House of Brands vs. Branded House) · Bei Zweifel: Neutral-Default (Dark-Neutral + ein Akzent) für Utility-Kontexte wählen.</p></div>
+
+<!-- 5 LOGO ASSETS -->
+<h2 id="s5"><span class="num">5</span>Logo-Assets</h2>
+
+<h3>5.1 Source-Files beschaffen <span class="tag p0">P0</span></h3>
+<p>Im Repo: <code>blau-neon-wide</code>, <code>pink-rot-wide</code>, <code>weiss-transparent-wide</code> (SVG + PNG/JPG). Laut PDF existieren <strong>9 Varianten</strong>, 6 fehlen:</p>
+<ul class="checks">
+  <li>Schwarz auf Weiß (uni)</li>
+  <li>Weiß-Outline auf Weiß</li>
+  <li>Neon-Grün uni (auf Hell)</li>
+  <li>Blau uni (auf Hell)</li>
+  <li>Rot uni (auf Hell)</li>
+  <li>Rosa uni (auf Hell)</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Wo liegen die Source-Files (Figma/AI/SVG)? Ist der Designer verfügbar für Export?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Designer-Kontakt (wer hat das CI-PDF gebaut) · Alternative: Recolor der vorhandenen SVG-Master in Figma/Illustrator selbst.</p></div>
+
+<h3>5.2 Export-Set <span class="tag p1">P1</span></h3>
+<ul class="checks">
+  <li>SVG (Master)</li>
+  <li>PNG @1x, @2x, @3x (Email, Web, Marketing)</li>
+  <li>PDF (Print)</li>
+</ul>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Automatisierbar via <code>sharp</code>-Script oder Figma „Export“-Batch.</p></div>
+
+<h3>5.3 Favicon-Set <span class="tag p1">P1</span></h3>
+<ul class="checks">
+  <li>favicon.ico multi-res (16, 32)</li>
+  <li>icon-192, icon-512 (PWA)</li>
+  <li>apple-touch-icon 180×180</li>
+  <li>safari-pinned-tab.svg (monochrome)</li>
+  <li>Konsolidieren in <code>brand/favicons/</code></li>
+</ul>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Tool: <code>realfavicongenerator.net</code> oder npm <code>favicons</code> aus Master-SVG.</p></div>
+
+<h3>5.4 OG-Image-Templates <span class="tag p2">P2</span></h3>
+<ul class="checks">
+  <li>Master-Template pro Welt (1200×630)</li>
+  <li>Dynamische OG-Images via <code>opengraph-image.tsx</code></li>
+  <li>Fallback für Root-Pages</li>
+</ul>
+
+<h3>5.5 Filenaming-Convention <span class="tag p2">P2</span></h3>
+<p>Vorschlag: <code>logo-[variant]-[colorway]-[format].[ext]</code></p>
+<ul class="checks">
+  <li>Convention committen</li>
+  <li>Bestandsdateien umbenennen</li>
+  <li>Code-Pfade aktualisieren</li>
+</ul>
+
+<!-- 6 LOGO REGELN -->
+<h2 id="s6"><span class="num">6</span>Logo-Nutzungsregeln <span class="tag p2">P2</span></h2>
+<ul class="checks">
+  <li>Schutzraum / Clearspace (z. B. ½ × Höhe des „G“)</li>
+  <li>Min-Size Digital (≥ 32 px Höhe)</li>
+  <li>Min-Size Print (≥ 10 mm Höhe)</li>
+  <li>Varianten-Wahl-Matrix (wide / square / mono)</li>
+  <li>Don'ts (nicht strecken, rotieren, auf busy BG, Shadow/Bevel)</li>
+  <li>Background-Regeln</li>
+  <li>Co-Branding-Regeln (Partner-Logos)</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Welche Don'ts sind harte No-Gos (rechtlich/brand-kritisch) vs. weiche Empfehlungen?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Referenzen: Figma-Brand-Guidelines, Spotify-Brand, Stripe-Brand — öffentlich im Web. Pattern übernehmen und an Generation-AI-Realität anpassen. Luca entscheidet Do-vs-Don't-Cut.</p></div>
+
+<!-- 7 VOICE -->
+<h2 id="s7"><span class="num">7</span>Voice &amp; Tone <span class="tag p1">P1</span></h2>
+
+<h3>7.1 Ansprache pro Welt</h3>
+<ul class="checks">
+  <li>Education (Studierende): Du?</li>
+  <li>Business (Partner): Sie?</li>
+  <li>Regel für gemischte Kontexte</li>
+</ul>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Luca-Entscheidung · Konvention: Ansprache folgt Empfänger, nicht Absender — Auth-Mails an Studierende = Du.</p></div>
+
+<h3>7.2 Sprach-Policy</h3>
+<ul class="checks">
+  <li>Primär Deutsch mit Umlauten (ö/ä/ü/ß — nie oe/ae/ue/ss)</li>
+  <li>Englisch wo? (UI-Terms, Tech-Docs, Social?)</li>
+  <li>Tech-Terminologie Englisch belassen</li>
+</ul>
+
+<h3>7.3 Emoji-Policy</h3>
+<ul class="checks">
+  <li>Wo erlaubt? (Casual Marketing ja, Auth-Mails nein)</li>
+  <li>On-brand vs. off-brand</li>
+</ul>
+
+<h3>7.4 Signatur-Stil</h3>
+<ul class="checks">
+  <li>Mail-Signatur-Template (Business)</li>
+  <li>Sign-off-Varianten</li>
+</ul>
+
+<h3>7.5 Don'ts</h3>
+<ul class="checks">
+  <li>Tonfallen (z. B. „Sehr geehrte…“ in Du-Welt)</li>
+  <li>Corporate-Speak vs. kumpelig</li>
+</ul>
+
+<h3>7.6 Microcopy</h3>
+<ul class="checks">
+  <li>Phrasen-Library (Errors, Empty-States, Toasts)</li>
+  <li>Button-Labels konsistent</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Wer schreibt die Microcopy-Library? Einmal-Aufwand oder lebendes Dokument?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Start: 20 häufigste Strings in aktueller Website + tools-app extrahieren, kuratieren. Tool: <code>grep</code> über Repo. Lebendes Dokument in <code>brand/VOICE.md</code>.</p></div>
+
+<!-- 8 SPACING -->
+<h2 id="s8"><span class="num">8</span>Spacing &amp; Layout <span class="tag p1">P1</span></h2>
+<ul class="checks">
+  <li>Grid-Basis: 4 px oder 8 px</li>
+  <li>Spacing-Skala 0/1/2/3/4… als Tokens</li>
+  <li>Border-Radius: sm/md/lg/xl/full</li>
+  <li>Container-Max-Width (1280/1440)</li>
+  <li>Breakpoints (Tailwind-Default?)</li>
+  <li>Shadow-Skala (Light + Dark)</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>4-px- oder 8-px-Grid? Radius-Charakter (soft/rounded vs. sharp)?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Default: 4-px-Grid (Tailwind-Standard). Radius: folgt Logo-Charakter — Logo ist geometrisch-klar, also eher <code>md</code> (8 px) als extrem rund. Luca bestätigt.</p></div>
+
+<!-- 9 KOMPONENTEN -->
+<h2 id="s9"><span class="num">9</span>Komponenten-Basis <span class="tag p2">P2</span></h2>
+<ul class="checks">
+  <li>Buttons: Primary / Secondary / Ghost / Destructive / Link — pro Welt, alle States</li>
+  <li>Input / Select / Checkbox / Radio / Switch</li>
+  <li>Card (Default, Interactive, Feature)</li>
+  <li>Modal / Dialog</li>
+  <li>Toast / Notification</li>
+  <li>Tabs / Segmented Control</li>
+  <li>Navigation (Top, Sidebar, Mobile)</li>
+  <li>Form-States</li>
+  <li>Badge / Chip / Tag</li>
+  <li>Avatar</li>
+  <li>Loader / Skeleton</li>
+</ul>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Base: Shadcn/UI als Starter, dann an Brand-Tokens anpassen. Spart Monate.</p></div>
+
+<!-- 10 MOTION -->
+<h2 id="s10"><span class="num">10</span>Motion &amp; Animation <span class="tag p2">P2</span></h2>
+<ul class="checks">
+  <li>Tempo: fast 100 ms, normal 200 ms, slow 400 ms</li>
+  <li>Easing: ease-out / ease-in-out / spring</li>
+  <li>Hover-Transitions</li>
+  <li>Page-Transitions</li>
+  <li>Micro-Interactions</li>
+  <li>Reduced-Motion ehren (<code>prefers-reduced-motion</code>)</li>
+</ul>
+
+<!-- 11 TEMPLATES -->
+<h2 id="s11"><span class="num">11</span>Templates &amp; Tooling-Assets <span class="tag p2">P2</span></h2>
+<h3>11.1 Social</h3>
+<ul class="checks">
+  <li>Instagram Story 1080×1920, Post 1080×1080 + 1080×1350</li>
+  <li>LinkedIn Post 1200×627, Cover 1584×396</li>
+  <li>Twitter/X Post + Header</li>
+</ul>
+<h3>11.2 Presentation</h3>
+<ul class="checks">
+  <li>Pitch-Deck (Blau/Grün, 16:9)</li>
+  <li>Sales-Deck Hochschulen (Rosa/Rot, 16:9)</li>
+  <li>Internal-Deck (Neutral)</li>
+  <li>Keynote + PowerPoint + Google-Slides</li>
+</ul>
+<h3>11.3 Dokumente</h3>
+<ul class="checks">
+  <li>Brief DIN A4</li>
+  <li>Rechnung</li>
+  <li>Business-Card 85×55 mm</li>
+  <li>PDF-One-Pager</li>
+</ul>
+<h3>11.4 Email-Signatur</h3>
+<ul class="checks">
+  <li>HTML-Template (Gmail/Outlook)</li>
+  <li>Plain-Text-Fallback</li>
+</ul>
+
+<!-- 12 DOCS -->
+<h2 id="s12"><span class="num">12</span>Dokumentation &amp; Ops <span class="tag p1">P1</span></h2>
+
+<h3>12.1 Brand-Folder</h3>
+<ul class="checks">
+  <li><code>brand/</code> angelegt ✓</li>
+  <li><code>brand/DESIGN.md</code> — Haupt-Doc</li>
+  <li><code>brand/tokens.json</code> — W3C Design Tokens Spec</li>
+  <li><code>brand/logos/</code> alle Varianten</li>
+  <li><code>brand/fonts/</code> (falls self-hosted)</li>
+  <li><code>brand/assets/</code> OG, Favicons, Templates</li>
+  <li><code>brand/CHANGELOG.md</code></li>
+</ul>
+
+<h3>12.2 Versionierung</h3>
+<ul class="checks">
+  <li>Semver (aktueller PDF-Stand = 1.0.0)</li>
+  <li>Changelog aus Changesets</li>
+  <li>Breaking-Changes dokumentieren</li>
+</ul>
+
+<h3>12.3 Governance</h3>
+<ul class="checks">
+  <li>Wer darf Brand ändern? PR-Review-Pflicht?</li>
+  <li>Wie werden Designer-Updates eingespielt?</li>
+  <li>CI-Check: Tailwind-Config gegen <code>tokens.json</code></li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Solo-Ownership (Luca) oder Team-Prozess? Ab welchem Team-Size brauchen wir Review-Pflicht?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Aktuell: Luca = Owner, Changes via Commit. Später mit Designer: 2-Augen-PR.</p></div>
+
+<h3>12.4 Externe Distribution</h3>
+<ul class="checks">
+  <li>Öffentliche Brand Guidelines unter <code>generation-ai.org/brand</code></li>
+  <li>Media-Kit (Logos, Colors, Screenshots zum Download)</li>
+</ul>
+
+<!-- 13 RECHT -->
+<h2 id="s13"><span class="num">13</span>Rechtliches <span class="tag p1">P1</span></h2>
+<ul class="checks">
+  <li>Font-Lizenzen dokumentieren (Cascadia OFL — unkritisch, aber notieren)</li>
+  <li>Partner-Logos auf Website (PDF-Seite 6/7): Nutzungsrechte schriftlich?</li>
+  <li>Logo-Trademark-Status (DPMA-Anmeldung?)</li>
+  <li>Brand-Schutz bei Missbrauch (Prozess definieren)</li>
+  <li>Copyright-Hinweis (© Generation AI 2026)</li>
+</ul>
+<div class="qa"><span class="label">Fragen</span>
+  <p>Ist „Generation AI“ als Wort- oder Bildmarke geschützt? Für welche Nizza-Klassen?</p></div>
+<div class="qa src"><span class="label">Antworten aus</span>
+  <p>Recherche: DPMA-Register (register.dpma.de, kostenlos). Beratung: Markenanwalt (Pauschale ~800–1.200 €). Für Partner-Logos: Mail-Trail oder Kooperationsvertrag pro Partner.</p></div>
+
+<!-- 14 CODE -->
+<h2 id="s14"><span class="num">14</span>Implementation in Code <span class="tag p1">P1</span></h2>
+
+<h3>14.1 Tokens → Code-Pipeline</h3>
+<ul class="checks">
+  <li><code>brand/tokens.json</code> als Source of Truth (W3C-Format)</li>
+  <li>Build-Script: Tokens → <code>tailwind.config.js</code></li>
+  <li>Build-Script: Tokens → <code>variables.css</code></li>
+  <li>Website + tools-app teilen dieselben Tokens</li>
+  <li>Später: Style Dictionary wenn's lohnt</li>
+</ul>
+
+<h3>14.2 Theme-System</h3>
+<ul class="checks">
+  <li>Zwei Tailwind-Themes: <code>education</code> + <code>business</code></li>
+  <li><code>&lt;BrandContext value="education" /&gt;</code> Provider</li>
+  <li>Dark-Mode unabhängig von Welt</li>
+</ul>
+
+<h3>14.3 Font-Loading</h3>
+<ul class="checks">
+  <li>Cascadia Code via <code>next/font/google</code></li>
+  <li>Optional self-hosted mit <code>@font-face</code></li>
+  <li><code>font-display: swap</code></li>
+</ul>
+
+<h3>14.4 Asset-Pipeline</h3>
+<ul class="checks">
+  <li>SVG-Optimierung mit SVGO</li>
+  <li>PNG-Exports aus SVG via Sharp-Script</li>
+  <li>Favicon-Auto-Generation aus Master-SVG</li>
+</ul>
+
+<h3>14.5 Logo-Component</h3>
+<ul class="checks">
+  <li><code>&lt;Logo variant="wide" colorway="auto" /&gt;</code></li>
+  <li><code>colorway="auto"</code> wählt per Brand-Context + Dark-Mode</li>
+  <li>Size-Props</li>
+</ul>
+
+<h3>14.6 Storybook / Docs <span class="tag p3">P3</span></h3>
+<ul class="checks">
+  <li>Storybook für alle Komponenten (später)</li>
+  <li>Deploy unter <code>design.generation-ai.org</code></li>
+</ul>
+
+<!-- 15 SPRINTS -->
+<h2 id="s15"><span class="num">15</span>Sprint-Plan</h2>
+<table>
+  <tr><th>Sprint</th><th>Fokus</th><th>Aufwand</th></tr>
+  <tr><td>1 — Foundations</td><td>Font-Setup · Farbrollen · Kontext→Welt · WCAG-Audit · <code>DESIGN.md</code> + <code>tokens.json</code></td><td>4–6 h</td></tr>
+  <tr><td>2 — Assets</td><td>9 Logo-Varianten · PNG-Export · Favicons</td><td>2–3 h</td></tr>
+  <tr><td>3 — Implementation</td><td>Tailwind aus Tokens · Website + tools-app migrieren · Logo-Component</td><td>3–4 h</td></tr>
+  <tr><td>4 — Voice &amp; Rules</td><td>Voice &amp; Tone · Logo-Regeln · Brand-Guidelines-PDF</td><td>2 h</td></tr>
+</table>
+<p class="section-lead">Danach wachsen Komponenten pro Feature-Phase organisch weiter.</p>
+
+<div class="callout">
+  <strong>Merke:</strong> Brand-System ist kein Einmal-Projekt. Dieses Backlog ist die <em>Start-Baseline</em> —
+  jede Design-Entscheidung landet danach zurück in <code>brand/DESIGN.md</code> und <code>tokens.json</code>,
+  damit Website, tools-app, Decks und Mails immer vom selben Stand ziehen.
+</div>
+
+<footer>
+  Generation AI · Brand System Backlog · v1.0 · 2026-04-18<br />
+  Source: CI-PDF April 2026, Repo-Scan tools-app + website.
+</footer>
+
+</div>
+</body>
+</html>
