@@ -8,8 +8,8 @@ progress:
   total_phases: 13
   completed_phases: 5
   total_plans: 32
-  completed_plans: 28
-  percent: 88
+  completed_plans: 29
+  percent: 91
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,9 +18,9 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20: 4/6 Plans done, Wave-3 ruhige Mitte platziert, Plan 05 + 06 next)
-**Phase:** 20 — Plans 01+02+03+04/6 DONE
-**Last Updated:** 2026-04-20
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20: 5/6 Plans done, alle 8 Sections gefüllt inkl. Wow-Peak 3, Plan 06 next)
+**Phase:** 20 — Plans 01+02+03+04+05/6 DONE
+**Last Updated:** 2026-04-20 (Plan 20-05 complete)
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
 
 ### Phase 20 Progress
@@ -52,8 +52,17 @@ progress:
   - Deviations: 0 (Plan 1:1 ausgeführt)
   - R1.5 + R1.6 + CSP Playwright grün (3/3 local prod PORT=3030), Build grün `ƒ /`, 11× "Beispiel" im DOM, alle Stub-Titles sichtbar
   - Requirements completed: R1.4, R1.5, R1.6
-- **Plan 20-05** Wave 3 next up (AudienceSplit + Trust + FinalCTA — 3. Wow-Peak, Wave-2-Boundary gelockt)
-- **Plan 20-06** Wave 4 (Polish + Lighthouse-Gate + Changeset)
+- **Plan 20-05** DONE 2026-04-20 — Wow-Peak 3 (AudienceSplit + Trust + FinalCTA)
+  - Commits: `c7575c6` (audience-split), `e8a8860` (trust), `333c977` (final-cta)
+  - Audience-Split: dominante Studi-Section (H2 text-5xl + Primary-CTA → /join + secondary → tools) + dezenter B2B-Streifen (text-xs/sm + bg-bg-elevated + /partner link)
+  - Trust: MagicUI Marquee mit 6 Stub-Partner-Tiles ("Sparringspartner 1..6" Text-Pills, Logo-Assets deferred) + Microproof "N=109 · März 2026" + doppelter reduced-motion-Guard (CSS @media in globals.css + JS useReducedMotion → Tailwind-arbitrary `[&_.animate-marquee]:![animation-play-state:paused]`)
+  - Final-CTA: LampContainer (min-h-[70vh] override) + motion.div Content-Layer mit useReducedMotion-Gate + substantive Claim-Placeholder "Bereit, KI ernst zu nehmen?" + Primary-CTA → /join + Sekundär-Link → tools.generation-ai.org
+  - Deviations: 0 (Plan 1:1 ausgeführt, first-try grün auf allen Tasks)
+  - Playwright **8/8 grün** (R1.1×3 + R1.2 + R1.5 + R1.6 + R1.8 + CSP) gegen lokalen Prod PORT=3031
+  - DOM-Smoke: 8 unique data-sections, 5× href="/join", 2× href="/partner", 4× animate-marquee, 24× Sparringspartner-Pills
+  - Build grün `ƒ /`, CSP intakt
+  - Requirements completed: R1.7, R1.8, R1.9
+- **Plan 20-06** Wave 4 next up (Polish + Lighthouse-Gate + Changeset v4.5.0)
 
 ---
 
