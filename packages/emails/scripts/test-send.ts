@@ -21,8 +21,9 @@ if (!apiKey) {
 }
 
 const to = process.argv[2]
+const onlyTemplate = process.argv[3]
 if (!to || !to.includes('@')) {
-  console.error('Usage: pnpm -F @genai/emails run email:test-send <email@example.com>')
+  console.error('Usage: pnpm -F @genai/emails run email:test-send <email@example.com> [template-name]')
   process.exit(1)
 }
 
@@ -43,8 +44,13 @@ const templates = [
 ]
 
 async function main() {
-  console.log(`Sending 6 test emails to ${to}...\n`)
-  for (const t of templates) {
+  const list = onlyTemplate ? templates.filter((t) => t.name === onlyTemplate) : templates
+  if (list.length === 0) {
+    console.error(`No template matches "${onlyTemplate}". Available: ${templates.map((t) => t.name).join(', ')}`)
+    process.exit(1)
+  }
+  console.log(`Sending ${list.length} test email${list.length === 1 ? '' : 's'} to ${to}...\n`)
+  for (const t of list) {
     const html = await render(t.component(t.props as any) as any)
     const { data, error } = await resend.emails.send({
       from: 'Generation AI <noreply@generation-ai.org>',
