@@ -12,7 +12,7 @@
     "email:export": "tsx scripts/export.ts",
     "email:test-send": "tsx scripts/test-send.ts",
     "logos:generate": "tsx scripts/generate-logo-pngs.ts",
-    "test": "vitest run"
+    "test": "echo 'No tests for @genai/emails' && exit 0"
   },
   "dependencies": {
     "@react-email/components": "^0.0.31",
