@@ -21,10 +21,11 @@ const HOME_URL = 'https://generation-ai.org'
  * rounded window consistently. Theme-agnostic — looks identical on every client.
  */
 export function BrandLogo(): React.ReactElement {
-  const titleBarBg = '#2a2a2a'
-  const titleBarText = '#8a8a8a'
-  const contentBg = '#0a0a0a'
-  const borderColor = '#333333'
+  // Matches website terminal-splash palette (slightly softer than pure black)
+  const titleBarBg = '#3a3a3a'
+  const titleBarText = '#a0a0a0'
+  const contentBg = '#1c1c1c'
+  const borderColor = '#2a2a2a'
   const windowRadius = 10
 
   return (
@@ -146,20 +147,17 @@ export function BrandLogo(): React.ReactElement {
                 }}
               >
                 <Img
-                  src="https://generation-ai.org/brand/logos/logo-wide-neon.png"
+                  src="https://generation-ai.org/brand/logos/logo-wide-neon.png?v=3"
                   alt="Generation AI"
-                  width={360}
-                  height={203}
+                  width={180}
                   style={{
                     display: 'block',
                     margin: '0 auto',
-                    width: '180px',
                     height: 'auto',
                     maxWidth: '180px',
                     outline: 'none',
                     border: 0,
                     textDecoration: 'none',
-                    imageRendering: '-webkit-optimize-contrast' as React.CSSProperties['imageRendering'],
                   }}
                 />
               </td>
