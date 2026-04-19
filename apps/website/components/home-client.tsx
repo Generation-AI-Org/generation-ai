@@ -1,11 +1,24 @@
 'use client'
 
 import { useState } from 'react'
+import { MotionConfig } from "motion/react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { TerminalSplash } from "@/components/terminal-splash"
+import { HeroSection } from "@/components/sections/hero-section"
+import { DiscrepancySection } from "@/components/sections/discrepancy-section"
+import { OfferingSection } from "@/components/sections/offering-section"
+import { ToolShowcaseSection } from "@/components/sections/tool-showcase-section"
+import { CommunityPreviewSection } from "@/components/sections/community-preview-section"
+import { AudienceSplitSection } from "@/components/sections/audience-split-section"
+import { TrustSection } from "@/components/sections/trust-section"
+import { FinalCTASection } from "@/components/sections/final-cta-section"
 
-export function HomeClient() {
+type HomeClientProps = {
+  nonce: string
+}
+
+export function HomeClient({ nonce }: HomeClientProps) {
   const [showContent, setShowContent] = useState(false)
   const [splashDone, setSplashDone] = useState(false)
 
@@ -15,7 +28,7 @@ export function HomeClient() {
   }
 
   return (
-    <>
+    <MotionConfig nonce={nonce}>
       {!splashDone && (
         <TerminalSplash onComplete={handleSplashComplete} skipIfSeen={true} />
       )}
@@ -27,11 +40,18 @@ export function HomeClient() {
       >
         <Header />
         <main id="main-content" className="min-h-screen pt-16">
-          {/* Phase 20 Wave 2 (Plan 02) wires Header + sections here. */}
-          {/* Phase 20 Wave 3 (Plans 03-05) fills in the section components. */}
+          {/* Phase 20 Wave-3 sections — Plans 03 (Hero, Discrepancy), 04 (Offering, ToolShowcase, CommunityPreview), 05 (AudienceSplit, Trust, FinalCTA) */}
+          <HeroSection />
+          <DiscrepancySection />
+          <OfferingSection />
+          <ToolShowcaseSection />
+          <CommunityPreviewSection />
+          <AudienceSplitSection />
+          <TrustSection />
+          <FinalCTASection />
         </main>
         <Footer />
       </div>
-    </>
+    </MotionConfig>
   )
 }

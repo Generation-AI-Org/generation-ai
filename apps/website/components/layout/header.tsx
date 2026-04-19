@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { motion, useReducedMotion } from "motion/react"
-import { ChevronDown, Menu } from "lucide-react"
+import { ChevronDown, Menu, X } from "lucide-react"
 import { useTheme } from "@/components/ThemeProvider"
 import { Logo } from "@genai/ui"
 import { cn } from "@/lib/utils"
@@ -11,6 +11,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu"
@@ -79,14 +80,16 @@ export function Header() {
                 <ChevronDown className="w-3.5 h-3.5" aria-hidden="true" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-bg-card border-border">
-                <DropdownMenuLabel className="text-text-muted text-xs font-mono uppercase tracking-wider">
-                  Für Partner
-                </DropdownMenuLabel>
-                {partnerSubItems.map((item) => (
-                  <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
-                    <span className="font-mono text-sm">{item.label}</span>
-                  </DropdownMenuItem>
-                ))}
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-text-muted text-xs font-mono uppercase tracking-wider">
+                    Für Partner
+                  </DropdownMenuLabel>
+                  {partnerSubItems.map((item) => (
+                    <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
+                      <span className="font-mono text-sm">{item.label}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -138,9 +141,21 @@ export function Header() {
                 >
                   <Menu className="w-6 h-6" aria-hidden="true" />
                 </SheetTrigger>
-                <SheetContent side="right" className="bg-bg-card border-border w-full sm:max-w-sm">
-                  <SheetHeader>
+                <SheetContent
+                  side="right"
+                  showCloseButton={false}
+                  className="bg-bg-card border-border w-full sm:max-w-sm"
+                >
+                  <SheetHeader className="relative">
                     <SheetTitle className="font-mono">Navigation</SheetTitle>
+                    {/* German aria-label overrides shadcn's default "Close" — landing.spec.ts
+                        matches /Menü schließen|Close/i either way. Positioned top-right. */}
+                    <SheetClose
+                      aria-label="Menü schließen"
+                      className="absolute top-3 right-3 p-2 rounded-md text-[var(--text-on-header)] hover:bg-white/10 cursor-pointer inline-flex items-center justify-center"
+                    >
+                      <X className="w-5 h-5" aria-hidden="true" />
+                    </SheetClose>
                   </SheetHeader>
                   <MobileNavList prefersReducedMotion={prefersReducedMotion} />
                 </SheetContent>
@@ -265,11 +280,9 @@ function MobileNavList({ prefersReducedMotion }: MobileNavListProps) {
           </Link>
         }
       />
-
-      {/* Override: explicit German close label (shadcn Sheet default renders "Close" in sr-only span) */}
-      <SheetClose aria-label="Menü schließen" className="sr-only">
-        Menü schließen
-      </SheetClose>
+      {/* Close-Button: the shadcn SheetContent already renders a built-in close button
+          with sr-only text "Close" — the landing.spec.ts matcher is /Menü schließen|Close/i,
+          so no extra button is needed. */}
     </div>
   )
 }

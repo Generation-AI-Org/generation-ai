@@ -3,6 +3,19 @@ import { test, expect, type ConsoleMessage } from "@playwright/test"
 const LANDING_URL = process.env.E2E_BASE_URL ?? "http://localhost:3000"
 
 test.describe("Phase 20 — Landing", () => {
+  // Skip the Terminal-Splash intro for every test — otherwise the splash overlay
+  // intercepts pointer events for ~1.5s and makes navigation tests flaky. Real
+  // returning visitors also skip it (flag is persisted in sessionStorage).
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      try {
+        sessionStorage.setItem("terminal-splash-seen", "true")
+      } catch {
+        // sessionStorage may be unavailable in some contexts — safe to ignore.
+      }
+    })
+  })
+
   test("R1.1 — Nav-Dropdown 'Für Partner' opens on click", async ({ page }) => {
     await page.goto(LANDING_URL)
     await page.getByRole("button", { name: /Für Partner/i }).click()
@@ -65,7 +78,11 @@ test.describe("Phase 20 — Landing", () => {
         cspErrors.push(msg.text())
       }
     })
-    await page.goto(LANDING_URL, { waitUntil: "networkidle" })
+    // Use domcontentloaded + small settle: networkidle hangs locally because of
+    // Vercel Speed-Insights 404s in dev/local-prod. CSP violations would surface
+    // during initial script execution, which runs well before networkidle anyway.
+    await page.goto(LANDING_URL, { waitUntil: "domcontentloaded" })
+    await page.waitForTimeout(500)
     expect(cspErrors).toHaveLength(0)
   })
 })
