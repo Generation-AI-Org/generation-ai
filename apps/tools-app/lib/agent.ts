@@ -1,62 +1,21 @@
-import OpenAI from 'openai'
-import { KB_TOOLS_OPENAI, executeTool } from './kb-tools'
+import Anthropic from '@anthropic-ai/sdk'
+import { KB_TOOLS, executeTool } from './kb-tools'
 import type { ChatMessage, ContentSource, ContentType } from './types'
 
-// Gemini via OpenAI-compatible API (supports tool calling)
-let _geminiClient: OpenAI | null = null
+// Anthropic client (Claude Haiku 4.5 — fast + excellent tool-use)
+let _client: Anthropic | null = null
 
-function getGeminiClient(): OpenAI {
-  if (!_geminiClient) {
-    _geminiClient = new OpenAI({
-      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
-    })
+function getClient(): Anthropic {
+  if (!_client) {
+    _client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   }
-  return _geminiClient
+  return _client
 }
 
-const MODEL = 'gemini-3-flash-preview'
+const MODEL = 'claude-haiku-4-5-20251001'
+const MAX_TOKENS = 4096
+const MAX_ITERATIONS = 5
 
-/**
- * Strip <think> reasoning tags from response
- */
-function stripThinkTags(text: string): string {
-  return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
-}
-
-/**
- * Create chat completion with Gemini 3 Flash
- */
-async function createCompletion(
-  messages: OpenAI.ChatCompletionMessageParam[],
-  tools: OpenAI.ChatCompletionTool[]
-): Promise<{ response: OpenAI.ChatCompletion; model: string }> {
-  const startTime = Date.now()
-
-  console.log(`[Timing] Gemini 3 Flash request starting...`)
-  // reasoning_effort: 'low' — Gemini 3 thinking cannot be disabled; default effort
-  // makes the model over-plan and keep requesting more tool calls instead of
-  // synthesizing. "low" still thinks, just less, and emits finish_reason: stop reliably.
-  // max_completion_tokens (not max_tokens) is the OpenAI-compat param that includes
-  // reasoning tokens for thinking models — 8000 leaves headroom for reasoning + answer.
-  const response = await getGeminiClient().chat.completions.create({
-    model: MODEL,
-    max_completion_tokens: 8000,
-    reasoning_effort: 'low',
-    tools: tools.length ? tools : undefined,
-    messages,
-  })
-  const elapsed = Date.now() - startTime
-  const usage = response.usage
-  const reasoning = usage?.completion_tokens_details?.reasoning_tokens
-  console.log(`[Timing] Gemini completed in ${elapsed}ms | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out (reasoning: ${reasoning ?? '?'})`)
-  return { response, model: MODEL }
-}
-
-/**
- * System prompt for V2 Member Agent
- * From v3-architecture.md
- */
 export const SYSTEM_PROMPT = `Du bist der KI-Assistent von Generation AI — für Studierende im DACH-Raum.
 
 Du hast Zugriff auf:
@@ -94,9 +53,6 @@ Antworte basierend auf den Ergebnissen. Am Ende:
 - Deutsch, Du-Form, direkt und hilfreich
 - Bei Fragen zu Generation AI selbst: "Stell deine Frage in unserer Community auf Circle!"`
 
-/**
- * Agent result type
- */
 export interface AgentResult {
   text: string
   sources: ContentSource[]
@@ -104,82 +60,95 @@ export interface AgentResult {
 }
 
 /**
- * Run the V2 agent with tool-calling loop
- * Primary: MiniMax, Fallback: Gemini Flash-Lite
+ * Extract text content from an Anthropic response's content blocks.
+ */
+function extractText(content: Anthropic.ContentBlock[]): string {
+  const textBlock = content.find((b): b is Anthropic.TextBlock => b.type === 'text')
+  return textBlock ? textBlock.text : ''
+}
+
+/**
+ * Run the V2 agent with Claude Haiku 4.5 + tool-calling loop.
  *
- * @param message - User's message
- * @param history - Previous messages in the conversation
- * @returns Agent result with text, sources, and iteration count
+ * Flow:
+ * 1. Send user message + tool definitions
+ * 2. Claude responds with either end_turn (final text) or tool_use (needs tools)
+ * 3. On tool_use: execute tools, send results back, repeat (max 5 iterations)
+ * 4. On max iterations: force final synthesis without tools
  */
 export async function runAgent(
   message: string,
   history: ChatMessage[] = []
 ): Promise<AgentResult> {
   const agentStart = Date.now()
-  console.log(`[Timing] === Agent started ===`)
+  console.log(`[Timing] === Agent started (Claude Haiku 4.5) ===`)
 
-  // Build messages array for OpenAI-compatible API
-  const messages: OpenAI.ChatCompletionMessageParam[] = [
-    { role: 'system', content: SYSTEM_PROMPT },
-    // Include history (last 6 messages max)
-    ...history.slice(-6).map((msg): OpenAI.ChatCompletionMessageParam => ({
+  // Build message history (Anthropic expects alternating user/assistant, no system)
+  const messages: Anthropic.MessageParam[] = [
+    ...history.slice(-6).map((msg): Anthropic.MessageParam => ({
       role: msg.role as 'user' | 'assistant',
-      content: msg.content
+      content: msg.content,
     })),
-    // Add current user message
-    { role: 'user', content: message }
+    { role: 'user', content: message },
   ]
 
-  // Track sources from kb_read calls
   const sources: ContentSource[] = []
   const seenSlugs = new Set<string>()
-
-  // Max 5 Tool-Calls pro Request (Cost-Limit per CONTEXT.md)
   let iterations = 0
-  const maxIterations = 5
 
-  while (iterations < maxIterations) {
-    console.log(`[Timing] --- Iteration ${iterations + 1} starting ---`)
+  while (iterations < MAX_ITERATIONS) {
     const iterStart = Date.now()
-    const { response, model } = await createCompletion(messages, KB_TOOLS_OPENAI)
-    console.log(`[Timing] LLM call completed in ${Date.now() - iterStart}ms (model: ${model})`)
+    const response = await getClient().messages.create({
+      model: MODEL,
+      max_tokens: MAX_TOKENS,
+      system: SYSTEM_PROMPT,
+      tools: KB_TOOLS,
+      messages,
+    })
+    const elapsed = Date.now() - iterStart
+    console.log(
+      `[Timing] Claude call ${iterations + 1}: ${elapsed}ms | ${response.usage.input_tokens} in, ${response.usage.output_tokens} out | stop: ${response.stop_reason}`
+    )
 
-    const choice = response.choices[0]
-    const assistantMessage = choice.message
+    // Append assistant response to conversation
+    messages.push({ role: 'assistant', content: response.content })
 
-    // Agent ist fertig (no tool calls)
-    if (choice.finish_reason === 'stop' || !assistantMessage.tool_calls?.length) {
-      const text = stripThinkTags(assistantMessage.content || '')
-      console.log(`[Timing] === Agent finished in ${Date.now() - agentStart}ms (${iterations} iterations) ===`)
-      return { text, sources, iterations }
+    // End of turn → final answer
+    if (response.stop_reason === 'end_turn') {
+      const text = extractText(response.content)
+      console.log(
+        `[Timing] === Agent finished in ${Date.now() - agentStart}ms (${iterations + 1} iterations) ===`
+      )
+      return { text, sources, iterations: iterations + 1 }
     }
 
-    // Agent will Tools nutzen
-    if (assistantMessage.tool_calls?.length) {
-      // Add assistant message with tool calls
-      messages.push(assistantMessage)
+    // Tool use → execute all requested tools
+    if (response.stop_reason === 'tool_use') {
+      const toolUseBlocks = response.content.filter(
+        (b): b is Anthropic.ToolUseBlock => b.type === 'tool_use'
+      )
 
-      // Execute each tool call
-      for (const toolCall of assistantMessage.tool_calls) {
-        // Handle both function and custom tool call formats
-        const funcCall = 'function' in toolCall ? toolCall.function : null
-        if (!funcCall) continue
-
+      const toolResults: Anthropic.ToolResultBlockParam[] = []
+      for (const block of toolUseBlocks) {
         const toolStart = Date.now()
-        const args = JSON.parse(funcCall.arguments)
-        const result = await executeTool(funcCall.name, args)
-        console.log(`[Timing] Tool ${funcCall.name} completed in ${Date.now() - toolStart}ms`)
+        const result = await executeTool(
+          block.name,
+          block.input as Record<string, unknown>
+        )
+        console.log(
+          `[Timing] Tool ${block.name}: ${Date.now() - toolStart}ms`
+        )
 
-        // Bei kb_read: Item zu sources hinzufügen
-        if (funcCall.name === 'kb_read') {
+        // Track sources from kb_read calls
+        if (block.name === 'kb_read') {
           try {
             const parsed = JSON.parse(result)
-            if (parsed && parsed.slug && !seenSlugs.has(parsed.slug)) {
+            if (parsed?.slug && !seenSlugs.has(parsed.slug)) {
               seenSlugs.add(parsed.slug)
               sources.push({
                 slug: parsed.slug,
                 title: parsed.title,
-                type: parsed.type as ContentType
+                type: parsed.type as ContentType,
               })
             }
           } catch {
@@ -187,28 +156,28 @@ export async function runAgent(
           }
         }
 
-        // Add tool result
-        messages.push({
-          role: 'tool',
-          tool_call_id: toolCall.id,
-          content: result
+        toolResults.push({
+          type: 'tool_result',
+          tool_use_id: block.id,
+          content: result,
         })
       }
 
+      messages.push({ role: 'user', content: toolResults })
       iterations++
     } else {
-      // No tool calls - extract text and return
-      const text = stripThinkTags(assistantMessage.content || '') || 'Ich konnte keine vollständige Antwort finden.'
-      console.log(`[Timing] === Agent finished in ${Date.now() - agentStart}ms (${iterations} iterations) ===`)
-      return { text, sources, iterations }
+      // Unexpected stop_reason (max_tokens, stop_sequence, etc.) → return what we have
+      const text = extractText(response.content) || 'Ich konnte keine vollständige Antwort finden.'
+      console.log(
+        `[Timing] === Agent finished with stop_reason=${response.stop_reason} in ${Date.now() - agentStart}ms ===`
+      )
+      return { text, sources, iterations: iterations + 1 }
     }
   }
 
-  // Max iterations reached — force a final synthesis call without tools.
-  // Append an explicit user instruction so the model knows it MUST answer now,
-  // otherwise low-reasoning Gemini sometimes replies with empty content.
-  console.log(`[Timing] === Agent max iterations reached, forcing synthesis ===`)
-  const synthMessages: OpenAI.ChatCompletionMessageParam[] = [
+  // Max iterations reached — force a final synthesis call without tools
+  console.log(`[Timing] === Max iterations reached, forcing synthesis ===`)
+  const synthMessages: Anthropic.MessageParam[] = [
     ...messages,
     {
       role: 'user',
@@ -217,14 +186,23 @@ export async function runAgent(
     },
   ]
   const synthStart = Date.now()
-  const { response: synthResponse } = await createCompletion(synthMessages, [])
-  console.log(`[Timing] Synthesis call completed in ${Date.now() - synthStart}ms`)
+  const synthResponse = await getClient().messages.create({
+    model: MODEL,
+    max_tokens: MAX_TOKENS,
+    system: SYSTEM_PROMPT,
+    messages: synthMessages,
+  })
+  console.log(`[Timing] Synthesis call: ${Date.now() - synthStart}ms`)
 
-  const synthText = stripThinkTags(synthResponse.choices[0]?.message?.content || '')
-  console.log(`[Timing] === Agent finished in ${Date.now() - agentStart}ms (${iterations} iterations + synthesis) ===`)
+  const synthText = extractText(synthResponse.content)
+  console.log(
+    `[Timing] === Agent finished in ${Date.now() - agentStart}ms (${iterations} iterations + synthesis) ===`
+  )
 
   return {
-    text: synthText || 'Ich konnte keine vollständige Antwort finden. Bitte versuche es mit einer anderen Frage.',
+    text:
+      synthText ||
+      'Ich konnte keine vollständige Antwort finden. Bitte versuche es mit einer anderen Frage.',
     sources,
     iterations,
   }
