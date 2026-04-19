@@ -48,8 +48,6 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     needs: build-and-test
-    # E2E tests sind optional bis staging URL konfiguriert
-    if: ${{ vars.STAGING_URL != '' }}
 
     steps:
       - name: Checkout
@@ -81,7 +79,14 @@ jobs:
       - name: E2E Tests
         run: pnpm e2e
         env:
-          BASE_URL: ${{ vars.STAGING_URL }}
+          # D-08: E2E_BASE_URL optional override. Leer → playwright.config.ts nimmt Prod-Default.
+          E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+          # D-07: Test-User-Secrets für Password-Login-Test. Muss in Repo-Secrets gesetzt sein (siehe MANUAL-STEPS.md).
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          # Admin-Key weiterhin für Magic-Link/Recovery-Generation nötig (Phase 13 helper).
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
