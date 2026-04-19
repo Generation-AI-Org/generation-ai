@@ -25,7 +25,7 @@ const sessionRatelimit = new Ratelimit({
   analytics: true,
 })
 
-export interface RateLimitResult {
+interface RateLimitResult {
   success: boolean
   reset?: number
   retryAfter?: number

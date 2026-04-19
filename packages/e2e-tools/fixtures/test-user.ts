@@ -3,7 +3,7 @@
  * Werte kommen aus .env.test.local (via dotenv in playwright.config).
  * Wenn fehlend → wirft explizit (damit Tests skip'en können via test.skip(!user.email)).
  */
-export type TestUser = {
+type TestUser = {
   email: string
   password: string
 }

@@ -5,7 +5,7 @@
  */
 import type { Page, Response } from "@playwright/test"
 
-export type CspViolation = { text: string; location?: string }
+type CspViolation = { text: string; location?: string }
 
 export function collectCspViolations(page: Page): CspViolation[] {
   const violations: CspViolation[] = []

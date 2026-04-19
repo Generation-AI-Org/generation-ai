@@ -193,7 +193,7 @@ export const KB_TOOLS: Tool[] = [
 
 // Tool Definitions for OpenAI-compatible API (MiniMax)
 
-export const KB_TOOLS_OPENAI: OpenAI.ChatCompletionTool[] = [
+const KB_TOOLS_OPENAI: OpenAI.ChatCompletionTool[] = [
   {
     type: "function",
     function: {

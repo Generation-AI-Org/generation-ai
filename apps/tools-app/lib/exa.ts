@@ -16,12 +16,12 @@ const EXCLUDED_DOMAINS = [
   "tiktok.com",
 ]
 
-export interface ExaCitation {
+interface ExaCitation {
   url: string
   title: string
 }
 
-export interface ExaAnswerResponse {
+interface ExaAnswerResponse {
   answer: string
   citations: ExaCitation[]
   query: string

@@ -16,7 +16,7 @@ const MODEL = 'claude-haiku-4-5-20251001'
 const MAX_TOKENS = 4096
 const MAX_ITERATIONS = 5
 
-export const SYSTEM_PROMPT = `Du bist der KI-Assistent von Generation AI — für Studierende im DACH-Raum.
+const SYSTEM_PROMPT = `Du bist der KI-Assistent von Generation AI — für Studierende im DACH-Raum.
 
 Du hast Zugriff auf:
 1. **Wissensbasis (KB)** — kuratierte Inhalte zu KI-Tools, Concepts, FAQs
@@ -53,7 +53,7 @@ Antworte basierend auf den Ergebnissen. Am Ende:
 - Deutsch, Du-Form, direkt und hilfreich
 - Bei Fragen zu Generation AI selbst: "Stell deine Frage in unserer Community auf Circle!"`
 
-export interface AgentResult {
+interface AgentResult {
   text: string
   sources: ContentSource[]
   iterations: number

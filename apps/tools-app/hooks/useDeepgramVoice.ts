@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 
-export interface UseDeepgramVoiceReturn {
+interface UseDeepgramVoiceReturn {
   isRecording: boolean
   isProcessing: boolean
   isSupported: boolean
