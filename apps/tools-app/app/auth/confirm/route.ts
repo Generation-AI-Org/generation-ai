@@ -1,5 +1,6 @@
 import { type EmailOtpType } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { needsFirstLoginPrompt } from '@genai/auth'
 import { createClient as createServerClient } from '@genai/auth/server'
 
 // Route liest Cookies via Supabase-Server-Client → ist faktisch dynamic.
@@ -36,12 +37,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/auth/set-password`)
   }
 
-  // First-Login-Prompt (D-01, D-02): Wenn has_password weder true noch false, First-Login-Screen zeigen.
-  // has_password=true → hat Passwort, kein Prompt.
-  // has_password=false → hat Skip gewählt, kein Re-Prompt.
-  // has_password=undefined → Alt-User oder neuer User, First-Login-Screen mit Skip-Option.
-  const hasPassword = data?.user?.user_metadata?.has_password
-  if (hasPassword !== true && hasPassword !== false) {
+  // First-Login-Prompt (D-01, D-02) via shared helper — tri-state has_password:
+  // true=has pw, false=skipped, undefined=prompt.
+  if (needsFirstLoginPrompt(data?.user)) {
     return NextResponse.redirect(`${origin}/auth/set-password?first=1`)
   }
 

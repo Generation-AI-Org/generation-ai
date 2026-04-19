@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createBrowserClient } from '@genai/auth'
+import { createBrowserClient, needsFirstLoginPrompt } from '@genai/auth'
 
 /**
  * Legacy fallback callback page.
@@ -59,38 +59,25 @@ export default function AuthCallbackPage() {
           return
         }
 
-        // Phase 19: First-Login-Prompt bei Alt-/Neu-Usern ohne has_password-Flag.
+        // Phase 19: First-Login-Prompt via shared tri-state helper.
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) {
-          // WR-02: getUser kann null liefern wenn Session nicht etabliert wurde
-          // (expired token, network failure, server error). Redirect zu /login
-          // statt auf set-password zu schicken (würde 401).
+          // WR-02: getUser kann null liefern wenn Session nicht etabliert wurde.
           window.location.href = '/login?error=session_failed'
           return
         }
-        const hasPassword = user.user_metadata?.has_password
-        if (hasPassword !== true && hasPassword !== false) {
-          window.location.href = '/auth/set-password?first=1'
-          return
-        }
-        window.location.href = '/'
+        window.location.href = needsFirstLoginPrompt(user) ? '/auth/set-password?first=1' : '/'
         return
       }
 
       // No params — PKCE flow, session was set server-side via cookie.
-      // Phase 19: First-Login-Prompt bei Alt-/Neu-Usern ohne has_password-Flag.
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         // WR-02: Session-Etablierung fehlgeschlagen — User zurück zum Login.
         window.location.href = '/login?error=session_failed'
         return
       }
-      const hasPassword = user.user_metadata?.has_password
-      if (hasPassword !== true && hasPassword !== false) {
-        window.location.href = '/auth/set-password?first=1'
-        return
-      }
-      window.location.href = '/'
+      window.location.href = needsFirstLoginPrompt(user) ? '/auth/set-password?first=1' : '/'
     }
 
     handle()
