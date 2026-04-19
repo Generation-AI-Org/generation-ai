@@ -39,6 +39,17 @@ Grund: Phase 13 hat ggf. Test-Werte drin gelassen. Für unsere Nutzerzahl (<1000
 5. **Outlook Desktop (falls zur Hand):** Button muss gepaddete Pill sein, nicht nackter Link-Text — verifiziert dass VML-Fallback greift
 6. Wenn alles passt: Luca meldet zurück an Claude "approved" → Phase-17 SUMMARY wird finalisiert
 
+## Pre-Deploy Checks (aus Code-Review IN-01, IN-02)
+
+- **Logo-PNGs müssen LIVE sein bevor Templates in Supabase landen.** Sonst hat die erste Welle Prod-Mails kaputte `<img>`-Tags. Quick-Check:
+  ```bash
+  curl -I https://generation-ai.org/brand/logos/logo-wide-red.png   # erwartet: 200
+  curl -I https://generation-ai.org/brand/logos/logo-wide-neon.png  # erwartet: 200
+  ```
+  Falls 404 → Website-Deploy abwarten, dann Templates pasten.
+
+- **Outlook Desktop ignoriert `prefers-color-scheme`.** Erwartetes Verhalten: Outlook rendert immer Light-Theme (rotes Button auf weißer Card). Das ist kein Bug, sondern Design-Entscheidung — der VML-Fallback sorgt dafür, dass der Button trotzdem korrekt gepaddet ist. Nur Gmail Web/Apple Mail iOS+macOS schalten echt zwischen Light/Dark um.
+
 ## Notes
 
 - **Outlook-VML-Fallback via VML roundrect**: Die Buttons nutzen handgeschriebenes VML (`<v:roundrect>`) in `<!--[if mso]>...<![endif]-->` Conditional Comments. Outlook Desktop rendert dieses VML als gepaddete Pill. Moderne Clients (Gmail, Apple Mail) sehen das VML nicht — die erhalten den normalen `<a>` Link. Verifiziert im Export via `grep mso apps/website/emails/dist/*.html` — muss in allen 5 Button-Templates matchen (reauth hat keinen Button, nur OTP-Code).
