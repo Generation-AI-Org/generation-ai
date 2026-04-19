@@ -26,6 +26,10 @@ export default function LoginPage() {
       email,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // Signups sind in Supabase disabled → shouldCreateUser:true (default) würde
+        // "Signups not allowed" werfen, auch für Dashboard/SQL-angelegte Bestandsuser.
+        // false macht signInWithOtp zu einem reinen Login-Flow für existierende User.
+        shouldCreateUser: false,
       },
     })
 
