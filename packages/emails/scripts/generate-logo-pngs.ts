@@ -21,10 +21,10 @@ const TARGET_WIDTH = 1920
 const TARGET_HEIGHT = 1080
 
 /**
- * CRT scanline overlay. Every 2nd row is slightly darkened to give the logo
- * the retro "Generation AI terminal splash" feel. Composed with blend: multiply
- * so transparent pixels stay transparent (no box around the logo), only the
- * colored letter pixels get the horizontal striping.
+ * CRT scanline overlay for the whole logo PNG. Flattens transparency to the
+ * terminal content bg (#1c1c1c) first so the PNG merges seamlessly with the
+ * surrounding terminal content area, then paints horizontal bands across the
+ * entire image — bg and letters alike — for a consistent retro look.
  */
 function buildScanlineSvg(w: number, h: number): Buffer {
   // Display size is ~180x101. For visible "every other row" scanlines at that
@@ -34,11 +34,14 @@ function buildScanlineSvg(w: number, h: number): Buffer {
   const thickness = 8
   const rows: string[] = []
   for (let y = 0; y < h; y += pitch) {
-    rows.push(`<rect x="0" y="${y}" width="${w}" height="${thickness}" fill="black" fill-opacity="0.55"/>`)
+    rows.push(`<rect x="0" y="${y}" width="${w}" height="${thickness}" fill="black" fill-opacity="0.45"/>`)
   }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">${rows.join('')}</svg>`
   return Buffer.from(svg)
 }
+
+// Terminal content background — must match BrandLogo.tsx `contentBg`.
+const TERMINAL_BG = { r: 28, g: 28, b: 28 } // #1c1c1c
 
 async function run() {
   for (const { src, dest } of TARGETS) {
@@ -52,10 +55,13 @@ async function run() {
         kernel: sharp.kernel.lanczos3,
         fastShrinkOnLoad: false,
       })
+      // Flatten transparency onto the terminal content bg so the PNG blends
+      // seamlessly with the <td> it sits in — no visible rectangle around the logo.
+      .flatten({ background: TERMINAL_BG })
       .composite([{ input: scanlines, blend: 'multiply' }])
       .png({ compressionLevel: 9, palette: false })
       .toFile(outPath)
-    console.log(`✓ ${src} → ${outPath} (with scanline overlay)`)
+    console.log(`✓ ${src} → ${outPath} (flattened to terminal bg + scanlines)`)
   }
 }
 

@@ -154,7 +154,7 @@ export function BrandLogo(): React.ReactElement {
                 }}
               >
                 <Img
-                  src="https://generation-ai.org/brand/logos/logo-wide-neon.png?v=5"
+                  src="https://generation-ai.org/brand/logos/logo-wide-neon.png?v=6"
                   alt="Generation AI"
                   width={180}
                   style={{
