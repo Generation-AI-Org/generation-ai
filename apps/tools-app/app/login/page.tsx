@@ -58,6 +58,28 @@ export default function LoginPage() {
     window.location.href = '/'
   }
 
+  async function handleForgotPassword() {
+    if (!email) {
+      setMessage({ type: 'error', text: 'Trag deine E-Mail oben ein, dann klick nochmal.' })
+      return
+    }
+
+    setLoading(true)
+    setMessage(null)
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/set-password`,
+    })
+
+    setLoading(false)
+
+    if (error) {
+      setMessage({ type: 'error', text: error.message })
+    } else {
+      setMessage({ type: 'success', text: 'Check deine Mails — Link zum Passwort zurücksetzen ist unterwegs.' })
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
@@ -93,9 +115,19 @@ export default function LoginPage() {
           {/* Password (optional) */}
           {showPassword && (
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
-                Passwort
-              </label>
+              <div className="flex items-baseline justify-between mb-1.5">
+                <label htmlFor="password" className="block text-sm font-medium text-[var(--text-secondary)]">
+                  Passwort
+                </label>
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={loading}
+                  className="text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors disabled:opacity-50"
+                >
+                  Passwort vergessen?
+                </button>
+              </div>
               <input
                 id="password"
                 type="password"
