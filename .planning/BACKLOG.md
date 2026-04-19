@@ -62,6 +62,10 @@
 - [ ] **Mobile Shift+Enter** — Luca glaubt gefixt, verifizieren.
 - [ ] **Desktop Chat-Input wächst nicht bei Transkription** — Normales Tippen + Enter expandiert das Input-Feld korrekt. Wenn stattdessen ein langer Text per Diktat reinkommt, bleibt das Feld klein/schmal → nervig zu lesen/editieren. Auto-Resize muss auch bei programmatischen Text-Writes triggern.
 
+### 🧪 Test-Infrastruktur
+
+- [ ] **E2E-Baseline reparieren** — Nach Phase 18 bestätigt: `auth.spec.ts` (Password-Login sb-cookie test) + `chat.spec.ts` (3 Tests) failen bereits auf main. Ursachen: (a) `TEST_USER_EMAIL`/`TEST_USER_PASSWORD` env nicht in CI gesetzt → auth-test wird übersprungen bzw. fehlt Fixture-User, (b) Chat-Tests erwarten `localhost:3001` Dev-Server, werden aber ohne `pnpm dev` ausgeführt. Fix: entweder `playwright.config.ts` webServer-autostart einrichten, oder Tests auf Prod-URL umstellen (wie `smoke.spec.ts`). Baseline: 2 fail / 8 skipped auf main@`f6928db`.
+
 ### 🎨 UI tools-app
 
 - [x] **Mobile Header: Login/Logout-Button sichtbar im Header** — bereits erledigt (vor Audit 2026-04-17): `AppShell.tsx:170-222` hat farblich differenzierte Buttons — Login = accent-grün, Logout = neutral mit rotem Hover-State.

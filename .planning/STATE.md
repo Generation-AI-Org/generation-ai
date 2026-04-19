@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
-status: Ready to plan
-last_updated: "2026-04-19T15:00:00.000Z"
+status: Complete
+last_updated: "2026-04-19T16:05:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 4
-  total_plans: 17
-  completed_plans: 17
-  percent: 94
+  completed_phases: 5
+  total_plans: 21
+  completed_plans: 21
+  percent: 100
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,10 +18,20 @@ progress:
 
 ## Current Status
 
-**Milestone:** v3.0 UX Polish & Feature Expansion
-**Phase:** 18
-**Last Updated:** 2026-04-18
-**Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global verfügbar. Brand System v4.3.0 deployed: Geist Mono/Sans, Radix Colors, `<Logo />` component, VOICE.md microcopy.
+**Milestone:** v3.0 UX Polish & Feature Expansion — ✅ COMPLETE (5/5 Phasen)
+**Phase:** — (Milestone abgeschlossen, nächster Schritt: v4.0 planen)
+**Last Updated:** 2026-04-19
+**Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged.
+
+**Phase 18 — DONE 2026-04-19:**
+
+- 4 Plans / 3 Waves / alle grün (lint/build/unit)
+- Delta: −1.587 LOC, 9 Files raus, 4 Deps raus, 13 Exports lokalisiert
+- knip als Monorepo-weites Orphan-Tool etabliert (`knip.json` + `pnpm knip`)
+- KiwiMascot + alle Supabase-Shims bewusst behalten (DEFER, auth-audit-Scope)
+- E2E-Failures verifiziert pre-existing (failen identisch auf main vor Phase 18) → getrackt in BACKLOG
+- PR #4 squash-merged als commit `f6928db`, feature-branch gelöscht
+- Artifacts: `.planning/phases/18-simplify-pass-tools-app/` (CONTEXT, 4× PLAN, 4× SUMMARY, VERIFICATION, knip-report)
 
 **Phase 16 — DONE 2026-04-18:**
 

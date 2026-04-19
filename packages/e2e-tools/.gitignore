@@ -2,3 +2,4 @@
 test-results/
 playwright-report/
 .playwright/
+.env.test.local
