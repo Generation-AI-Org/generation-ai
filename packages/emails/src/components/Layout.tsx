@@ -18,47 +18,66 @@ export interface LayoutProps {
 }
 
 /**
- * Shared email layout wrapper used by all 6 Supabase auth templates.
+ * Shared email layout — light default + dark override via prefers-color-scheme.
  *
- * Always dark CI theme — matches the website/terminal splash look.
- * No theme-adaptive swap (Gmail iOS doesn't support it reliably), so we
- * ship a single dark variant that looks identical across all mail clients.
+ * Why this structure:
+ * - Gmail iOS aggressively auto-inverts dark-designed emails to light, regardless
+ *   of meta tags. The only reliable path to "dark in Gmail iOS" is to design the
+ *   base as light, and let Gmail's own dark-mode invert turn it dark for the user.
+ * - Apple Mail / Gmail Web honor `@media (prefers-color-scheme: dark)` so we keep
+ *   a proper dark variant for those clients.
+ * - The terminal-window header (`<BrandLogo>`) is an image with a baked-in dark
+ *   background, so it stays dark everywhere regardless of what the mail client does.
  */
 export function Layout({ preview, children }: LayoutProps): React.ReactElement {
   return (
     <Html lang="de">
       <Head>
-        <meta name="color-scheme" content="only dark" />
-        <meta name="supported-color-schemes" content="only dark" />
+        <meta name="color-scheme" content="light dark" />
+        <meta name="supported-color-schemes" content="light dark" />
         <style
           dangerouslySetInnerHTML={{
             __html: `
-:root { color-scheme: only dark; supported-color-schemes: only dark; }
-html, body { color-scheme: only dark !important; background-color: ${tokens.dark.bg} !important; }
-u + .body { color-scheme: only dark !important; }
+@media (prefers-color-scheme: dark) {
+  .email-body { background-color: ${tokens.dark.bg} !important; }
+  .email-card { background-color: ${tokens.dark.bgCard} !important; border-color: ${tokens.dark.border} !important; }
+  .email-heading, .email-text { color: ${tokens.dark.text} !important; }
+  .email-muted, .email-footer { color: ${tokens.dark.textMuted} !important; }
+  .email-divider { border-top-color: ${tokens.dark.border} !important; border-color: ${tokens.dark.border} !important; }
+  .email-btn { background-color: ${tokens.dark.accent} !important; color: ${tokens.dark.textOnAccent} !important; }
+}
+
+/* Outlook.com dark mode */
+[data-ogsc] .email-body { background-color: ${tokens.dark.bg} !important; }
+[data-ogsc] .email-card { background-color: ${tokens.dark.bgCard} !important; border-color: ${tokens.dark.border} !important; }
+[data-ogsc] .email-heading, [data-ogsc] .email-text { color: ${tokens.dark.text} !important; }
+[data-ogsc] .email-muted, [data-ogsc] .email-footer { color: ${tokens.dark.textMuted} !important; }
+[data-ogsc] .email-btn { background-color: ${tokens.dark.accent} !important; color: ${tokens.dark.textOnAccent} !important; }
 `,
           }}
         />
       </Head>
       <Preview>{preview}</Preview>
       <Body
+        className="email-body"
         style={{
-          backgroundColor: tokens.dark.bg,
+          backgroundColor: tokens.light.bg,
           fontFamily: fontStack.sans,
           margin: 0,
           padding: '40px 20px',
         }}
       >
         <Container
+          className="email-card"
           style={{
             maxWidth: '480px',
-            backgroundColor: tokens.dark.bgCard,
+            backgroundColor: tokens.light.bgCard,
             borderRadius: radius['2xl'],
-            border: '1px solid ' + tokens.dark.border,
+            border: '1px solid ' + tokens.light.border,
             padding: '40px 32px',
           }}
         >
-          {/* Header: Brand logo */}
+          {/* Header: Brand logo (always-dark terminal window) */}
           <Section style={{ textAlign: 'center', marginBottom: '32px' }}>
             <BrandLogo />
           </Section>
@@ -68,20 +87,22 @@ u + .body { color-scheme: only dark !important; }
 
           {/* Divider */}
           <Hr
+            className="email-divider"
             style={{
               margin: '32px 0',
               border: 'none',
               borderTopWidth: '1px',
               borderTopStyle: 'solid',
-              borderTopColor: tokens.dark.border,
+              borderTopColor: tokens.light.border,
             }}
           />
 
           {/* Footer: brand signature */}
           <Text
+            className="email-footer"
             style={{
               fontSize: '12px',
-              color: tokens.dark.textMuted,
+              color: tokens.light.textMuted,
               textAlign: 'center',
               margin: 0,
             }}
@@ -91,9 +112,10 @@ u + .body { color-scheme: only dark !important; }
 
           {/* Legal footer */}
           <Text
+            className="email-footer"
             style={{
               fontSize: '11px',
-              color: tokens.dark.textMuted,
+              color: tokens.light.textMuted,
               textAlign: 'center',
               margin: '8px 0 0 0',
             }}

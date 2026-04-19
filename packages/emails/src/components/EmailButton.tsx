@@ -39,8 +39,8 @@ function escapeHtml(s: string): string {
  *   - color → tokens.dark.textOnAccent (#141414)
  */
 export function EmailButton({ href, children }: EmailButtonProps): React.ReactElement {
-  const bg = tokens.dark.accent
-  const textColor = tokens.dark.textOnAccent
+  const bg = tokens.light.accent
+  const textColor = tokens.light.textOnAccent
   const font = fontStack.mono
   const pX = 24
   const pY = 12
