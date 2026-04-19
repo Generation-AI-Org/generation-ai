@@ -1,0 +1,81 @@
+
+> generation-ai@0.0.0 knip /Users/lucaschweigmann/projects/generation-ai
+> knip --no-exit-code
+
+Unused files (12)
+apps/tools-app/components/chat/ChatPanel.tsx     
+apps/tools-app/components/chat/UrlInputModal.tsx 
+apps/tools-app/components/ui/DetailHeaderLogo.tsx
+apps/tools-app/components/ui/KiwiMascot.tsx      
+apps/tools-app/scripts/seed-v2.ts                
+apps/website/components/ui/network-grid.tsx      
+apps/website/components/ui/terminal.tsx          
+apps/website/components/ui/text-scramble.tsx     
+apps/website/lib/email.ts                        
+apps/website/lib/fonts.ts                        
+apps/website/lib/supabase/client.ts              
+apps/website/lib/supabase/server.ts              
+Unused dependencies (9)
+@supabase/ssr          apps/tools-app/package.json:23:6
+@genai/types           apps/website/package.json:16:6  
+@supabase/ssr          apps/website/package.json:18:6  
+@supabase/supabase-js  apps/website/package.json:19:6  
+framer-motion          apps/website/package.json:23:6  
+resend                 apps/website/package.json:29:6  
+shadcn                 apps/website/package.json:30:6  
+tw-animate-css         apps/website/package.json:32:6  
+@radix-ui/colors       packages/ui/package.json:13:6   
+Unused devDependencies (7)
+eslint-config-next  apps/tools-app/package.json:54:6    
+tailwindcss         apps/tools-app/package.json:57:6    
+eslint-config-next  apps/website/package.json:46:6      
+prettier            apps/website/package.json:48:6      
+tailwindcss         apps/website/package.json:49:6      
+@genai/auth         packages/e2e-tools/package.json:11:6
+@types/sharp        packages/emails/package.json:25:6   
+Unlisted dependencies (1)
+@genai/config  packages/ui/tsconfig.json
+Unlisted binaries (1)
+tsx  apps/tools-app/package.json
+Unused exports (6)
+default            function  apps/tools-app/components/chat/AttachmentsPanel.tsx:20:25
+SYSTEM_PROMPT                apps/tools-app/lib/agent.ts:19:14                        
+getPublishedItems  function  apps/tools-app/lib/content.ts:4:23                       
+KB_TOOLS_OPENAI              apps/tools-app/lib/kb-tools.ts:196:14                    
+supabase                     apps/tools-app/lib/supabase.ts:10:14                     
+buttonVariants               apps/website/components/ui/button.tsx:58:18              
+Unused exported types (8)
+UseDeepgramVoiceReturn  interface  apps/tools-app/hooks/useDeepgramVoice.ts:5:18    
+AgentResult             interface  apps/tools-app/lib/agent.ts:56:18                
+ExaCitation             interface  apps/tools-app/lib/exa.ts:19:18                  
+ExaAnswerResponse       interface  apps/tools-app/lib/exa.ts:24:18                  
+RateLimitResult         interface  apps/tools-app/lib/ratelimit.ts:28:18            
+ContentStatus           type       apps/tools-app/lib/types.ts:4:3                  
+TestUser                type       packages/e2e-tools/fixtures/test-user.ts:6:13    
+CspViolation            type       packages/e2e-tools/helpers/csp-assertions.ts:8:13
+Duplicate exports (1)
+nextConfig|default  packages/config/eslint/next.mjs
+Configuration hints (25)
+scripts/**                             packages/emails  knip.json  Remove from ignore               
+next.config.{ts,js,mjs}                apps/tools-app   knip.json  Remove from ignore               
+eslint.config.{mjs,js}                 apps/tools-app   knip.json  Remove from ignore               
+tailwind.config.{ts,js}                apps/tools-app   knip.json  Remove from ignore               
+next.config.{ts,js,mjs}                apps/website     knip.json  Remove from ignore               
+eslint.config.{mjs,js}                 apps/website     knip.json  Remove from ignore               
+tailwind.config.{ts,js}                apps/website     knip.json  Remove from ignore               
+emails/**/*.tsx                        apps/tools-app   knip.json  Refine entry pattern (no matches)
+instrumentation.ts                     apps/website     knip.json  Refine entry pattern (no matches)
+instrumentation-client.ts              apps/website     knip.json  Refine entry pattern (no matches)
+sentry.{client,server,edge}.config.ts  apps/website     knip.json  Refine entry pattern (no matches)
+emails/**/*.tsx                        apps/website     knip.json  Refine entry pattern (no matches)
+src/index.ts                           packages/emails  knip.json  Remove redundant entry pattern   
+proxy.ts                               apps/tools-app   knip.json  Remove redundant entry pattern   
+instrumentation.ts                     apps/tools-app   knip.json  Remove redundant entry pattern   
+instrumentation-client.ts              apps/tools-app   knip.json  Remove redundant entry pattern   
+proxy.ts                               apps/website     knip.json  Remove redundant entry pattern   
+src/index.ts                           packages/types   knip.json  Remove redundant entry pattern   
+src/index.ts                           packages/auth    knip.json  Remove redundant entry pattern   
+src/server.ts                          packages/auth    knip.json  Remove redundant entry pattern   
+src/browser.ts                         packages/auth    knip.json  Remove redundant entry pattern   
+src/helpers.ts                         packages/auth    knip.json  Remove redundant entry pattern   
+...3 more similar hints                                                                             
