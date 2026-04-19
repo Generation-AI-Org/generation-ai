@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getUser } from '@/lib/auth'
+import { PasswordSection } from './PasswordSection'
 import { DeleteAccountButton } from './DeleteAccountButton'
 
 // Disable caching - auth state must be fresh on every request
@@ -38,6 +39,21 @@ export default async function SettingsPage() {
           <div className="p-4 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
             <p className="text-[var(--text-secondary)] mb-2">Angemeldet als:</p>
             <p className="text-[var(--text)] font-medium">{user.email}</p>
+          </div>
+        </section>
+
+        <section className="mb-12">
+          <h2 className="text-xl font-semibold text-[var(--text)] mb-4">Passwort</h2>
+          <div className="p-4 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
+            <p className="text-[var(--text-secondary)] mb-4">
+              {user.user_metadata?.has_password === true
+                ? 'Ändere dein Passwort. Du brauchst dein aktuelles Passwort zur Bestätigung.'
+                : 'Setze ein Passwort, damit du dich auch ohne Magic-Link anmelden kannst.'}
+            </p>
+            <PasswordSection
+              hasPassword={user.user_metadata?.has_password === true}
+              email={user.email ?? ''}
+            />
           </div>
         </section>
 
