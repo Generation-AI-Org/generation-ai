@@ -121,6 +121,15 @@
 - Cross-Session-Chat-Historie in UI (zeige keine Past-Sessions-List) — separater Scope.
 - Pro-Only vs. Public-Chat-Logik auf Detail-Seiten — vermutlich gleiche Mode-Detection wie Home.
 
+### 🔧 Phase 19 — Code-Review Follow-ups (nicht-blockierend)
+
+Aus `19-REVIEW.md`, nach Phase-19-Closure getrackt. In nächster passender Phase abarbeiten (z.B. beim nächsten Auth- oder Test-Touch).
+
+- [ ] **WR-03:** `packages/e2e-tools/tests/chat.spec.ts` → `auth-gate.spec.ts` umbenennen. File testet jetzt `/settings` Auth-Gate, nicht mehr `/chat`. Filename + Describe alignen.
+- [ ] **IN-04:** `export const dynamic = 'force-dynamic'` in `apps/tools-app/app/auth/confirm/route.ts` ergänzen. Route ist aktuell bereits dynamic (wegen `cookies()`-Zugriff via Supabase-Server-Client), aber explizit ist sicherer. Siehe `LEARNINGS.md` CSP-Regel.
+- [ ] **IN-05:** Tri-state `has_password`-Check (3× dupliziert in `/auth/confirm/route.ts`, `/auth/callback/page.tsx` 2× Branches) in Helper extrahieren. Vorschlag: `@genai/auth/lib/has-password.ts` mit `needsFirstLoginPrompt(user): boolean`.
+- [ ] **CI e2e-env:** `NEXT_PUBLIC_SUPABASE_ANON_KEY` im `.github/workflows/ci.yml` e2e-Job ergänzen. Ist aktuell nur in build-Steps gesetzt, e2e-Step könnte bei Tests die den Anon-Client brauchen failen.
+
 ### 🧱 Fundament-Stufen (aus STATE.md) ✅ DONE
 
 - [x] **Stufe 1:** `/gsd-map-codebase` — gelaufen 2026-04-19
