@@ -4,7 +4,8 @@
 
 - ✅ **v1.0 Monorepo Migration** — shipped 2026-04-14
 - ✅ **v2.0 Production Hardening** — shipped 2026-04-17 (Release v4.1.0)
-- 🚧 **v3.0 UX Polish & Feature Expansion** — Phases 14-17 (in progress)
+- ✅ **v3.0 UX Polish & Feature Expansion** — shipped 2026-04-19 (Releases v4.2.0, v4.3.0, v4.3.x, v4.4.0) — Phases 14-19
+- 🚧 **v4.0 Website Conversion-Layer & Onboarding-Funnel** — Phases 20-26 (planning)
 
 ---
 
@@ -475,9 +476,7 @@ Plans:
 
 ---
 
-## Milestone v4.0: Growth-Readiness (2026-04-19+)
-
-### Phase 19: Password-Flow + Test-Baseline
+### Phase 19: Password-Flow + Test-Baseline (v3.0 trailing)
 
 **Goal:** Eingeloggte User können optional ein Passwort setzen (First-Login-Prompt mit Skip + Settings-Inline-Form mit Re-Auth bei Change). Recovery-Mail-Template bleibt unverändert (nur noch für Vergessen-Case). E2E-Baseline wird repariert (Default gegen Prod, realer Test-User via GitHub-Secrets).
 **Depends on:** — (nur bestehender Auth-Stack)
@@ -509,6 +508,216 @@ Plans:
 - [ ] `pnpm build` beider Apps grün, keine Regression für Magic-Link-only-Flow
 
 **Release:** minor (v4.4.0) — neues User-facing Feature (Passwort-UI)
+
+---
+
+## Milestone v4.0: Website Conversion-Layer & Onboarding-Funnel (2026-04-19+)
+
+| Phase | Name | Goal | Requirements | Autonom-fähig |
+|-------|------|------|--------------|---------------|
+| 20 | Navigation + Landing-Skeleton | Top-Nav + Landing-Sections mit Stub-Daten | R1 | ⚠️ teilweise (Claim-Wording bleibt Placeholder) |
+| 21 | `/about`-Seite | Mission, Team, Sparringspartner, Verein | R2 | ✅ (statischer Content) |
+| 22 | `/partner`-Seite | 3 Anker-Sections + Kontakt-Formular | R3 | ✅ (statischer Content + Form) |
+| 23 | `/join` Fragebogen-Flow | Linearer 4-Step-Flow mit Validation (Backend-Stub) | R4 | ✅ |
+| 24 | `/level-test` Assessment | Optionaler Test mit DSGVO-Consent, Score-Migration | R5 | ⚠️ (Test-Fragen als Placeholder, Content-Pass durch Luca) |
+| 25 | Circle-API-Sync (Unified Signup) | Server-Action: Supabase+Circle anlegen, SSO-Link in Welcome-Flow | R6 | ❌ (Live-Credentials + Luca-Approval für Go-Live) |
+| 26 | Subdomain-Integration | Featured-Tools API + Community-Preview via Circle API | R7 | ⚠️ (Content-Schema-Migration, Rate-Limit-Tuning) |
+
+**Dependencies:**
+- Phase 20 blockt visuell nichts anderes, aber alle weiteren Pages beerben die Nav → 20 zuerst.
+- Phase 23 (`/join` UI) **kann** vor 25 (Circle-Sync) gebaut werden — Submit stubbed als 503.
+- Phase 24 (`/level-test`) optional aus 23 verlinkt — beide können parallel, aber 23 zuerst für State-Contract.
+- Phase 25 (Circle-Sync) aktiviert Live-Signup-Pfad — depends on 23 fertig.
+- Phase 26 (Subdomain-Integration) kann parallel zu allen anderen laufen, liefert echte Daten in Phase 20 (nachträglich).
+
+**Empfohlene Reihenfolge:** 20 → 21 → 22 → 23 → 24 → 25 → 26 (linear, klare Review-Checkpoints).
+
+---
+
+### Phase 20: Navigation + Landing-Skeleton
+
+**Goal:** Top-Nav + Landing auf das neue Layout umbauen — alle Sections gebaut mit Stub-Daten, damit Architektur und visuelles Gerüst steht. Echte Daten (Tool-Showcase, Community-Preview) kommen in Phase 26 nachträglich.
+**Requirements:** R1.1-R1.10
+**Depends on:** keine
+**Out-of-Scope:** Echte Tool-Showcase- und Community-Preview-Daten (→ Phase 26), Final-Wording Hero + Final-CTA (bleibt Placeholder).
+
+**Scope:**
+- Top-Nav mit Dropdown "Für Partner" (a11y-korrekt, Desktop + Mobile-Burger)
+- Hero, Diskrepanz-Section mit custom data-viz (scroll-triggered Animation), 4-Card-Angebot, Tool-Showcase (Stub), Community-Preview (Stub), Zielgruppen-Split, Trust-Strip, Final-CTA, Footer
+- Design-Tokens aus `brand/` weiter verwenden (keine neuen Tokens)
+- CSP-safe (nonce-aware Animationen, keine inline-scripts ohne Nonce)
+
+**Success Criteria:**
+- [ ] Lighthouse Landing > 90 in allen Kategorien
+- [ ] Nav-Dropdown a11y-korrekt (keyboard + screen-reader)
+- [ ] Diskrepanz-Viz läuft smooth (60fps, CLS ≤ 0.1)
+- [ ] Stub-Content für Tool-Showcase + Community-Preview klar als Placeholder erkennbar (no fake trust signals)
+
+**Release:** minor (v5.0.0-alpha oder v4.5.0) — Breaking UX-Change (neue Nav, neue Landing-Struktur)
+
+---
+
+### Phase 21: `/about`-Seite
+
+**Goal:** Mission, Story, Team, Sparringspartner, Verein als eigene Seite. Vertrauens-Anker.
+**Requirements:** R2.1-R2.6
+**Depends on:** Phase 20 (Nav + Layout-Shell)
+**Out-of-Scope:** CMS-Integration für Team-Daten (bleibt im Code hardcoded).
+
+**Scope:**
+- Mission + Vision (aus `brand/VOICE.md`), Story, Team-Grid, Sparringspartner-Section, Verein-Block, CTA
+- Responsive Team-Grid (3-col Desktop, 1-col Mobile)
+- DSGVO-konformer Umgang mit Personenbildern (Einverständnis vorab dokumentiert)
+
+**Success Criteria:**
+- [ ] Alle Gründer + aktive Mitglieder mit korrekten Rollen gelistet
+- [ ] Nav-Link "Über uns" zeigt auf `/about`
+- [ ] Responsive auf Mobile grün (Team-Grid bricht korrekt um)
+
+**Release:** patch
+
+---
+
+### Phase 22: `/partner`-Seite
+
+**Goal:** B2B-Landing für Unternehmen, Stiftungen, Hochschulen mit Lead-Capture.
+**Requirements:** R3.1-R3.6
+**Depends on:** Phase 20
+**Out-of-Scope:** Sales-CRM, Partner-Portal, Testimonials (sobald welche existieren, nachziehen).
+
+**Scope:**
+- Hero "Kooperation statt Standard"
+- 3 Anker-Sections `#unternehmen`, `#stiftungen`, `#hochschulen` mit jeweiligem Wertversprechen + Kontakt-CTA
+- Reihenfolge: Unternehmen → Stiftungen → Hochschulen
+- Kontakt-Formular (simple Form → Resend-Mail an admin@generation-ai.org, Honeypot gegen Spam)
+- Nav-Dropdown-Links funktionieren als Anker-Navigation (scroll + URL-hash)
+
+**Success Criteria:**
+- [ ] Anker-Links aus Nav springen korrekt
+- [ ] Submit triggert Mail an admin@, User sieht Confirmation-Screen
+- [ ] Form spamgeschützt (Honeypot-Field)
+- [ ] Lighthouse `/partner` > 90
+
+**Release:** patch
+
+---
+
+### Phase 23: `/join` Fragebogen-Flow
+
+**Goal:** Linearer 3-Step-Flow (+ Confirmation) mit Validation, State-Persistenz, 503-Backend.
+**Requirements:** R4.1-R4.8
+**Depends on:** Phase 20
+**Out-of-Scope:** Live-Backend (Circle-Sync in Phase 25), Live-Signup-Reaktivierung (bleibt 503).
+
+**Scope:**
+- Step 1: Fragebogen (Name, Email, Status, Uni, Motivation, Self-Select Level 1-5)
+- Step 2: Assessment-Weiche (Link zu `/level-test` oder Skip)
+- Step 3: Account + Circle-Flow-Stub (Submit-Button, aktuell mit 503-Response)
+- Step 4: Confirmation-Screen
+- Progress-Indicator, SessionStorage-State, Validation inline + aria-live
+- 503-Banner statt Success solange Luca nicht freigibt
+
+**Success Criteria:**
+- [ ] Alle Steps keyboard-navigierbar + screen-reader-korrekt
+- [ ] Uni-Autocomplete funktioniert
+- [ ] State übersteht Reload innerhalb Session
+- [ ] Submit zeigt 503-Banner mit Erklärung "Anmeldung geschlossen, bald wieder"
+- [ ] Lighthouse `/join` > 90
+
+**Release:** patch (UI ohne Live-Signup, bleibt sichtbar aber nicht wirksam)
+
+---
+
+### Phase 24: `/level-test` Assessment
+
+**Goal:** Optionaler Kompetenz-Test mit Level-Score-Output, DSGVO-konform, Standalone-fähig.
+**Requirements:** R5.1-R5.7
+**Depends on:** Phase 23 (State-Contract für Score-Migration)
+**Out-of-Scope:** Adaptive Test-Logik (nur gewichtete statische Fragen in v4.0).
+
+**Scope:**
+- 5-8 gewichtete Fragen mit Multiple-Choice-Antworten → Level 1-5
+- DSGVO-Consent-Gate vor Test-Start
+- Ergebnis-Screen mit Level + Erklärung + CTA zurück zu `/join` (oder Standalone-CTA bei direktem Einstieg)
+- Score in SessionStorage + Migration ins Profile-Record bei späterem Signup
+- Lösch-Flow dokumentiert (Link zu `/datenschutz` mit Passage)
+
+**Success Criteria:**
+- [ ] Test ohne Login durchführbar
+- [ ] Consent blockt Submit wenn nicht aktiv
+- [ ] Score landet korrekt in `/join` Step-State bei Rückkehr
+- [ ] DSGVO-Passage in Datenschutzerklärung ergänzt
+
+**Release:** patch
+
+---
+
+### Phase 25: Circle-API-Sync (Unified Signup)
+
+**Goal:** Eine Mail statt zwei — Server-Action legt bei Submit Supabase-User + Circle-Member an, generiert SSO-Link, embedded in Welcome-Flow. Graceful-Degrade auf B-Fallback.
+**Requirements:** R6.1-R6.7
+**Depends on:** Phase 23 fertig (Submit-Payload-Contract), Circle-API-Token in Vercel aktiv
+**Out-of-Scope:** Live-Signup-Reaktivierung (bleibt 503 — Phase aktiviert nur die Tech-Pipeline, Luca entscheidet Go separat), OAuth, SAML/OIDC.
+
+**Scope:**
+- `/api/join` Route-Handler in apps/website:
+  1. Validate Payload
+  2. `supabase.auth.admin.createUser` mit Metadata (status, uni, motivation, level)
+  3. Circle Admin-API v2 call: Member anlegen mit Email + Name + Community-ID
+  4. Circle-SSO-Link via Circle-API generieren (passwordless)
+  5. Supabase Magic-Link mit `redirect_to` an unseren Welcome-Screen inkl. SSO-Link-Parameter
+- Welcome-Screen `/join/welcome?token=...`:
+  - "Willkommen, [Name]" + "Du bist jetzt Teil der Community"
+  - Prominenter CTA "→ Zur Community" der per SSO-Link direkt in Circle landet (kein zweiter Login)
+- Graceful-Degrade: Circle-API-Fail → UI-Fallback "Check dein Postfach für deinen Community-Zugang" + Circle schickt Standard-Invite-Mail
+- Sentry-Tag `circle-api` für Error-Tracking
+- `profiles.circle_member_id` Column befüllen
+- Env-Vars `CIRCLE_API_TOKEN`, `CIRCLE_COMMUNITY_ID`, `CIRCLE_COMMUNITY_URL` aktiv verdrahten
+- **Live-Signup bleibt 503** bis Luca explizit per Commit/Setting freigibt (Feature-Flag möglich)
+
+**Manual Steps (Luca):**
+- Circle-Business-Plan Admin-API-Token generieren + in Vercel Env einspielen
+- Circle-Dashboard: verifizieren welcher Auto-Invitation-Mail-Flow aktiv ist (ggf. pausieren für SSO-Flow)
+
+**Success Criteria:**
+- [ ] Test-User via Preview-Env durchläuft Flow: Submit → unsere Mail → Confirm → Welcome-Screen → "Zur Community" → eingeloggt in Circle ohne 2. Login-Prompt
+- [ ] Circle-Member im Circle-Dashboard existiert mit korrekten Metadaten
+- [ ] `profiles.circle_member_id` ist gesetzt
+- [ ] Simulierter Circle-API-Fail triggert Fallback-UI, kein 500-Error
+- [ ] Sentry erfasst Circle-Errors mit `circle-api`-Tag
+- [ ] Live-Signup-Gate dokumentiert (503 bleibt bis Go)
+
+**Release:** minor (echter neuer Funnel, aber live-disabled — v5.0.0-beta oder v4.6.0)
+
+---
+
+### Phase 26: Subdomain-Integration
+
+**Goal:** Landing bekommt echte Daten — Featured-Tools aus tools-app, Community-Preview (Posts + Events) via Circle API. Graceful-Degrade bei API-Ausfall.
+**Requirements:** R7.1-R7.7
+**Depends on:** Phase 20 (Landing-Shell), Phase 25 abgeschlossen (Circle-API-Setup etabliert)
+**Out-of-Scope:** Content-Management-UI für Featured-Flag (bleibt DB-Admin-Update).
+
+**Scope:**
+- Content-Schema-Migration: `featured: boolean` in tools-app Content-Package
+- Backfill: 3-5 initial-featured Tools manuell markieren
+- tools-app `GET /api/public/featured-tools` (Server-Component-cached)
+- Website konsumiert API via Server-Component (ISR `revalidate: 300` oder Edge-Cache)
+- Circle API v2 Calls:
+  - Posts aus Tools-Space (3-4 letzte)
+  - Events (2-3 kommende)
+- Fallback-Placeholder für beide Preview-Blöcke
+- Rate-Limit-bewusst caching (prüfen was Circle-Business-Plan erlaubt)
+- Klären: welche Circle-Content ist public via API vs. member-only
+
+**Success Criteria:**
+- [ ] Featured-Tools erscheinen in Landing, togglebar via DB-Update
+- [ ] Community-Preview zeigt aktuelle Circle-Posts + Events
+- [ ] API-Outage triggert Fallback, kein Error für User
+- [ ] Lighthouse Landing bleibt > 90 (Cache funktioniert)
+- [ ] No-Layout-Shift bei Skeleton → Real-Content
+
+**Release:** minor (v5.0.0 final oder v4.6.0)
 
 ---
 

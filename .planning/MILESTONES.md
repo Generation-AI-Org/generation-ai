@@ -42,26 +42,55 @@
 
 ---
 
+### v3.0: UX Polish & Feature Expansion ✅
+*Completed: 2026-04-19 (Releases v4.2.0, v4.3.0, v4.3.x, v4.4.0)*
+
+**Goal:** Auf gehärteter v2.0-Basis die UX schärfen — Mobile-Polish, globaler Chat mit Kontext, Brand System, Auth-Polish.
+
+**Delivered:**
+- Phase 14 — Mobile Polish (Chat-Input Auto-Resize, Mobile Footer, Micro-Animations-Parity)
+- Phase 15 — Chat überall + Context-aware (GlobalLayout, Desktop-Sidebar-Mode, Tool-Kontext)
+- Phase 16 — Brand System Foundation (Radix Colors, Geist Mono/Sans, `<Logo />` 11 Varianten, visual-regression verifiziert)
+- Phase 17 — Auth Extensions (6 Supabase-Email-Templates auf React Email, Brand-Tokens inline, Gravatar-Avatar)
+- Phase 18 — Simplify-Pass tools-app (−1.587 LOC, 9 Files raus, 4 Deps raus, knip als Monorepo-Orphan-Tool etabliert)
+- Phase 19 — Password-Flow + Test-Baseline (First-Login-Prompt mit Skip, Settings-Section mit Re-Auth, E2E-Prod-Baseline + CI-Secrets)
+
+**Outcomes:**
+- Minor Release v4.2.0 (Chat überall), v4.3.0 (Brand), v4.4.0 (Password-Flow)
+- Patches v4.3.x (Auth-Templates, Simplify)
+- E2E-Tests laufen gegen Prod mit real Test-User via GH-Secrets
+- Design-System als Code (brand/tokens.json + packages/config + packages/ui)
+
+**Carried-over:** OAuth Google + Apple → BACKLOG (v4.1+ oder später).
+
+---
+
 ## Current Milestone
 
-### v3.0: UX Polish & Feature Expansion (In Progress)
-*Started: 2026-04-17*
+### v4.0: Website Conversion-Layer & Onboarding-Funnel (In Progress)
+*Started: 2026-04-19*
 
-**Goal:** Auf gehärteter v2.0-Basis die UX schärfen — Mobile-Polish, globaler Chat mit Kontext, OAuth, Passwort-Flow, Simplify-Pass.
+**Goal:** Website (generation-ai.org) vom One-Pager-Intro zum Conversion-Entry-Point umbauen — klarer Funnel Richtung Mitgliedschaft. Basis für Fördermitglieder-Wachstum und Partner-Ansprache.
 
 **Target Features:**
-- Mobile-UX Parity (Bugs + Micro-Animations)
-- Global FloatingChat (auf allen Routen + Context-aware auf Detail-Seiten)
-- Passwort-Flow vollständig (UI + Email-Templates + Reset-Test)
-- Code-Simplify-Pass (tote Files + Naming-Konsistenz)
-- OAuth Google + Apple (Circle-Member-Auto-Detection)
+- Navigation-Redesign + Landing-Umbau (Hero, Diskrepanz-Viz, 4-Card-Angebot, Tool-Showcase, Community-Preview, Zielgruppen-Split, Trust, Final-CTA)
+- `/about` — Mission, Team, Sparringspartner, Verein
+- `/partner` — 3 Anker-Sections (Unternehmen, Stiftungen, Hochschulen) + Lead-Capture
+- `/join` — linearer Fragebogen-Flow mit Self-Select Level (Backend-Stub 503 bis Luca-Go)
+- `/level-test` — optionales Assessment, überschreibt Self-Select
+- **Circle-API-Sync (Unified Signup)** — Circle-Member via API + SSO-Link in Welcome-Flow → eine Mail statt zwei, kein Circle-Doppel-Signup
+- Subdomain-Integration — Featured-Tools API + Community-Preview via Circle API
 
-**Phases:** 14-19 (siehe ROADMAP.md)
+**Out-of-Scope:** Signup-Live-Reaktivierung, Payment, Kurs-CMS, 2FA, finale Claim-Wording.
+
+**Scope-Dokument:** `.planning/research/v4-scoping/SCOPE.md` (Sparring-Session 2026-04-19).
+
+**Phases:** 20-26 (siehe ROADMAP.md).
 
 ---
 
 ## Future Milestones (Ideas)
 
-- **v3.1:** Content System (Tool-Card-Previews, volle Detail-Artikel)
-- **v3.5:** 2FA + Security-Hardening (httpOnly cookies, Account-Delete-Verification)
-- **v4.0:** Circle Integration (Smart-Links, Cross-Session-Features)
+- **v4.1:** OAuth Google + Apple (Circle-Member-Auto-Detection)
+- **v4.5:** Content System (Tool-Card-Previews, volle Detail-Artikel)
+- **v5.0:** 2FA + Security-Hardening (httpOnly cookies, Account-Delete-Verification)

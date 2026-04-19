@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0
-milestone_name: UX Polish & Feature Expansion
-status: Phase 19 Code-Complete (5/5 plans, Plan 05 pending Human-Verify-Checkpoint)
-last_updated: "2026-04-19T17:15:00.000Z"
+milestone: v4.0
+milestone_name: Website Conversion-Layer & Onboarding-Funnel
+status: Milestone setup — requirements + roadmap geschrieben, Phasen 20-26 warten auf /gsd-plan-phase
+last_updated: "2026-04-19T18:00:00.000Z"
 progress:
-  total_phases: 5
-  completed_phases: 4
-  total_plans: 21
-  completed_plans: 19
-  percent: 90
+  total_phases: 7
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,10 +18,56 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Growth-Readiness — 🚧 IN PROGRESS (5/5 plans in Phase 19 code-complete, Plan 05 pending Human-Verify)
-**Phase:** 19 Password-Flow + Test-Baseline — Code-Tasks DONE (Plans 01-05), Plan 05 Human-Verify-Checkpoint offen
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 PLANNING (Phases 20-26 definiert, noch nicht gestartet)
+**Phase:** Noch keine (Nächstes: `/gsd-plan-phase 20`)
 **Last Updated:** 2026-04-19
-**Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged.
+**Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
+
+---
+
+## Milestone v4.0 — Setup abgeschlossen 2026-04-19
+
+**Scope-Dokument:** `.planning/research/v4-scoping/SCOPE.md` (Sparring-Session)
+**Requirements:** R1-R7 in `.planning/REQUIREMENTS.md`
+**Roadmap:** Phasen 20-26 in `.planning/ROADMAP.md`
+
+**Phasen (empfohlene Reihenfolge):**
+1. **Phase 20** — Navigation + Landing-Skeleton (Stub-Daten)
+2. **Phase 21** — `/about`-Seite
+3. **Phase 22** — `/partner`-Seite (3 Anker-Sections + Kontakt-Formular)
+4. **Phase 23** — `/join` Fragebogen-Flow (Backend-Stub 503)
+5. **Phase 24** — `/level-test` Assessment (optional, DSGVO-konform)
+6. **Phase 25** — Circle-API-Sync (Unified Signup: eine Mail via SSO-Link)
+7. **Phase 26** — Subdomain-Integration (Featured-Tools + Community-Preview)
+
+**Kern-UX-Win:** Phase 25 Circle-API-Sync — User bekommt **eine** Mail statt zwei, landet nach Confirm via embedded SSO-Link direkt eingeloggt in Circle (Circle-Business-Plan API).
+
+**Tech-Entscheidungen:**
+- Circle-Sync via Server-Action in Next.js (kein Supabase Webhook/Edge Function — expliziter Code-Pfad)
+- Tool-Showcase via public API aus tools-app (ISR-cached)
+- Community-Preview via Circle API v2 (Rate-Limit-bewusst cachen)
+- Live-Signup bleibt 503 bis Luca-Go nach Phase 25
+
+---
+
+## v3.0 Milestone — COMPLETE 2026-04-19 (6/6 Phasen)
+
+**Phase 19 (trailing): Password-Flow + Test-Baseline**
+Code-Complete (Commits `88cf644` + Plans 19-01..19-05), Plan 05 Human-Verify-Checkpoint offen — läuft in paralleler Session.
+
+- Plan 19-01 DONE — confirm-Route `has_password`-Check, Commit `865d87e`
+- Plan 19-02 DONE — Set-Password First-Login-Mode, Commit `ad38601`
+- Plan 19-03 DONE — Settings PasswordSection, Commits `24512e9` + `072195e`
+- Plan 19-04 DONE — E2E-Prod-Baseline, Commits `bf39bdf` + `195b042` + `58b0048` + `2a09a86`
+- Plan 19-05 DONE (code) — CI-Secrets + MANUAL-STEPS + Changeset, Commit `88cf644`
+
+**Phasen-Übersicht:**
+- Phase 14 — Mobile Polish ✅
+- Phase 15 — Chat überall + Context-aware ✅ (v4.2.0)
+- Phase 16 — Brand System Foundation ✅ (v4.3.0)
+- Phase 17 — Auth Extensions ✅ (v4.3.x)
+- Phase 18 — Simplify-Pass tools-app ✅ (−1.587 LOC)
+- Phase 19 — Password-Flow + Test-Baseline 🔄 code-complete, Verify offen (v4.4.0)
 
 **Phase 19 — IN PROGRESS 2026-04-19:**
 
