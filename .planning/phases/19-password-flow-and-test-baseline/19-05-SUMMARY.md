@@ -235,6 +235,46 @@ None — CI-Workflow-Edit erweitert nur Env-Var-Binding, kein neuer Network-Endp
   - Wenn Test-User's `has_password=true` via Dashboard versehentlich gesetzt würde, greift First-Login-Prompt nicht (E2E Path 1 würde falschen Flow testen). MANUAL-STEPS.md §1 warnt davor.
   - `pnpm e2e` gegen Prod ist abhängig von Prod-Verfügbarkeit — akzeptiertes Tradeoff (CONTEXT-Decision).
 
+## Checkpoint Resolution — UX-Smoke PASSED (2026-04-19)
+
+Alle 5 Manual-Verify-Steps mit Luca durchgeklickt. Während der Verifikation 3 In-Flight-Bugs gefunden und gefixt:
+
+### UX-Smoke-Ergebnisse
+
+| Test | Plan | Result | User |
+|------|------|--------|------|
+| First-Login-Redirect (`has_password=null` → `/auth/set-password?first=1`) | 19-01 | ✓ PASS | admin@, lucvii@gmx.de |
+| Skip-Button → `has_password=false` | 19-02 | ✓ PASS | admin@ |
+| Passwort setzen → `has_password=true` | 19-02 | ✓ PASS | lucvii@gmx.de |
+| Settings Change-Mode (3 Felder + Re-Auth) | 19-03 | ✓ PASS | lucvii@gmx.de |
+| Settings Set-Mode (2 Felder, no Re-Auth wenn has_password=false) | 19-03 | ✓ PASS | admin@ |
+| Zweiter Magic-Link ohne Re-Prompt | 19-01 + callback | ✓ PASS | lucvii@gmx.de |
+
+### In-Flight-Fixes (committed ausserhalb der 5 Original-Plans)
+
+1. **`fix(19-04)` c78a094** — Auth-gate smoke tests verwenden `/settings` statt `/chat`. `/chat` existiert nicht als Route, fällt in `[slug]` catch-all mit 404-Fallback. Falsche Annahme aus Plan 19-04.
+
+2. **`fix(19)` be25de0** — `has_password`-Check zusätzlich in `/auth/callback/page.tsx` (PKCE-Flow). Plan 19-01 hatte den Check nur in `/auth/confirm` eingebaut, aber Supabase's Magic-Link-Flow routet via `/auth/callback` (redirect_to in Email-Template). Ohne diesen Fix griff der First-Login-Prompt bei keinem echten User.
+
+3. **`fix(19)` ac1e374** — `signInWithOtp({ shouldCreateUser: false })` im Login-Form. Default `true` triggerte „Signups not allowed for this instance" für Admin-angelegte User, weil Supabase `shouldCreateUser:true` als Signup-Intent interpretiert. Blocker für admin@generation-ai.org und jeden zukünftig per Dashboard angelegten User.
+
+### Data-Migration (2026-04-19)
+
+8 Bestands-User hatten `encrypted_password` (aus Phase 17 „Passwort vergessen?"-Flow) aber `has_password = null` → würden beim nächsten Login false-positive Prompt sehen. One-shot SQL-Migration setzt `has_password=true` für alle Betroffenen:
+
+```sql
+UPDATE auth.users 
+SET raw_user_meta_data = raw_user_meta_data || '{"has_password": true}'::jsonb
+WHERE encrypted_password IS NOT NULL 
+  AND raw_user_meta_data->>'has_password' IS NULL;
+```
+
+### Test-User-Residuals
+
+- `e2e-tester@generation-ai.test` — bleibt aktiv, gebraucht für CI/E2E (`TEST_USER_EMAIL`-Secret)
+- `admin@generation-ai.org` — per SQL angelegt (kein Password, flag=false nach Skip), kann als Ops-Zugang bleiben oder aufgelöst werden
+- `lucvii@gmx.de` — hat jetzt Passwort `Tester123` gesetzt, flag=true. Lucas manueller Test-Account — Cleanup/Behalten ist Lucas Entscheidung
+
 ## Self-Check: PASSED
 
 - File `.github/workflows/ci.yml` exists: FOUND
@@ -243,6 +283,10 @@ None — CI-Workflow-Edit erweitert nur Env-Var-Binding, kein neuer Network-Endp
 - Commit `c82604d` exists in git log: FOUND
 - Commit `e765b76` exists in git log: FOUND
 - Commit `6ab6ae6` exists in git log: FOUND
+- Commit `c78a094` (chat.spec.ts fix) exists in git log: FOUND
+- Commit `be25de0` (callback has_password fix) exists in git log: FOUND
+- Commit `ac1e374` (shouldCreateUser fix) exists in git log: FOUND
+- UX-Smoke all 5 tests verified against prod: PASSED
 - All 3 code-task acceptance-criteria greps passed
 - Task 4 (Human-Verify) documented as PENDING in User Setup Required section
 
