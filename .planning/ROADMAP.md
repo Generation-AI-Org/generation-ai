@@ -516,7 +516,7 @@ Plans:
 
 | Phase | Name | Goal | Requirements | Autonom-fähig |
 |-------|------|------|--------------|---------------|
-| 20 | Navigation + Landing-Skeleton | Top-Nav + Landing-Sections mit Stub-Daten | R1 | ⚠️ teilweise (Claim-Wording bleibt Placeholder) |
+| 20 | Navigation + Landing-Skeleton | 1/6 | In Progress|  |
 | 21 | `/about`-Seite | Mission, Team, Sparringspartner, Verein | R2 | ✅ (statischer Content) |
 | 22 | `/partner`-Seite | 3 Anker-Sections + Kontakt-Formular | R3 | ✅ (statischer Content + Form) |
 | 23 | `/join` Fragebogen-Flow | Linearer 4-Step-Flow mit Validation (Backend-Stub) | R4 | ✅ |
@@ -541,10 +541,10 @@ Plans:
 **Requirements:** R1.1-R1.10
 **Depends on:** keine
 **Out-of-Scope:** Echte Tool-Showcase- und Community-Preview-Daten (→ Phase 26), Final-Wording Hero + Final-CTA (bleibt Placeholder).
-**Plans:** 6 plans
+**Plans:** 1/6 plans executed
 
 Plans:
-- [ ] 20-01-PLAN.md — Wave 1 Setup: motion + shadcn + Aceternity/MagicUI Copy-in, globals.css Keyframes, lighthouserc.json + landing.spec.ts skeleton, Alt-Sections löschen (D-21)
+- [x] 20-01-PLAN.md — Wave 1 Setup: motion + shadcn + Aceternity/MagicUI Copy-in, globals.css Keyframes, lighthouserc.json + landing.spec.ts skeleton, Alt-Sections löschen (D-21)
 - [ ] 20-02-PLAN.md — Wave 2 Layout-Shell: Header-Umbau (Dropdown + Mobile-Sheet), Footer-Erweiterung, 8 Section-Stubs + home-client.tsx wiring + MotionConfig nonce
 - [ ] 20-03-PLAN.md — Wave 3 Wow-Peaks 1+2: Hero (Aurora) + Diskrepanz (Custom Bento-Split + 6 Number-Tickers + Scroll-Divergenz)
 - [ ] 20-04-PLAN.md — Wave 3 ruhige Mitte: 4-Card-Angebot (Bento) + Tool-Showcase (Infinite Cards + Beispiel-Badge) + Community-Preview (statisch + Beispiel-Badges)

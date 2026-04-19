@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: Phase 19 complete, Phase 20 in progress
-last_updated: "2026-04-20T00:00:00.000Z"
+status: unknown
+last_updated: "2026-04-19T23:11:16.482Z"
 progress:
   total_phases: 13
   completed_phases: 5
-  total_plans: 26
-  completed_plans: 23
-  percent: 88
+  total_plans: 32
+  completed_plans: 24
+  percent: 75
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,10 +18,20 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 PLANNING (Phases 20-26 definiert, noch nicht gestartet)
-**Phase:** 20
-**Last Updated:** 2026-04-19
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 Wave 1 started)
+**Phase:** 20 — Plan 01/6 DONE
+**Last Updated:** 2026-04-20
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
+
+### Phase 20 Progress
+
+- **Plan 20-01** DONE 2026-04-20 — Stack-Setup (motion + shadcn + Aceternity/MagicUI copy-ins), legacy sections deleted, lighthouserc.json + landing.spec.ts skeleton
+  - Commits: `27a645d`, `5c9e9ee`, `6a52f21`
+  - Branch: `feature/phase-20-landing-skeleton`
+  - Build grün, `ƒ /`, CSP OK
+- **Plan 20-02** next up — Navigation (Header-Umbau mit Dropdown + Mobile-Sheet-Overlay, Footer-Ausbau)
+- **Plans 20-03..05** Wave 3 (Sections)
+- **Plan 20-06** Wave 4 (Polish + Lighthouse-Gate + Changeset)
 
 ---
 
