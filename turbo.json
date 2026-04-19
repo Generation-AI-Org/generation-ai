@@ -41,7 +41,7 @@
     },
     "e2e": {
       "dependsOn": ["^build"],
-      "passThroughEnv": ["PLAYWRIGHT_*", "BASE_URL", "TEST_USER_EMAIL", "TEST_USER_PASSWORD"],
+      "passThroughEnv": ["PLAYWRIGHT_*", "BASE_URL", "E2E_BASE_URL", "TEST_USER_EMAIL", "TEST_USER_PASSWORD"],
       "outputs": ["playwright-report/**", "test-results/**"]
     }
   }
