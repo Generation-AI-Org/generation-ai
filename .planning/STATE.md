@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
-status: Executing Phase 19 (4/5 plans, Wave 2 complete — Plan 05 CI-Binding next)
-last_updated: "2026-04-19T17:01:04Z"
+status: Executing Phase 19 (4/5 plans complete, Wave 2 done — Plan 05 CI-Binding next)
+last_updated: "2026-04-19T17:07:37.603Z"
 progress:
   total_phases: 5
   completed_phases: 4
@@ -18,7 +18,7 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Growth-Readiness — 🚧 IN PROGRESS (2/5 plans in Phase 19, Wave 1 complete)
+**Milestone:** v4.0 Growth-Readiness — 🚧 IN PROGRESS (4/5 plans in Phase 19, Wave 2 complete)
 **Phase:** 19 Password-Flow + Test-Baseline — Wave 2 DONE (Plans 01-04), Plan 05 next (CI-Binding + MANUAL-STEPS)
 **Last Updated:** 2026-04-19
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged.
@@ -47,9 +47,19 @@ progress:
   - `turbo.json` `tasks.e2e.passThroughEnv` um `E2E_BASE_URL` erweitert — D-08-Override funktioniert jetzt auch via `pnpm e2e` (turbo-Wrapper), nicht nur via `pnpm exec playwright test`
   - 33 Tests parsen (auth 12, chat 5, smoke 2, visual-baseline 14), turbo.json valides JSON, alle Acceptance-Criteria-Greps erfüllt
   - Requirements completed: D-07, D-08
-- Plan 19-03 — Settings-Inline-Form (2 Modi: Setzen/Ändern mit Re-Auth) — STATUS UNKLAR, separat getrackt
+- Plan 19-03 DONE — Settings Password-Block, Commits `24512e9` (PasswordSection.tsx), `072195e` (page.tsx mount)
+  - Neue `PasswordSection` Client-Component (151 Zeilen) im `apps/tools-app/app/settings/`-Ordner
+  - 2-Modi-Logic: Set-Mode (2-Feld-Form) für User ohne `has_password`, Change-Mode (3-Feld-Form mit Re-Auth) für User mit `has_password=true`
+  - Change-Mode: `signInWithPassword` als Re-Auth-Check vor `updateUser({ password })` (D-04) — falsches aktuelles Passwort → Early-Return mit Error-Message, kein Server-State-Change
+  - Kombinierter `updateUser({ password, data: { has_password: true } })`-Call (D-05)
+  - Success: Inline-Message (grün), Felder clearen, lokaler State wechselt auf Change-Mode — KEIN Redirect
+  - Error: Inline-Message (rot), Form bleibt ausgefüllt
+  - Input-IDs bewusst anders als set-password-page (`currentPassword`/`newPassword`/`confirmNewPassword` vs. `password`/`confirmPassword`) — kein E2E-Selektor-Konflikt mit Phase-13-Auth-Tests
+  - Settings-Page rendert neuen Block zwischen Account und Rechtliches (natürliche User-Lesereihenfolge)
+  - Build grün (6.0s, 46/46 Pages, /settings als `ƒ` dynamic), alle Acceptance-Criteria-Greps erfüllt
+  - Requirements completed: D-03, D-04, D-05
 - Next (Wave 3): Plan 19-05 CI-Binding (GitHub-Actions-Secrets-Referenz + MANUAL-STEPS.md)
-- Artifacts: `.planning/phases/19-password-flow-and-test-baseline/19-01-SUMMARY.md`, `19-02-SUMMARY.md`, `19-04-SUMMARY.md`
+- Artifacts: `.planning/phases/19-password-flow-and-test-baseline/19-01-SUMMARY.md`, `19-02-SUMMARY.md`, `19-03-SUMMARY.md`, `19-04-SUMMARY.md`
 
 **Phase 18 — DONE 2026-04-19:**
 
