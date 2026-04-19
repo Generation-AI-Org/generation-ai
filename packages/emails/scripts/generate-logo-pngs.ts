@@ -30,11 +30,14 @@ function buildScanlineSvg(w: number, h: number): Buffer {
   // Display size is ~180x101. For visible "every other row" scanlines at that
   // size, we need pitch ~2 display px = ~22 raster px at 1080 height.
   // Line thickness 8 raster px (≈0.75 display px) to survive downsampling.
-  const pitch = 22
-  const thickness = 8
+  // Matches website terminal-splash: 1px line on 3px pitch, ~0.4 opacity.
+  // In 1080px raster at ~10.7x display scale: pitch 11, thickness 4, slight
+  // opacity bump (0.35) to survive Apple Mail / Gmail image recompression.
+  const pitch = 11
+  const thickness = 4
   const rows: string[] = []
   for (let y = 0; y < h; y += pitch) {
-    rows.push(`<rect x="0" y="${y}" width="${w}" height="${thickness}" fill="black" fill-opacity="0.45"/>`)
+    rows.push(`<rect x="0" y="${y}" width="${w}" height="${thickness}" fill="black" fill-opacity="0.35"/>`)
   }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">${rows.join('')}</svg>`
   return Buffer.from(svg)
