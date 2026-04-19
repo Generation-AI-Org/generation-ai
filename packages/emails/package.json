@@ -1,0 +1,30 @@
+{
+  "name": "@genai/emails",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./templates/*": "./src/templates/*.tsx",
+    "./components/*": "./src/components/*.tsx"
+  },
+  "scripts": {
+    "email:dev": "email dev --dir ./src/templates --port 3030",
+    "email:export": "tsx scripts/export.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@react-email/components": "^0.0.31",
+    "@react-email/render": "^1.0.1",
+    "react-email": "^3.0.1"
+  },
+  "devDependencies": {
+    "@genai/config": "workspace:*",
+    "tsx": "^4.19.0",
+    "typescript": "catalog:",
+    "@types/react": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  }
+}
