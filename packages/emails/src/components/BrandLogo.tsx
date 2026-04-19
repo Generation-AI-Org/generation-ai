@@ -21,11 +21,17 @@ const HOME_URL = 'https://generation-ai.org'
  * rounded window consistently. Theme-agnostic — looks identical on every client.
  */
 export function BrandLogo(): React.ReactElement {
-  // Matches website terminal-splash palette (slightly softer than pure black)
+  // Matches website terminal-splash palette — content darker than card bg
+  // so the terminal window stands out from the email card.
   const titleBarBg = '#3a3a3a'
   const titleBarText = '#a0a0a0'
   const contentBg = '#1c1c1c'
   const borderColor = '#2a2a2a'
+  // CRT-style subtle scanlines overlaid on the content area. 2px dark + 1px
+  // slightly-lit band. Renders in Apple Mail + Gmail Web; Outlook gracefully
+  // falls back to solid bg.
+  const scanlines =
+    'repeating-linear-gradient(0deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0) 2px, rgba(206,255,50,0.035) 2px, rgba(206,255,50,0.035) 3px)'
   const windowRadius = 10
 
   return (
@@ -127,7 +133,7 @@ export function BrandLogo(): React.ReactElement {
                           letterSpacing: '0.04em',
                         }}
                       >
-                        generation-ai — zsh — 80×24
+                        generation-ai — zsh
                       </td>
                       {/* Spacer to balance the dots column */}
                       <td style={{ width: '54px' }}>&nbsp;</td>
@@ -141,6 +147,7 @@ export function BrandLogo(): React.ReactElement {
               <td
                 style={{
                   backgroundColor: contentBg,
+                  backgroundImage: scanlines,
                   padding: '28px 20px',
                   textAlign: 'center',
                   borderBottomLeftRadius: `${windowRadius - 1}px`,
