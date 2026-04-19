@@ -363,9 +363,6 @@ importers:
 
   packages/emails:
     dependencies:
-      '@react-email/button':
-        specifier: 0.0.10
-        version: 0.0.10
       '@react-email/components':
         specifier: ^0.0.31
         version: 0.0.31(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -388,6 +385,12 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.14
+      '@types/sharp':
+        specifier: ^0.31.1
+        version: 0.31.1
+      sharp:
+        specifier: ^0.33.5
+        version: 0.33.5
       tsx:
         specifier: ^4.19.0
         version: 4.21.0
@@ -2069,11 +2072,6 @@ packages:
     peerDependencies:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
 
-  '@react-email/button@0.0.10':
-    resolution: {integrity: sha512-S8r7NGTxXoxvw5kCdMzpwXdBHhYAhrYM9sylK6xr+2M9osrjHQOPLBoV3I/po9xdzN3WyRcZqQixH0wPeXy2Gw==}
-    engines: {node: '>=16.0.0'}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-
   '@react-email/button@0.0.19':
     resolution: {integrity: sha512-HYHrhyVGt7rdM/ls6FuuD6XE7fa7bjZTJqB2byn6/oGsfiEZaogY77OtoLL/mrQHjHjZiJadtAMSik9XLcm7+A==}
     engines: {node: '>=18.0.0'}
@@ -2940,6 +2938,9 @@ packages:
 
   '@types/react@19.2.14':
     resolution: {integrity: sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==}
+
+  '@types/sharp@0.31.1':
+    resolution: {integrity: sha512-5nWwamN9ZFHXaYEincMSuza8nNfOof8nmO+mcI+Agx1uMUk4/pQnNIcix+9rLPXzKrm1pS34+6WRDbDV0Jn7ag==}
 
   '@types/statuses@2.0.6':
     resolution: {integrity: sha512-xMAgYwceFhRA2zY+XbEA7mxYbA093wdiW8Vu6gZPGWy9cmOyU9XesH1tNcEWsKFd5Vzrqx5T3D38PWx1FIIXkA==}
@@ -5877,10 +5878,6 @@ packages:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
 
-  react@18.2.0:
-    resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
-    engines: {node: '>=0.10.0'}
-
   react@19.2.4:
     resolution: {integrity: sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ==}
     engines: {node: '>=0.10.0'}
@@ -8517,10 +8514,6 @@ snapshots:
     dependencies:
       react: 19.2.4
 
-  '@react-email/button@0.0.10':
-    dependencies:
-      react: 18.2.0
-
   '@react-email/button@0.0.19(react@19.2.4)':
     dependencies:
       react: 19.2.4
@@ -9302,6 +9295,10 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
+  '@types/sharp@0.31.1':
+    dependencies:
+      '@types/node': 20.19.39
+
   '@types/statuses@2.0.6': {}
 
   '@types/tedious@4.0.14':
@@ -10081,13 +10078,11 @@ snapshots:
     dependencies:
       color-name: 1.1.4
       simple-swizzle: 0.2.4
-    optional: true
 
   color@4.2.3:
     dependencies:
       color-convert: 2.0.1
       color-string: 1.9.1
-    optional: true
 
   comma-separated-tokens@2.0.3: {}
 
@@ -11342,8 +11337,7 @@ snapshots:
 
   is-arrayish@0.2.1: {}
 
-  is-arrayish@0.3.4:
-    optional: true
+  is-arrayish@0.3.4: {}
 
   is-async-function@2.1.1:
     dependencies:
@@ -12759,10 +12753,6 @@ snapshots:
 
   react-refresh@0.17.0: {}
 
-  react@18.2.0:
-    dependencies:
-      loose-envify: 1.4.0
-
   react@19.2.4: {}
 
   read-yaml-file@1.1.0:
@@ -13127,7 +13117,6 @@ snapshots:
       '@img/sharp-wasm32': 0.33.5
       '@img/sharp-win32-ia32': 0.33.5
       '@img/sharp-win32-x64': 0.33.5
-    optional: true
 
   sharp@0.34.5:
     dependencies:
@@ -13204,7 +13193,6 @@ snapshots:
   simple-swizzle@0.2.4:
     dependencies:
       is-arrayish: 0.3.4
-    optional: true
 
   sirv@3.0.2:
     dependencies:
