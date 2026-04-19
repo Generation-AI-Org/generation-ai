@@ -27,7 +27,7 @@ export default function ReauthEmail({
           fontFamily: fontStack.sans,
           fontSize: '24px',
           fontWeight: 700,
-          color: tokens.light.text,
+          color: tokens.dark.text,
           margin: '0 0 16px 0',
         }}
       >
@@ -39,7 +39,7 @@ export default function ReauthEmail({
         style={{
           fontSize: '16px',
           lineHeight: 1.65,
-          color: tokens.light.text,
+          color: tokens.dark.text,
           margin: '0 0 32px 0',
         }}
       >
@@ -57,7 +57,7 @@ export default function ReauthEmail({
             fontSize: '32px',
             fontWeight: 700,
             letterSpacing: '0.2em',
-            color: tokens.light.text,
+            color: tokens.dark.text,
             backgroundColor: '#EFEFEF',
             padding: '16px 24px',
             borderRadius: radius['2xl'],
@@ -73,7 +73,7 @@ export default function ReauthEmail({
         style={{
           fontSize: '14px',
           lineHeight: 1.55,
-          color: tokens.light.textMuted,
+          color: tokens.dark.textMuted,
           margin: '24px 0 0 0',
         }}
       >

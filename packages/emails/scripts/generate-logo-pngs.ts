@@ -16,18 +16,18 @@ const TARGETS = [
   { src: 'logo-wide-neon.svg', dest: 'logo-wide-neon.png' },
 ];
 
-// SVG viewBox is 960x540 (16:9). BrandLogo displays at 170px wide (~96px tall).
-// Rasterize at the SVG's native size with very high density — no downscaling,
-// no sharpen filter needed. Result is as crisp as the vector allows.
-// Image is loaded from a URL by mail clients, not inlined, so file size does
-// not count toward Gmail's 102KB HTML clipping threshold.
-const TARGET_HEIGHT = 540;
+// SVG viewBox is 960x540 (16:9). BrandLogo displays at ~180px wide in emails.
+// Rasterize at 2x native SVG size (1920x1080) with massive density — gives
+// ~10x retina crispness even after Apple Mail / Gmail image recompression.
+// Images load from URL, not inlined — file size does not count toward Gmail's
+// 102KB HTML clipping threshold.
+const TARGET_HEIGHT = 1080;
 
 async function run() {
   for (const { src, dest } of TARGETS) {
     const svgBuffer = readFileSync(join(SRC_DIR, src));
     const outPath = join(DEST_DIR, dest);
-    await sharp(svgBuffer, { density: 1536 })
+    await sharp(svgBuffer, { density: 1152, limitInputPixels: false })
       .resize({
         height: TARGET_HEIGHT,
         kernel: sharp.kernel.lanczos3,

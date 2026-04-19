@@ -20,60 +20,32 @@ export interface LayoutProps {
 /**
  * Shared email layout wrapper used by all 6 Supabase auth templates.
  *
- * Structure: Html > Head (color-scheme meta + dark-mode CSS) > Body > Container > Header (BrandLogo) > children > Hr > Footer
- *
- * Dark mode: @media (prefers-color-scheme: dark) rules in <style> block swap
- * all visual tokens (bg, card, text, muted, footer, divider, button, logo).
- * Supported by Gmail (web), Apple Mail, and modern Outlook web — not Outlook Desktop.
+ * Always dark CI theme — matches the website/terminal splash look.
+ * No theme-adaptive swap (Gmail iOS doesn't support it reliably), so we
+ * ship a single dark variant that looks identical across all mail clients.
  */
 export function Layout({ preview, children }: LayoutProps): React.ReactElement {
   return (
     <Html lang="de">
       <Head>
-        {/* Color scheme support declarations */}
-        <meta name="color-scheme" content="light dark" />
-        <meta name="supported-color-schemes" content="light dark" />
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-@media (prefers-color-scheme: dark) {
-  .email-body { background-color: ${tokens.dark.bg} !important; }
-  .email-card { background-color: ${tokens.dark.bgCard} !important; border-color: ${tokens.dark.border} !important; }
-  .email-heading { color: ${tokens.dark.text} !important; }
-  .email-text { color: ${tokens.dark.text} !important; }
-  .email-muted { color: ${tokens.dark.textMuted} !important; }
-  .email-footer { color: ${tokens.dark.textMuted} !important; }
-  .email-divider { border-top-color: ${tokens.dark.border} !important; border-color: ${tokens.dark.border} !important; }
-  .email-btn { background-color: ${tokens.dark.accent} !important; color: ${tokens.dark.textOnAccent} !important; }
-}
-
-/* Outlook.com dark mode */
-[data-ogsc] .email-body { background-color: ${tokens.dark.bg} !important; }
-[data-ogsc] .email-card { background-color: ${tokens.dark.bgCard} !important; border-color: ${tokens.dark.border} !important; }
-[data-ogsc] .email-heading, [data-ogsc] .email-text { color: ${tokens.dark.text} !important; }
-[data-ogsc] .email-muted, [data-ogsc] .email-footer { color: ${tokens.dark.textMuted} !important; }
-[data-ogsc] .email-btn { background-color: ${tokens.dark.accent} !important; color: ${tokens.dark.textOnAccent} !important; }
-`,
-          }}
-        />
+        <meta name="color-scheme" content="dark" />
+        <meta name="supported-color-schemes" content="dark" />
       </Head>
       <Preview>{preview}</Preview>
       <Body
-        className="email-body"
         style={{
-          backgroundColor: tokens.light.bg,
+          backgroundColor: tokens.dark.bg,
           fontFamily: fontStack.sans,
           margin: 0,
           padding: '40px 20px',
         }}
       >
         <Container
-          className="email-card"
           style={{
             maxWidth: '480px',
-            backgroundColor: tokens.light.bgCard,
+            backgroundColor: tokens.dark.bgCard,
             borderRadius: radius['2xl'],
-            border: '1px solid ' + tokens.light.border,
+            border: '1px solid ' + tokens.dark.border,
             padding: '40px 32px',
           }}
         >
@@ -87,22 +59,20 @@ export function Layout({ preview, children }: LayoutProps): React.ReactElement {
 
           {/* Divider */}
           <Hr
-            className="email-divider"
             style={{
               margin: '32px 0',
               border: 'none',
               borderTopWidth: '1px',
               borderTopStyle: 'solid',
-              borderTopColor: tokens.light.border,
+              borderTopColor: tokens.dark.border,
             }}
           />
 
-          {/* Footer: brand signature — matches VOICE.md Utility-Signatur tone */}
+          {/* Footer: brand signature */}
           <Text
-            className="email-footer"
             style={{
               fontSize: '12px',
-              color: tokens.light.textMuted,
+              color: tokens.dark.textMuted,
               textAlign: 'center',
               margin: 0,
             }}
@@ -112,10 +82,9 @@ export function Layout({ preview, children }: LayoutProps): React.ReactElement {
 
           {/* Legal footer */}
           <Text
-            className="email-footer"
             style={{
               fontSize: '11px',
-              color: tokens.light.textMuted,
+              color: tokens.dark.textMuted,
               textAlign: 'center',
               margin: '8px 0 0 0',
             }}
