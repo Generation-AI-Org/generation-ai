@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: unknown
-last_updated: "2026-04-19T23:11:16.482Z"
+status: in_progress
+last_updated: "2026-04-20T10:00:00.000Z"
 progress:
   total_phases: 13
   completed_phases: 5
   total_plans: 32
-  completed_plans: 24
-  percent: 75
+  completed_plans: 25
+  percent: 78
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,8 +18,8 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 Wave 1 started)
-**Phase:** 20 — Plan 01/6 DONE
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 Waves 1+2 done, Wave 3 next)
+**Phase:** 20 — Plans 01+02/6 DONE
 **Last Updated:** 2026-04-20
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
 
@@ -29,8 +29,13 @@ progress:
   - Commits: `27a645d`, `5c9e9ee`, `6a52f21`
   - Branch: `feature/phase-20-landing-skeleton`
   - Build grün, `ƒ /`, CSP OK
-- **Plan 20-02** next up — Navigation (Header-Umbau mit Dropdown + Mobile-Sheet-Overlay, Footer-Ausbau)
-- **Plans 20-03..05** Wave 3 (Sections)
+- **Plan 20-02** DONE 2026-04-20 — Navigation + Layout-Shell (Header-Umbau mit Dropdown + Mobile-Sheet, Footer 4-Spalten mit Sitemap+Legal+Kontakt+LinkedIn, 8 Section-Stubs in home-client gemountet, MotionConfig mit Request-Nonce via `await headers()` in page.tsx)
+  - Commits: `96d690c` (header), `c945a88` (footer), `81d6ca4` (sections + MotionConfig)
+  - Deviations: 5 auto-fixed (3 Rule-1 Bugs: lucide Linkedin fehlt → Inline-SVG; base-ui Menu Error #31 → DropdownMenuGroup wrapper; 2 Close-Buttons → showCloseButton=false + custom; 2 Rule-3 Test-Infra: splash-skip beforeEach, CSP waitUntil=domcontentloaded)
+  - R1.1 Playwright (Dropdown click+keyboard, Mobile-Nav) + CSP-Test grün (4/4)
+  - Build grün, `ƒ /`, CSP-Header mit Nonce intakt, 8 unique data-sections im DOM
+  - Requirements completed: R1.1, R1.10
+- **Plans 20-03..05** Wave 3 next up (Sections parallel-fähig — Wave-2-Boundary gelockt)
 - **Plan 20-06** Wave 4 (Polish + Lighthouse-Gate + Changeset)
 
 ---

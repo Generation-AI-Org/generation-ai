@@ -11,7 +11,7 @@
 **Problem:** Aktuelle Website ist One-Pager (Hero → Features → TargetAudience → Signup). Keine Navigation, kein Funnel, keine Deep-Dive-Pfade. Landing transportiert Generation AI als e.V. nicht.
 
 **Requirements:**
-- R1.1: Top-Nav mit `Tools · Community · Für Partner ▾ · Über uns · [Jetzt beitreten]`. Tools + Community als externe Links zu Subdomains. Kein Login-Button im Header.
+- R1.1: ✅ Top-Nav mit `Tools · Community · Für Partner ▾ · Über uns · [Jetzt beitreten]`. Tools + Community als externe Links zu Subdomains. Kein Login-Button im Header. *(done in 20-02: Header umgebaut, Dropdown + Mobile-Sheet funktional, 3/3 R1.1 Playwright-Tests grün)*
 - R1.2: Hero-Section — Claim + Subline + Primary CTA "Jetzt beitreten" (kein Login, keine Zahlen).
 - R1.3: Diskrepanz-Section — zentraler Hook mit Gegenüberstellung "Was Wirtschaft will" vs "Was Studis mitbringen" (6 Kernzahlen aus Value-Prop-v2). Custom data-viz mit Scroll-Animation. Closer: *"Generation AI schließt diese Lücke."*
 - R1.4: 4-Card-Angebot (Community, Wissensplattform, Events & Workshops, Expert-Formate) mit Icon + Titel + 1-Satz + Deep-Link.
@@ -20,7 +20,7 @@
 - R1.7: Zielgruppen-Split — Studi-Section groß mit CTA zu `/join`, dezenter B2B-Streifen Richtung `/partner`.
 - R1.8: Trust — Logo-Strip Sparringspartner + Micro-Proof Survey-Quelle ("N=109 · März 2026").
 - R1.9: Final CTA — Claim-Wiederholung + `[Jetzt beitreten]` + Sub-Line + kleiner Sekundär-Link "Erst mal umschauen → tools.generation-ai.org".
-- R1.10: Footer — Legal, Sitemap, Social (LinkedIn), Kontakt-Mail, Copyright.
+- R1.10: ✅ Footer — Legal, Sitemap, Social (LinkedIn), Kontakt-Mail, Copyright. *(done in 20-02: 4-Spalten-Grid mit Logo+Tagline, Sitemap (5 links), Legal (2 links), Kontakt (admin@generation-ai.org mailto + LinkedIn inline-SVG), Copyright mit Vereinsnennung)*
 
 **Akzeptanzkriterien:**
 - [ ] Nav-Dropdown "Für Partner" funktioniert auf Desktop + Mobile (a11y-korrekt)
