@@ -1,13 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createBrowserClient } from '@genai/auth'
 import Link from 'next/link'
 
-export default function SetPasswordPage() {
+function SetPasswordInner() {
+  const searchParams = useSearchParams()
+  const isFirstLogin = searchParams.get('first') === '1'
+
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [skipping, setSkipping] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -27,7 +32,11 @@ export default function SetPasswordPage() {
     setMessage(null)
 
     const supabase = createBrowserClient()
-    const { error } = await supabase.auth.updateUser({ password })
+    // Set password + mark account as having password (D-05, D-01)
+    const { error } = await supabase.auth.updateUser({
+      password,
+      data: { has_password: true },
+    })
 
     setLoading(false)
 
@@ -40,6 +49,19 @@ export default function SetPasswordPage() {
         window.location.href = '/'
       }, 1500)
     }
+  }
+
+  async function handleSkip() {
+    setSkipping(true)
+    const supabase = createBrowserClient()
+    // D-02: Skip setzt has_password=false explizit, damit confirm-route beim nächsten Magic-Link nicht re-prompt'et.
+    const { error } = await supabase.auth.updateUser({
+      data: { has_password: false },
+    })
+    if (error) {
+      console.error('Skip metadata write failed (redirecting anyway):', error.message)
+    }
+    window.location.href = '/'
   }
 
   return (
@@ -110,7 +132,7 @@ export default function SetPasswordPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading || !password || !confirmPassword}
+            disabled={loading || skipping || !password || !confirmPassword}
             className="mx-auto block py-2.5 px-6 rounded-full bg-[var(--accent)] text-bg font-medium shadow-[0_0_12px_var(--accent-glow)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {loading ? (
@@ -127,13 +149,35 @@ export default function SetPasswordPage() {
           </button>
         </form>
 
-        {/* Back Link */}
-        <div className="mt-8 text-center">
-          <Link href="/" className="text-sm text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
-            &larr; Zurück zur App
-          </Link>
-        </div>
+        {/* Skip Button — only in first-login mode (D-02) */}
+        {isFirstLogin && (
+          <button
+            type="button"
+            onClick={handleSkip}
+            disabled={loading || skipping}
+            className="mx-auto block mt-3 py-2 px-6 text-sm text-[var(--text-muted)] hover:text-[var(--text-secondary)] disabled:opacity-50 transition-colors"
+          >
+            {skipping ? 'Wird gespeichert...' : 'Später setzen'}
+          </button>
+        )}
+
+        {/* Back Link — hidden in first-login mode (force decision) */}
+        {!isFirstLogin && (
+          <div className="mt-8 text-center">
+            <Link href="/" className="text-sm text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
+              &larr; Zurück zur App
+            </Link>
+          </div>
+        )}
       </div>
     </div>
+  )
+}
+
+export default function SetPasswordPage() {
+  return (
+    <Suspense fallback={null}>
+      <SetPasswordInner />
+    </Suspense>
   )
 }
