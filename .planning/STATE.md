@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
 status: Ready to plan
-last_updated: "2026-04-19T11:26:37.462Z"
+last_updated: "2026-04-19T15:00:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 17
-  completed_plans: 14
-  percent: 82
+  completed_plans: 17
+  percent: 94
 ---
 
 # Project State — Generation AI Monorepo
@@ -40,36 +40,19 @@ progress:
 - Artifacts: `.planning/phases/15-chat-ueberall-global-context-aware/` (CONTEXT, 3× PLAN, 3× SUMMARY, VERIFICATION, REVIEW)
 - Zusätzlicher Post-Fix: Legal-Seiten (`/impressum`, `/datenschutz`) aus GlobalLayout entfernt (Commit `42916e0`)
 
-**Next Up: Phase 17 — Auth Extensions**
+**Phase 17 — DONE 2026-04-19:**
 
-Email-Templates + Rate-Limits. Nutzt Design-Tokens aus Phase 16 (durch). **CONTEXT.md:** `.planning/phases/17-auth-extensions/CONTEXT.md`.
+- 5 Plans / 6 Supabase-Email-Templates auf React Email vereinheitlicht (Confirm, Magic Link, Recovery, Email-Change, Reauth, Invite)
+- React Email Setup + Shared Layout + Brand-Tokens inline
+- HTMLs in `apps/website/emails/dist/*.html` exportiert und in Supabase Dashboard eingespielt
+- Sender auf `noreply@generation-ai.org` via Resend SMTP
+- Gravatar für `noreply@generation-ai.org` registriert (Neon-AI-Icon auf Blau) — verifiziert via gravatar.com/site/check
+- Rate-Limits auf Supabase-Defaults (30/h Email, 150/5min Token-Refresh)
+- Artifacts: `.planning/phases/17-auth-extensions/` (CONTEXT, 5× PLAN, 5× SUMMARY, VERIFICATION, REVIEW, REVIEW-FIX, MANUAL-STEPS)
 
-**Hauptjob:** 6 Supabase-Templates auf **React Email** vereinheitlichen (Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite). Theme-adaptiv via `@media (prefers-color-scheme: dark)`. Copy aus `brand/VOICE.md` Microcopy-Library. Logo: `logo-wide-red.svg` (Light) / `logo-wide-neon.svg` (Dark).
-
-**Scope:**
-
-1. React Email Setup (`@react-email/components` + `react-email` CLI) — Dev-Server für Template-Preview
-2. Shared Layout-Component (`packages/emails/`): Header + Logo + Body-Wrapper + Footer, DRY
-3. 6 Templates implementieren — Bulletproof Buttons (Outlook-VML), Preview-Text, Plain-Text-Fallback
-4. Token-Mapping: Brand-Farben aus `brand/tokens.json` inline in die Templates
-5. HTML-Export-Script (`pnpm email:export`) → 6 HTML-Files in `apps/website/emails/dist/`
-6. Rate-Limits auf Prod-Werte (Supabase Dashboard, Manual-Step)
-
-**Pre-Approved für Autonomous-Run (Luca-Entscheidung 2026-04-19):**
-
-- Code-Generation + Package-Install: voll autonom
-- Push + PR auf feat-Branch: OK
-- Changeset: patch (v4.3.x)
-- **Keine Interactive-Fragen** — Rate-Limits empfiehlt Claude direkt in der finalen Summary (Supabase-Defaults, siehe CONTEXT.md)
-- Stop-Gate nur am Ende: Luca spielt HTMLs in Supabase ein + setzt Rate-Limits laut Claude-Empfehlung
-
-**Kommando:** `/gsd-autonomous --only 17`
-
-**Manual-Steps Luca (nach Auto-Run — Claude liefert dafür genaue Anleitung):**
-
-1. **Email Templates**: 6 HTMLs aus `apps/website/emails/dist/*.html` + Subjects aus CONTEXT.md im Supabase Dashboard einspielen
-2. **Rate Limits**: Prüfen ob noch Phase-13-Test-Werte aktiv — wenn ja, auf Supabase-Defaults zurücksetzen (30/h Email, 150/5min Token-Refresh). Details in CONTEXT.md §Manual Steps.
-3. Test-Mail triggern (Reset-Password auf eigenem Account), in Gmail Light + Dark + Apple Mail prüfen
+**Brand-Asset-Zugaben (outside phase):**
+- `brand/logos/favicon-blue-neon-padded.svg` — Favicon-SVG mit Padding für Gravatar-Use
+- `brand/avatars/gravatar-admin-512.png` — 512×512 Gravatar-Avatar
 
 **OAuth** (Google/Apple) bleibt im `BACKLOG.md`.
 

@@ -122,3 +122,28 @@
 - [ ] **Stufe 1:** `/gsd-map-codebase` laufen lassen
 - [ ] **Stufe 2:** Auth-Flow-Audit als GSD-Phase (deckt den ganzen Auth-Block hier mit ab)
 - [ ] **Stufe 3:** Simplify-Pass tools-app
+
+### 🔐 Signup-Reactivation (wenn Signup wieder geöffnet wird)
+
+Alter Code in `apps/website/app/api/auth/signup/route.ts` steht aktuell auf 503 (pre-launch). Beim Restore aus Git-History (`git show 44f7c97:apps/website/app/api/auth/signup/route.ts`) folgendes **unbedingt anpassen**:
+
+**BEFORE (Git-History):**
+```ts
+user_metadata: {
+  full_name: name,
+}
+```
+
+**AFTER (richtig):**
+```ts
+user_metadata: {
+  name: name,        // ← Mail-Template liest {{ .Data.name }} + Supabase Dashboard zeigt Display-Name
+  full_name: name,   // ← Konvention, wird auch von Google/Apple-OAuth auto-gesetzt
+}
+```
+
+Ohne diese Änderung: neue User kriegen „Hey ," in Auth-Mails (Template-Variable matcht nicht).
+
+**Kontext:** Bei bestehenden Accounts wurden `name` + `full_name` am 2026-04-19 via SQL-Update konsistent gemacht. Der Signup-Code muss dieselbe Konvention beim Create anwenden, sonst driften wir wieder auseinander.
+
+**Verwandt:** Signup-Form sollte ein Name-Pflichtfeld haben (aktuell im Form bereits vorhanden laut Git-History), plus Datenschutz-Checkbox.
