@@ -1,201 +1,167 @@
 # Architecture
 
-**Analysis Date:** 2026-04-17
+**Analysis Date:** 2026-04-19
 
 ## Pattern Overview
 
-**Overall:** Satellite Architecture with Shared Auth Layer
+**Overall:** Turborepo monorepo with two Next.js 16 (App Router) apps, sharing a Supabase backend via "Soft SSO" (cookie domain `.generation-ai.org`). Circle.so is the community hub; both Next.js apps are satellites.
 
 **Key Characteristics:**
-- Monorepo (Turborepo + pnpm) with two Next.js apps + shared packages
-- Circle.so is the community hub; Website and tools-app are satellites
-- Shared Supabase instance for auth across all properties
-- Soft SSO via same email across properties
-- API-driven chat with dual modes (public + member)
+- Two independently deployable apps (`apps/website`, `apps/tools-app`) on Vercel, one shared Supabase project
+- Shared auth helpers in `packages/auth` (wrapper around `@supabase/ssr`)
+- App-Router server components + Route Handlers; per-app `proxy.ts` (Next.js middleware) handles session refresh + nonce-CSP
+- React 19, Tailwind v4, TypeScript, pnpm workspaces, Turborepo
+- Hybrid public/member RLS model in Postgres so the chat works anonymously and authenticated against the same tables
 
 ## Layers
 
-**Frontend Layer:**
-- Location: `apps/website/`, `apps/tools-app/`
-- Purpose: User-facing Next.js 16 applications
-- Contains: React 19 components, page routes, client/server hooks
-- Depends on: @genai/auth (Supabase client), @genai/types, @genai/config
-- Used by: End users via Vercel hosting
+**App Shell (Next.js Apps):**
+- Purpose: Routing, SSR, layouts, page composition
+- Location: `apps/website/app/`, `apps/tools-app/app/`
+- Contains: Server components, client components, Route Handlers (`route.ts`), `layout.tsx`, `loading.tsx`, error boundaries
+- Depends on: `packages/auth`, `packages/ui`, `packages/types`, `packages/emails`, app-local `lib/`
+- Used by: End users via browser
 
-**Auth Layer:**
-- Location: `packages/auth/`
-- Purpose: Canonical Supabase SSR wrapper for both apps
-- Contains: Browser client factory, server client factory, middleware, helpers
-- Exports: Multiple entry points (`./browser`, `./server`, `./helpers`, `./middleware`)
-- Depends on: @supabase/ssr, @supabase/supabase-js, next/headers
-- Used by: Both apps via proxy.ts + server components
+**Edge Middleware (per app):**
+- Purpose: Session refresh + CSP nonce injection on every request
+- Location: `apps/website/proxy.ts`, `apps/tools-app/proxy.ts`
+- Contains: `updateSession()` call, nonce generation, CSP header set on REQUEST then RESPONSE
+- Depends on: `@genai/auth/middleware`, app-local `lib/csp.ts`
+- Critical: Nonce must be set on `request.headers` BEFORE `updateSession()` (see `LEARNINGS.md` 2026-04-18)
 
-**API/Backend Layer:**
-- Location: `apps/*/app/api/` (Next.js route handlers)
-- Purpose: Serverless endpoints for chat, auth, content, voice
-- Contains: POST/GET/DELETE handlers with business logic
-- Depends on: Supabase client, LLM clients (Gemini, Claude), rate limiting, content services
-- Used by: Frontend via fetch(), external tools
+**Shared Auth Package:**
+- Purpose: Single source of truth for Supabase client construction
+- Location: `packages/auth/src/`
+- Contains:
+  - `browser.ts` -> `createClient` for client components
+  - `server.ts` -> `createClient` with `cookies()` for route handlers / server components (`@genai/auth/server`)
+  - `helpers.ts` -> `getUser`, `getSession` (`@genai/auth/helpers`)
+  - `middleware.ts` -> `updateSession` (`@genai/auth/middleware`)
+  - `admin.ts` -> service-role client (`createAdminClient`)
+- Subpath imports enforced so `next/headers` never gets bundled into the browser
 
-**Content & Knowledge Layer:**
-- Location: `apps/tools-app/lib/content.ts`, `lib/kb-tools.ts`
-- Purpose: Fetch published content from Supabase, enable KB navigation
-- Contains: Functions to explore, list, read, search knowledge base
-- Depends on: Supabase client, Exa API (search)
-- Used by: Chat agent (agent.ts), frontend (AppShell)
+**App-Local Domain Logic (tools-app):**
+- Purpose: Chat, agent, KB tools, content loading, sanitization, rate limiting
+- Location: `apps/tools-app/lib/`
+- Contains: `agent.ts` (V2 agent loop), `llm.ts` (V1 full-context), `kb-tools.ts` (tool definitions), `content.ts` (content fetch from Supabase), `supabase.ts` (typed client wrappers), `ratelimit.ts` (Upstash), `sanitize.ts`, `csp.ts`, `exa.ts`, `analytics.ts`, `env.ts`, `auth.ts`, `types.ts`
+- Depends on: `packages/auth`, `packages/types`, Supabase, Gemini, Exa, Upstash
 
-**LLM/Agent Layer:**
-- Location: `apps/tools-app/lib/llm.ts`, `lib/agent.ts`
-- Purpose: AI chat logic with tool-calling capability
-- Contains: Gemini models (3 Flash for members, 2.5 Flash-Lite for public), system prompts
-- Depends on: @ai-sdk/google, OpenAI SDK (for Gemini via OpenAI-compatible API), kb-tools
-- Used by: POST /api/chat endpoint
+**App-Local Domain Logic (website):**
+- Purpose: Email sending, schema.org JSON-LD, Supabase wrappers, fonts
+- Location: `apps/website/lib/`
+- Contains: `email.ts` (Resend), `schema.ts`, `supabase/`, `csp.ts`, `fonts.ts`, `utils.ts`
 
-**Shared Config Layer:**
-- Location: `packages/config/`, `packages/types/`
-- Purpose: Centralized TypeScript, ESLint, Tailwind, type definitions
-- Contains: tsconfig base, shared enums, content types
-- Depends on: None (no external deps)
-- Used by: All apps via catalog and monorepo references
+**Shared Packages:**
+- `packages/types/src/` - `auth.ts`, `content.ts`, `index.ts` (cross-app TypeScript types)
+- `packages/ui/src/components/` - `Logo.tsx` (currently the only shared component, with a Vitest test)
+- `packages/emails/src/` - React Email templates (`templates/`, `components/`, `tokens.ts`) used to render Supabase auth emails; built output in `packages/emails/dist/` and per-app `apps/website/emails/dist/`
+- `packages/config/` - shared `eslint/`, `tailwind/`, `tsconfig/` presets
+- `packages/e2e-tools/` - Playwright runner (`fixtures/`, `helpers/`, `tests/`, `playwright.config.ts`)
 
 ## Data Flow
 
-**Chat Flow (Member Mode with Agent):**
+**Auth (Soft SSO across `.generation-ai.org`):**
 
-1. User message → `POST /api/chat` with `mode: 'member'`
-2. Rate limit check (`checkRateLimit`)
-3. Session lookup/create in `chat_sessions` table
-4. Message sanitization (`sanitizeUserInput`)
-5. Store user message in `chat_messages`
-6. Call `runAgent()` with message + history
-7. Agent orchestration:
-   - Load full content from DB (`getFullContent`)
-   - Initialize Gemini client (OpenAI-compatible)
-   - Build tool definitions from KB tools (explore, list, read, search, web_search)
-   - Iteratively call Gemini with tools until done
-   - Execute tools (kb_*, web_search) as needed
-8. Format response with sources and recommendations
-9. Store assistant message in `chat_messages`
-10. Return to client: `{ text, recommendedSlugs, sources, sessionId }`
+1. User signs up on `generation-ai.org` (currently DISABLED, route returns 503 - `apps/website/app/api/auth/signup/`)
+2. Backend creates Supabase user + profile + Circle member, sends branded magic link via Resend (templates from `packages/emails`)
+3. User clicks link -> lands on tools-app callback `apps/tools-app/app/auth/callback/page.tsx` or confirm `apps/tools-app/app/auth/confirm/route.ts`
+4. Supabase sets session cookie scoped to `.generation-ai.org` -> both apps' middleware (`proxy.ts` -> `@genai/auth/middleware updateSession`) can refresh it
+5. Sign-out via `apps/tools-app/app/auth/signout/route.ts`; password set via `apps/tools-app/app/auth/set-password/page.tsx`
+6. Server components / route handlers read user via `@genai/auth/helpers getUser()` (which uses `@genai/auth/server createClient` with `cookies()`)
+7. Circle.so has its own auth; identity link is "same email" only - no token exchange
 
-**Content Display Flow:**
+**Chat Request (tools-app):**
 
-1. Server component `Home()` fetches user + published tools in parallel
-2. Determine `mode` based on auth state
-3. Pass `items` + `mode` to `AppShell` client component
-4. Client renders `CardGrid` with filtering, search, keyboard shortcuts
-5. Chat bubble (lazy-loaded) listens to user selections and highlights
-6. When user clicks tool card, chat can recommend related items
-
-**Auth Flow:**
-
-1. User visits app → `proxy.ts` intercepts all requests
-2. Proxy calls `updateSession()` from @genai/auth/middleware
-3. Session middleware:
-   - Creates server-safe Supabase client with cookies
-   - Calls `supabase.auth.getUser()` to refresh token if needed
-   - Returns updated response with new auth cookies
-4. Server components can call `getUser()` or `getSession()` from @genai/auth/helpers
-5. Browser components import client from @genai/auth/browser for direct access
+1. Client posts to `apps/tools-app/app/api/chat/route.ts` with `{ message, history, sessionId, mode, context }`
+2. Route validates `context` (length-bounded), runs `checkRateLimit(ip, sessionId)` from `lib/ratelimit.ts` (Upstash) - returns 429 with `Retry-After` if exceeded
+3. Input passed through `sanitizeUserInput` (`lib/sanitize.ts`)
+4. Branch on `mode`:
+   - `public` -> `getRecommendations()` from `lib/llm.ts` -> injects all KB items via `getFullContent()` from `lib/content.ts` -> calls Gemini 2.5 Flash-Lite -> returns answer + recommended slugs
+   - `member` -> `runAgent()` from `lib/agent.ts` -> Gemini 3 Flash with tool-calling against `lib/kb-tools.ts` (`kb_search`, `kb_list`, `kb_read`, `web_search` via `lib/exa.ts`) - max 5 tool calls per request
+5. Persisted to `chat_sessions` / `chat_messages` via `createServerClient` from `lib/supabase.ts` (RLS: `user_id IS NULL OR auth.uid() = user_id`)
 
 **State Management:**
-
-- Server-driven: Most state lives in Supabase (sessions, messages, profiles)
-- Client-local: UI state in React hooks (search query, filters, theme, chat expansion)
-- Session state: Supabase auth cookie in `sb-*` format, shared across .generation-ai.org subdomain
-- Rate limit state: Upstash Redis (IP + session ID keyed)
+- Server-first: server components fetch from Supabase directly
+- Client state for chat in `apps/tools-app/components/chat/` (`ChatPanel`, `MessageList`, `ChatInput`, `FloatingChat`, `AttachmentsPanel`, `QuickActions`, `UrlInputModal`)
+- Auth context in `apps/tools-app/components/AuthProvider.tsx`; theme in `ThemeProvider.tsx` (mirrored in website)
 
 ## Key Abstractions
 
-**Supabase Client Factory Pattern:**
-- Purpose: Manage auth cookie lifecycle safely across server/browser contexts
-- Examples: `@genai/auth/server.ts`, `@genai/auth/browser.ts`
-- Pattern: Function that returns typed Supabase client with appropriate cookie handlers
+**`ChatMode`:**
+- Purpose: Switches between V1 full-context and V2 agent
+- Location: `apps/tools-app/lib/types.ts`
+- Values: `'public'` | `'member'`
 
-**Chat Mode Routing:**
-- Purpose: Branch logic based on user auth state
-- Examples: `lib/llm.ts` (getRecommendations vs runAgent), `app/page.tsx` (ChatMode type)
-- Pattern: Conditional exports and conditional API calls based on `ChatMode` enum
+**Hybrid V1/V2 RLS:**
+- `chat_sessions.user_id` and `chat_messages.user_id` nullable
+- `USING (user_id IS NULL OR auth.uid() = user_id)` - anonymous public sessions coexist with owner-only member sessions in one table
 
-**Tool Definition System:**
-- Purpose: Enable agent to explore and use knowledge base programmatically
-- Examples: `lib/kb-tools.ts` (kbExplore, kbList, kbRead, kbSearch), `lib/agent.ts` (KB_TOOLS_OPENAI)
-- Pattern: Tool objects with name, description, input schema, execution function
+**KB Tools (V2 agent):**
+- Location: `apps/tools-app/lib/kb-tools.ts`
+- Tools: `kb_search`, `kb_list`, `kb_read`, `web_search`
+- Bound to Gemini function-calling; the agent loop in `lib/agent.ts` caps iterations
 
-**Content Item Types:**
-- Purpose: Serialize content across DB → API → UI with type safety
-- Examples: `@genai/types/content.ts` (ContentType, ContentItem, ContentItemMeta, ContentSource)
-- Pattern: Full type for DB reads, meta type for UI lists, source type for attribution
+**Server-only auth subpath imports:**
+- `@genai/auth` barrel exports only browser-safe symbols
+- `@genai/auth/server`, `@genai/auth/helpers`, `@genai/auth/middleware` must be imported by their subpath to avoid leaking `next/headers` into client bundles
 
 ## Entry Points
 
-**Website App:**
-- Location: `apps/website/app/layout.tsx`, `app/page.tsx`
-- Triggers: HTTP requests to generation-ai.org
-- Responsibilities: Render landing page, SEO metadata, theme provider, speed insights
+**Website pages (`apps/website/app/`):**
+- `page.tsx` -> landing
+- `impressum/`, `datenschutz/` -> legal
+- `robots.ts`, `sitemap.ts` -> SEO
+- `layout.tsx` -> root layout (must remain dynamic - see CSP rules)
 
-**Tools App:**
-- Location: `apps/tools-app/app/layout.tsx`, `app/page.tsx`
-- Triggers: HTTP requests to tools.generation-ai.org
-- Responsibilities: Fetch user + tools, render app shell, lazy-load chat
+**Website API (`apps/website/app/api/`):**
+- `auth/signup/` -> POST sign-up (currently 503; see `CLAUDE.md` for reactivation path)
 
-**Chat API Endpoint:**
-- Location: `apps/tools-app/app/api/chat/route.ts`
-- Triggers: POST /api/chat from frontend or external tools
-- Responsibilities: Validate input, rate limit, determine mode, orchestrate LLM + agent
+**Tools-app pages (`apps/tools-app/app/`):**
+- `page.tsx` -> home (chat + library)
+- `[slug]/page.tsx` -> tool/guide/faq detail
+- `login/`, `settings/`, `impressum/`, `datenschutz/`
+- `auth/callback/page.tsx`, `auth/confirm/route.ts`, `auth/set-password/page.tsx`, `auth/signout/route.ts`
+- `error.tsx`, `global-error.tsx`, `not-found.tsx`, `loading.tsx`
 
-**Auth Proxy:**
-- Location: `apps/*/proxy.ts`
-- Triggers: Every HTTP request (via Next.js 16 proxy config)
-- Responsibilities: Refresh Supabase session, update auth cookies
+**Tools-app API (`apps/tools-app/app/api/`):**
+- `chat/route.ts` - main chat endpoint (V1 + V2)
+- `agent/` - agent-specific endpoint (subdir present)
+- `account/delete/` - account deletion
+- `voice/token/`, `voice/transcribe/` - voice input
+- `extract-url/`, `defuddle/` - URL/content extraction for chat attachments
+- `health/` - uptime check
+- `debug-auth/` - auth diagnostics
 
-**Delete Account:**
-- Location: `apps/tools-app/app/api/account/delete/route.ts`
-- Triggers: DELETE /api/account/delete from settings
-- Responsibilities: Delete user messages, sessions, auth.users row (in order)
+**Edge Middleware:**
+- `apps/website/proxy.ts`, `apps/tools-app/proxy.ts`
+- Sets `x-nonce` + `Content-Security-Policy` on REQUEST headers, then calls `updateSession()`, then mirrors CSP onto the RESPONSE
+
+**Sentry instrumentation (tools-app):**
+- `instrumentation.ts`, `instrumentation-client.ts`, `sentry.edge.config.ts`, `sentry.server.config.ts`
 
 ## Error Handling
 
-**Strategy:** Fail gracefully with user-friendly German messages, log server-side errors to Sentry
+**Strategy:** Try/catch in route handlers returning typed JSON errors; React error boundaries for UI; Sentry capture in tools-app via `instrumentation*.ts` and `sentry.*.config.ts`.
 
 **Patterns:**
-- Rate limit: 429 with `Retry-After` header and `X-RateLimit-*` headers
-- Missing data: 400 with error message (e.g., "Nachricht fehlt")
-- Auth required: 401 (not explicitly shown but implied in account/delete)
-- Server error: 500 with generic message, Sentry integration logs details
-- Chat mode mismatch: Defaults to 'public' if mode not recognized
-- Missing tool results: Agent returns empty list and continues (e.g., kbList returns [])
+- Rate-limit failures -> 429 JSON `{ error, retryAfter }` with `Retry-After` header
+- Invalid optional input (e.g. chat `context`) -> silently dropped, never fail the request
+- Per-route `error.tsx` + `global-error.tsx` in tools-app for client-side recovery
 
 ## Cross-Cutting Concerns
 
-**Logging:** 
-- Server-side: console.log for development, structured via Sentry for production
-- Client-side: console only (no production logging configured)
-- Timing: Chat route logs Gemini latency + token counts
+**Logging:** Sentry (errors), Better Stack (uptime). No structured app logger by default - `console.*` in route handlers.
 
-**Validation:**
-- Input: `sanitizeUserInput()` for user messages (HTML strip, XSS prevention)
-- Schema: Zod in tools-app for env validation (@t3-oss/env-nextjs)
-- Types: TypeScript strict mode across monorepo
+**Validation:** Inline checks (length-bounded) + `sanitizeUserInput` for chat messages (`apps/tools-app/lib/sanitize.ts`). No Zod usage detected at architecture layer.
 
-**Authentication:**
-- Supabase Auth (PKCE flow, session management via cookies)
-- Soft SSO: Email matching across websites (no explicit sync)
-- Admin: Admin API client in packages/auth/admin.ts for backend operations
-- Middleware: Proxy ensures session always refreshed before route handlers
+**Authentication:** `@supabase/ssr` via `packages/auth`. `getUser()` (verifies via Auth server) preferred over `getSession()` for trust-sensitive checks. Cookie domain `.generation-ai.org` shared across both apps.
 
-**Caching:**
-- ISR: None explicitly configured (dynamic routes)
-- Database: Supabase client caching (SDK-level)
-- Edge: Vercel Edge Functions not used
-- Client: React query not used, reliance on server-driven fetches
+**CSP:** Per-app `lib/csp.ts` builds nonce-based directives; proxy injects on request. Root layouts MUST be dynamic (`force-dynamic` or implicit via `await getUser()` / `await cookies()`) - see `LEARNINGS.md`.
 
-**Rate Limiting:**
-- Implementation: Upstash Redis via @upstash/ratelimit
-- Scope: Per IP + session ID
-- Limits: 20 requests/minute (configurable)
-- Headers: Standard RateLimit headers in response
+**Rate Limiting:** Upstash Redis via `apps/tools-app/lib/ratelimit.ts`, keyed on `ip + sessionId`.
+
+**Email:** Resend in `apps/website/lib/email.ts`; React Email templates in `packages/emails/src/templates/` (`confirm-signup.tsx`, `magic-link.tsx`, `recovery.tsx`); built HTML in `apps/website/emails/dist/` and uploaded to Supabase Auth.
 
 ---
 
-*Architecture analysis: 2026-04-17*
+*Architecture analysis: 2026-04-19*
