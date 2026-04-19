@@ -52,19 +52,31 @@ async function run() {
     const outPath = join(DEST_DIR, dest)
     const scanlines = buildScanlineSvg(TARGET_WIDTH, TARGET_HEIGHT)
 
-    await sharp(svgBuffer, { density: 1152, limitInputPixels: false })
+    // Step 1: rasterize the logo with transparent background.
+    const logoRaster = await sharp(svgBuffer, { density: 1152, limitInputPixels: false })
       .resize({
         height: TARGET_HEIGHT,
         kernel: sharp.kernel.lanczos3,
         fastShrinkOnLoad: false,
       })
-      // Flatten transparency onto the terminal content bg so the PNG blends
-      // seamlessly with the <td> it sits in — no visible rectangle around the logo.
+      .png({ compressionLevel: 9, palette: false })
+      .toBuffer()
+
+    // Step 2: mask the full-canvas scanline pattern by the logo's alpha,
+    // so stripes only remain where the letters are.
+    const maskedScanlines = await sharp(scanlines)
+      .composite([{ input: logoRaster, blend: 'dest-in' }])
+      .png({ compressionLevel: 9, palette: false })
+      .toBuffer()
+
+    // Step 3: paint the masked scanlines on top of the logo (letters get
+    // striped, transparent areas stay transparent), then flatten to terminal bg.
+    await sharp(logoRaster)
+      .composite([{ input: maskedScanlines, blend: 'over' }])
       .flatten({ background: TERMINAL_BG })
-      .composite([{ input: scanlines, blend: 'multiply' }])
       .png({ compressionLevel: 9, palette: false })
       .toFile(outPath)
-    console.log(`✓ ${src} → ${outPath} (flattened to terminal bg + scanlines)`)
+    console.log(`✓ ${src} → ${outPath} (scanlines on letters only, bg = terminal)`)
   }
 }
 
