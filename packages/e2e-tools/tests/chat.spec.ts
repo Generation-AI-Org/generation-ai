@@ -1,35 +1,36 @@
 import { test, expect } from '@playwright/test'
 
 /**
- * Chat-Smoke-Tests gegen Prod (Phase 19 D-08).
- * Test-Runner ist unauthenticated → Server redirected /chat zu /login.
- * Diese Tests prüfen nur: Page lädt ohne 5xx, eine bekannte UI (Chat oder Login) ist sichtbar.
+ * Auth-Gate-Smoke-Tests gegen Prod (Phase 19 D-08).
  *
+ * Test-Runner ist unauthenticated → `/settings` (geschützte Server-Component) redirected zu `/login`.
+ * Diese Tests prüfen nur: Page lädt ohne 5xx, Redirect zum Login funktioniert, Login-UI sichtbar.
+ *
+ * Hinweis: `/chat` existiert als eigene Route NICHT — Chat ist ein Floating-Bubble-Widget, kein Page-Route.
  * Volle Chat-Flows mit echtem User sind im BACKLOG (Mail-Inbox-Scraping nötig für Magic-Link-Flow).
  */
 
-test.describe('Chat Flow (prod smoke)', () => {
-  test('chat page loads', async ({ page }) => {
-    const response = await page.goto('/chat', { waitUntil: 'networkidle' })
+test.describe('Auth Gate (prod smoke)', () => {
+  test('protected route loads', async ({ page }) => {
+    const response = await page.goto('/settings', { waitUntil: 'networkidle' })
     expect(response?.status(), 'HTTP status < 400').toBeLessThan(400)
     await expect(page.locator('body')).toBeVisible()
   })
 
-  test('unauthenticated /chat shows login prompt or chat interface', async ({ page }) => {
-    await page.goto('/chat', { waitUntil: 'networkidle' })
+  test('unauthenticated /settings redirects to login', async ({ page }) => {
+    await page.goto('/settings', { waitUntil: 'networkidle' })
     // Unauthenticated: server redirects to /login → email input visible.
-    // Authenticated (rare in CI): chat textbox visible.
     const loginEmail = page.locator('#email')
-    const chatInput = page.getByRole('textbox')
-    await expect(loginEmail.or(chatInput)).toBeVisible({ timeout: 10_000 })
+    await expect(loginEmail).toBeVisible({ timeout: 10_000 })
+    expect(new URL(page.url()).pathname).toBe('/login')
   })
 
-  test('/chat is not a 5xx page', async ({ page }) => {
-    const response = await page.goto('/chat')
-    expect(response?.status(), '/chat must not 5xx').toBeLessThan(500)
-    // Final URL is either /chat (authenticated) or /login (redirect).
+  test('/settings is not a 5xx page', async ({ page }) => {
+    const response = await page.goto('/settings')
+    expect(response?.status(), '/settings must not 5xx').toBeLessThan(500)
+    // Final URL is either /settings (authenticated) or /login (redirect).
     const finalPath = new URL(page.url()).pathname
-    expect(['/chat', '/login']).toContain(finalPath)
+    expect(['/settings', '/login']).toContain(finalPath)
   })
 
   // TODO: Full chat flow with authenticated user (BACKLOG — needs mail-inbox-scraping for magic link)
