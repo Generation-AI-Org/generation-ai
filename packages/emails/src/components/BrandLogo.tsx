@@ -2,7 +2,7 @@ import { Img, Link, Section } from '@react-email/components'
 import React from 'react'
 
 const HOME_URL = 'https://generation-ai.org'
-const TERMINAL_IMG = 'https://generation-ai.org/brand/logos/terminal-header.png?v=4'
+const TERMINAL_IMG = 'https://generation-ai.org/brand/logos/terminal-header.png?v=5'
 
 /**
  * Brand logo header — complete macOS-style terminal window rendered as a single PNG.
