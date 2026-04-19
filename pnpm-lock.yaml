@@ -363,6 +363,9 @@ importers:
 
   packages/emails:
     dependencies:
+      '@react-email/button':
+        specifier: 0.0.10
+        version: 0.0.10
       '@react-email/components':
         specifier: ^0.0.31
         version: 0.0.31(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -2065,6 +2068,11 @@ packages:
     deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
     peerDependencies:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
+
+  '@react-email/button@0.0.10':
+    resolution: {integrity: sha512-S8r7NGTxXoxvw5kCdMzpwXdBHhYAhrYM9sylK6xr+2M9osrjHQOPLBoV3I/po9xdzN3WyRcZqQixH0wPeXy2Gw==}
+    engines: {node: '>=16.0.0'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@react-email/button@0.0.19':
     resolution: {integrity: sha512-HYHrhyVGt7rdM/ls6FuuD6XE7fa7bjZTJqB2byn6/oGsfiEZaogY77OtoLL/mrQHjHjZiJadtAMSik9XLcm7+A==}
@@ -5869,6 +5877,10 @@ packages:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
 
+  react@18.2.0:
+    resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
+    engines: {node: '>=0.10.0'}
+
   react@19.2.4:
     resolution: {integrity: sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ==}
     engines: {node: '>=0.10.0'}
@@ -8504,6 +8516,10 @@ snapshots:
   '@react-email/body@0.0.11(react@19.2.4)':
     dependencies:
       react: 19.2.4
+
+  '@react-email/button@0.0.10':
+    dependencies:
+      react: 18.2.0
 
   '@react-email/button@0.0.19(react@19.2.4)':
     dependencies:
@@ -12742,6 +12758,10 @@ snapshots:
       fast-deep-equal: 2.0.1
 
   react-refresh@0.17.0: {}
+
+  react@18.2.0:
+    dependencies:
+      loose-envify: 1.4.0
 
   react@19.2.4: {}
 
