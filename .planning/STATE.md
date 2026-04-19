@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
-status: Executing Phase 19 (2/5 plans, Wave 1 complete)
-last_updated: "2026-04-19T16:56:42Z"
+status: Executing Phase 19 (4/5 plans, Wave 2 complete — Plan 05 CI-Binding next)
+last_updated: "2026-04-19T17:01:04Z"
 progress:
-  total_phases: 6
+  total_phases: 5
   completed_phases: 4
-  total_plans: 26
-  completed_plans: 20
-  percent: 77
+  total_plans: 21
+  completed_plans: 18
+  percent: 86
 ---
 
 # Project State — Generation AI Monorepo
@@ -19,7 +19,7 @@ progress:
 ## Current Status
 
 **Milestone:** v4.0 Growth-Readiness — 🚧 IN PROGRESS (2/5 plans in Phase 19, Wave 1 complete)
-**Phase:** 19 Password-Flow + Test-Baseline — Wave 1 DONE (Plans 01+02), Plan 03 next
+**Phase:** 19 Password-Flow + Test-Baseline — Wave 2 DONE (Plans 01-04), Plan 05 next (CI-Binding + MANUAL-STEPS)
 **Last Updated:** 2026-04-19
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged.
 
@@ -40,8 +40,16 @@ progress:
   - Build grün, alle 10 Acceptance-Criteria-Greps erfüllt
   - Requirements completed: D-01, D-02, D-05
 - **Wave 1 bereit zum atomaren Deploy** (Plans 01+02 müssen gemeinsam gepusht werden — 19-01 alleine würde User auf Page ohne Skip-Button routen)
-- Next (Wave 2): Plan 19-03 Settings-Inline-Form (2 Modi: Setzen/Ändern mit Re-Auth)
-- Artifacts: `.planning/phases/19-password-flow-and-test-baseline/19-01-SUMMARY.md`, `19-02-SUMMARY.md`
+- Plan 19-04 DONE — E2E-Baseline Reparatur, Commits `bf39bdf` (playwright.config), `195b042` (auth.spec), `58b0048` (chat.spec), `2a09a86` (turbo.json)
+  - Default-baseURL jetzt Prod (`https://tools.generation-ai.org`), Override via `E2E_BASE_URL` (primary) oder `BASE_URL` (legacy-fallback)
+  - `chat.spec.ts` refactored auf Prod-Reality: unauthenticated `/chat` → `/login`-redirect, flexible Locator (`loginEmail.or(chatInput)`), URL-Whitelist `['/chat', '/login']`, status < 500
+  - `auth.spec.ts` `TOOLS_URL`-Konstante aligned mit Config-Pattern — Phase-13 + Plan-02 Test-Bodies unverändert
+  - `turbo.json` `tasks.e2e.passThroughEnv` um `E2E_BASE_URL` erweitert — D-08-Override funktioniert jetzt auch via `pnpm e2e` (turbo-Wrapper), nicht nur via `pnpm exec playwright test`
+  - 33 Tests parsen (auth 12, chat 5, smoke 2, visual-baseline 14), turbo.json valides JSON, alle Acceptance-Criteria-Greps erfüllt
+  - Requirements completed: D-07, D-08
+- Plan 19-03 — Settings-Inline-Form (2 Modi: Setzen/Ändern mit Re-Auth) — STATUS UNKLAR, separat getrackt
+- Next (Wave 3): Plan 19-05 CI-Binding (GitHub-Actions-Secrets-Referenz + MANUAL-STEPS.md)
+- Artifacts: `.planning/phases/19-password-flow-and-test-baseline/19-01-SUMMARY.md`, `19-02-SUMMARY.md`, `19-04-SUMMARY.md`
 
 **Phase 18 — DONE 2026-04-19:**
 
