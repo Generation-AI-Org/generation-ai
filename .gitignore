@@ -5,6 +5,8 @@ node_modules/
 # Build outputs
 .next/
 dist/
+# Email HTML export artifacts are intentionally committed (Supabase Dashboard paste targets)
+!apps/website/emails/dist/
 .turbo/
 
 # Environment
