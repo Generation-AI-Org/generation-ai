@@ -79,3 +79,89 @@ src/server.ts                          packages/auth    knip.json  Remove redund
 src/browser.ts                         packages/auth    knip.json  Remove redundant entry pattern   
 src/helpers.ts                         packages/auth    knip.json  Remove redundant entry pattern   
 ...3 more similar hints                                                                             
+
+---
+
+## Disposition Table (Plan 18-02 Task 2 — Decision Checkpoint)
+
+Classified by Claude. Each row needs Luca's eyeball before any DELETE is applied (Plan 18-02 Task 3).
+
+### Unused Files (12)
+
+| # | File | LOC | Disposition | Reason |
+|---|---|---|---|---|
+| 1 | apps/tools-app/components/chat/ChatPanel.tsx | 247 | **DELETE** | FloatingChat is the canonical chat UI since Phase 9; ChatPanel is the legacy fullscreen variant, no importers. |
+| 2 | apps/tools-app/components/chat/UrlInputModal.tsx | 167 | **DELETE** | URL extraction is now inline in FloatingChat / via /api/extract-url; modal not wired. |
+| 3 | apps/tools-app/components/ui/DetailHeaderLogo.tsx | 9 | **DELETE** | 9-line wrapper, replaced by `<Logo />` from `@genai/ui` in Phase 16. |
+| 4 | apps/tools-app/components/ui/KiwiMascot.tsx | 191 | **DEFER** | Brand-relevant mascot. Could come back in marketing/empty-states. Confirm with Luca before nuking. |
+| 5 | apps/tools-app/scripts/seed-v2.ts | 225 | **KEEP-WITH-REASON** | Manually-invoked seed script for local Supabase; not import-reachable but has business value. Add to knip `entry`. |
+| 6 | apps/website/components/ui/network-grid.tsx | 192 | **DELETE** | Confirmed orphan — neither home-client nor terminal-splash imports it. |
+| 7 | apps/website/components/ui/terminal.tsx | 490 | **DELETE** | The actually-used splash is `components/terminal-splash.tsx`; this generic shadcn-style `ui/terminal.tsx` is dead. |
+| 8 | apps/website/components/ui/text-scramble.tsx | 74 | **DELETE** | No importers in components or app/. |
+| 9 | apps/website/lib/email.ts | 101 | **DELETE** | Inline-HTML magic-link emailer; superseded by `@genai/emails` React Email templates in Phase 17. Signup is also disabled (503). |
+| 10 | apps/website/lib/fonts.ts | 7 | **DEFER** | Tiny — verify it's not pulled into a layout via dynamic name before deleting. |
+| 11 | apps/website/lib/supabase/client.ts | 3 | **DEFER** | 3-line shim re-exporting from `@genai/auth`. CONCERNS.md flagged "tools-app `lib/supabase.ts` shim → DEFER (needs auth audit)". Same logic — needs auth-audit, not housekeeping. |
+| 12 | apps/website/lib/supabase/server.ts | 3 | **DEFER** | Same as #11. |
+
+### Unused Dependencies (9)
+
+| # | Dep | Workspace | Disposition | Reason |
+|---|---|---|---|---|
+| 1 | @supabase/ssr | apps/tools-app | **KEEP-WITH-REASON** | Imported via `@genai/auth` peer; removing would break the workspace install graph. Verify before removing. |
+| 2 | @genai/types | apps/website | **DEFER** | May be used after signup is re-enabled. Low value to remove. |
+| 3 | @supabase/ssr | apps/website | **KEEP-WITH-REASON** | Same as #1. |
+| 4 | @supabase/supabase-js | apps/website | **DEFER** | Used transitively via shims (#11/#12); coupled to auth audit. |
+| 5 | framer-motion | apps/website | **DELETE** | Not imported anywhere in current website source. |
+| 6 | resend | apps/website | **DELETE** (paired with file #9) | Only consumer is `lib/email.ts` which is also up for deletion. |
+| 7 | shadcn | apps/website | **DELETE** | CLI tool, not a runtime dep; if needed it can be `pnpm dlx`'d. |
+| 8 | tw-animate-css | apps/website | **DEFER** | Could be referenced from Tailwind config / globals.css — verify before removal. |
+| 9 | @radix-ui/colors | packages/ui | **KEEP-WITH-REASON** | Used in CSS-only via Tailwind tokens (Phase 16 brand foundation). |
+
+### Unused devDependencies (7)
+
+| # | Dep | Workspace | Disposition | Reason |
+|---|---|---|---|---|
+| 1 | eslint-config-next | apps/tools-app | **KEEP-WITH-REASON** | Used by `eslint.config.mjs` flat config which knip's ignore hides. False positive. |
+| 2 | tailwindcss | apps/tools-app | **KEEP-WITH-REASON** | PostCSS uses it via `@tailwindcss/postcss`. False positive. |
+| 3 | eslint-config-next | apps/website | **KEEP-WITH-REASON** | Same as #1. |
+| 4 | prettier | apps/website | **DEFER** | Likely used via editor / git-hook, no script wired. Verify before removal. |
+| 5 | tailwindcss | apps/website | **KEEP-WITH-REASON** | Same as #2. |
+| 6 | @genai/auth | packages/e2e-tools | **DEFER** | E2E may need auth fixtures later. Low risk to keep. |
+| 7 | @types/sharp | packages/emails | **DELETE** | `sharp` itself isn't a dep of @genai/emails; types are dead. |
+
+### Unused Exports (6)
+
+| # | Export | File | Disposition | Reason |
+|---|---|---|---|---|
+| 1 | default | apps/tools-app/components/chat/AttachmentsPanel.tsx | **DEFER** | Component exists but unused — same family as ChatPanel/UrlInputModal. Could nuke whole attachments path together. |
+| 2 | SYSTEM_PROMPT | apps/tools-app/lib/agent.ts | **DELETE export** | Local-only; remove `export` keyword. |
+| 3 | getPublishedItems | apps/tools-app/lib/content.ts | **DELETE export** | Same. |
+| 4 | KB_TOOLS_OPENAI | apps/tools-app/lib/kb-tools.ts | **DELETE export** | Legacy OpenAI-shape, agent uses Gemini-shape now. |
+| 5 | supabase | apps/tools-app/lib/supabase.ts | **DEFER** | Per CONCERNS.md auth-audit dependency. |
+| 6 | buttonVariants | apps/website/components/ui/button.tsx | **DELETE export** | Unused cva variants helper. |
+
+### Unused Exported Types (8)
+
+All small interface/type exports that are local-only. **DELETE export keyword** for: UseDeepgramVoiceReturn, AgentResult, ExaCitation, ExaAnswerResponse, RateLimitResult, ContentStatus, TestUser, CspViolation. Zero risk — types only.
+
+### Other
+
+- **Duplicate exports:** `nextConfig|default` in `packages/config/eslint/next.mjs` → **DEFER** (config file, low risk, verify ESLint still loads).
+- **Unlisted dependency:** `@genai/config` in `packages/ui/tsconfig.json` → **KEEP-WITH-REASON**, add to `packages/ui/package.json` devDependencies. Tiny fix.
+- **Unlisted binary:** `tsx` in apps/tools-app → **KEEP-WITH-REASON**, add to devDeps for the seed script.
+- **Configuration hints (25):** Knip suggesting we tighten the entry/ignore patterns. Cosmetic; can defer to a follow-up.
+
+---
+
+## Summary Counts
+
+| Disposition | Files | Deps | Exports | Types | Total |
+|---|---|---|---|---|---|
+| DELETE | 6 | 3 | 5 | 8 | 22 |
+| DELETE export only (in-place) | — | — | (5 of above) | (8 of above) | — |
+| KEEP-WITH-REASON | 1 | 5 | — | — | 6 |
+| DEFER (Luca decision) | 5 | 4 | 2 | — | 11 |
+
+**LOC at risk if all DELETEs apply:** ~1280 lines from files + ~220 lines from website unused-deps install removal (indirect).
+
+**Decision needed (resume-signal):** "proceed" → apply DELETE rows above (single commit per category). "stop" → keep this report only, don't delete anything.
