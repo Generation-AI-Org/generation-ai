@@ -10,29 +10,33 @@ const __dirname = dirname(__filename)
 const REPO_ROOT = join(__dirname, '..', '..', '..')
 const SRC_DIR = join(REPO_ROOT, 'brand', 'logos')
 const DEST_DIR = join(REPO_ROOT, 'apps', 'website', 'public', 'brand', 'logos')
+const LOGO_SRC = 'logo-wide-neon.svg'
+const LOGO_DEST = 'logo-wide-neon.png'
+const TERMINAL_DEST = 'terminal-header.png'
 
-// Only the neon logo is shipped — emails always render on dark terminal chrome,
-// so no red variant is needed.
-const TARGETS = [{ src: 'logo-wide-neon.svg', dest: 'logo-wide-neon.png' }]
+// Logo raster at 2x native SVG size (1920x1080) for retina crispness
+const LOGO_RASTER_W = 1920
+const LOGO_RASTER_H = 1080
 
-// SVG viewBox is 960x540 (16:9). BrandLogo displays at ~180px wide in emails.
-// Rasterize at 2x native SVG size (1920x1080) for ~10x retina crispness.
-const TARGET_WIDTH = 1920
-const TARGET_HEIGHT = 1080
+// Terminal header raster. Display target is ~280x130, 4x = 1120x520.
+// 16:9 logo sits centered in the content area.
+const TERMINAL_W = 1120
+const TERMINAL_H = 520
+const TITLEBAR_H = 96
+const CONTENT_H = TERMINAL_H - TITLEBAR_H // 424
+
+// Logo placement inside terminal content area
+const LOGO_W_IN_TERMINAL = 680
+const LOGO_H_IN_TERMINAL = Math.round((LOGO_W_IN_TERMINAL * 540) / 960) // 382
+const LOGO_X = Math.round((TERMINAL_W - LOGO_W_IN_TERMINAL) / 2) // 220
+const LOGO_Y = TITLEBAR_H + Math.round((CONTENT_H - LOGO_H_IN_TERMINAL) / 2) // 96+21 = 117
+
+const TERMINAL_BG = { r: 28, g: 28, b: 28 } // #1c1c1c
 
 /**
- * CRT scanline overlay for the whole logo PNG. Flattens transparency to the
- * terminal content bg (#1c1c1c) first so the PNG merges seamlessly with the
- * surrounding terminal content area, then paints horizontal bands across the
- * entire image — bg and letters alike — for a consistent retro look.
+ * CRT scanlines masked to logo alpha. Only paints on the letters.
  */
 function buildScanlineSvg(w: number, h: number): Buffer {
-  // Display size is ~180x101. For visible "every other row" scanlines at that
-  // size, we need pitch ~2 display px = ~22 raster px at 1080 height.
-  // Line thickness 8 raster px (≈0.75 display px) to survive downsampling.
-  // Matches website terminal-splash: 1px line on 3px pitch, ~0.4 opacity.
-  // In 1080px raster at ~10.7x display scale: pitch 11, thickness 4, slight
-  // opacity bump (0.35) to survive Apple Mail / Gmail image recompression.
   const pitch = 11
   const thickness = 4
   const rows: string[] = []
@@ -43,41 +47,94 @@ function buildScanlineSvg(w: number, h: number): Buffer {
   return Buffer.from(svg)
 }
 
-// Terminal content background — must match BrandLogo.tsx `contentBg`.
-const TERMINAL_BG = { r: 28, g: 28, b: 28 } // #1c1c1c
+/**
+ * Full terminal-window SVG: rounded rect frame, dark title bar, 3 traffic-light
+ * dots, centered "generation-ai — zsh" title, dark content area. Logo gets
+ * composited on top later. Rendered as ONE PNG so Gmail/other mail clients
+ * cannot invert or theme-shift individual parts.
+ */
+function buildTerminalChromeSvg(): Buffer {
+  const radius = 20
+  const titleBarBg = '#3a3a3a'
+  const titleBarText = '#a0a0a0'
+  const contentBg = '#1c1c1c'
+  const borderColor = '#2a2a2a'
+  const dotsY = Math.round(TITLEBAR_H / 2)
+  const dotRadius = 16
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${TERMINAL_W}" height="${TERMINAL_H}">
+  <defs>
+    <clipPath id="win">
+      <rect x="0" y="0" width="${TERMINAL_W}" height="${TERMINAL_H}" rx="${radius}" ry="${radius}"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#win)">
+    <rect width="${TERMINAL_W}" height="${TERMINAL_H}" fill="${contentBg}"/>
+    <rect x="0" y="0" width="${TERMINAL_W}" height="${TITLEBAR_H}" fill="${titleBarBg}"/>
+    <line x1="0" y1="${TITLEBAR_H}" x2="${TERMINAL_W}" y2="${TITLEBAR_H}" stroke="${borderColor}" stroke-width="2"/>
+    <circle cx="56" cy="${dotsY}" r="${dotRadius}" fill="#ff5f57"/>
+    <circle cx="${56 + 40}" cy="${dotsY}" r="${dotRadius}" fill="#febc2e"/>
+    <circle cx="${56 + 80}" cy="${dotsY}" r="${dotRadius}" fill="#28c840"/>
+    <text x="${TERMINAL_W / 2}" y="${dotsY + 14}" text-anchor="middle"
+          font-family="ui-monospace, 'Geist Mono', Menlo, monospace"
+          font-size="36" fill="${titleBarText}" letter-spacing="1.2">generation-ai — zsh</text>
+  </g>
+  <rect x="1" y="1" width="${TERMINAL_W - 2}" height="${TERMINAL_H - 2}"
+        rx="${radius}" ry="${radius}" fill="none" stroke="${borderColor}" stroke-width="2"/>
+</svg>`
+  return Buffer.from(svg)
+}
+
+async function buildLogoWithScanlines(): Promise<Buffer> {
+  const svgBuffer = readFileSync(join(SRC_DIR, LOGO_SRC))
+  const scanlines = buildScanlineSvg(LOGO_RASTER_W, LOGO_RASTER_H)
+
+  const logoRaster = await sharp(svgBuffer, { density: 1152, limitInputPixels: false })
+    .resize({ height: LOGO_RASTER_H, kernel: sharp.kernel.lanczos3, fastShrinkOnLoad: false })
+    .png({ compressionLevel: 9, palette: false })
+    .toBuffer()
+
+  const maskedScanlines = await sharp(scanlines)
+    .composite([{ input: logoRaster, blend: 'dest-in' }])
+    .png({ compressionLevel: 9, palette: false })
+    .toBuffer()
+
+  return await sharp(logoRaster)
+    .composite([{ input: maskedScanlines, blend: 'over' }])
+    .png({ compressionLevel: 9, palette: false })
+    .toBuffer()
+}
 
 async function run() {
-  for (const { src, dest } of TARGETS) {
-    const svgBuffer = readFileSync(join(SRC_DIR, src))
-    const outPath = join(DEST_DIR, dest)
-    const scanlines = buildScanlineSvg(TARGET_WIDTH, TARGET_HEIGHT)
+  // 1. Logo PNG (on terminal bg, letters striped) — still produced for any
+  //    other uses, but the terminal-header.png below is the primary email asset.
+  const logoWithScanlines = await buildLogoWithScanlines()
+  await sharp(logoWithScanlines)
+    .flatten({ background: TERMINAL_BG })
+    .png({ compressionLevel: 9, palette: false })
+    .toFile(join(DEST_DIR, LOGO_DEST))
+  console.log(`✓ ${LOGO_DEST} — standalone logo on terminal bg`)
 
-    // Step 1: rasterize the logo with transparent background.
-    const logoRaster = await sharp(svgBuffer, { density: 1152, limitInputPixels: false })
-      .resize({
-        height: TARGET_HEIGHT,
-        kernel: sharp.kernel.lanczos3,
-        fastShrinkOnLoad: false,
-      })
-      .png({ compressionLevel: 9, palette: false })
-      .toBuffer()
+  // 2. Terminal header PNG: full window chrome + logo composed in one image.
+  //    Gmail etc. cannot invert parts of an image, so this guarantees the
+  //    retro dark terminal look in every mail client and every theme.
+  const chrome = buildTerminalChromeSvg()
+  // Resize the scanlined logo to fit inside the terminal content area.
+  const logoResized = await sharp(logoWithScanlines)
+    .resize({
+      width: LOGO_W_IN_TERMINAL,
+      height: LOGO_H_IN_TERMINAL,
+      fit: 'fill',
+      kernel: sharp.kernel.lanczos3,
+    })
+    .png({ compressionLevel: 9, palette: false })
+    .toBuffer()
 
-    // Step 2: mask the full-canvas scanline pattern by the logo's alpha,
-    // so stripes only remain where the letters are.
-    const maskedScanlines = await sharp(scanlines)
-      .composite([{ input: logoRaster, blend: 'dest-in' }])
-      .png({ compressionLevel: 9, palette: false })
-      .toBuffer()
-
-    // Step 3: paint the masked scanlines on top of the logo (letters get
-    // striped, transparent areas stay transparent), then flatten to terminal bg.
-    await sharp(logoRaster)
-      .composite([{ input: maskedScanlines, blend: 'over' }])
-      .flatten({ background: TERMINAL_BG })
-      .png({ compressionLevel: 9, palette: false })
-      .toFile(outPath)
-    console.log(`✓ ${src} → ${outPath} (scanlines on letters only, bg = terminal)`)
-  }
+  await sharp(chrome)
+    .composite([{ input: logoResized, top: LOGO_Y, left: LOGO_X }])
+    .png({ compressionLevel: 9, palette: false })
+    .toFile(join(DEST_DIR, TERMINAL_DEST))
+  console.log(`✓ ${TERMINAL_DEST} — complete terminal window with logo`)
 }
 
 run().catch((err) => {
