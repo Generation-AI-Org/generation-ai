@@ -57,7 +57,7 @@ export default function ReauthEmail({
             fontSize: '32px',
             fontWeight: 700,
             letterSpacing: '0.2em',
-            color: tokens.dark.text,
+            color: '#141414',
             backgroundColor: '#EFEFEF',
             padding: '16px 24px',
             borderRadius: radius['2xl'],

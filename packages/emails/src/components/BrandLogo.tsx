@@ -147,7 +147,6 @@ export function BrandLogo(): React.ReactElement {
               <td
                 style={{
                   backgroundColor: contentBg,
-                  backgroundImage: scanlines,
                   padding: '28px 20px',
                   textAlign: 'center',
                   borderBottomLeftRadius: `${windowRadius - 1}px`,
@@ -155,7 +154,7 @@ export function BrandLogo(): React.ReactElement {
                 }}
               >
                 <Img
-                  src="https://generation-ai.org/brand/logos/logo-wide-neon.png?v=3"
+                  src="https://generation-ai.org/brand/logos/logo-wide-neon.png?v=4"
                   alt="Generation AI"
                   width={180}
                   style={{

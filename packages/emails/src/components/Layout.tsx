@@ -28,8 +28,17 @@ export function Layout({ preview, children }: LayoutProps): React.ReactElement {
   return (
     <Html lang="de">
       <Head>
-        <meta name="color-scheme" content="dark" />
-        <meta name="supported-color-schemes" content="dark" />
+        <meta name="color-scheme" content="only dark" />
+        <meta name="supported-color-schemes" content="only dark" />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+:root { color-scheme: only dark; supported-color-schemes: only dark; }
+html, body { color-scheme: only dark !important; background-color: ${tokens.dark.bg} !important; }
+u + .body { color-scheme: only dark !important; }
+`,
+          }}
+        />
       </Head>
       <Preview>{preview}</Preview>
       <Body
