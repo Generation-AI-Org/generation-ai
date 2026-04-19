@@ -1,8 +1,6 @@
 import { Img } from '@react-email/components'
 import React from 'react'
 
-export interface BrandLogoProps {}
-
 /**
  * Mail-safe brand logo using PNG assets.
  * SVG is unreliable in email clients — PNG only per CONTEXT.md §Technische Notizen.
@@ -14,7 +12,7 @@ export interface BrandLogoProps {}
  *
  * PNG assets to be uploaded to generation-ai.org/brand/logos/ in Plan 17-05.
  */
-export function BrandLogo(_props: BrandLogoProps): React.ReactElement {
+export function BrandLogo(): React.ReactElement {
   return (
     <>
       {/* Light mode logo — visible by default, hidden in dark mode */}
