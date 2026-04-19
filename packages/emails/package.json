@@ -10,6 +10,7 @@
   "scripts": {
     "email:dev": "email dev --dir ./src/templates --port 3030",
     "email:export": "tsx scripts/export.ts",
+    "logos:generate": "tsx scripts/generate-logo-pngs.ts",
     "test": "vitest run"
   },
   "dependencies": {
@@ -20,6 +21,8 @@
   },
   "devDependencies": {
     "@genai/config": "workspace:*",
+    "sharp": "^0.33.5",
+    "@types/sharp": "^0.31.1",
     "tsx": "^4.19.0",
     "typescript": "catalog:",
     "@types/react": "catalog:"
