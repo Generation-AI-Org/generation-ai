@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = await createServerClient()
-  const { error } = await supabase.auth.verifyOtp({ token_hash, type })
+  const { data, error } = await supabase.auth.verifyOtp({ token_hash, type })
 
   if (error) {
     console.error('OTP verification error:', error.message)
@@ -25,8 +25,18 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  // Recovery flow: always to /auth/set-password (password reset UI), D-06 — template stays
   if (type === 'recovery') {
     return NextResponse.redirect(`${origin}/auth/set-password`)
+  }
+
+  // First-Login-Prompt (D-01, D-02): Wenn has_password weder true noch false, First-Login-Screen zeigen.
+  // has_password=true → hat Passwort, kein Prompt.
+  // has_password=false → hat Skip gewählt, kein Re-Prompt.
+  // has_password=undefined → Alt-User oder neuer User, First-Login-Screen mit Skip-Option.
+  const hasPassword = data?.user?.user_metadata?.has_password
+  if (hasPassword !== true && hasPassword !== false) {
+    return NextResponse.redirect(`${origin}/auth/set-password?first=1`)
   }
 
   const redirectPath = next.startsWith('/') ? next : '/'
