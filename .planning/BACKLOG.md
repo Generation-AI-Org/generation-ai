@@ -14,9 +14,9 @@
 
 ## Account-Setup
 
-- [ ] **Sentry Account** — sentry.io → Free → DSN holen
-- [ ] **Better Stack Account** — betterstack.com → Uptime Monitors
-- [ ] **Email-Umleitung info@generation-ai.org** — Forwarding auf Luca's Postfach einrichten (Domain-Provider / Resend / Google Workspace — je nach Setup). Wichtig: Legal-Seiten nennen die Adresse.
+- [x] **Sentry Account** — eingerichtet, DSN im Code, Error-Tracking live
+- [x] **Better Stack Account** — Uptime-Monitors eingerichtet
+- [x] **Email-Umleitung info@generation-ai.org** — läuft über ImprovMX (admin@/hello@/noreply@ Aliases auf Luca's Postfach)
 
 ## Code-Fixes
 
@@ -40,8 +40,8 @@
 
 - [ ] **Passwort-Setzen-UI für User** — aktuell nur Magic-Link, nutzer kann Passwort nicht selbst setzen. Flow: Settings → "Passwort setzen/ändern" → Reset-Mail → neues Passwort.
 - [ ] **Passwort-Reset end-to-end testen** — Code existiert, nie verifiziert. Per Playwright gegen Prod durchspielen.
-- [ ] **Supabase Email-Templates customizen** — aktuell heller Hintergrund, Luca will Systemfarbe (dunkel bei Darkmode-Mail). Templates in Supabase Dashboard → Auth → Email Templates.
-- [ ] **Rate-Limit auf Login zurückstellen** — während Tests hochgestellt wegen Fehlschlägen. Wieder auf normale Werte.
+- [x] **Supabase Email-Templates customizen** — erledigt in Phase 17 (React Email + Brand-Tokens + neon-terminal-style)
+- [x] **Rate-Limit auf Login zurückstellen** — zurück auf Defaults (Luca 2026-04-19)
 
 ### 🔐 Auth — OAuth-Login (Circle-Integration)
 
@@ -59,8 +59,8 @@
 
 - [x] **Tool-Highlighting kaputt** — gefixt in v4.1.0 (recommendedSlugs-Pass-Through im `/api/chat` member-mode).
 - [x] **Mobile Chat-Width springt auf ~80 %** — gefixt 2026-04-17: expanded Chat auf Mobile jetzt full-screen (`inset-0` + deckender `bg-[var(--bg)]`), Desktop bleibt 35%-Sidebar. FloatingChat.tsx:406.
-- [ ] **Mobile Shift+Enter** — Luca glaubt gefixt, verifizieren.
-- [ ] **Desktop Chat-Input wächst nicht bei Transkription** — Normales Tippen + Enter expandiert das Input-Feld korrekt. Wenn stattdessen ein langer Text per Diktat reinkommt, bleibt das Feld klein/schmal → nervig zu lesen/editieren. Auto-Resize muss auch bei programmatischen Text-Writes triggern.
+- [x] **Mobile Shift+Enter** — verifiziert gefixt (Luca 2026-04-19)
+- [x] **Desktop Chat-Input wächst nicht bei Transkription** — gefixt (Luca 2026-04-19)
 
 ### 🧪 Test-Infrastruktur
 
@@ -70,9 +70,9 @@
 
 - [x] **Mobile Header: Login/Logout-Button sichtbar im Header** — bereits erledigt (vor Audit 2026-04-17): `AppShell.tsx:170-222` hat farblich differenzierte Buttons — Login = accent-grün, Logout = neutral mit rotem Hover-State.
 - [x] **Login-Seite: Logo statt grünem Punkt** — bereits erledigt (vor Audit 2026-04-17): `app/login/page.tsx:66-76` nutzt theme-aware Logo (`logo-blue-neon-new.jpg` / `logo-pink-red.jpg`) über dem Heading.
-- [ ] **Mobile-Polish allgemein** — einmal durchgehen, Luca nutzt es auf Handy auch oft.
-- [ ] **Mobile Chat: Hintergrund deckend oder blurred** — wenn Chat offen ist, schimmert die Page darunter durch (CardGrid/Akzentfarben sichtbar) → ablenkend. Entweder (a) Chat-Panel opaque `bg-[var(--bg)]` statt `bg-[var(--bg-card)]` mit Transparenz, oder (b) zusätzliches Backdrop-Element `fixed inset-0 bg-black/40 backdrop-blur-md z-30` hinter dem Panel. Option (b) ist der Modal-Sheet-Standard und fühlt sich „richtiger" an. Nur Mobile (lg:hidden) — Desktop bleibt Sidebar. Datei: `apps/tools-app/components/chat/FloatingChat.tsx:406`.
-- [ ] **Mobile Legal Footer: Sichtbarkeit + Schriftfarbe** — aktueller Code `AppShell.tsx:340-349` nutzt `text-text-muted` (dunkle Schrift) statt Theme-aware hell. Außerdem erscheint der Footer inkonsistent (mal sichtbar, mal weg). Entweder konsistent immer sichtbar (unter CardGrid angeheftet, nicht floating) oder konsistent weg und Legal-Links nur im Header-Menü. Luca-Tendenz: immer sichtbar, aber hell im Darkmode. Auch prüfen: verdeckt Chat-Expand den Footer unabsichtlich?
+- [x] **Mobile-Polish allgemein** — durchgegangen (Luca 2026-04-19)
+- [x] **Mobile Chat: Hintergrund deckend oder blurred** — gefixt (Luca 2026-04-19)
+- [x] **Mobile Legal Footer: Sichtbarkeit + Schriftfarbe** — gefixt (Luca 2026-04-19)
 
 ### 📄 Content tools-app
 
@@ -91,7 +91,7 @@
 
 - [ ] **Smart-Links zu Circle** (Luca: "geile Idee") — jedes Tool zeigt, wo im Circle darüber diskutiert wird. Link zu Space/Thread mit Discussions.
 
-### 💬 Chat überall — global Agent + Context-aware
+### 💬 Chat überall — global Agent + Context-aware ✅ DONE in Phase 15
 
 > Aufgenommen 2026-04-17. Luca: „wenn ich auf eine Toolseite gehe, wird der Agent nicht mehr angezeigt. Auch über Tools im Startseitefenster sinnvoll. Bei langen Artikeln Markdown nach links schieben, Agent rechts."
 
@@ -121,11 +121,11 @@
 - Cross-Session-Chat-Historie in UI (zeige keine Past-Sessions-List) — separater Scope.
 - Pro-Only vs. Public-Chat-Logik auf Detail-Seiten — vermutlich gleiche Mode-Detection wie Home.
 
-### 🧱 Fundament-Stufen (aus STATE.md)
+### 🧱 Fundament-Stufen (aus STATE.md) ✅ DONE
 
-- [ ] **Stufe 1:** `/gsd-map-codebase` laufen lassen
-- [ ] **Stufe 2:** Auth-Flow-Audit als GSD-Phase (deckt den ganzen Auth-Block hier mit ab)
-- [ ] **Stufe 3:** Simplify-Pass tools-app
+- [x] **Stufe 1:** `/gsd-map-codebase` — gelaufen 2026-04-19
+- [x] **Stufe 2:** Auth-Flow-Audit — Phase 13 complete
+- [x] **Stufe 3:** Simplify-Pass tools-app — Phase 18 complete
 
 ### 🔐 Signup-Reactivation (wenn Signup wieder geöffnet wird)
 
