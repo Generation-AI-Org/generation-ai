@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: Milestone setup — requirements + roadmap geschrieben, Phasen 20-26 warten auf /gsd-plan-phase
-last_updated: "2026-04-19T18:00:00.000Z"
+status: unknown
+last_updated: "2026-04-19T21:57:55.100Z"
 progress:
-  total_phases: 7
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 13
+  completed_phases: 5
+  total_plans: 26
+  completed_plans: 23
+  percent: 88
 ---
 
 # Project State — Generation AI Monorepo
@@ -19,7 +19,7 @@ progress:
 ## Current Status
 
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 PLANNING (Phases 20-26 definiert, noch nicht gestartet)
-**Phase:** Noch keine (Nächstes: `/gsd-plan-phase 20`)
+**Phase:** 20
 **Last Updated:** 2026-04-19
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
 
@@ -32,6 +32,7 @@ progress:
 **Roadmap:** Phasen 20-26 in `.planning/ROADMAP.md`
 
 **Phasen (empfohlene Reihenfolge):**
+
 1. **Phase 20** — Navigation + Landing-Skeleton (Stub-Daten)
 2. **Phase 21** — `/about`-Seite
 3. **Phase 22** — `/partner`-Seite (3 Anker-Sections + Kontakt-Formular)
@@ -43,6 +44,7 @@ progress:
 **Kern-UX-Win:** Phase 25 Circle-API-Sync — User bekommt **eine** Mail statt zwei, landet nach Confirm via embedded SSO-Link direkt eingeloggt in Circle (Circle-Business-Plan API).
 
 **Tech-Entscheidungen:**
+
 - Circle-Sync via Server-Action in Next.js (kein Supabase Webhook/Edge Function — expliziter Code-Pfad)
 - Tool-Showcase via public API aus tools-app (ISR-cached)
 - Community-Preview via Circle API v2 (Rate-Limit-bewusst cachen)
@@ -62,6 +64,7 @@ Code-Complete (Commits `88cf644` + Plans 19-01..19-05), Plan 05 Human-Verify-Che
 - Plan 19-05 DONE (code) — CI-Secrets + MANUAL-STEPS + Changeset, Commit `88cf644`
 
 **Phasen-Übersicht:**
+
 - Phase 14 — Mobile Polish ✅
 - Phase 15 — Chat überall + Context-aware ✅ (v4.2.0)
 - Phase 16 — Brand System Foundation ✅ (v4.3.0)
