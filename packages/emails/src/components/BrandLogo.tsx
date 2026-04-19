@@ -43,6 +43,7 @@ export function BrandLogo(): React.ReactElement {
             border: `1px solid ${borderColor}`,
             borderRadius: `${windowRadius}px`,
             backgroundColor: contentBg,
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
             // overflow:hidden doesn't clip inner corners in Outlook, so we
             // paint title bar with a flat top and let content paint the
             // bottom with matching corners via its own background.
@@ -126,7 +127,7 @@ export function BrandLogo(): React.ReactElement {
                           letterSpacing: '0.04em',
                         }}
                       >
-                        generation-ai — zsh
+                        generation-ai — zsh — 80×24
                       </td>
                       {/* Spacer to balance the dots column */}
                       <td style={{ width: '54px' }}>&nbsp;</td>
