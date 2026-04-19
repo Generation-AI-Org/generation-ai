@@ -122,6 +122,31 @@ export function Layout({ preview, children }: LayoutProps): React.ReactElement {
           >
             Du bekommst diese Mail, weil du einen Account bei Generation AI hast. Fragen? Antworte einfach auf diese Mail.
           </Text>
+
+          {/* Legal links */}
+          <Text
+            className="email-footer"
+            style={{
+              fontSize: '11px',
+              color: tokens.light.textMuted,
+              textAlign: 'center',
+              margin: '8px 0 0 0',
+            }}
+          >
+            <a
+              href="https://generation-ai.org/impressum"
+              style={{ color: tokens.light.textMuted, textDecoration: 'underline' }}
+            >
+              Impressum
+            </a>
+            {' · '}
+            <a
+              href="https://generation-ai.org/datenschutz"
+              style={{ color: tokens.light.textMuted, textDecoration: 'underline' }}
+            >
+              Datenschutz
+            </a>
+          </Text>
         </Container>
       </Body>
     </Html>
