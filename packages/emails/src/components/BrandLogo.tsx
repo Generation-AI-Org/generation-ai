@@ -15,31 +15,45 @@ const imgBase: React.CSSProperties = {
 /**
  * Brand logo header — theme-adaptive, clickable.
  *
- * - Light clients show red logo; dark clients show neon logo (via Layout's <style>).
- * - `height: auto` prevents Gmail/Apple-Mail squish when container shrinks
- *   (PNG is native 960x540 16:9 — browser computes height from width).
- * - Logo links to generation-ai.org.
+ * - Light clients: red logo (default visible).
+ * - Dark clients: neon logo (shown via Layout's <style>).
+ * - Display is controlled ONLY via class → CSS (no `display` inline) because Gmail
+ *   iOS often treats inline styles as higher-priority than `!important` class rules.
+ * - Dark logo wrapped in hidden <div> (overflow/max-width: 0) as a safety net for
+ *   clients that strip media queries — keeps the dark image fully hidden.
+ * - `height: auto` prevents Gmail/Apple-Mail squish when container shrinks.
  */
 export function BrandLogo(): React.ReactElement {
   return (
     <Section style={{ textAlign: 'center', padding: '8px 0 4px 0' }}>
       <Link href={HOME_URL} style={{ textDecoration: 'none' }}>
-        {/* Light mode — red logo. Hidden in dark via CSS in Layout. */}
+        {/* Light mode logo — visible by default. Hidden in dark via Layout CSS. */}
         <Img
           src="https://generation-ai.org/brand/logos/logo-wide-red.png"
           alt="Generation AI"
           width={170}
           className="email-logo-light"
-          style={{ ...imgBase, display: 'block' }}
+          style={imgBase}
         />
-        {/* Dark mode — neon logo. Hidden in light via CSS in Layout. */}
-        <Img
-          src="https://generation-ai.org/brand/logos/logo-wide-neon.png"
-          alt="Generation AI"
-          width={170}
-          className="email-logo-dark"
-          style={{ ...imgBase, display: 'none' }}
-        />
+        {/* Dark mode logo — hidden by default wrapper; media query un-hides. */}
+        <div
+          className="email-logo-dark-wrap"
+          style={{
+            display: 'none',
+            maxHeight: 0,
+            maxWidth: 0,
+            overflow: 'hidden',
+            lineHeight: 0,
+          }}
+        >
+          <Img
+            src="https://generation-ai.org/brand/logos/logo-wide-neon.png"
+            alt="Generation AI"
+            width={170}
+            className="email-logo-dark"
+            style={imgBase}
+          />
+        </div>
       </Link>
     </Section>
   )

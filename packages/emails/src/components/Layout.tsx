@@ -36,10 +36,6 @@ export function Layout({ preview, children }: LayoutProps): React.ReactElement {
         <style
           dangerouslySetInnerHTML={{
             __html: `
-/* Default (light mode) — hide dark logo */
-.email-logo-dark { display: none !important; }
-.email-logo-light { display: inline-block !important; }
-
 @media (prefers-color-scheme: dark) {
   .email-body { background-color: ${tokens.dark.bg} !important; }
   .email-card { background-color: ${tokens.dark.bgCard} !important; border-color: ${tokens.dark.border} !important; }
@@ -50,9 +46,17 @@ export function Layout({ preview, children }: LayoutProps): React.ReactElement {
   .email-divider { border-top-color: ${tokens.dark.border} !important; border-color: ${tokens.dark.border} !important; }
   .email-btn { background-color: ${tokens.dark.accent} !important; color: ${tokens.dark.textOnAccent} !important; }
   .email-logo-light { display: none !important; }
-  .email-logo-dark { display: block !important; }
-  .email-prompt { color: ${tokens.dark.accent} !important; }
+  .email-logo-dark-wrap { display: block !important; max-height: none !important; max-width: 100% !important; overflow: visible !important; line-height: normal !important; }
 }
+
+/* Outlook.com dark mode */
+[data-ogsc] .email-logo-light { display: none !important; }
+[data-ogsc] .email-logo-dark-wrap { display: block !important; max-height: none !important; max-width: 100% !important; overflow: visible !important; }
+[data-ogsc] .email-body { background-color: ${tokens.dark.bg} !important; }
+[data-ogsc] .email-card { background-color: ${tokens.dark.bgCard} !important; border-color: ${tokens.dark.border} !important; }
+[data-ogsc] .email-heading, [data-ogsc] .email-text { color: ${tokens.dark.text} !important; }
+[data-ogsc] .email-muted, [data-ogsc] .email-footer { color: ${tokens.dark.textMuted} !important; }
+[data-ogsc] .email-btn { background-color: ${tokens.dark.accent} !important; color: ${tokens.dark.textOnAccent} !important; }
 `,
           }}
         />
