@@ -7,7 +7,11 @@ import { generateMagicLink, generateRecoveryLink, ensureTestUser } from "../help
 // Serial mode prevents parallel signout/login races between tests.
 test.describe.configure({ mode: "serial" })
 
-const TOOLS_URL = process.env.BASE_URL || "https://tools.generation-ai.org"
+// Aligned mit playwright.config.ts (Phase 19 D-08): E2E_BASE_URL primary, BASE_URL legacy-fallback.
+const TOOLS_URL =
+  process.env.E2E_BASE_URL ||
+  process.env.BASE_URL ||
+  "https://tools.generation-ai.org"
 const WEBSITE_URL = process.env.WEBSITE_URL || "https://generation-ai.org"
 
 /** Helper: login via password on the tools-app login page */
