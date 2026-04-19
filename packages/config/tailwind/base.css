@@ -115,6 +115,31 @@
   --status-success: #16A34A;
   --status-warning: #F59E0B;
   --status-info: #2563EB;
+
+  /* ─── Brand Color Scales (12-Step, Radix-Pattern) ──────────────────────────
+   * 1-2 App-BG · 3-5 UI-BG · 6-8 Borders · 9 Solid (Brand) · 10 Hover · 11-12 Text
+   * Source of Truth: brand/tokens.json → brand.scales
+   * Theme-unabhängig (dark + light), HSL-interpoliert als Start.
+   */
+  --neon-1: #FCFDF9; --neon-2: #F8FCEB; --neon-3: #F2FBD5;
+  --neon-4: #ECFBBC; --neon-5: #E4FB9D; --neon-6: #DCFC79;
+  --neon-7: #D4FC54; --neon-8: #CDFD35; --neon-9: #CEFF32;
+  --neon-10: #C0F518; --neon-11: #89AE13; --neon-12: #39470A;
+
+  --blue-1: #F9F9FD; --blue-2: #EBEBFC; --blue-3: #D5D5FB;
+  --blue-4: #BCBCFB; --blue-5: #9D9DFB; --blue-6: #7979FC;
+  --blue-7: #5454FC; --blue-8: #3535FD; --blue-9: #3A3AFF;
+  --blue-10: #2020F6; --blue-11: #1313AE; --blue-12: #0A0A47;
+
+  --pink-1: #FDF9FD; --pink-2: #FBECFB; --pink-3: #FAD6FB;
+  --pink-4: #F9BCFA; --pink-5: #F99EFA; --pink-6: #F97AFB;
+  --pink-7: #F955FB; --pink-8: #F937FB; --pink-9: #FC78FE;
+  --pink-10: #F55BF7; --pink-11: #AB15AD; --pink-12: #460B47;
+
+  --red-1: #FDF9FA; --red-2: #FBECEF; --red-3: #F9D7DD;
+  --red-4: #F8BEC9; --red-5: #F7A1B0; --red-6: #F67E93;
+  --red-7: #F65B76; --red-8: #F53D5E; --red-9: #F5133B;
+  --red-10: #D31234; --red-11: #A81A33; --red-12: #450D17;
 }
 
 /* Light Mode — Pink/Red CI (exakte CI-Werte) */
@@ -185,6 +210,39 @@
   --color-slate-10: var(--slate-10);
   --color-slate-11: var(--slate-11);
   --color-slate-12: var(--slate-12);
+
+  /* Brand scale bindings — namespaced under brand-* to avoid collision with
+   * Tailwind's default red/blue/pink palettes that existing code uses
+   * (bg-red-500, text-red-400 etc. stay intact). Usage: bg-brand-neon-3,
+   * text-brand-pink-11, border-brand-red-7.
+   */
+  --color-brand-neon-1: var(--neon-1);   --color-brand-neon-2: var(--neon-2);
+  --color-brand-neon-3: var(--neon-3);   --color-brand-neon-4: var(--neon-4);
+  --color-brand-neon-5: var(--neon-5);   --color-brand-neon-6: var(--neon-6);
+  --color-brand-neon-7: var(--neon-7);   --color-brand-neon-8: var(--neon-8);
+  --color-brand-neon-9: var(--neon-9);   --color-brand-neon-10: var(--neon-10);
+  --color-brand-neon-11: var(--neon-11); --color-brand-neon-12: var(--neon-12);
+
+  --color-brand-blue-1: var(--blue-1);   --color-brand-blue-2: var(--blue-2);
+  --color-brand-blue-3: var(--blue-3);   --color-brand-blue-4: var(--blue-4);
+  --color-brand-blue-5: var(--blue-5);   --color-brand-blue-6: var(--blue-6);
+  --color-brand-blue-7: var(--blue-7);   --color-brand-blue-8: var(--blue-8);
+  --color-brand-blue-9: var(--blue-9);   --color-brand-blue-10: var(--blue-10);
+  --color-brand-blue-11: var(--blue-11); --color-brand-blue-12: var(--blue-12);
+
+  --color-brand-pink-1: var(--pink-1);   --color-brand-pink-2: var(--pink-2);
+  --color-brand-pink-3: var(--pink-3);   --color-brand-pink-4: var(--pink-4);
+  --color-brand-pink-5: var(--pink-5);   --color-brand-pink-6: var(--pink-6);
+  --color-brand-pink-7: var(--pink-7);   --color-brand-pink-8: var(--pink-8);
+  --color-brand-pink-9: var(--pink-9);   --color-brand-pink-10: var(--pink-10);
+  --color-brand-pink-11: var(--pink-11); --color-brand-pink-12: var(--pink-12);
+
+  --color-brand-red-1: var(--red-1);   --color-brand-red-2: var(--red-2);
+  --color-brand-red-3: var(--red-3);   --color-brand-red-4: var(--red-4);
+  --color-brand-red-5: var(--red-5);   --color-brand-red-6: var(--red-6);
+  --color-brand-red-7: var(--red-7);   --color-brand-red-8: var(--red-8);
+  --color-brand-red-9: var(--red-9);   --color-brand-red-10: var(--red-10);
+  --color-brand-red-11: var(--red-11); --color-brand-red-12: var(--red-12);
 }
 
 /* Base body styles */
