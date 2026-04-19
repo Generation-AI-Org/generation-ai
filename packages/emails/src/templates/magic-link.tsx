@@ -16,7 +16,7 @@ export interface MagicLinkEmailProps {
  * render(...) produces HTML with Go-template syntax intact for Dashboard import.
  */
 export default function MagicLinkEmail({
-  name = '{{ .Data.name }}',
+  name = '{{ .Data.full_name }}',
   confirmationUrl = '{{ .ConfirmationURL }}',
 }: MagicLinkEmailProps): React.ReactElement {
   return (

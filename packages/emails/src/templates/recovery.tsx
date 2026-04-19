@@ -16,7 +16,7 @@ export interface RecoveryEmailProps {
  * render(...) produces HTML with Go-template syntax intact for Dashboard import.
  */
 export default function RecoveryEmail({
-  name = '{{ .Data.name }}',
+  name = '{{ .Data.full_name }}',
   confirmationUrl = '{{ .ConfirmationURL }}',
 }: RecoveryEmailProps): React.ReactElement {
   return (
