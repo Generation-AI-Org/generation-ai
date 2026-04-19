@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: unknown
-last_updated: "2026-04-19T21:57:55.100Z"
+status: Phase 19 complete, Phase 20 in progress
+last_updated: "2026-04-20T00:00:00.000Z"
 progress:
   total_phases: 13
   completed_phases: 5
@@ -54,8 +54,8 @@ progress:
 
 ## v3.0 Milestone — COMPLETE 2026-04-19 (6/6 Phasen)
 
-**Phase 19 (trailing): Password-Flow + Test-Baseline**
-Code-Complete (Commits `88cf644` + Plans 19-01..19-05), Plan 05 Human-Verify-Checkpoint offen — läuft in paralleler Session.
+**Phase 19 (trailing): Password-Flow + Test-Baseline** — ✅ DONE 2026-04-20
+Verifier 13/13 passed, Code-Review 1 Crit + 2 Warn gefixt, alle 4 Follow-ups (WR-03/IN-04/IN-05/CI-env) erledigt.
 
 - Plan 19-01 DONE — confirm-Route `has_password`-Check, Commit `865d87e`
 - Plan 19-02 DONE — Set-Password First-Login-Mode, Commit `ad38601`
@@ -70,9 +70,31 @@ Code-Complete (Commits `88cf644` + Plans 19-01..19-05), Plan 05 Human-Verify-Che
 - Phase 16 — Brand System Foundation ✅ (v4.3.0)
 - Phase 17 — Auth Extensions ✅ (v4.3.x)
 - Phase 18 — Simplify-Pass tools-app ✅ (−1.587 LOC)
-- Phase 19 — Password-Flow + Test-Baseline 🔄 code-complete, Verify offen (v4.4.0)
+- Phase 19 — Password-Flow + Test-Baseline ✅ (v4.4.0, closed 2026-04-20)
 
-**Phase 19 — IN PROGRESS 2026-04-19:**
+**Phase 19 — DONE 2026-04-20 (Code + UX-Smoke + Code-Review + Follow-ups):**
+
+- **5/5 Plans** done, **3 Waves** sequentiell (worktrees disabled)
+- **UX-Smoke gegen Prod:** alle 5 Flows grün (admin@, lucvii@gmx.de) — First-Login-Redirect, Skip, Password setzen, Change-Mode Re-Auth, Set-Mode ohne Re-Auth, Zweiter Magic-Link ohne Re-Prompt
+- **E2E:** smoke+auth-gate 5p/2s · auth.spec 10p/2s gegen Prod
+- **In-Flight-Fixes während UX-Smoke:**
+  - `c78a094` auth-gate tests `/chat` → `/settings` (falsche Plan-19-04-Annahme)
+  - `be25de0` `has_password`-Check auch in `/auth/callback` (PKCE-Flow, Plan 19-01 hatte nur `/auth/confirm` abgedeckt)
+  - `ac1e374` `signInWithOtp({shouldCreateUser:false})` (Dashboard-User-Login-Blocker)
+- **Code-Review (9 findings, REVIEW.md):**
+  - `2c4f3f0` CR-01 Open-Redirect in confirm-route (`next=//evil.com`), WR-01 Skip-Error-Handling, WR-02 Callback-null-user → alle gefixt
+  - 5 Info + 1 Cosmetic zunächst getrackt, dann alle erledigt (siehe Follow-ups)
+- **Data-Migration:** 8 Alt-User mit `encrypted_password` + `has_password=null` auf `has_password=true` gesetzt — kein false-positive Prompt mehr
+- **Follow-ups (alle done 2026-04-20):**
+  - `f68358f` WR-03 chat.spec.ts → auth-gate.spec.ts
+  - `20ac816` IN-04 explicit `force-dynamic` in confirm-route
+  - `8ded103` IN-05 `needsFirstLoginPrompt()` Helper in @genai/auth
+  - `89f9163` CI-env `NEXT_PUBLIC_SUPABASE_ANON_KEY` im e2e-Job
+- **Artifacts:** `.planning/phases/19-password-flow-and-test-baseline/` — CONTEXT, 5× PLAN, 5× SUMMARY, MANUAL-STEPS, REVIEW, VERIFICATION (13/13 passed)
+- **Test-User-Residuals:** `e2e-tester@generation-ai.test` (CI), `admin@generation-ai.org` (Ops/flag=false), `lucvii@gmx.de` (Lucas manueller Test, flag=true)
+
+<details>
+<summary>Plan-Level-Details (ausklappen)</summary>
 
 - Plan 19-01 DONE — confirm-Route um `has_password`-Check erweitert, Commit `865d87e`
   - verifyOtp → `data.user.user_metadata.has_password` tri-state Check (undefined → First-Login-Redirect, true/false → normaler Flow)
@@ -113,8 +135,9 @@ Code-Complete (Commits `88cf644` + Plans 19-01..19-05), Plan 05 Human-Verify-Che
   - `.changeset/phase-19-password-flow.md` — @genai/tools-app:minor (linked bumpt @genai/website auto), v4.4.0
   - Requirements completed: D-07, D-09
   - Task 4 CHECKPOINT (Human-Verify): PENDING Lucas Setup + Build + `pnpm e2e` gegen Prod
-- **Phase 19 Closure hängt am Human-Verify-Checkpoint** — Luca muss Supabase-Test-User anlegen + GitHub-Secrets setzen + Build/E2E lokal verifizieren, siehe `.planning/phases/19-password-flow-and-test-baseline/MANUAL-STEPS.md`
-- Artifacts: `.planning/phases/19-password-flow-and-test-baseline/19-01-SUMMARY.md`, `19-02-SUMMARY.md`, `19-03-SUMMARY.md`, `19-04-SUMMARY.md`, `19-05-SUMMARY.md`, `MANUAL-STEPS.md`
+- Artifacts: `.planning/phases/19-password-flow-and-test-baseline/19-01-SUMMARY.md` … `19-05-SUMMARY.md`, `MANUAL-STEPS.md`
+
+</details>
 
 **Phase 18 — DONE 2026-04-19:**
 

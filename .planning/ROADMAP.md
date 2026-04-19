@@ -501,13 +501,14 @@ Plans:
 **Out-of-Scope:** Signup-Reactivation, Circle-API-Integration, OAuth, Password-Policy-Erweiterungen, 2FA, Session-Invalidation bei Change.
 
 **Success Criteria:**
-- [ ] First-Login-Magic-Link zeigt Set-Password-Screen mit funktionierendem Skip
-- [ ] Settings-Eintrag „Passwort setzen/ändern" funktioniert end-to-end
-- [ ] Recovery-Mail-Template unverändert, Flow funktioniert für Vergessen-Case (D-06)
-- [ ] E2E-Tests grün gegen Prod, kein localhost-/TEST_USER-Dependency mehr
-- [ ] `pnpm build` beider Apps grün, keine Regression für Magic-Link-only-Flow
+- [x] First-Login-Magic-Link zeigt Set-Password-Screen mit funktionierendem Skip — verifiziert gegen Prod 2026-04-20
+- [x] Settings-Eintrag „Passwort setzen/ändern" funktioniert end-to-end — Set/Change-Mode beide grün
+- [x] Recovery-Mail-Template unverändert, Flow funktioniert für Vergessen-Case (D-06)
+- [x] E2E-Tests grün gegen Prod, kein localhost-/TEST_USER-Dependency mehr — smoke+auth-gate 5p/2s, auth.spec 10p/2s
+- [x] `pnpm build` beider Apps grün, keine Regression für Magic-Link-only-Flow
 
-**Release:** minor (v4.4.0) — neues User-facing Feature (Passwort-UI)
+**Status:** ✅ COMPLETE 2026-04-20 — 13/13 Verifier passed, Code-Review 3 Crit+Warn gefixt, 4 Follow-ups done.
+**Release:** minor (v4.4.0) — neues User-facing Feature (Passwort-UI). Changeset liegt, `pnpm version` pending.
 
 ---
 
