@@ -59,7 +59,7 @@ export default function RecoveryEmail({
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
-        <EmailButton href={confirmationUrl}>Passwort zurücksetzen</EmailButton>
+        <EmailButton slug="recovery" href={confirmationUrl}>Passwort zurücksetzen</EmailButton>
       </Section>
 
       <Text

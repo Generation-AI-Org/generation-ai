@@ -59,7 +59,7 @@ export default function ConfirmSignupEmail({
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
-        <EmailButton href={confirmationUrl}>E-Mail bestätigen</EmailButton>
+        <EmailButton slug="confirm-signup" href={confirmationUrl}>E-Mail bestätigen</EmailButton>
       </Section>
 
       <Text

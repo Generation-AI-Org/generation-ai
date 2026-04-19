@@ -106,6 +106,48 @@ async function buildLogoWithScanlines(): Promise<Buffer> {
     .toBuffer()
 }
 
+/**
+ * CTA button as a PNG. Neon-outlined pill with neon mono text. Rendered as
+ * an image because Gmail iOS "smart-invert" flips any colored fill to a
+ * lighter shade and even dims pure neon text — mail clients don't invert images.
+ *
+ * Slug → label map is kept in one place below (buttons table in run()).
+ */
+async function buildButtonPng(label: string, outPath: string): Promise<void> {
+  // Display target ~200x44 (pill height 44). 4x retina = 800x176.
+  const W = 800
+  const H = 176
+  const strokeW = 6
+  const r = H / 2 - strokeW / 2
+  // Monospace font, bold, ~56px in raster (= 14px display)
+  const fontSize = 56
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+  <rect x="${strokeW / 2}" y="${strokeW / 2}"
+        width="${W - strokeW}" height="${H - strokeW}"
+        rx="${r}" ry="${r}"
+        fill="none" stroke="#CEFF32" stroke-width="${strokeW}"/>
+  <text x="${W / 2}" y="${H / 2 + fontSize / 3}" text-anchor="middle"
+        font-family="ui-monospace, 'Geist Mono', Menlo, Consolas, monospace"
+        font-size="${fontSize}" font-weight="700" letter-spacing="1"
+        fill="#CEFF32">${label.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>
+</svg>`
+
+  await sharp(Buffer.from(svg), { density: 288 })
+    .resize({ width: W, height: H, fit: 'fill', kernel: sharp.kernel.lanczos3 })
+    .png({ compressionLevel: 9, palette: false })
+    .toFile(outPath)
+  console.log(`✓ ${outPath} — "${label}"`)
+}
+
+const BUTTONS: Array<{ slug: string; label: string }> = [
+  { slug: 'confirm-signup', label: 'E-Mail bestätigen' },
+  { slug: 'magic-link', label: 'Anmelden' },
+  { slug: 'recovery', label: 'Passwort zurücksetzen' },
+  { slug: 'email-change', label: 'Änderung bestätigen' },
+  { slug: 'invite', label: 'Account anlegen' },
+]
+
 async function run() {
   // 1. Logo PNG (on terminal bg, letters striped) — still produced for any
   //    other uses, but the terminal-header.png below is the primary email asset.
@@ -117,10 +159,7 @@ async function run() {
   console.log(`✓ ${LOGO_DEST} — standalone logo on terminal bg`)
 
   // 2. Terminal header PNG: full window chrome + logo composed in one image.
-  //    Gmail etc. cannot invert parts of an image, so this guarantees the
-  //    retro dark terminal look in every mail client and every theme.
   const chrome = buildTerminalChromeSvg()
-  // Resize the scanlined logo to fit inside the terminal content area.
   const logoResized = await sharp(logoWithScanlines)
     .resize({
       width: LOGO_W_IN_TERMINAL,
@@ -130,12 +169,16 @@ async function run() {
     })
     .png({ compressionLevel: 9, palette: false })
     .toBuffer()
-
   await sharp(chrome)
     .composite([{ input: logoResized, top: LOGO_Y, left: LOGO_X }])
     .png({ compressionLevel: 9, palette: false })
     .toFile(join(DEST_DIR, TERMINAL_DEST))
   console.log(`✓ ${TERMINAL_DEST} — complete terminal window with logo`)
+
+  // 3. CTA button PNGs — one per template label. Gmail iOS cannot invert images.
+  for (const { slug, label } of BUTTONS) {
+    await buildButtonPng(label, join(DEST_DIR, `btn-${slug}.png`))
+  }
 }
 
 run().catch((err) => {

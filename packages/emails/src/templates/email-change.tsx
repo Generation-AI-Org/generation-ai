@@ -59,7 +59,7 @@ export default function EmailChangeEmail({
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
-        <EmailButton href={confirmationUrl}>Änderung bestätigen</EmailButton>
+        <EmailButton slug="email-change" href={confirmationUrl}>Änderung bestätigen</EmailButton>
       </Section>
 
       <Text

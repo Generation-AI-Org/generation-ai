@@ -59,7 +59,7 @@ export default function InviteEmail({
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
-        <EmailButton href={confirmationUrl}>Account anlegen</EmailButton>
+        <EmailButton slug="invite" href={confirmationUrl}>Account anlegen</EmailButton>
       </Section>
 
       <Text

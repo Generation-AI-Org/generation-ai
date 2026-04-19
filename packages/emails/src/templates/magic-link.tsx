@@ -59,7 +59,7 @@ export default function MagicLinkEmail({
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
-        <EmailButton href={confirmationUrl}>Anmelden</EmailButton>
+        <EmailButton slug="magic-link" href={confirmationUrl}>Anmelden</EmailButton>
       </Section>
 
       <Text
