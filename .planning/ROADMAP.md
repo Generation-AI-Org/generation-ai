@@ -475,6 +475,33 @@ Plans:
 
 ---
 
+## Milestone v4.0: Growth-Readiness (2026-04-19+)
+
+### Phase 19: Password-Flow + Test-Baseline
+
+**Goal:** Eingeloggte User können optional ein Passwort setzen (First-Login-Prompt mit Skip + Settings-Eintrag). Recovery-Mail-Text wird neutral für beide Cases (erstmalig + vergessen). E2E-Baseline wird repariert (Tests gegen Prod, kein TEST_USER-Env mehr nötig).
+**Depends on:** — (nur bestehender Auth-Stack)
+
+**Scope:**
+- `/auth/confirm` erweitern: bei Magic-Link + `user_metadata.has_password !== true` → redirect zu `/auth/set-password?first=1`
+- Set-Password-Page: Skip-Button hinzufügen, metadata-Flag setzen
+- `/settings`: Button „Passwort setzen/ändern" triggert `resetPasswordForEmail`
+- Recovery-Mail-Template (`packages/emails/src/templates/recovery.tsx`) textlich neutralisieren + HTMLs regenerieren
+- `packages/e2e-tools/playwright.config.ts` auf Prod-URL umstellen, failende Chat-Tests entsprechend anpassen, Password-Login-Test als skip mit Backlog-Ref
+
+**Out-of-Scope:** Signup-Reactivation, Circle-API-Integration, OAuth. Content-Arbeit ist eigener Workstream.
+
+**Success Criteria:**
+- [ ] First-Login-Magic-Link zeigt Set-Password-Screen mit funktionierendem Skip
+- [ ] Settings-Eintrag „Passwort setzen/ändern" funktioniert end-to-end
+- [ ] Recovery-Mail-Text neutral, funktioniert für beide Fälle
+- [ ] E2E-Tests grün gegen Prod, kein localhost-/TEST_USER-Dependency mehr
+- [ ] `pnpm build` beider Apps grün, keine Regression für Magic-Link-only-Flow
+
+**Release:** minor (v4.4.0) — neues User-facing Feature (Passwort-UI)
+
+---
+
 *v2.0 Roadmap erstellt: 2026-04-13*
 *Phase 4 geplant: 2026-04-14*
 *Phase 5 geplant: 2026-04-14*
