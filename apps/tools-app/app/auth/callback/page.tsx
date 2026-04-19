@@ -36,8 +36,9 @@ export default function AuthCallbackPage() {
       const accessToken = hashParams.get('access_token')
       const refreshToken = hashParams.get('refresh_token')
 
+      const supabase = createBrowserClient()
+
       if (accessToken && refreshToken) {
-        const supabase = createBrowserClient()
         const { error } = await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: refreshToken,
@@ -53,11 +54,30 @@ export default function AuthCallbackPage() {
         }
 
         const hashType = hashParams.get('type')
-        window.location.href = hashType === 'recovery' ? '/auth/set-password' : '/'
+        if (hashType === 'recovery') {
+          window.location.href = '/auth/set-password'
+          return
+        }
+
+        // Phase 19: First-Login-Prompt bei Alt-/Neu-Usern ohne has_password-Flag.
+        const { data: { user } } = await supabase.auth.getUser()
+        const hasPassword = user?.user_metadata?.has_password
+        if (hasPassword !== true && hasPassword !== false) {
+          window.location.href = '/auth/set-password?first=1'
+          return
+        }
+        window.location.href = '/'
         return
       }
 
-      // No params — session may already be set. Go home.
+      // No params — PKCE flow, session was set server-side via cookie.
+      // Phase 19: First-Login-Prompt bei Alt-/Neu-Usern ohne has_password-Flag.
+      const { data: { user } } = await supabase.auth.getUser()
+      const hasPassword = user?.user_metadata?.has_password
+      if (hasPassword !== true && hasPassword !== false) {
+        window.location.href = '/auth/set-password?first=1'
+        return
+      }
       window.location.href = '/'
     }
 
