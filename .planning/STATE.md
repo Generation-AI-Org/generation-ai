@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: in_progress
-last_updated: "2026-04-20T10:00:00.000Z"
+status: unknown
+last_updated: "2026-04-19T23:36:51.665Z"
 progress:
   total_phases: 13
   completed_phases: 5
   total_plans: 32
-  completed_plans: 25
-  percent: 78
+  completed_plans: 26
+  percent: 81
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,8 +18,8 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 Waves 1+2 done, Wave 3 next)
-**Phase:** 20 — Plans 01+02/6 DONE
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20: 3/6 Plans done, Wave-3 Wow-Peaks 1+2 wired, Plan 04+05 next)
+**Phase:** 20 — Plans 01+02+03/6 DONE
 **Last Updated:** 2026-04-20
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
 
@@ -35,7 +35,15 @@ progress:
   - R1.1 Playwright (Dropdown click+keyboard, Mobile-Nav) + CSP-Test grün (4/4)
   - Build grün, `ƒ /`, CSP-Header mit Nonce intakt, 8 unique data-sections im DOM
   - Requirements completed: R1.1, R1.10
-- **Plans 20-03..05** Wave 3 next up (Sections parallel-fähig — Wave-2-Boundary gelockt)
+- **Plan 20-03** DONE 2026-04-20 — Wow-Peaks 1+2 (Hero + Discrepancy)
+  - Commits: `c52cc4f` (hero), `55b286a` (discrepancy)
+  - Hero: AuroraBackground + Claim-Placeholder + CTA → /join, useReducedMotion-Guard
+  - Discrepancy: Bento-Split + 6 NumberTicker (7× / 56% / 73% | 83.5% / 75% / 6.4%) + useScroll ±4%-Divergenz (CLS-safe via overflow-hidden) + Closer "Generation AI schließt diese Lücke."
+  - Reduced-Motion: useTransform liefert 0%→0%, motion-Entries skippen, CSS-Aurora-Keyframe pausiert
+  - Deviations: 0 (Plan 1:1 ausgeführt, keine Rule-Fixes nötig)
+  - R1.2 + CSP Playwright grün (2/2 local prod), Build grün, `ƒ /`, 3× `href="/join"` im DOM
+  - Requirements completed: R1.2, R1.3
+- **Plans 20-04 + 20-05** Wave 3 next up (Offering/ToolShowcase/CommunityPreview + AudienceSplit/Trust/FinalCTA — parallel-fähig, Wave-2-Boundary gelockt)
 - **Plan 20-06** Wave 4 (Polish + Lighthouse-Gate + Changeset)
 
 ---

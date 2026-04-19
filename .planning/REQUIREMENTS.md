@@ -12,8 +12,8 @@
 
 **Requirements:**
 - R1.1: ✅ Top-Nav mit `Tools · Community · Für Partner ▾ · Über uns · [Jetzt beitreten]`. Tools + Community als externe Links zu Subdomains. Kein Login-Button im Header. *(done in 20-02: Header umgebaut, Dropdown + Mobile-Sheet funktional, 3/3 R1.1 Playwright-Tests grün)*
-- R1.2: Hero-Section — Claim + Subline + Primary CTA "Jetzt beitreten" (kein Login, keine Zahlen).
-- R1.3: Diskrepanz-Section — zentraler Hook mit Gegenüberstellung "Was Wirtschaft will" vs "Was Studis mitbringen" (6 Kernzahlen aus Value-Prop-v2). Custom data-viz mit Scroll-Animation. Closer: *"Generation AI schließt diese Lücke."*
+- R1.2: ✅ Hero-Section — Claim + Subline + Primary CTA "Jetzt beitreten" (kein Login, keine Zahlen). *(done in 20-03: Aurora-Background + Claim-Placeholder + CTA → /join, R1.2 Playwright-Test grün)*
+- R1.3: ✅ Diskrepanz-Section — zentraler Hook mit Gegenüberstellung "Was Wirtschaft will" vs "Was Studis mitbringen" (6 Kernzahlen aus Value-Prop-v2). Custom data-viz mit Scroll-Animation. Closer: *"Generation AI schließt diese Lücke."* *(done in 20-03: Custom Bento-Split + 6 NumberTicker + useScroll-Divergenz ±4% CLS-safe + Closer-Reveal + Reduced-Motion-Fallback)*
 - R1.4: 4-Card-Angebot (Community, Wissensplattform, Events & Workshops, Expert-Formate) mit Icon + Titel + 1-Satz + Deep-Link.
 - R1.5: Tool-Showcase Teaser — 3-5 featured Tools aus tools-app (Featured-Flag im Content-Schema). CTA zu `tools.generation-ai.org`.
 - R1.6: Community-Preview — zweispaltig (letzte Artikel + kommende Events via Circle API). Fallback-Placeholder bei API-Down.
