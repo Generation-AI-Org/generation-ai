@@ -1,5 +1,45 @@
 # @genai/tools-app
 
+## 0.2.0
+
+### Minor Changes
+
+- [`7739de9`](https://github.com/Generation-AI-Org/generation-ai/commit/7739de945ebb750463c2dcc823c69a5dd1f67901) Thanks [@luca-schweigmann](https://github.com/luca-schweigmann)! - feat(chat): Chat überall — global + Context-aware (Phase 15).
+
+  AppShell gesplittet in GlobalLayout (Header + FloatingChat) und HomeLayout (FilterBar + CardGrid). GlobalLayout läuft jetzt auf allen authed Routen inkl. `/settings`, `/[slug]` und Legal-Seiten; `/login` bleibt bare.
+
+  FloatingChat kennt einen neuen `context`-Prop. Auf Desktop-Detail-Seiten (`/[slug]`, ≥1024px) wird der Chat bei Expand zu einer 400px-Sidebar rechts, der Artikel schrumpft sichtbar. Mobile bleibt Floating/Bottom-Sheet.
+
+  Der Agent bekommt via `/api/chat`-Body (`context`-Feld) den aktuellen Tool-Kontext (slug/title/type/summary) als System-Prefix — die Antwort referenziert das gelesene Tool. User-Message wird weiterhin ohne Prefix persistiert.
+
+  Empty-State auf `/[slug]`: "Fragen zu {ToolName}?" + 3 One-Tap-Chips ("Wie unterscheidet sich das von ähnlichen Tools?", "Für welche Use-Cases passt {ToolName}?", "Wie fange ich an?").
+
+  Session-Persistenz: `genai-chat-session` Key überlebt Navigation (Home → Detail → Settings). Analytics-Event `chat_opened_from_route` wird bei jedem Chat-Open mit `{ route, context_slug?, mode }` gefeuert (Vercel Analytics + Sentry-Breadcrumb fallback).
+
+- [`f852b37`](https://github.com/Generation-AI-Org/generation-ai/commit/f852b373c45aa999a4851ce2cd44ebd297089e8f) Thanks [@luca-schweigmann](https://github.com/luca-schweigmann)! - Phase 16: Brand System Foundation — Radix Colors + Geist Fonts + Logo Component + Brand Migration
+  - Install `@radix-ui/colors@3.0.0` and `geist@1.7.0`; extend `packages/config/tailwind/base.css` with Radix slate/slate-dark token imports and semantic CSS custom properties (`--text`, `--surface`, `--border`, `--accent`, etc.)
+  - Implement `<Logo />` component in `@genai/ui` with 11 colorway variants, `colorway="auto"` matrix resolving correct variant per context + theme, and full Vitest suite
+  - Migrate `apps/website`: Inter + CascadiaCode → Geist Sans/Mono; `<Logo />` in header, footer, terminal-splash; focus-ring `var(--accent)` → `var(--text)`; VOICE.md microcopy; metadata umlauts restored
+  - Migrate `apps/tools-app`: same font swap; `<Logo />` in GlobalLayout, DetailHeaderLogo, login page; neutral hex audit; VOICE.md microcopy
+  - Typography upgrade: H1, buttons, and kbd globally on Geist Mono; tool card titles + footer + chat titles mono; chat body text stays Geist Sans
+  - Unify website favicon + apple-touch-icon with tools-app; remove orphan logo PNG files
+  - Visual regression gate: 14 routes tested, 12 intentional diffs (font swap + SVG logo), 0 unintentional regressions; post-migration baselines updated
+
+### Patch Changes
+
+- [`e2ddec7`](https://github.com/Generation-AI-Org/generation-ai/commit/e2ddec766891f4f5fa46ab6a7f345f74fba09258) Thanks [@luca-schweigmann](https://github.com/luca-schweigmann)! - fix(mobile): Backdrop-Blur hinter Chat-Panel — wenn Chat offen ist, wird die Page dahinter abgedunkelt + geblurrt. Kein Durchschimmern mehr, keine ungewollten Background-Scrolls. Kiwi-Bot bleibt als Toggle klickbar. Tap aufs Backdrop schließt den Chat.
+
+- [`d0521b1`](https://github.com/Generation-AI-Org/generation-ai/commit/d0521b11c9cc40aa5c26f20a946e2e9b308ea15d) Thanks [@luca-schweigmann](https://github.com/luca-schweigmann)! - fix(mobile): Chat im expanded-Modus nimmt jetzt den vollen Screen ein statt unter Header + Filter-Bar eingeengt zu sein. Desktop bleibt 35%-Sidebar. Minimize- und X-Button funktionieren wie gehabt.
+
+- [`d22b452`](https://github.com/Generation-AI-Org/generation-ai/commit/d22b452bd15161e1b6e64e8f4d4262c540b69dfb) Thanks [@luca-schweigmann](https://github.com/luca-schweigmann)! - fix(chat): Textarea waechst jetzt auch bei Diktat-Input (Voice) und programmatischen Updates synchron mit — nicht nur beim manuellen Tippen. Resize-Logik als DRY-Funktion extrahiert.
+
+  fix(mobile): Legal-Footer (Impressum/Datenschutz) wird ausgeblendet waehrend der Chat mobile full-screen expanded ist, damit der Chat die volle Hoehe nutzen kann. Footer-Farbe auf theme-aware CSS-Variable umgestellt (`var(--text-muted)` / `var(--text)`) fuer konsistenten Kontrast im Dark- und Light-Mode.
+
+- [`2c980b8`](https://github.com/Generation-AI-Org/generation-ai/commit/2c980b86707ac55d5f733e3367da9355700eca98) Thanks [@luca-schweigmann](https://github.com/luca-schweigmann)! - Phase 17: Supabase auth email templates vereinheitlicht auf React Email — 6 Templates (Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite) teilen ein Layout + Design-Tokens aus brand/tokens.json, theme-adaptiv via prefers-color-scheme. Copy aus brand/VOICE.md. HTML-Export via `pnpm -F @genai/emails run email:export`.
+
+- Updated dependencies [[`f852b37`](https://github.com/Generation-AI-Org/generation-ai/commit/f852b373c45aa999a4851ce2cd44ebd297089e8f)]:
+  - @genai/ui@0.1.0
+
 ## 0.1.1
 
 ### Patch Changes
