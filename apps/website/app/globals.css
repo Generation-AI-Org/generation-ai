@@ -3,6 +3,8 @@
 @import "../../../packages/config/tailwind/base.css";
 @import "tw-animate-css";
 
+@custom-variant dark (&:is(.dark *));
+
 /* ─── website-specific additions ──────────────────────────────────────────── */
 
 /* shadcn compatibility */
@@ -32,6 +34,24 @@
   /* Typography */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  @keyframes marquee {
+  from {
+    transform: translateX(0);
+    }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+    }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
 }
 
 /* Base Styles */
@@ -115,5 +135,49 @@ textarea:focus-visible,
 @layer utilities {
   .animate-float {
     animation: float 2.5s ease-in-out infinite;
+  }
+}
+
+/* ─── Phase 20: Aceternity/MagicUI Animation Keyframes ───────────────────── */
+
+@theme inline {
+  --animate-aurora: aurora 60s linear infinite;
+  --animate-scroll: scroll var(--scroll-duration, 40s) linear infinite;
+}
+
+@keyframes aurora {
+  from { background-position: 50% 50%, 50% 50%; }
+  to { background-position: 350% 50%, 350% 50%; }
+}
+
+@keyframes scroll {
+  to { transform: translate(calc(-50% - 0.5rem)); }
+}
+
+/* Aurora brand-rebrand colors — dark default (brand-neon + brand-blue swirl) */
+:root {
+  --brand-aurora-1: var(--brand-blue-5, #3b82f6);
+  --brand-aurora-2: var(--brand-neon-4, #a5b4fc);
+  --brand-aurora-3: var(--brand-blue-4, #93c5fd);
+  --brand-aurora-4: var(--brand-neon-3, #ddd6fe);
+  --brand-aurora-5: var(--brand-blue-6, #60a5fa);
+}
+
+/* Light-mode Aurora swirl (brand-pink + brand-red) */
+.light {
+  --brand-aurora-1: var(--brand-pink-5, #f472b6);
+  --brand-aurora-2: var(--brand-red-4, #fca5a5);
+  --brand-aurora-3: var(--brand-pink-4, #f9a8d4);
+  --brand-aurora-4: var(--brand-red-3, #fecaca);
+  --brand-aurora-5: var(--brand-pink-6, #ec4899);
+}
+
+/* Reduced-Motion: pause all Phase-20 loop animations (D-06 PFLICHT) */
+@media (prefers-reduced-motion: reduce) {
+  .animate-aurora,
+  .animate-scroll,
+  .animate-marquee,
+  .animate-marquee-vertical {
+    animation-play-state: paused !important;
   }
 }
