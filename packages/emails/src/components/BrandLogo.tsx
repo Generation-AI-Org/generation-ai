@@ -1,6 +1,5 @@
-import { Img, Link, Section, Text } from '@react-email/components'
+import { Img, Link, Section } from '@react-email/components'
 import React from 'react'
-import { fontStack } from '../tokens'
 
 const HOME_URL = 'https://generation-ai.org'
 
@@ -14,14 +13,12 @@ const imgBase: React.CSSProperties = {
 }
 
 /**
- * Brand logo header — theme-adaptive, terminal-retro vibe.
+ * Brand logo header — theme-adaptive, clickable.
  *
  * - Light clients show red logo; dark clients show neon logo (via Layout's <style>).
  * - `height: auto` prevents Gmail/Apple-Mail squish when container shrinks
- *   (PNG is 480x270, intrinsic 16:9 — browser computes height from width).
- * - Logo is clickable → links to generation-ai.org.
- * - Monospace "prompt" subtitle echoes the terminal splash screen on the website.
- * - Subtitle color swaps with theme (red → neon) via Layout's CSS toggle.
+ *   (PNG is native 960x540 16:9 — browser computes height from width).
+ * - Logo links to generation-ai.org.
  */
 export function BrandLogo(): React.ReactElement {
   return (
@@ -44,20 +41,6 @@ export function BrandLogo(): React.ReactElement {
           style={{ ...imgBase, display: 'none' }}
         />
       </Link>
-      {/* Terminal-style prompt subtitle. Color swaps with theme (see Layout). */}
-      <Text
-        className="email-prompt"
-        style={{
-          fontFamily: fontStack.mono,
-          fontSize: '11px',
-          color: '#F5133B',
-          margin: '14px 0 0 0',
-          letterSpacing: '0.08em',
-          opacity: 0.8,
-        }}
-      >
-        {'> generation-ai:~$'}
-      </Text>
     </Section>
   )
 }

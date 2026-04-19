@@ -10,6 +10,7 @@
   "scripts": {
     "email:dev": "email dev --dir ./src/templates --port 3030",
     "email:export": "tsx scripts/export.ts",
+    "email:test-send": "tsx scripts/test-send.ts",
     "logos:generate": "tsx scripts/generate-logo-pngs.ts",
     "test": "vitest run"
   },
@@ -20,11 +21,12 @@
   },
   "devDependencies": {
     "@genai/config": "workspace:*",
-    "sharp": "^0.33.5",
+    "@types/react": "catalog:",
     "@types/sharp": "^0.31.1",
+    "resend": "^6.10.0",
+    "sharp": "^0.33.5",
     "tsx": "^4.19.0",
-    "typescript": "catalog:",
-    "@types/react": "catalog:"
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "react": "catalog:",
