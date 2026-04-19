@@ -39,10 +39,11 @@ function escapeHtml(s: string): string {
  *   - color → tokens.dark.textOnAccent (#141414)
  */
 export function EmailButton({ href, children }: EmailButtonProps): React.ReactElement {
-  // Terminal-style "command pill" — dark bg + neon text. Same in every client
-  // and every theme (no @media swap), matches the terminal-header look.
-  // Mail clients preserve colors in auto-invert so dark-neon stays dark-neon.
-  const bg = '#141414'
+  // Terminal-style "command pill" — dark green-tinted bg + neon text.
+  // The subtle green tint (#1a2e1a) makes Gmail's smart-invert see it as
+  // "colored" rather than neutral-dark, so it doesn't flip it to white.
+  // Visually still reads as a dark terminal pill.
+  const bg = '#1a2e1a'
   const textColor = tokens.dark.accent // #CEFF32 neon
   const font = fontStack.mono
   const pX = 24
