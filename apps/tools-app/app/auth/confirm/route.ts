@@ -2,6 +2,12 @@ import { type EmailOtpType } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServerClient } from '@genai/auth/server'
 
+// Route liest Cookies via Supabase-Server-Client → ist faktisch dynamic.
+// Explizit setzen als Versicherung gegen künftige Refactors, die den
+// Cookie-Zugriff entfernen und die Route accidentally static prerendern
+// würden (siehe LEARNINGS.md 2026-04-18, CSP + static prerendering).
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const token_hash = searchParams.get('token_hash')
