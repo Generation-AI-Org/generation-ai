@@ -50,7 +50,8 @@ export function Layout({ preview, children }: LayoutProps): React.ReactElement {
   .email-divider { border-top-color: ${tokens.dark.border} !important; border-color: ${tokens.dark.border} !important; }
   .email-btn { background-color: ${tokens.dark.accent} !important; color: ${tokens.dark.textOnAccent} !important; }
   .email-logo-light { display: none !important; }
-  .email-logo-dark { display: inline-block !important; }
+  .email-logo-dark { display: block !important; }
+  .email-prompt { color: ${tokens.dark.accent} !important; }
 }
 `,
           }}

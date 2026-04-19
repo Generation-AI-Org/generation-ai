@@ -40,13 +40,25 @@ export default function EmailChangeEmail({
           fontSize: '16px',
           lineHeight: 1.65,
           color: tokens.light.text,
-          margin: '0 0 24px 0',
+          margin: '0 0 16px 0',
         }}
       >
-        Du willst deine Mail-Adresse zu {newEmail} ändern. Bestätige die Änderung mit einem Klick:
+        Du willst deine Mail-Adresse zu {newEmail} ändern.
       </Text>
 
-      <Section style={{ textAlign: 'center', margin: '32px 0' }}>
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 32px 0',
+        }}
+      >
+        Bestätige die Änderung mit einem Klick:
+      </Text>
+
+      <Section style={{ textAlign: 'center', margin: '40px 0' }}>
         <EmailButton href={confirmationUrl}>Änderung bestätigen</EmailButton>
       </Section>
 

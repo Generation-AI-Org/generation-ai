@@ -40,13 +40,25 @@ export default function InviteEmail({
           fontSize: '16px',
           lineHeight: 1.65,
           color: tokens.light.text,
-          margin: '0 0 24px 0',
+          margin: '0 0 16px 0',
         }}
       >
-        Willkommen bei Generation AI — der KI-Community für Studierende im DACH-Raum. Leg deinen Account an, dann geht's los.
+        Willkommen bei Generation AI — der KI-Community für Studierende im DACH-Raum.
       </Text>
 
-      <Section style={{ textAlign: 'center', margin: '32px 0' }}>
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 32px 0',
+        }}
+      >
+        Leg deinen Account an, dann geht's los.
+      </Text>
+
+      <Section style={{ textAlign: 'center', margin: '40px 0' }}>
         <EmailButton href={confirmationUrl}>Account anlegen</EmailButton>
       </Section>
 

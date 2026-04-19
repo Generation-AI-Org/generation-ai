@@ -40,13 +40,25 @@ export default function MagicLinkEmail({
           fontSize: '16px',
           lineHeight: 1.65,
           color: tokens.light.text,
-          margin: '0 0 24px 0',
+          margin: '0 0 16px 0',
         }}
       >
-        hier ist dein Login-Link. Klick drauf und du bist drin. Der Link gilt 15 Minuten.
+        hier ist dein Login-Link. Klick drauf und du bist drin.
       </Text>
 
-      <Section style={{ textAlign: 'center', margin: '32px 0' }}>
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 32px 0',
+        }}
+      >
+        Der Link gilt 15 Minuten.
+      </Text>
+
+      <Section style={{ textAlign: 'center', margin: '40px 0' }}>
         <EmailButton href={confirmationUrl}>Anmelden</EmailButton>
       </Section>
 

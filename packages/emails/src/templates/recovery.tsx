@@ -40,13 +40,25 @@ export default function RecoveryEmail({
           fontSize: '16px',
           lineHeight: 1.65,
           color: tokens.light.text,
-          margin: '0 0 24px 0',
+          margin: '0 0 16px 0',
         }}
       >
-        klick auf den Button, um ein neues Passwort zu setzen. Der Link gilt 60 Minuten.
+        klick auf den Button, um ein neues Passwort zu setzen.
       </Text>
 
-      <Section style={{ textAlign: 'center', margin: '32px 0' }}>
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 32px 0',
+        }}
+      >
+        Der Link gilt 60 Minuten.
+      </Text>
+
+      <Section style={{ textAlign: 'center', margin: '40px 0' }}>
         <EmailButton href={confirmationUrl}>Passwort zurücksetzen</EmailButton>
       </Section>
 

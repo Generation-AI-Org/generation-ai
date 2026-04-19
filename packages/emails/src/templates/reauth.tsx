@@ -40,14 +40,14 @@ export default function ReauthEmail({
           fontSize: '16px',
           lineHeight: 1.65,
           color: tokens.light.text,
-          margin: '0 0 24px 0',
+          margin: '0 0 32px 0',
         }}
       >
         Gib diesen Code in Generation AI ein, um fortzufahren:
       </Text>
 
       {/* OTP code block — no button. User copies the 6-digit code into the app. */}
-      <Section style={{ textAlign: 'center', margin: '32px 0' }}>
+      <Section style={{ textAlign: 'center', margin: '40px 0' }}>
         {/* OTP code is rendered with static light-theme colors for maximum contrast/readability in all mail clients. */}
         <Text
           className="email-code"
