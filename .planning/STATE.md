@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v4.0
-milestone_name: Growth-Readiness
-status: Executing Phase 19 (1/5 plans)
-last_updated: "2026-04-19T16:53:07Z"
+milestone: v3.0
+milestone_name: UX Polish & Feature Expansion
+status: Executing Phase 19 (2/5 plans, Wave 1 complete)
+last_updated: "2026-04-19T16:56:42Z"
 progress:
-  total_phases: 1
-  completed_phases: 0
-  total_plans: 5
-  completed_plans: 1
-  percent: 20
+  total_phases: 6
+  completed_phases: 4
+  total_plans: 26
+  completed_plans: 20
+  percent: 77
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,8 +18,8 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Growth-Readiness — 🚧 IN PROGRESS (1/5 plans in Phase 19)
-**Phase:** 19 Password-Flow + Test-Baseline — Wave 1 (Plan 01 done, Plan 02 next)
+**Milestone:** v4.0 Growth-Readiness — 🚧 IN PROGRESS (2/5 plans in Phase 19, Wave 1 complete)
+**Phase:** 19 Password-Flow + Test-Baseline — Wave 1 DONE (Plans 01+02), Plan 03 next
 **Last Updated:** 2026-04-19
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged.
 
@@ -30,8 +30,18 @@ progress:
   - Recovery-Branch unverändert (D-06 Guard: 0-line diff auf `packages/emails/src/templates/recovery.tsx`)
   - Build grün, alle 9 Acceptance-Criteria-Greps erfüllt
   - Requirements completed: D-01, D-02, D-06
-- Next (Wave 1, MUSS vor Deploy gemeinsam): Plan 19-02 Set-Password-Page mit Skip-Button + metadata-Writes
-- Artifacts: `.planning/phases/19-password-flow-and-test-baseline/19-01-SUMMARY.md`
+- Plan 19-02 DONE — Set-Password-Page First-Login-Mode, Commit `ad38601`
+  - `useSearchParams()` liest `?first=1` → `isFirstLogin`-Flag → Skip-Button „Später setzen"
+  - Submit: kombinierter `updateUser({ password, data: { has_password: true } })` (atomar, D-05)
+  - Skip: `updateUser({ data: { has_password: false } })` + redirect / (D-02)
+  - Recovery-Flow unverändert (kein `?first=1` → kein Skip-Button, Back-Link sichtbar)
+  - Suspense-Wrapper proaktiv ergänzt (Next.js 15/16 Requirement)
+  - Submit-Button disabled auch bei `skipping=true` (Rule-2-Deviation: Race-Prevention)
+  - Build grün, alle 10 Acceptance-Criteria-Greps erfüllt
+  - Requirements completed: D-01, D-02, D-05
+- **Wave 1 bereit zum atomaren Deploy** (Plans 01+02 müssen gemeinsam gepusht werden — 19-01 alleine würde User auf Page ohne Skip-Button routen)
+- Next (Wave 2): Plan 19-03 Settings-Inline-Form (2 Modi: Setzen/Ändern mit Re-Auth)
+- Artifacts: `.planning/phases/19-password-flow-and-test-baseline/19-01-SUMMARY.md`, `19-02-SUMMARY.md`
 
 **Phase 18 — DONE 2026-04-19:**
 
