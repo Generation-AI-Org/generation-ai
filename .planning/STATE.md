@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0
-milestone_name: UX Polish & Feature Expansion
-status: Complete
-last_updated: "2026-04-19T16:05:00.000Z"
+milestone: v4.0
+milestone_name: Growth-Readiness
+status: Executing Phase 19 (1/5 plans)
+last_updated: "2026-04-19T16:53:07Z"
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 21
-  completed_plans: 21
-  percent: 100
+  total_phases: 1
+  completed_phases: 0
+  total_plans: 5
+  completed_plans: 1
+  percent: 20
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,10 +18,20 @@ progress:
 
 ## Current Status
 
-**Milestone:** v3.0 UX Polish & Feature Expansion — ✅ COMPLETE (5/5 Phasen)
-**Phase:** — (Milestone abgeschlossen, nächster Schritt: v4.0 planen)
+**Milestone:** v4.0 Growth-Readiness — 🚧 IN PROGRESS (1/5 plans in Phase 19)
+**Phase:** 19 Password-Flow + Test-Baseline — Wave 1 (Plan 01 done, Plan 02 next)
 **Last Updated:** 2026-04-19
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged.
+
+**Phase 19 — IN PROGRESS 2026-04-19:**
+
+- Plan 19-01 DONE — confirm-Route um `has_password`-Check erweitert, Commit `865d87e`
+  - verifyOtp → `data.user.user_metadata.has_password` tri-state Check (undefined → First-Login-Redirect, true/false → normaler Flow)
+  - Recovery-Branch unverändert (D-06 Guard: 0-line diff auf `packages/emails/src/templates/recovery.tsx`)
+  - Build grün, alle 9 Acceptance-Criteria-Greps erfüllt
+  - Requirements completed: D-01, D-02, D-06
+- Next (Wave 1, MUSS vor Deploy gemeinsam): Plan 19-02 Set-Password-Page mit Skip-Button + metadata-Writes
+- Artifacts: `.planning/phases/19-password-flow-and-test-baseline/19-01-SUMMARY.md`
 
 **Phase 18 — DONE 2026-04-19:**
 
@@ -61,6 +71,7 @@ progress:
 - Artifacts: `.planning/phases/17-auth-extensions/` (CONTEXT, 5× PLAN, 5× SUMMARY, VERIFICATION, REVIEW, REVIEW-FIX, MANUAL-STEPS)
 
 **Brand-Asset-Zugaben (outside phase):**
+
 - `brand/logos/favicon-blue-neon-padded.svg` — Favicon-SVG mit Padding für Gravatar-Use
 - `brand/avatars/gravatar-admin-512.png` — 512×512 Gravatar-Avatar
 
