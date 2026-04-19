@@ -479,22 +479,32 @@ Plans:
 
 ### Phase 19: Password-Flow + Test-Baseline
 
-**Goal:** Eingeloggte User können optional ein Passwort setzen (First-Login-Prompt mit Skip + Settings-Eintrag). Recovery-Mail-Text wird neutral für beide Cases (erstmalig + vergessen). E2E-Baseline wird repariert (Tests gegen Prod, kein TEST_USER-Env mehr nötig).
+**Goal:** Eingeloggte User können optional ein Passwort setzen (First-Login-Prompt mit Skip + Settings-Inline-Form mit Re-Auth bei Change). Recovery-Mail-Template bleibt unverändert (nur noch für Vergessen-Case). E2E-Baseline wird repariert (Default gegen Prod, realer Test-User via GitHub-Secrets).
 **Depends on:** — (nur bestehender Auth-Stack)
+**Plans:** 5 plans
 
-**Scope:**
-- `/auth/confirm` erweitern: bei Magic-Link + `user_metadata.has_password !== true` → redirect zu `/auth/set-password?first=1`
-- Set-Password-Page: Skip-Button hinzufügen, metadata-Flag setzen
-- `/settings`: Button „Passwort setzen/ändern" triggert `resetPasswordForEmail`
-- Recovery-Mail-Template (`packages/emails/src/templates/recovery.tsx`) textlich neutralisieren + HTMLs regenerieren
-- `packages/e2e-tools/playwright.config.ts` auf Prod-URL umstellen, failende Chat-Tests entsprechend anpassen, Password-Login-Test als skip mit Backlog-Ref
+Plans:
+- [ ] 19-01-PLAN.md — confirm-Route: has_password-Check + First-Login-Redirect zu /auth/set-password?first=1
+- [ ] 19-02-PLAN.md — Set-Password-Page: Skip-Button + metadata-Writes (has_password=true/false)
+- [ ] 19-03-PLAN.md — /settings Inline-Form: PasswordSection mit Set/Change-Modi + Re-Auth via signInWithPassword
+- [ ] 19-04-PLAN.md — E2E-Config gegen Prod (E2E_BASE_URL) + chat.spec.ts prod-tauglich
+- [ ] 19-05-PLAN.md — CI-Secrets + MANUAL-STEPS.md + Changeset + Human-Verify-Checkpoint
 
-**Out-of-Scope:** Signup-Reactivation, Circle-API-Integration, OAuth. Content-Arbeit ist eigener Workstream.
+**Scope (updated 2026-04-19 per CONTEXT.md Decisions D-01..D-09):**
+- `/auth/confirm` erweitert: bei Magic-Link + `user_metadata.has_password` weder `true` noch `false` → redirect zu `/auth/set-password?first=1`
+- Set-Password-Page: Skip-Button + metadata-Writes (D-01, D-02)
+- `/settings`: neuer Passwort-Section als Inline-Form (D-03), 2 Modi via `has_password` (D-04), Re-Auth via signInWithPassword bei Change, kein Redirect nach Success (D-05)
+- Recovery-Mail-Template bleibt unverändert (D-06)
+- `packages/e2e-tools/playwright.config.ts` Default auf Prod mit `E2E_BASE_URL`-Override (D-08), `chat.spec.ts` prod-tauglich, `auth.spec.ts` liest baseURL aus gleicher Env-Kette
+- CI-Workflow mit `TEST_USER_EMAIL` + `TEST_USER_PASSWORD` Secrets (D-07)
+- `.planning/phases/19-password-flow-and-test-baseline/MANUAL-STEPS.md` dokumentiert Supabase-User + GH-Secrets-Setup (D-09)
+
+**Out-of-Scope:** Signup-Reactivation, Circle-API-Integration, OAuth, Password-Policy-Erweiterungen, 2FA, Session-Invalidation bei Change.
 
 **Success Criteria:**
 - [ ] First-Login-Magic-Link zeigt Set-Password-Screen mit funktionierendem Skip
 - [ ] Settings-Eintrag „Passwort setzen/ändern" funktioniert end-to-end
-- [ ] Recovery-Mail-Text neutral, funktioniert für beide Fälle
+- [ ] Recovery-Mail-Template unverändert, Flow funktioniert für Vergessen-Case (D-06)
 - [ ] E2E-Tests grün gegen Prod, kein localhost-/TEST_USER-Dependency mehr
 - [ ] `pnpm build` beider Apps grün, keine Regression für Magic-Link-only-Flow
 
