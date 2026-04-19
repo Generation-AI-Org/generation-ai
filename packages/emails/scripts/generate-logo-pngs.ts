@@ -1,6 +1,11 @@
 import sharp from 'sharp';
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// ESM-safe __dirname — works regardless of package "type" field or tsx ESM mode
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const REPO_ROOT = join(__dirname, '..', '..', '..');
 const SRC_DIR = join(REPO_ROOT, 'brand', 'logos');
