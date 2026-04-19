@@ -120,7 +120,13 @@ export function Layout({ preview, children }: LayoutProps): React.ReactElement {
               margin: '8px 0 0 0',
             }}
           >
-            Du bekommst diese Mail, weil du einen Account bei Generation AI hast. Fragen? Antworte einfach auf diese Mail.
+            Du bekommst diese Mail, weil du einen Account bei Generation AI hast. Fragen?{' '}
+            <a
+              href="mailto:info@generation-ai.org"
+              style={{ color: tokens.light.textMuted, textDecoration: 'underline' }}
+            >
+              info@generation-ai.org
+            </a>
           </Text>
 
           {/* Legal links */}
