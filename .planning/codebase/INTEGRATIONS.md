@@ -1,234 +1,161 @@
 # External Integrations
 
-**Analysis Date:** 2026-04-17
+**Analysis Date:** 2026-04-19
 
 ## APIs & External Services
 
-**AI & Language Models:**
-- Gemini API (Google)
-  - SDK: `@ai-sdk/google` 3.0.63
-  - Models: `gemini-2.5-flash-lite` (public chat, fast/cheap), `gemini-3-flash` (member mode, agent)
-  - Used in: `apps/tools-app/lib/llm.ts`
+**LLM Providers (tools-app):**
+- **Google Gemini** — primary public-chat model (`gemini-2.5-flash-lite`) and agent model (`gemini-3-flash` per `CLAUDE.md`)
+  - SDK: `@ai-sdk/google` via Vercel AI SDK (`ai`)
+  - Wired in: `apps/tools-app/lib/llm.ts`
   - Auth: `GOOGLE_GENERATIVE_AI_API_KEY`
+- **Anthropic Claude** — agent path (`claude-haiku-4-5-20251001`)
+  - SDK: `@anthropic-ai/sdk`
+  - Wired in: `apps/tools-app/lib/agent.ts`
+  - Auth: `ANTHROPIC_API_KEY`
+- **OpenAI** — client present but not on hot path
+  - SDK: `openai`
+  - Auth: not currently referenced in code (kept for compatibility)
+- **Zhipu / MiniMax** — optional, validated as optional in `apps/tools-app/lib/env.ts`
+  - Auth: `ZHIPU_API_KEY`, `MINIMAX_API_KEY`
 
-- Claude API (Anthropic)
-  - SDK: `@anthropic-ai/sdk` 0.87.0
-  - Purpose: Tool definitions and imports (currently unused for inference)
-  - Used in: `apps/tools-app/lib/kb-tools.ts`
-  - Auth: `ANTHROPIC_API_KEY` (optional, tools-app)
+**Web Search & Content (tools-app):**
+- **Exa.ai** — trusted web search for agent
+  - Wired in: `apps/tools-app/lib/exa.ts`
+  - Auth: `EXA_API_KEY`
+- **Firecrawl** — URL extraction fallback
+  - Wired in: `apps/tools-app/app/api/defuddle/route.ts`
+  - Auth: `FIRECRAWL_API_KEY`
+- **Mozilla Readability** — local content extraction (`@mozilla/readability`) used by `apps/tools-app/app/api/extract-url/`
 
-- OpenAI API
-  - SDK: `openai` 6.34.0
-  - Status: Included but unused
-  - Auth: `OPENAI_API_KEY` (not configured)
+**Voice (tools-app):**
+- **Deepgram** — speech-to-text + ephemeral token issuance
+  - Wired in: `apps/tools-app/app/api/voice/transcribe/route.ts`, `apps/tools-app/app/api/voice/token/route.ts`
+  - Auth: `DEEPGRAM_API_KEY`
 
-- LLM Fallbacks (Chinese market)
-  - Zhipu API (Optional)
-  - MiniMax API (Optional)
-  - Auth: `ZHIPU_API_KEY`, `MINIMAX_API_KEY` (optional)
-
-**Web Search:**
-- Exa API
-  - SDK: None (direct HTTP calls expected)
-  - Purpose: Trusted web search for agent web-browsing capability
-  - Used in: `apps/tools-app/lib/exa.ts`
-  - Auth: `EXA_API_KEY` (optional, graceful fallback)
-
-**Email Services:**
-- Resend
-  - SDK: `resend` 6.10.0
-  - Purpose: Transactional email for magic links and notifications
-  - Used in: `apps/website/` (auth flows)
+**Email (website):**
+- **Resend** — transactional email delivery
+  - SDK: `resend` ^6.10.0
+  - Wired in: `apps/website/lib/email.ts` (sendMagicLinkEmail)
   - Auth: `RESEND_API_KEY`
+  - From: `Generation AI <noreply@generation-ai.org>`
+- **react-email** — template authoring in `packages/emails/src/templates/` (confirm-signup, magic-link, recovery)
+  - Build/export: `pnpm --filter @genai/emails email:export` → `apps/website/emails/dist/*.html`
+  - Dev preview: `email:dev` on port 3030
 
-**Community Platform:**
-- Circle.so
-  - API: REST API (credentials in Vercel env)
-  - Purpose: Community platform for discussions, courses, events
-  - Auth: `CIRCLE_API_TOKEN`, `CIRCLE_COMMUNITY_ID`, `CIRCLE_COMMUNITY_URL`
-  - Flow: Website redirects users to community.generation-ai.org (soft SSO, same email)
+**Community (external, soft SSO):**
+- **Circle.so** — community at `community.generation-ai.org`
+  - Linked from: `apps/tools-app/components/layout/GlobalLayout.tsx`
+  - Auth: `CIRCLE_API_TOKEN`, `CIRCLE_COMMUNITY_ID`, `CIRCLE_COMMUNITY_URL` (whitelisted in `turbo.json`; not yet read by app code — provisioned for future server-side calls)
+  - Flow: same email across Supabase + Circle for soft SSO; no direct API integration in repo currently
+
+**Mail forwarding (operational, not in code):**
+- **ImprovMX** — forwards `admin@generation-ai.org` and similar (per user memory `reference_mail_forwarding.md`)
 
 ## Data Storage
 
 **Databases:**
-- Supabase PostgreSQL
-  - Connection: `NEXT_PUBLIC_SUPABASE_URL` (wbohulnuwqrhystaamjc.supabase.co)
-  - Client: `@supabase/supabase-js` 2.103.0 (browser) + `@supabase/ssr` 0.10.2 (server)
-  - Tables:
-    - `auth.users` - Supabase built-in auth users
-    - `profiles` - Extended user profile data
-    - `content_items` - KI-Tool knowledge base (tools-app)
-    - `chat_sessions` - Chat history sessions (tools-app)
-    - `chat_messages` - Individual chat messages with roles and content
-  - Access:
-    - Admin: `SUPABASE_SERVICE_ROLE_KEY` (server-side only)
-    - Public: `NEXT_PUBLIC_SUPABASE_ANON_KEY` with Row Level Security (RLS)
-  - Auth method: Session cookies via `@supabase/ssr` middleware
+- **Supabase Postgres** (shared instance: `wbohulnuwqrhystaamjc.supabase.co`)
+  - Auth: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (browser/SSR), `SUPABASE_SERVICE_ROLE_KEY` (server-only admin)
+  - Client factory: `packages/auth/src/{browser,server,admin,middleware}.ts` exposed via `@genai/auth`, `@genai/auth/server`, `@genai/auth/admin`, `@genai/auth/middleware`
+  - Used in: `apps/tools-app/lib/supabase.ts`, `apps/website/lib/supabase/`, all API routes
+  - Migrations: `supabase/` (root), `apps/website/supabase/`, `apps/tools-app/supabase/`
 
 **File Storage:**
-- Supabase Storage (implicit)
-  - Purpose: Potential for image/asset storage
-  - Status: Not actively used in current codebase
+- Local filesystem for build artifacts only (no external object storage configured)
+- Brand assets in `brand/` and per-app `public/`
 
-**Caching:**
-- Upstash Redis
-  - Endpoint: `UPSTASH_REDIS_REST_URL`
-  - Client: `@upstash/redis` 1.37.0
-  - Purpose: Rate limiting via `@upstash/ratelimit` 2.0.8
-  - Auth: `UPSTASH_REDIS_REST_TOKEN`
-  - Used in: `apps/tools-app/lib/ratelimit.ts`
+**Caching / Rate Limiting:**
+- **Upstash Redis** — sliding-window rate limits (10/min IP, 60/h session)
+  - Wired in: `apps/tools-app/lib/ratelimit.ts` (`Redis.fromEnv()`)
+  - Auth: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
+  - Optional with graceful degradation per Zod schema
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Supabase Auth
-  - Method: Passwordless (magic links via email)
-  - Provider: `@supabase/supabase-js` + `@supabase/ssr`
-  - Session Management: HTTP-only cookies (set via middleware in `packages/auth/src/middleware.ts`)
-  - Cookie Domain: `.generation-ai.org` (shared across website and tools-app)
-  - Soft SSO: Same email registers once, logs into both apps
-
-**Implementation Location:**
-- Middleware: `packages/auth/src/middleware.ts` - Cookie management per Supabase pattern
-- Browser Client: `packages/auth/src/browser.ts` - createBrowserClient for client-side auth
-- Server Client: `packages/auth/src/server.ts` - createServerClient for server-side operations
-- Admin Client: `packages/auth/src/admin.ts` - createClient with service role key
-- Helpers: `packages/auth/src/helpers.ts` - getCurrentUser(), getSession()
-
-**Auth Disabled:**
-- Sign-up endpoint: `apps/website/app/api/auth/signup/route.ts` returns 503 (temporarily disabled)
-- Can be restored from git history
+- **Supabase Auth** — magic-link based, cookie-bound sessions via `@supabase/ssr`
+- Cross-app session sharing via `NEXT_PUBLIC_COOKIE_DOMAIN` (set in both `next.config.ts` files) — enables `.generation-ai.org` cookie scope between website and tools-app
+- Sign-up endpoint currently disabled (returns 503): `apps/website/app/api/auth/signup/route.ts`
+- Account deletion: `apps/tools-app/app/api/account/delete/`
+- Sign-out: `apps/tools-app/app/auth/signout/route.ts`
+- Middleware/proxy: `apps/website/proxy.ts`, `apps/tools-app/proxy.ts` (also handle CSP nonce — see `LEARNINGS.md`)
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- Sentry (tools-app only)
-  - SDK: `@sentry/nextjs` 10
-  - Config: `apps/tools-app/sentry.server.config.ts`, `apps/tools-app/sentry.edge.config.ts`
-  - DSN: `https://67d7d952c96ed82810c68e17aeec8ce3@o4511218002362368.ingest.de.sentry.io/4511218004197456`
-  - Sampling: tracesSampleRate = 1 (100%, should adjust in production)
-  - Features: Automatic instrumentation, Vercel Cron monitoring, PII capture enabled
-  - Website: No Sentry configured (minimal error tracking)
+- **Sentry** (tools-app only)
+  - Config: `apps/tools-app/sentry.server.config.ts`, `apps/tools-app/sentry.edge.config.ts`, `apps/tools-app/instrumentation.ts`, `apps/tools-app/instrumentation-client.ts`
+  - DSN hardcoded in server config (project: `o4511218002362368`)
+  - Build wrapped via `withSentryConfig` in `apps/tools-app/next.config.ts`
+  - `tracesSampleRate: 1`, `enableLogs: true`, `sendDefaultPii: true`
 
-**Performance Metrics:**
-- Vercel Speed Insights
-  - SDK: `@vercel/speed-insights` 2.0.0 (both apps)
-  - Tracks: Web Vitals, Performance metrics
-  - Integration: Automatic with Vercel deployment
+**Performance:**
+- **Vercel Speed Insights** (`@vercel/speed-insights`) in both apps
 
-**Monitoring & Uptime:**
-- Better Stack (referenced in docs, integration status unknown)
-  - Purpose: Uptime monitoring and status page
-  - Status: Mentioned in architecture, not visible in code
+**Uptime:**
+- **Better Stack** monitors `generation-ai.org`, `tools.generation-ai.org`, `community.generation-ai.org` (configured externally; see `.planning/research/monitoring.md`)
 
 **Logs:**
-- Vercel Logs (default)
-  - Access: Vercel Dashboard > Logs
-  - Framework: Structured logging via console.log/error
+- `console.error` / `console.log` shipped to Vercel logs and (in tools-app) forwarded to Sentry via `enableLogs: true`
 
 **Analytics:**
-- Status: Not detected in codebase (potential gap)
+- Internal analytics module: `apps/tools-app/lib/analytics.ts`
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Vercel
-  - Projects:
-    - `website` - generation-ai.org (root: `apps/website/`)
-    - `tools-app` - tools.generation-ai.org (root: `apps/tools-app/`)
-  - GitHub Integration: Automatic deployment on push to main
-  - Preview Deployments: Automatic for pull requests
-  - Build Command: `turbo build` (monorepo-aware caching)
-  - Start Command: `next start`
+- Vercel — two projects (website, tools-app)
+- Build version surfaced via `NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA` (mapped from `VERCEL_GIT_COMMIT_SHA` in `apps/tools-app/next.config.ts`)
 
 **CI Pipeline:**
-- GitHub Actions (referenced in Playwright config: `process.env.CI`)
-  - E2E Tests: Run on CI with retry=2, 1 worker
-  - Local Testing: Run in parallel with 0 retries
-  - Config: `packages/e2e-tools/playwright.config.ts`
+- No GitHub Actions in repo (no `.github/workflows/` detected)
+- Vercel handles preview + prod deploys on push
+- Sentry source maps uploaded silently unless `CI=true`
 
-**Versioning & Changelog:**
-- Changesets
-  - CLI: `@changesets/cli` 2.30.0
-  - Changelog Generator: `@changesets/changelog-github` 0.6.0
-  - Workflow: `pnpm changeset` before commit, `pnpm version` for release
-  - Linked Apps: website + tools-app (co-versioned)
-  - Ignored: `@genai/config` (internal package)
+**Versioning:**
+- Changesets — `linked: [website, tools-app]`, `ignore: [@genai/config]`
 
 ## Environment Configuration
 
-**Required env vars (tools-app):**
-- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anon key
-- `SUPABASE_SERVICE_ROLE_KEY` - Supabase admin key (Vercel only)
-- `GOOGLE_GENERATIVE_AI_API_KEY` - Gemini API key
+**Required env vars (per `turbo.json` `globalPassThroughEnv` + `apps/tools-app/lib/env.ts`):**
 
-**Optional env vars (graceful fallback):**
-- `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` - Rate limiting disabled if missing
-- `EXA_API_KEY` - Web search disabled if missing
-- `ANTHROPIC_API_KEY` - Claude imports available but not inference
-- `ZHIPU_API_KEY`, `MINIMAX_API_KEY` - LLM fallbacks for Chinese market
+| Var | Scope | Required | Used in |
+|-----|-------|----------|---------|
+| `NEXT_PUBLIC_SUPABASE_URL` | client | yes | both apps via `@genai/auth` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | client | yes | both apps via `@genai/auth` |
+| `SUPABASE_SERVICE_ROLE_KEY` | server | yes (tools-app) | `@genai/auth/admin` |
+| `NEXT_PUBLIC_COOKIE_DOMAIN` | client | yes (prod) | `apps/*/next.config.ts` |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | server | optional | `apps/tools-app/lib/llm.ts` |
+| `ANTHROPIC_API_KEY` | server | optional | `apps/tools-app/lib/agent.ts` |
+| `MINIMAX_API_KEY` | server | optional | (validated only) |
+| `ZHIPU_API_KEY` | server | optional | (validated only) |
+| `EXA_API_KEY` | server | optional | `apps/tools-app/lib/exa.ts` |
+| `UPSTASH_REDIS_REST_URL` | server | optional | `apps/tools-app/lib/ratelimit.ts` |
+| `UPSTASH_REDIS_REST_TOKEN` | server | optional | `apps/tools-app/lib/ratelimit.ts` |
+| `RESEND_API_KEY` | server | yes (website) | `apps/website/lib/email.ts` |
+| `DEEPGRAM_API_KEY` | server | feature-gated | `apps/tools-app/app/api/voice/*` |
+| `FIRECRAWL_API_KEY` | server | feature-gated | `apps/tools-app/app/api/defuddle/route.ts` |
+| `CIRCLE_API_TOKEN` | server | provisioned | not yet wired |
+| `CIRCLE_COMMUNITY_ID` | server | provisioned | not yet wired |
+| `CIRCLE_COMMUNITY_URL` | server | provisioned | not yet wired |
+| `NEXT_PUBLIC_APP_URL` | client | optional | `apps/tools-app/app/auth/signout/route.ts` (defaults to `https://tools.generation-ai.org`) |
+| `SKIP_ENV_VALIDATION` | server | dev-only | `apps/tools-app/lib/env.ts` |
 
 **Secrets location:**
-- Vercel Environment Variables (production)
-  - Dashboard: vercel.com > Project Settings > Environment Variables
-  - Protected: All secrets marked as "Sensitive"
-  - Scope: Per app, per environment (Preview, Production)
-- Local Development: `.env.local` files (git-ignored)
-  - Reference: `apps/tools-app/.env.example`
-
-**Validation:**
-- Tools-app: `lib/env.ts` validates at build time using t3-env + Zod
-- Skip validation: Set `SKIP_ENV_VALIDATION=1` (e.g., Docker builds without secrets)
-- Build will fail if required env vars missing
+- Local: `.env.local` per app (gitignored)
+- Vercel: project-level env vars per environment (Preview / Production)
+- `tsx --env-file=.env.local scripts/test-kb-tools.ts` pattern used for local script auth
 
 ## Webhooks & Callbacks
 
-**Incoming Webhooks:**
-- Not detected in codebase
-- Potential: Circle.so webhooks (not implemented)
+**Incoming:**
+- Supabase auth callback handled by `proxy.ts` middleware on both apps (cookie refresh)
+- No external webhooks (Resend, Stripe, etc.) registered in repo
 
-**Outgoing Webhooks:**
-- Supabase Realtime (implicit)
-  - Purpose: Chat message updates, session changes
-  - Transport: WebSocket
-  - Not explicitly called, managed by Supabase client
-
-**Callback URLs:**
-- Magic Link Flow: User email → Resend → Vercel function → Supabase redirect
-- Circle.so: Soft SSO via same email (no webhook, manual linking)
-
-## Third-Party Scripts
-
-**Performance & Analytics:**
-- Vercel Speed Insights - Automatic injection
-- Sentry (tools-app) - Automatic error capture
-
-**Font Loading:**
-- Status: Not explicitly configured (uses Tailwind defaults)
-
-## Data Flow
-
-**Authentication:**
-```
-User → Website/tools-app → Supabase Auth → Magic Link (Resend) → Verify → Cookies
-```
-
-**Chat:**
-```
-User (tools-app) → Rate Limit (Upstash) → LLM (Google Gemini) → Supabase (history) → Response
-```
-
-**Tool Search:**
-```
-User Query → Gemini (2.5 Flash-Lite) → Supabase (content_items) → Response + Sources
-```
-
-**Agent Mode (member):**
-```
-User → Rate Limit → Gemini 3 Flash (Agent) → Tools (KB-Tools, Exa API) → Response
-```
+**Outgoing:**
+- LLM, Exa, Firecrawl, Deepgram, Resend — outbound calls only
 
 ---
 
-*Integration audit: 2026-04-17*
+*Integration audit: 2026-04-19*

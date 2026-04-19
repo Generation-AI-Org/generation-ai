@@ -1,0 +1,78 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    "apps/*": {
+      "entry": [
+        "app/**/{page,layout,route,loading,error,not-found,global-error,template,default}.{ts,tsx}",
+        "proxy.ts",
+        "instrumentation.ts",
+        "instrumentation-client.ts",
+        "sentry.{client,server,edge}.config.ts",
+        "next.config.{ts,js,mjs}",
+        "vitest.config.{mts,ts}",
+        "__tests__/**/*.test.{ts,tsx}",
+        "emails/**/*.tsx"
+      ],
+      "project": [
+        "**/*.{ts,tsx}!",
+        "!**/node_modules/**",
+        "!**/.next/**",
+        "!**/dist/**",
+        "!**/playwright-report/**",
+        "!**/test-results/**",
+        "!emails/dist/**"
+      ],
+      "ignore": [
+        "next.config.{ts,js,mjs}",
+        "postcss.config.{mjs,js}",
+        "eslint.config.{mjs,js}",
+        "tailwind.config.{ts,js}"
+      ]
+    },
+    "packages/auth": {
+      "entry": [
+        "src/index.ts",
+        "src/server.ts",
+        "src/browser.ts",
+        "src/helpers.ts",
+        "src/middleware.ts",
+        "src/admin.ts",
+        "vitest.config.{mts,ts}",
+        "__tests__/**/*.test.{ts,tsx}"
+      ],
+      "project": ["src/**/*.ts", "__tests__/**/*.{ts,tsx}"]
+    },
+    "packages/ui": {
+      "entry": [
+        "src/index.ts",
+        "vitest.config.{mts,ts}",
+        "src/**/*.test.{ts,tsx}"
+      ],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "packages/types": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/config": {
+      "entry": ["**/*.{js,mjs,ts}"],
+      "project": ["**/*.{js,mjs,ts}"]
+    },
+    "packages/emails": {
+      "entry": [
+        "src/index.ts",
+        "src/templates/*.tsx",
+        "scripts/**/*.{ts,mjs,js}"
+      ],
+      "project": ["src/**/*.{ts,tsx}", "scripts/**/*.{ts,mjs,js}"],
+      "ignore": ["scripts/**"]
+    },
+    "packages/e2e-tools": {
+      "entry": [
+        "tests/**/*.spec.ts",
+        "playwright.config.{ts,mts}"
+      ],
+      "project": ["**/*.ts", "!**/node_modules/**", "!**/playwright-report/**", "!**/test-results/**"]
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { createServerClient } from '@/lib/supabase'
 import type { ContentItem, ContentItemMeta } from '@/lib/types'
 
-export async function getPublishedItems(): Promise<ContentItemMeta[]> {
+async function getPublishedItems(): Promise<ContentItemMeta[]> {
   const supabase = createServerClient()
   const { data, error } = await supabase
     .from('content_items')

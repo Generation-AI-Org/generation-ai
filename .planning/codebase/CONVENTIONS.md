@@ -1,231 +1,229 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-04-17
+**Analysis Date:** 2026-04-19
 
-## Naming Patterns
+## Repo Layout & Workspace
+
+Monorepo via **Turborepo + pnpm** (`pnpm@10.8.1`). Workspaces declared in `pnpm-workspace.yaml`:
+- `apps/*` — `@genai/website`, `@genai/tools-app`
+- `packages/*` — `@genai/auth`, `@genai/ui`, `@genai/types`, `@genai/config`, `@genai/emails`, `@genai/e2e-tools`
+
+**Package naming:** All workspace packages use the `@genai/<name>` scope. Internal deps reference `workspace:*`.
+
+**Root scripts** (`package.json`):
+```bash
+pnpm dev | build | lint | test | e2e      # Turbo-run alles
+pnpm dev:website | dev:tools              # gefiltert
+pnpm changeset | version | release        # Versioning
+```
+
+## TypeScript
+
+**Base config:** `packages/config/tsconfig/base.json` — extended by every app/package via `"extends": "@genai/config/tsconfig/base.json"`.
+
+Key compiler options:
+- `strict: true` (non-negotiable)
+- `target: ES2017`, `module: esnext`, `moduleResolution: bundler`
+- `jsx: react-jsx`, `noEmit: true`, `isolatedModules: true`
+
+**Path alias:** `@/*` → app root. Example: `import { Button } from "@/components/ui/button"`. Configured per app in `apps/*/tsconfig.json`.
+
+**Cross-package imports:** Use the package name with subpath exports, never relative paths into another package.
+- `import { createServerClient } from "@genai/auth/server"`
+- `import type { ChatMessage } from "@genai/types"`
+
+## ESLint
+
+**Shared config:** `packages/config/eslint/next.mjs` exports `nextConfig` (next-vitals + next-typescript + global ignores for `.next/`, `out/`, `build/`, `next-env.d.ts`).
+
+**App-level overrides** (`apps/*/eslint.config.mjs`) disable React 19 Compiler rules that break existing patterns:
+- `react-hooks/set-state-in-effect: off`
+- `react-hooks/static-components: off`
+- `react-hooks/immutability: off`
+
+`tools-app` additionally disables `@next/next/no-html-link-for-pages` to allow `<a>` tags for auth links (bypasses the router cache).
+
+**No Prettier config in repo** — `prettier` is installed in `apps/website/package.json` but no shared `.prettierrc`. Match existing style of the file you're editing.
+
+## Naming Conventions
 
 **Files:**
-- Components (React): `PascalCase.tsx` — `Hero.tsx`, `Button.tsx`, `ChatInput.tsx`
-- Utilities/helpers: `camelCase.ts` — `sanitize.ts`, `agent.ts`, `ratelimit.ts`
-- Route handlers: `route.ts` in Next.js app directory structure
-- Test files: `[ComponentName].test.tsx` or `[module].test.ts` in `__tests__/` directories
-- API routes: `route.ts` in `app/api/[route]/` paths
+- React components in `apps/website/components/ui/` — **kebab-case**: `button.tsx`, `network-grid.tsx`, `text-scramble.tsx`
+- React components in `apps/tools-app/components/` — **PascalCase**: `ChatInput.tsx`, `MessageList.tsx`, `ContentCard.tsx`
+- Lib modules — **kebab-case** or single-word lowercase: `lib/csp.ts`, `lib/kb-tools.ts`, `lib/ratelimit.ts`
+- Test files — match source: `Button.test.tsx`, `chat.test.ts` under `__tests__/`
+- Config — `*.config.{ts,mts,mjs}`
 
-**Functions:**
-- Named exports use `camelCase`: `stripThinkTags()`, `getGeminiClient()`, `checkRateLimit()`
-- React components use `PascalCase`: `function Button()`, `export function Hero()`
-- Private functions prefix with underscore: `_geminiClient` (state variable, not function)
-- Async functions: standard naming, no special prefix
+> **NOTE:** The two apps disagree on component file casing (kebab in website, Pascal in tools-app). Match the convention of the app you're working in. Don't refactor existing files.
 
-**Variables:**
-- Constants: `SCREAMING_SNAKE_CASE` — `MODEL`, `LITE_MODEL`, `SYSTEM_PROMPT`
-- Standard variables: `camelCase` — `ipRatelimit`, `sessionId`, `seenSlugs`
-- Component props: `camelCase` — `isLoading`, `onSend`, `onClick`, `variant`
-- Prefix state with `_` when singleton cached value: `_geminiClient`, `_anthropicClient`
+**Functions / variables:** `camelCase`. **Types / Components:** `PascalCase`. **Constants:** `SCREAMING_SNAKE_CASE` (e.g. `URLS`, `ERROR_WHITELIST`).
 
-**Types:**
-- Interfaces: `PascalCase` — `ChatMessage`, `RateLimitResult`, `KBListItem`, `RecommendationResponse`
-- Type aliases: `PascalCase` — `ChatMode`, `ContentType`, `ContentSource`
-- Generic parameters: single uppercase letter or descriptive — `<T>`, `<Props>`
-
-**Imported items:**
-- Lowercase module names: `import { Button } from "@/components/ui/button"`
-- Mixed imports for components and utilities: `import React, { useState } from "react"`
-- Path aliases used: `@/` for src root, `@genai/` for workspace packages
-
-## Code Style
-
-**Formatting:**
-- Tool: Prettier
-- Settings (from `.prettierrc`):
-  - `semi: true` — Statements end with semicolons
-  - `singleQuote: false` — Double quotes for strings
-  - `tabWidth: 2` — 2-space indentation
-  - `trailingComma: "es5"` — Trailing commas in ES5-valid contexts (objects, arrays)
-
-**Linting:**
-- Tool: ESLint
-- Config: `eslint.config.mjs` using flat config format (ESLint 9+)
-- Extends: `eslint-config-next/core-web-vitals` and `eslint-config-next/typescript`
-- Website-specific overrides in `apps/website/eslint.config.mjs`:
-  - Disables `react-hooks/set-state-in-effect` (React 19 compiler conflicts)
-  - Disables `react-hooks/static-components` (React 19 patterns)
-  - Disables `react-hooks/immutability` (React 19 patterns)
-- Ignores: `.next/`, `out/`, `build/`, `next-env.d.ts`
+**Env vars:** `NEXT_PUBLIC_*` prefix for browser-exposed values; otherwise plain `SCREAMING_SNAKE`. Validation via `@t3-oss/env-nextjs` in `apps/tools-app/lib/env.ts`.
 
 ## Import Organization
 
-**Order:**
-1. External packages (React, Next.js, third-party) — `import { useState } from "react"`
-2. Workspace packages — `import { Button } from "@genai/ui"`
-3. Absolute imports from app — `import { checkRateLimit } from "@/lib/ratelimit"`
-4. Relative imports (same-module helpers) — rarely used, prefer absolute
-5. Types/interfaces — mixed with imports, no separate block
+Observed order (no enforced linter rule):
+1. External packages (React, Next, Supabase, AI SDKs)
+2. Workspace packages (`@genai/*`)
+3. Path-aliased local imports (`@/lib`, `@/components`)
+4. Relative imports (rare — prefer aliases)
 
-**Example from `apps/tools-app/lib/agent.ts`:**
-```typescript
-import OpenAI from 'openai'
-import { KB_TOOLS_OPENAI, executeTool } from './kb-tools'
-import type { ChatMessage, ContentSource, ContentType } from './types'
-```
+Type-only imports use `import type { ... }`. Side-effect imports first (e.g. `import "@testing-library/jest-dom/vitest"`).
 
-**Path Aliases:**
-- `@/` — src root of current app (via `tsconfig.json`)
-- `@genai/auth` — workspace auth package
-- `@genai/types` — workspace types package
-- `@genai/config` — workspace config package
+## Styling — Tailwind v4
 
-## Error Handling
+Tailwind v4 with `@tailwindcss/postcss` (catalog version). No `tailwind.config.{js,ts}` — config is **CSS-driven via `@theme`** in `packages/config/tailwind/base.css`.
 
-**Patterns:**
-- Try-catch for external operations (API calls, parsing) — `agent.ts`, `ratelimit.ts`, `llm.ts`
-- Silent catch for non-critical parsing: `} catch {} {}`
-- Log with context before throwing: `console.log('[Timing] Gemini 3 Flash request starting...')`
-- Return error objects instead of throwing in async APIs: `{ success: false, error: ... }`
-- Graceful degradation on Redis failures: continue request instead of 500
+**Design system entry:** `packages/config/tailwind/base.css` (imported by each app's `app/globals.css`). Defines:
+- Radix `slate` neutral scale with semantic role mapping `slate-1`..`slate-12` (App BG, Subtle BG, UI BG, Hover BG, Active BG, Subtle border, UI border, Hover border, Solid BG, Hover solid, Low-contrast text, High-contrast text)
+- Brand tokens via CSS custom properties: `--bg`, `--bg-card`, `--accent`, `--text`, `--border`, `--bg-header`, …
+- Geist Sans + Geist Mono font stacks via `--font-sans` / `--font-mono` (loaded via `next/font`)
+- Semantic status colors: `--status-error`, `--status-success`, `--status-warning`, `--status-info`
+- Tailwind utility bindings via `@theme inline` block (e.g. `--color-accent` → `bg-accent`, `text-accent`)
 
-**Example from `ratelimit.ts`:**
-```typescript
-try {
-  const [ipResult, sessionResult] = await Promise.all([
-    ipRatelimit.limit(ip),
-    sessionRatelimit.limit(sessionId),
-  ])
-  // Handle results
-} catch (error) {
-  // Graceful degradation: if Redis fails, allow the request
-  return { success: true, limit: 100, remaining: 100 }
+**Theme switching:** Dark is **default** (`:root`, no class). Light theme via `.light` class on `<html>`. Slate dark values are re-aliased onto `:root:not(.light)` because Radix v3 ships dark on `.dark`/`.dark-theme` only (see comment block in `base.css`).
+
+**Class composition:** `clsx` + `tailwind-merge` via `cn()` helper in `apps/*/lib/utils.ts`. **Always use `cn()`** when combining conditional classes.
+
+**Variants:** `class-variance-authority` (cva) for component variants. Reference: `apps/website/components/ui/button.tsx`.
+
+**Color rules:**
+- Never use hex literals for neutrals — always `var(--slate-N)` or the bound Tailwind utility
+- Brand tokens via CSS variable references (`bg-[var(--accent)]`, `text-[var(--text)]`)
+- Status colors stay separate from brand accents (must never collide with `--accent`)
+
+**Typography roles** (`base.css`, per UI-SPEC §B):
+- `h1` → Geist Mono, `letter-spacing: -0.02em`, `line-height: 1.05`
+- `h2` → Geist Sans, tighter tracking
+- `button` → Geist Mono, `letter-spacing: 0.02em`
+- Body ligatures disabled globally (`font-feature-settings: "liga" 0, "calt" 0`)
+
+## React / Next.js Patterns
+
+- **Next.js 16, React 19, App Router** in both apps
+- Server Components by default. `"use client"` directive only when needed (state, refs, browser APIs)
+- Client components: `apps/tools-app/components/AuthProvider.tsx`, `ThemeProvider.tsx`
+- Async Server Components for data fetching (e.g. `app/[slug]/page.tsx`)
+- Route handlers under `app/api/*/route.ts` exporting named HTTP methods (`GET`, `POST`)
+- Sentry instrumentation via `instrumentation.ts` + `instrumentation-client.ts` (tools-app)
+
+**Auth:** Always go through `@genai/auth` — never import `@supabase/ssr` directly in app code. Subpath imports: `@genai/auth/server`, `@genai/auth/browser`, `@genai/auth/middleware`, `@genai/auth/admin`.
+
+**Error boundaries:** `error.tsx`, `global-error.tsx`, `not-found.tsx` per Next conventions in `apps/tools-app/app/`.
+
+## Component Patterns
+
+**Two distinct layers:**
+1. **`apps/website/components/ui/`** — shadcn-style primitives built on `@base-ui/react`, with `cva` variants. Kebab-case files. The Button uses `ButtonPrimitive` from `@base-ui/react/button`.
+2. **`apps/tools-app/components/<feature>/`** — Feature-grouped composites (`chat/`, `library/`, `detail/`, `layout/`). PascalCase files.
+
+**Standard component shape:**
+```tsx
+"use client"  // only if needed
+
+import { cn } from "@/lib/utils"
+
+interface Props {
+  /* required first, optional after */
+}
+
+export default function ComponentName({ ... }: Props) {
+  return <div className={cn("base classes", conditional && "extra")} />
 }
 ```
 
-**Example from `agent.ts`:**
-```typescript
-try {
-  const parsed = JSON.parse(result)
-  if (parsed && parsed.slug && !seenSlugs.has(parsed.slug)) {
-    // Process
-  }
-} catch {
-  // Ignore parse errors - tool response was malformed
-}
-```
+**Default vs named exports:** Both used. Feature components in tools-app default-export. UI primitives in website named-export.
 
-## Logging
+## German Content Rules — Umlaute (PFLICHT)
 
-**Framework:** Console methods only (no external logger)
+**Always use real Umlaute** in user-facing content: `ö ä ü ß`. **Never** ASCII transliteration `oe ae ue ss`.
 
-**Patterns:**
-- Timing info: `console.log('[Timing] Message with timing info...')` — includes milliseconds
-- Debug-level: use brackets for context, e.g. `[DebugContext]`
-- Production errors: log with context before returning error response
-- No console.warn or console.error observed — uses console.log for all
+Applies to:
+- Website copy, landing pages, marketing
+- Legal pages (`datenschutz`, `impressum`)
+- Email templates (`packages/emails/src/templates/`)
+- Toast messages, button labels, placeholders, error messages
+- All user-facing strings in components
 
-**Example from `agent.ts`:**
-```typescript
-const startTime = Date.now()
-console.log(`[Timing] Gemini 3 Flash request starting...`)
-const response = await getGeminiClient().chat.completions.create(...)
-const elapsed = Date.now() - startTime
-console.log(`[Timing] Gemini completed in ${elapsed}ms | Tokens: ${usage?.prompt_tokens ?? '?'} in, ${usage?.completion_tokens ?? '?'} out`)
-```
+Example placeholder (correct): `"Tippe weiter oder drücke Enter zum Abbrechen..."`
+Example button (correct): `"Mit Passwort anmelden"`, `"Passwort speichern"`
+
+**Exceptions** (ASCII allowed):
+- Code identifiers, file names, package names
+- Internal docs in `.planning/`
+- Git commit messages (mixed in practice)
+- Slug fragments in URLs (`ueber` is acceptable as a slug)
 
 ## Comments
 
-**When to Comment:**
-- Context for complex logic: "Dual-layer rate limiting: IP + Session"
-- References to architecture docs: `// Source: CONTEXT.md D-12 to D-16`
-- State of incomplete features: `// TEMPORARILY DISABLED — restore from git history`
-- Inline clarifications for tool call formats: `// Handle both function and custom tool call formats`
+- German is fine for in-line dev notes, especially explaining business logic or referencing incidents (cross-ref `LEARNINGS.md`)
+- Reference incident dates and learnings inline (`// Siehe LEARNINGS.md` style)
+- JSDoc for non-obvious public functions in lib modules; not enforced everywhere
+- Heavy use of `// ─── Section ─────────────────────` ASCII headers in CSS and longer files
 
-**JSDoc/TSDoc:**
-- Functions with external impact use JSDoc blocks: `/** @param ... @returns ... */`
-- Not on every function — only where parameter/return types need explanation
-- Used on public library functions and exported utilities
+## Error Handling
 
-**Example from `ratelimit.ts`:**
-```typescript
-/**
- * Check rate limits for both IP and session.
- * Both must pass for the request to proceed.
- *
- * @param ip - Client IP address
- * @param sessionId - Chat session ID
- * @returns Rate limit result with success flag and retry info
- */
-export async function checkRateLimit(ip: string, sessionId: string): Promise<RateLimitResult>
-```
+- API routes return JSON with `{ error: string, ... }` and a meaningful HTTP status (400, 405, 429, 500)
+- Rate-limit responses include `Retry-After` header + `retryAfter` in body (see `apps/tools-app/app/api/chat/route.ts`)
+- Sentry captures unhandled errors in tools-app (instrumentation files)
+- Client errors surface via toast / inline UI text in German
 
-## Function Design
+## Logging
 
-**Size:** Keep functions focused and testable. Agent loop in `agent.ts` exceeds 200 lines — acceptable for complex orchestration, but breaks long loops into helper functions.
-
-**Parameters:** 
-- Prefer objects for multiple parameters (not observed, but type-based pattern)
-- Use destructuring in function signatures: `({ className, variant, size, ...props })`
-- Keep async functions flat without deep nesting
-
-**Return Values:**
-- Return objects with explicit shape for complex data: `{ response, model }`
-- Use Promise-based returns for async: `Promise<RateLimitResult>`
-- Return null for optional/not-found: `return null` instead of undefined
-- Error responses include both success flag and detail: `{ success: false, error: 'message', retryAfter: 60 }`
-
-**Example from `button.tsx`:**
-```typescript
-function Button({
-  className,
-  variant = "default",
-  size = "default",
-  ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
-  return (
-    <ButtonPrimitive
-      data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
-}
-```
+- **No dedicated logging framework.** `console.*` for ad-hoc, Sentry for production exceptions
+- Avoid `console.log` in committed code outside `scripts/`
 
 ## Module Design
 
-**Exports:**
-- Named exports preferred over default: `export function checkRateLimit()`, `export { Button, buttonVariants }`
-- Type exports explicit: `export type { ChatMessage, ContentType }`
-- Re-exports for type aggregation: `export type { ... } from '@genai/types/content'`
+- **Subpath exports** for packages with multiple entry points (`@genai/auth/server`, `@genai/config/eslint/next`, `@genai/config/tailwind/base.css`)
+- No barrel re-exports across feature boundaries; each component imported directly
+- `lib/*` modules are flat — one concern per file (`csp.ts`, `ratelimit.ts`, `sanitize.ts`, `agent.ts`, `llm.ts`)
 
-**Barrel Files:**
-- Used in `lib/types.ts` to re-export workspace types:
-  ```typescript
-  export type { ContentType, ContentStatus } from '@genai/types/content'
-  export interface ChatMessage { ... }
-  ```
-- Consolidates app-specific and workspace types in one file
+## Changesets Workflow (PFLICHT)
 
-**File Organization:**
-- One main export per file (component or utility function)
-- Helper functions kept in same file (not split to separate utils unless reused)
-- Large functions broken into private helpers: `stripThinkTags()`, `parseResponse()`
+Versioning + changelogs via **Changesets**. Config in `.changeset/config.json`:
+- `linked: [["@genai/website", "@genai/tools-app"]]` — Apps versioned together
+- `ignore: ["@genai/config"]` — Config package not versioned
+- `changelog: ["@changesets/changelog-github", { repo: "Generation-AI-Org/generation-ai" }]` — auto-links PRs
+- `baseBranch: main`, `access: public`, `commit: false`
 
-## Client vs Server Code
-
-**Patterns:**
-- `'use client'` directive at top of client components (React 19, Next.js 16)
-- Server functions in `/api/route.ts` files, `lib/` modules are isomorphic
-- API routes handle HTTP, business logic in `lib/` folders
-
-**Example from `hero.tsx`:**
-```typescript
-'use client'
-
-import { SignalGrid } from "@/components/ui/signal-grid";
-
-export function Hero() {
-  return (...)
-}
+**Per change:**
+```bash
+pnpm changeset            # interaktiv: packages? bump-level? message?
+git add .changeset/       # commit das changeset zusammen mit dem Feature
 ```
+
+**Bei Release:**
+```bash
+pnpm version              # generates CHANGELOGs + bumps versions
+git add -A && git commit -m "chore: release"
+git tag vX.Y.Z
+git push --follow-tags
+gh release create vX.Y.Z
+```
+
+**Rules:**
+- Every non-trivial change needs a changeset
+- Changeset file ships in the same commit as the feature
+- `CHANGELOG.md` is generated — never edit by hand
+- Apps are linked → bumping one bumps the other
+
+## Git / Commits
+
+- Conventional-style prefixes observed: `feat`, `fix`, `chore`, `docs`, `feat(scope)`, `feat(<phase-N>)`
+- German is fine in commit messages
+- No push without explicit OK from Luca (per project CLAUDE.md)
+- No direct prod deploys without OK; preview deploys are fine
+- Never amend; create new commits
+
+## CI
+
+GitHub Actions in `.github/workflows/`:
+- **`ci.yml`** — push to main + PRs: install → build → lint → unit tests. E2E job is gated on `STAGING_URL` var
+- **`smoke-prod.yml`** — post-main-push (with 3-min sleep for Vercel promote), hourly cron, manual dispatch. Runs `smoke.spec.ts` against real prod URLs
+
+Turbo cache is wired via `TURBO_TOKEN` / `TURBO_TEAM` secrets.
 
 ---
 
-*Convention analysis: 2026-04-17*
+*Convention analysis: 2026-04-19*
