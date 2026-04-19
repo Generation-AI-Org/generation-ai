@@ -4,7 +4,13 @@ import { defineConfig, devices } from "@playwright/test"
 
 dotenv.config({ path: ".env.test.local" })
 
-// override via BASE_URL=https://tools.generation-ai.org in .env.test.local
+// D-08: Default gegen Prod. Override via E2E_BASE_URL (oder legacy BASE_URL).
+// Lokale Dev gegen Dev-Server: E2E_BASE_URL=http://localhost:3001 pnpm exec playwright test
+const BASE_URL =
+  process.env.E2E_BASE_URL ||
+  process.env.BASE_URL ||
+  "https://tools.generation-ai.org"
+
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
@@ -17,7 +23,7 @@ export default defineConfig({
     timeout: 10_000,
   },
   use: {
-    baseURL: process.env.BASE_URL || "http://localhost:3001",
+    baseURL: BASE_URL,
     trace: "on-first-retry",
   },
   projects: [
