@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
-status: Executing Phase 19 (4/5 plans complete, Wave 2 done — Plan 05 CI-Binding next)
-last_updated: "2026-04-19T17:07:37.603Z"
+status: Phase 19 Code-Complete (5/5 plans, Plan 05 pending Human-Verify-Checkpoint)
+last_updated: "2026-04-19T17:15:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 21
-  completed_plans: 18
-  percent: 86
+  completed_plans: 19
+  percent: 90
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,8 +18,8 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Growth-Readiness — 🚧 IN PROGRESS (4/5 plans in Phase 19, Wave 2 complete)
-**Phase:** 19 Password-Flow + Test-Baseline — Wave 2 DONE (Plans 01-04), Plan 05 next (CI-Binding + MANUAL-STEPS)
+**Milestone:** v4.0 Growth-Readiness — 🚧 IN PROGRESS (5/5 plans in Phase 19 code-complete, Plan 05 pending Human-Verify)
+**Phase:** 19 Password-Flow + Test-Baseline — Code-Tasks DONE (Plans 01-05), Plan 05 Human-Verify-Checkpoint offen
 **Last Updated:** 2026-04-19
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged.
 
@@ -58,8 +58,14 @@ progress:
   - Settings-Page rendert neuen Block zwischen Account und Rechtliches (natürliche User-Lesereihenfolge)
   - Build grün (6.0s, 46/46 Pages, /settings als `ƒ` dynamic), alle Acceptance-Criteria-Greps erfüllt
   - Requirements completed: D-03, D-04, D-05
-- Next (Wave 3): Plan 19-05 CI-Binding (GitHub-Actions-Secrets-Referenz + MANUAL-STEPS.md)
-- Artifacts: `.planning/phases/19-password-flow-and-test-baseline/19-01-SUMMARY.md`, `19-02-SUMMARY.md`, `19-03-SUMMARY.md`, `19-04-SUMMARY.md`
+- Plan 19-05 CODE-DONE — CI-Binding + MANUAL-STEPS + Changeset, Commits `c82604d` (CI), `e765b76` (MANUAL-STEPS), `6ab6ae6` (changeset)
+  - `.github/workflows/ci.yml` e2e-Job: STAGING_URL-Gate entfernt, TEST_USER_EMAIL/TEST_USER_PASSWORD aus Repo-Secrets, E2E_BASE_URL als optional Repo-Var, NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY für Magic-Link/Recovery-Helper (Rule-2-Deviation: war nur als Inline-Kommentar im Plan, jetzt als Code)
+  - `.planning/phases/19-password-flow-and-test-baseline/MANUAL-STEPS.md` (133 Zeilen) — 5 Sections: Supabase-User, GitHub-Secrets, E2E_BASE_URL, .env.test.local, Rollback
+  - `.changeset/phase-19-password-flow.md` — @genai/tools-app:minor (linked bumpt @genai/website auto), v4.4.0
+  - Requirements completed: D-07, D-09
+  - Task 4 CHECKPOINT (Human-Verify): PENDING Lucas Setup + Build + `pnpm e2e` gegen Prod
+- **Phase 19 Closure hängt am Human-Verify-Checkpoint** — Luca muss Supabase-Test-User anlegen + GitHub-Secrets setzen + Build/E2E lokal verifizieren, siehe `.planning/phases/19-password-flow-and-test-baseline/MANUAL-STEPS.md`
+- Artifacts: `.planning/phases/19-password-flow-and-test-baseline/19-01-SUMMARY.md`, `19-02-SUMMARY.md`, `19-03-SUMMARY.md`, `19-04-SUMMARY.md`, `19-05-SUMMARY.md`, `MANUAL-STEPS.md`
 
 **Phase 18 — DONE 2026-04-19:**
 

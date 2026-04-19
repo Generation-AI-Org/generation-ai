@@ -481,14 +481,14 @@ Plans:
 
 **Goal:** Eingeloggte User können optional ein Passwort setzen (First-Login-Prompt mit Skip + Settings-Inline-Form mit Re-Auth bei Change). Recovery-Mail-Template bleibt unverändert (nur noch für Vergessen-Case). E2E-Baseline wird repariert (Default gegen Prod, realer Test-User via GitHub-Secrets).
 **Depends on:** — (nur bestehender Auth-Stack)
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 - [x] 19-01-PLAN.md — confirm-Route: has_password-Check + First-Login-Redirect zu /auth/set-password?first=1
 - [x] 19-02-PLAN.md — Set-Password-Page: Skip-Button + metadata-Writes (has_password=true/false)
 - [x] 19-03-PLAN.md — /settings Inline-Form: PasswordSection mit Set/Change-Modi + Re-Auth via signInWithPassword
 - [x] 19-04-PLAN.md — E2E-Config gegen Prod (E2E_BASE_URL) + chat.spec.ts prod-tauglich
-- [ ] 19-05-PLAN.md — CI-Secrets + MANUAL-STEPS.md + Changeset + Human-Verify-Checkpoint
+- [x] 19-05-PLAN.md — CI-Secrets + MANUAL-STEPS.md + Changeset + Human-Verify-Checkpoint
 
 **Scope (updated 2026-04-19 per CONTEXT.md Decisions D-01..D-09):**
 - `/auth/confirm` erweitert: bei Magic-Link + `user_metadata.has_password` weder `true` noch `false` → redirect zu `/auth/set-password?first=1`
