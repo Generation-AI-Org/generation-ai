@@ -61,7 +61,14 @@ export default function AuthCallbackPage() {
 
         // Phase 19: First-Login-Prompt bei Alt-/Neu-Usern ohne has_password-Flag.
         const { data: { user } } = await supabase.auth.getUser()
-        const hasPassword = user?.user_metadata?.has_password
+        if (!user) {
+          // WR-02: getUser kann null liefern wenn Session nicht etabliert wurde
+          // (expired token, network failure, server error). Redirect zu /login
+          // statt auf set-password zu schicken (würde 401).
+          window.location.href = '/login?error=session_failed'
+          return
+        }
+        const hasPassword = user.user_metadata?.has_password
         if (hasPassword !== true && hasPassword !== false) {
           window.location.href = '/auth/set-password?first=1'
           return
@@ -73,7 +80,12 @@ export default function AuthCallbackPage() {
       // No params — PKCE flow, session was set server-side via cookie.
       // Phase 19: First-Login-Prompt bei Alt-/Neu-Usern ohne has_password-Flag.
       const { data: { user } } = await supabase.auth.getUser()
-      const hasPassword = user?.user_metadata?.has_password
+      if (!user) {
+        // WR-02: Session-Etablierung fehlgeschlagen — User zurück zum Login.
+        window.location.href = '/login?error=session_failed'
+        return
+      }
+      const hasPassword = user.user_metadata?.has_password
       if (hasPassword !== true && hasPassword !== false) {
         window.location.href = '/auth/set-password?first=1'
         return

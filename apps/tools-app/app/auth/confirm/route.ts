@@ -39,6 +39,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/auth/set-password?first=1`)
   }
 
-  const redirectPath = next.startsWith('/') ? next : '/'
+  // Safe-redirect: nur same-origin Paths erlauben.
+  // `//evil.com/path` und `/\\evil.com` würden sonst als protocol-relative URL
+  // an externe Domain leiten (open-redirect via Magic-Link, Phishing-Vektor).
+  const isSafePath =
+    next.startsWith('/') &&
+    !next.startsWith('//') &&
+    !next.startsWith('/\\')
+  const redirectPath = isSafePath ? next : '/'
   return NextResponse.redirect(`${origin}${redirectPath}`)
 }

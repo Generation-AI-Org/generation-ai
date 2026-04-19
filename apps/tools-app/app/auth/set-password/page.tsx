@@ -59,7 +59,17 @@ function SetPasswordInner() {
       data: { has_password: false },
     })
     if (error) {
-      console.error('Skip metadata write failed (redirecting anyway):', error.message)
+      // WR-01: Metadata-Write failed → Flag bleibt undefined → User würde beim
+      // nächsten Magic-Link wieder zum First-Login-Prompt geschickt. Statt still zu
+      // redirecten zeigen wir einen Error, sodass User Retry oder Passwort-Setzen
+      // als Alternative wählen kann.
+      console.error('Skip metadata write failed:', error.message)
+      setMessage({
+        type: 'error',
+        text: 'Skip konnte nicht gespeichert werden. Bitte versuch es nochmal oder setz jetzt ein Passwort.',
+      })
+      setSkipping(false)
+      return
     }
     window.location.href = '/'
   }
