@@ -22,9 +22,9 @@ const LOGO_RASTER_H = 1080
 // Height chosen so there's generous whitespace above + below the logo inside
 // the content area (~140 raster px = ~35 display px each side).
 const TERMINAL_W = 1120
-const TERMINAL_H = 900
+const TERMINAL_H = 820
 const TITLEBAR_H = 96
-const CONTENT_H = TERMINAL_H - TITLEBAR_H // 804
+const CONTENT_H = TERMINAL_H - TITLEBAR_H // 724
 
 // Logo placement inside terminal content area — centered with generous space.
 const LOGO_W_IN_TERMINAL = 680
