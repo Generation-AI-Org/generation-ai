@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: UX Polish & Feature Expansion
-status: unknown
-last_updated: "2026-04-18T16:58:07.705Z"
+status: Ready to plan
+last_updated: "2026-04-19T11:26:37.462Z"
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 12
-  completed_plans: 9
-  percent: 75
+  completed_phases: 3
+  total_plans: 17
+  completed_plans: 14
+  percent: 82
 ---
 
 # Project State — Generation AI Monorepo
@@ -19,7 +19,7 @@ progress:
 ## Current Status
 
 **Milestone:** v3.0 UX Polish & Feature Expansion
-**Phase:** 17 Auth Extensions — NEXT UP
+**Phase:** 18
 **Last Updated:** 2026-04-18
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global verfügbar. Brand System v4.3.0 deployed: Geist Mono/Sans, Radix Colors, `<Logo />` component, VOICE.md microcopy.
 
@@ -42,54 +42,34 @@ progress:
 
 **Next Up: Phase 17 — Auth Extensions**
 
-**Scope:** Brand-Entscheidungen aus Workshop-Session (2026-04-18) in Code überführen. Source of Truth liegt in `brand/DESIGN.md`, `brand/VOICE.md`, `brand/tokens.json`, `brand/logos/` (11 Varianten).
+Email-Templates + Rate-Limits. Nutzt Design-Tokens aus Phase 16 (durch). **CONTEXT.md:** `.planning/phases/17-auth-extensions/CONTEXT.md`.
 
-**Kernaufgaben:**
+**Hauptjob:** 6 Supabase-Templates auf **React Email** vereinheitlichen (Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite). Theme-adaptiv via `@media (prefers-color-scheme: dark)`. Copy aus `brand/VOICE.md` Microcopy-Library. Logo: `logo-wide-red.svg` (Light) / `logo-wide-neon.svg` (Dark).
 
-1. `@radix-ui/colors` installieren + Geist via `next/font/google` laden
-2. `packages/config/tailwind/base.css` erweitern (Radix slate + slate-dark, Geist-Fontfamilies)
-3. `<Logo />` Component in `packages/ui/` (11 Varianten, colorway="auto")
-4. Website + tools-app migrieren: Inter → Geist, Hex-Hardcodes → Radix-Tokens, Logo-Swap überall
-5. Microcopy-Pass: UI-Strings gegen `brand/VOICE.md` Library
-6. Visual-Regression-Check via Playwright (Before/After Screenshots)
+**Scope:**
 
-**Vorab-Kontext für Session:**
+1. React Email Setup (`@react-email/components` + `react-email` CLI) — Dev-Server für Template-Preview
+2. Shared Layout-Component (`packages/emails/`): Header + Logo + Body-Wrapper + Footer, DRY
+3. 6 Templates implementieren — Bulletproof Buttons (Outlook-VML), Preview-Text, Plain-Text-Fallback
+4. Token-Mapping: Brand-Farben aus `brand/tokens.json` inline in die Templates
+5. HTML-Export-Script (`pnpm email:export`) → 6 HTML-Files in `apps/website/emails/dist/`
+6. Rate-Limits auf Prod-Werte (Supabase Dashboard, Manual-Step)
 
-- Brand-Workshop durchgeführt 2026-04-18 — alle Design-Entscheidungen stehen in `brand/DESIGN.md`
-- Globals.css Primary-Fix bereits drin (`--color-primary: var(--accent)`, `--color-ring: var(--text)`) — Commit unbedingt gleich mitziehen
-- Siehe `brand/IMPLEMENTATION-TODO.md` für detaillierten Schritt-Plan
-
-**Pre-Approved für Autonomous-Run:**
-
-- Keine Manual-Steps nötig (rein Code)
-- Push: OK · PR auf feat-Branch OK
-- Changeset: minor (v4.3.0)
-- Visual-Regression-Gate: wenn Playwright-Diffs ungewollt, Phase pausiert für Luca-Review
-- Dev-Server-Smoke-Test in beiden Apps vor Commit (Light + Dark)
-
-**Kommando:** `/gsd-autonomous --only 16`
-
----
-
-**Phase 17 — Auth Extensions (nach Phase 16)**
-
-Email-Templates + Rate-Limits. Nutzt Design-Tokens aus Phase 16. **CONTEXT.md angelegt** (`.planning/phases/17-auth-extensions/CONTEXT.md`).
-
-**Hauptjob:** 6 Supabase-Templates auf **React Email** (Confirm Signup, Magic Link, Reset Password, Change Email, Reauthentication, Invite). Theme-adaptiv via `prefers-color-scheme`. Copy aus `brand/VOICE.md`.
-
-**Pre-Approved für Autonomous-Run:**
+**Pre-Approved für Autonomous-Run (Luca-Entscheidung 2026-04-19):**
 
 - Code-Generation + Package-Install: voll autonom
-- Push + Changeset patch (v4.3.x): OK
-- Stop-Gate: Manual-Steps am Ende (HTML-Export → Luca spielt in Supabase ein + setzt Rate-Limits)
-- Interactive-Modus nur nötig bei Rate-Limit-Klärung
+- Push + PR auf feat-Branch: OK
+- Changeset: patch (v4.3.x)
+- **Keine Interactive-Fragen** — Rate-Limits empfiehlt Claude direkt in der finalen Summary (Supabase-Defaults, siehe CONTEXT.md)
+- Stop-Gate nur am Ende: Luca spielt HTMLs in Supabase ein + setzt Rate-Limits laut Claude-Empfehlung
 
-**Kommando:** `/gsd-autonomous --only 17` (oder `--interactive` bei offenen Rate-Limit-Werten)
+**Kommando:** `/gsd-autonomous --only 17`
 
-**Manual-Steps Luca (nach Auto-Run):**
+**Manual-Steps Luca (nach Auto-Run — Claude liefert dafür genaue Anleitung):**
 
-- Supabase Dashboard → Email Templates: HTMLs aus `apps/website/emails/dist/*.html` einspielen
-- Supabase Dashboard → Rate Limits: Prod-Werte setzen
+1. **Email Templates**: 6 HTMLs aus `apps/website/emails/dist/*.html` + Subjects aus CONTEXT.md im Supabase Dashboard einspielen
+2. **Rate Limits**: Prüfen ob noch Phase-13-Test-Werte aktiv — wenn ja, auf Supabase-Defaults zurücksetzen (30/h Email, 150/5min Token-Refresh). Details in CONTEXT.md §Manual Steps.
+3. Test-Mail triggern (Reset-Password auf eigenem Account), in Gmail Light + Dark + Apple Mail prüfen
 
 **OAuth** (Google/Apple) bleibt im `BACKLOG.md`.
 

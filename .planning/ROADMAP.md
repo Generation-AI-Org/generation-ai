@@ -311,7 +311,7 @@ Plans:
 | 14 | Mobile Polish | Mobile Quick-Win-Bugs + Micro-Animations Parity zu Desktop | ✅ Ja |
 | 15 | 3/3 | Complete   | 2026-04-18 |
 | 16 | 6/6 | Complete    | 2026-04-18 |
-| 17 | Auth Extensions | Email-Templates (React Email) + Rate-Limits auf Prod | ⚠️ Teil-autonom (Supabase Dashboard) |
+| 17 | 5/5 | Complete    | 2026-04-19 |
 | 18 | Simplify-Pass tools-app | Tote Files, inkonsistente Patterns, Naming-Cleanup | ✅ Ja (nach Map) |
 
 ---
@@ -421,6 +421,14 @@ Plans:
 
 **Goal:** 6 Supabase-Email-Templates auf **React Email** vereinheitlichen — nutzt Design-Tokens aus Phase 16, Darkmode via `prefers-color-scheme`, deutsche Copy aus `brand/VOICE.md`. + Rate-Limits auf Prod-Werte setzen.
 **Depends on:** Phase 16 (Design-Tokens + Logo-Component sind da)
+**Plans:** 5/5 plans complete
+
+Plans:
+- [x] 17-01-react-email-foundation-PLAN.md — @genai/emails package: React Email setup, tokens.ts, Layout + EmailButton + BrandLogo
+- [x] 17-02-logo-png-generation-PLAN.md — Sharp-based SVG→PNG generation for mail-safe logo assets (red + neon)
+- [x] 17-03-templates-group-a-PLAN.md — Templates: Confirm-Signup, Recovery (Reset Password), Magic-Link
+- [x] 17-04-templates-group-b-PLAN.md — Templates: Email-Change, Reauth (OTP), Invite
+- [x] 17-05-export-and-handoff-PLAN.md — HTML export script, dist/*.html, MANUAL-STEPS.md, changeset, Luca-checkpoint
 **⚠️ Manual Steps (Luca):**
 - Supabase Dashboard → Auth → Email Templates: finale HTMLs einspielen (Claude liefert Files)
 - Supabase Dashboard → Auth → Rate Limits: Prod-Werte setzen
