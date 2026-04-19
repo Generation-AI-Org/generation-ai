@@ -18,18 +18,19 @@ const TERMINAL_DEST = 'terminal-header.png'
 const LOGO_RASTER_W = 1920
 const LOGO_RASTER_H = 1080
 
-// Terminal header raster. Display target is ~280x130, 4x = 1120x520.
-// 16:9 logo sits centered in the content area.
+// Terminal header raster. 4x retina = 1120 wide.
+// Height chosen so there's generous whitespace above + below the logo inside
+// the content area (~140 raster px = ~35 display px each side).
 const TERMINAL_W = 1120
-const TERMINAL_H = 520
+const TERMINAL_H = 760
 const TITLEBAR_H = 96
-const CONTENT_H = TERMINAL_H - TITLEBAR_H // 424
+const CONTENT_H = TERMINAL_H - TITLEBAR_H // 664
 
-// Logo placement inside terminal content area
+// Logo placement inside terminal content area — centered with generous space.
 const LOGO_W_IN_TERMINAL = 680
 const LOGO_H_IN_TERMINAL = Math.round((LOGO_W_IN_TERMINAL * 540) / 960) // 382
 const LOGO_X = Math.round((TERMINAL_W - LOGO_W_IN_TERMINAL) / 2) // 220
-const LOGO_Y = TITLEBAR_H + Math.round((CONTENT_H - LOGO_H_IN_TERMINAL) / 2) // 96+21 = 117
+const LOGO_Y = TITLEBAR_H + Math.round((CONTENT_H - LOGO_H_IN_TERMINAL) / 2) // 96+141 = 237
 
 const TERMINAL_BG = { r: 28, g: 28, b: 28 } // #1c1c1c
 
