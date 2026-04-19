@@ -1,0 +1,145 @@
+=== Phase 18 Baseline ===
+Date: 2026-04-19T13:35:21Z
+Commit: ceaaf71143ee606f9f985a3abd61d9887f85b0d6
+Branch: feat/phase-18-simplify-pass
+
+=== pnpm install --frozen-lockfile ===
+Scope: all 9 workspace projects
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +9
++++++++++
+Progress: resolved 9, reused 6, downloaded 0, added 1, done
+
+Done in 1.2s using pnpm v10.8.1
+EXIT: 0
+
+=== pnpm lint ===
+@genai/website:lint:   3:1  warning  Assign array to a variable before exporting as module default  import/no-anonymous-default-export
+@genai/website:lint: 
+@genai/website:lint: ✖ 5 problems (0 errors, 5 warnings)
+@genai/website:lint: 
+@genai/tools-app:lint: 
+@genai/tools-app:lint: /Users/lucaschweigmann/projects/generation-ai/apps/tools-app/components/AuthProvider.tsx
+@genai/tools-app:lint:   24:21  warning  'setIsLoading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@genai/tools-app:lint: 
+@genai/tools-app:lint: /Users/lucaschweigmann/projects/generation-ai/apps/tools-app/components/chat/FloatingChat.tsx
+@genai/tools-app:lint:    4:27  warning  'Info' is defined but never used                      @typescript-eslint/no-unused-vars
+@genai/tools-app:lint:   72:5   warning  'clearTranscript' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@genai/tools-app:lint: 
+@genai/tools-app:lint: /Users/lucaschweigmann/projects/generation-ai/apps/tools-app/components/ui/Badge.tsx
+@genai/tools-app:lint:   1:15  warning  'PricingModel' is defined but never used  @typescript-eslint/no-unused-vars
+@genai/tools-app:lint:   1:29  warning  'ContentType' is defined but never used   @typescript-eslint/no-unused-vars
+@genai/tools-app:lint: 
+@genai/tools-app:lint: /Users/lucaschweigmann/projects/generation-ai/apps/tools-app/components/ui/ToolIcon.tsx
+@genai/tools-app:lint:   6:3  warning  'SiAnthropic' is defined but never used  @typescript-eslint/no-unused-vars
+@genai/tools-app:lint: 
+@genai/tools-app:lint: /Users/lucaschweigmann/projects/generation-ai/apps/tools-app/eslint.config.mjs
+@genai/tools-app:lint:   3:1  warning  Assign array to a variable before exporting as module default  import/no-anonymous-default-export
+@genai/tools-app:lint: 
+@genai/tools-app:lint: /Users/lucaschweigmann/projects/generation-ai/apps/tools-app/hooks/useVoiceInput.ts
+@genai/tools-app:lint:   45:16  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+@genai/tools-app:lint:   63:16  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+@genai/tools-app:lint: 
+@genai/tools-app:lint: /Users/lucaschweigmann/projects/generation-ai/apps/tools-app/lib/exa.ts
+@genai/tools-app:lint:   37:3  warning  '_limit' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@genai/tools-app:lint: 
+@genai/tools-app:lint: /Users/lucaschweigmann/projects/generation-ai/apps/tools-app/lib/llm.ts
+@genai/tools-app:lint:    73:37  warning  'items' is defined but never used          @typescript-eslint/no-unused-vars
+@genai/tools-app:lint:   134:3   warning  'mode' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@genai/tools-app:lint: 
+@genai/tools-app:lint: ✖ 12 problems (0 errors, 12 warnings)
+@genai/tools-app:lint: 
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    4.348s 
+
+EXIT: 0
+
+=== pnpm build ===
+@genai/tools-app:build: ┌ ƒ /
+@genai/tools-app:build: ├ ƒ /_not-found
+@genai/tools-app:build: ├ ƒ /[slug]
+@genai/tools-app:build: ├ ƒ /api/account/delete
+@genai/tools-app:build: ├ ƒ /api/chat
+@genai/tools-app:build: ├ ƒ /api/debug-auth
+@genai/tools-app:build: ├ ƒ /api/defuddle
+@genai/tools-app:build: ├ ƒ /api/extract-url
+@genai/tools-app:build: ├ ƒ /api/health
+@genai/tools-app:build: ├ ƒ /api/voice/token
+@genai/tools-app:build: ├ ƒ /api/voice/transcribe
+@genai/tools-app:build: ├ ƒ /auth/callback
+@genai/tools-app:build: ├ ƒ /auth/confirm
+@genai/tools-app:build: ├ ƒ /auth/set-password
+@genai/tools-app:build: ├ ƒ /auth/signout
+@genai/tools-app:build: ├ ƒ /datenschutz
+@genai/tools-app:build: ├ ƒ /impressum
+@genai/tools-app:build: ├ ƒ /login
+@genai/tools-app:build: └ ƒ /settings
+@genai/tools-app:build: 
+@genai/tools-app:build: 
+@genai/tools-app:build: ƒ Proxy (Middleware)
+@genai/tools-app:build: 
+@genai/tools-app:build: ƒ  (Dynamic)  server-rendered on demand
+@genai/tools-app:build: 
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    28.665s 
+
+EXIT: 0
+
+=== pnpm test ===
+@genai/auth:test: 
+@genai/auth:test: [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@genai/auth:test: [2m      Tests [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+@genai/auth:test: [2m   Start at [22m 15:36:28
+@genai/auth:test: [2m   Duration [22m 326ms[2m (transform 46ms, setup 0ms, import 60ms, tests 4ms, environment 0ms)[22m
+@genai/auth:test: 
+@genai/ui:test:  ✓ src/components/Logo.test.tsx (17 tests) 73ms
+@genai/ui:test: 
+@genai/ui:test:  Test Files  1 passed (1)
+@genai/ui:test:       Tests  17 passed (17)
+@genai/ui:test:    Start at  15:36:27
+@genai/ui:test:    Duration  1.67s (transform 64ms, setup 53ms, collect 89ms, tests 73ms, environment 616ms, prepare 107ms)
+@genai/ui:test: 
+@genai/tools-app:test:  [32m✓[39m __tests__/components/QuickActions.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 112[2mms[22m[39m
+@genai/website:test:  [32m✓[39m __tests__/components/Button.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 124[2mms[22m[39m
+@genai/website:test: 
+@genai/website:test: [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@genai/website:test: [2m      Tests [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+@genai/website:test: [2m   Start at [22m 15:36:27
+@genai/website:test: [2m   Duration [22m 1.98s[2m (transform 52ms, setup 95ms, import 219ms, tests 124ms, environment 1.39s)[22m
+@genai/website:test: 
+@genai/tools-app:test:  [32m✓[39m __tests__/api/health.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 64[2mms[22m[39m
+@genai/tools-app:test:  [32m✓[39m __tests__/api/chat.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+@genai/tools-app:test:  [32m✓[39m __tests__/components/ChatInput.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 220[2mms[22m[39m
+@genai/tools-app:test: 
+@genai/tools-app:test: [2m Test Files [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+@genai/tools-app:test: [2m      Tests [22m [1m[32m15 passed[39m[22m[90m (15)[39m
+@genai/tools-app:test: [2m   Start at [22m 15:36:27
+@genai/tools-app:test: [2m   Duration [22m 1.59s[2m (transform 157ms, setup 266ms, import 836ms, tests 458ms, environment 2.62s)[22m
+@genai/tools-app:test: 
+
+ Tasks:    5 successful, 5 total
+Cached:    0 cached, 5 total
+  Time:    3.063s 
+
+ WARNING  no output files found for task @genai/auth#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @genai/emails#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @genai/tools-app#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @genai/ui#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @genai/website#test. Please check your `outputs` key in `turbo.json`
+EXIT: 0
+
+=== LOC measurement ===
+   13295 total
+EXIT: 0
+
+=== Baseline Summary ===
+Status: PASSED
+lint: passed (warnings only, 0 errors)
+build: passed (both apps)
+test: passed (5/5 workspaces, 41 tests ✓)
+LOC (apps + packages, .ts/.tsx): 13295
