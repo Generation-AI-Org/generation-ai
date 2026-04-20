@@ -3,7 +3,7 @@
 @import "../../../packages/config/tailwind/base.css";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:not(.light *));
 
 /* ─── website-specific additions ──────────────────────────────────────────── */
 
