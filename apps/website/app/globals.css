@@ -56,8 +56,14 @@
 
 /* Base Styles */
 html {
-  scroll-behavior: smooth;
   background-color: var(--bg);
+}
+
+/* Smooth scroll only when user has no motion-reduce preference (WCAG 2.3.3) */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
