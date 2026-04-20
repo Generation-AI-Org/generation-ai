@@ -211,7 +211,7 @@ textarea:focus-visible,
 }
 
 .animate-grid-spotlight {
-  animation: grid-spotlight 24s ease-in-out infinite;
+  animation: grid-spotlight 24s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 /* Reduced-Motion: pause all Phase-20 loop animations (D-06 PFLICHT) */

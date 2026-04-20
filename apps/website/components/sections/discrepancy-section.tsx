@@ -5,6 +5,7 @@ import {
   motion,
   useScroll,
   useTransform,
+  useSpring,
   useReducedMotion,
   type MotionValue,
 } from "motion/react"
@@ -131,61 +132,74 @@ export function DiscrepancySection() {
     offset: ["start start", "end end"],
   })
 
-  // Progress stages:
-  //   0.00 – 0.20  title fades in
-  //   0.20 – 0.45  upper line draws + 3 dots
-  //   0.45 – 0.70  lower line draws + 3 dots
-  //   0.70 – 0.85  area fills + "DIE LÜCKE" label
-  //   0.85 – 1.00  closer fades in
+  // Dämpfung: scrollYProgress wird über eine Spring geglättet, damit die
+  // Phasenübergänge nicht hart an den Stop-Punkten „einrasten“. Stiffness/
+  // Damping sind so gewählt, dass die Spring nicht überschwingt
+  // (kein Rubber-Band) — nur die Flanken der Transforms werden weicher.
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 30,
+    mass: 0.5,
+  })
+
+  // Progress stages (breiter überlappend für weichere Phasenwechsel):
+  //   0.00 – 0.22  title fades in
+  //   0.15 – 0.50  upper line draws
+  //   0.32 – 0.52  upper dots appear
+  //   0.42 – 0.75  lower line draws
+  //   0.58 – 0.78  lower dots appear
+  //   0.68 – 0.90  area fills
+  //   0.72 – 0.90  "DIE LÜCKE" label
+  //   0.82 – 0.98  closer fades in
   //
   // Reduced-motion: all values pinned to final state (1).
   const titleOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.1, 0.2],
+    smoothProgress,
+    [0, 0.11, 0.22],
     prefersReducedMotion ? [1, 1, 1] : [0, 0.5, 1],
   )
 
   const upperDraw = useTransform(
-    scrollYProgress,
-    [0.2, 0.45],
+    smoothProgress,
+    [0.15, 0.5],
     prefersReducedMotion ? [0, 0] : [1, 0],
   )
   const upperDotsOpacity = useTransform(
-    scrollYProgress,
-    [0.35, 0.45],
+    smoothProgress,
+    [0.32, 0.52],
     prefersReducedMotion ? [1, 1] : [0, 1],
   )
 
   const lowerDraw = useTransform(
-    scrollYProgress,
-    [0.45, 0.7],
+    smoothProgress,
+    [0.42, 0.75],
     prefersReducedMotion ? [0, 0] : [1, 0],
   )
   const lowerDotsOpacity = useTransform(
-    scrollYProgress,
-    [0.6, 0.7],
+    smoothProgress,
+    [0.58, 0.78],
     prefersReducedMotion ? [1, 1] : [0, 1],
   )
 
   const areaOpacity = useTransform(
-    scrollYProgress,
-    [0.7, 0.85],
+    smoothProgress,
+    [0.68, 0.9],
     prefersReducedMotion ? [0.5, 0.5] : [0, 0.5],
   )
   const gapLabelOpacity = useTransform(
-    scrollYProgress,
-    [0.75, 0.85],
+    smoothProgress,
+    [0.72, 0.9],
     prefersReducedMotion ? [1, 1] : [0, 1],
   )
 
   const closerOpacity = useTransform(
-    scrollYProgress,
-    [0.85, 0.95],
+    smoothProgress,
+    [0.82, 0.98],
     prefersReducedMotion ? [1, 1] : [0, 1],
   )
   const closerY = useTransform(
-    scrollYProgress,
-    [0.85, 0.95],
+    smoothProgress,
+    [0.82, 0.98],
     prefersReducedMotion ? [0, 0] : [20, 0],
   )
 
