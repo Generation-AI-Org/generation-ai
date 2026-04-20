@@ -4,13 +4,74 @@ slug: navigation-landing-skeleton
 status: automated_gates_green_pending_uat
 nyquist_compliant: true
 wave_0_complete: true
+code_review_status: fixes_applied
+review_findings_open: 15
+review_findings_fixed: 5
+screenshots_available: true
 created: 2026-04-20
 last-updated: 2026-04-20
 ---
 
 # Phase 20 — Validation Strategy
 
-> Per-phase validation contract. Automated gates (Build/CSP/Playwright/Lighthouse) are green. Manual UAT is the only remaining gate.
+> Per-phase validation contract. Automated gates (Build/CSP/Playwright/Lighthouse) are green. Code-review blocking/high findings fixed. Manual UAT is the only remaining gate.
+
+---
+
+## 🌅 Morning-Review-Package für Luca
+
+**Alles, was du morgen vor der UAT wissen musst. Kurz.**
+
+### Was ist fertig?
+
+- ✅ **6 Plans ausgeführt, 4 Waves durch** (20-01 bis 20-06 Tasks 1+1b)
+- ✅ **22 Commits auf** `feature/phase-20-landing-skeleton` (nicht gepusht)
+- ✅ **Automated-Gates alle grün:** Build (`ƒ /`), CSP-Nonce, Playwright 8/8, Lighthouse A11y 1.00 / BP 0.96 / SEO 1.00 / CLS 0.00 (Perf 0.88 flaky, Details s.u.)
+- ✅ **Code-Review durchgelaufen** → 1 blocking + 4 high gefixt. 7 medium + 8 low bleiben offen (siehe `20-REVIEW.md`)
+- ✅ **19 Screenshots** für dich generiert (Desktop Dark/Light · Mobile Dark/Light · Reduced-Motion · 8 Section-Crops · Header/Footer · Dropdown · Mobile-Sheet)
+
+### Wichtig: Visueller Regress durch HI-04-Fix
+
+Beim Code-Review kam raus, dass `@custom-variant dark` auf `.dark *` zielt, das Projekt aber `.light`-Klassen-Theming nutzt → **alle `dark:`-Varianten in den neuen Sections waren silent no-ops**. Fix dreht das um. Ergebnis: das Dark-Theme rendert jetzt wie designt (Discrepancy, Bento, Infinite-Cards mit korrekten dunklen Hintergründen).
+
+Vergleich bei Bedarf:
+- **Vorher:** `.planning/phases/20-navigation-landing-skeleton/screenshots-before-review-fixes/`
+- **Nachher:** `.planning/phases/20-navigation-landing-skeleton/screenshots/` (← das Aktuelle)
+
+### Server starten für UAT
+
+```bash
+cd /Users/lucaschweigmann/projects/generation-ai
+pnpm --filter @genai/website build
+cd apps/website && NODE_ENV=production pnpm start
+# → http://localhost:3000
+```
+
+Oder live im Browser schauen ohne Build: `pnpm --filter @genai/website dev`.
+
+### Was du bewerten musst (subjektiv, 33 Items unten)
+
+1. **Wow-Wahrnehmung** an 3 Peaks: Hero (Aurora), Discrepancy (6 Ticker + Scroll-Drift), Final-CTA (Lamp)
+2. **Brand-Stimmigkeit**: Dark-Default + Light-Toggle, keine Tailwind-Fremd-Farben
+3. **Stub-Erkennbarkeit**: sieht man klar, dass Tool-Showcase + Community Beispiel-Content sind?
+4. **Mobile** (375×812) + **Reduced-Motion** Emulation
+5. **Microcopy**: warm, direkt, keine Umlaut-Fehler
+
+### Wenn du "approved" schreibst
+
+Ich führe Plan 20-06 Task 3 aus: Changeset committen, Sign-Off auf VALIDATION.md, Plan 20-06 SUMMARY.md, STATE/ROADMAP/REQUIREMENTS-Update, Phase-20-complete. Dann wartet noch Phase-Verifier + `update_roadmap`.
+
+Wenn du Fails findest: sag mir welcher Punkt + welche Section, ich route zum entsprechenden Plan (20-02 Nav / 20-03 Hero+Discrepancy / 20-04 Offering+Showcase+Community / 20-05 Audience+Trust+Final-CTA).
+
+### Review-Findings offen (nicht-blocking)
+
+7 medium + 8 low — Details in `20-REVIEW.md`. Highlights:
+- **ME-03**: Inline CSS-Custom-Properties in AuroraBackground könnten `style-src` CSP brauchen (prüfen in `lib/csp.ts`)
+- **ME-05**: `BeispielBadge` exportiert aus `tool-showcase-section.tsx` — sollte nach `@/components/ui/beispiel-badge.tsx` (wenn mehrere Sections es nutzen)
+- **ME-04**: `setTimeout` ohne Cleanup in home-client.tsx
+- **LO-*** meistens Cosmetics (unused exports, magic timing, leere Wrapper)
+
+Nicht blockierend für Phase-20-Release, können in Follow-up-Phase 20.1 oder direkt in Phase 21 aufgeräumt werden.
 
 ---
 
