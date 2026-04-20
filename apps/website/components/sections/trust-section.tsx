@@ -1,13 +1,10 @@
-'use client'
-
-import { useReducedMotion } from "motion/react"
 import { Marquee } from "@/components/ui/marquee"
 
 // Plan 20-05 Task 2 — R1.8 / D-14
 // Stub-Logos (Sparringspartner-Assets sind Deferred, CONTEXT.md "Deferred Ideas") als Text-Pills.
 // Marquee bleibt IMMER im DOM → CSS-Guard in globals.css pausiert `.animate-marquee`
-// bei prefers-reduced-motion (Plan 01 reduced-motion guard). Zusätzlich JS-Gate via
-// useReducedMotion() als belt-and-braces: setzt pauseOnHover + schaltet optional reverse ab.
+// bei prefers-reduced-motion (Plan 01 reduced-motion guard). Keine JS-Seite nötig:
+// useReducedMotion() würde auf SSR null liefern und zu Hydration-Mismatch führen.
 const stubPartners = [
   "Sparringspartner 1",
   "Sparringspartner 2",
@@ -28,10 +25,11 @@ function PartnerTile({ name }: { name: string }) {
 }
 
 export function TrustSection() {
-  // JS-side reduced-motion detection — CSS-Guard in globals.css pausiert die
-  // `.animate-marquee` Keyframes bereits; dieser Hook ist Doppel-Sicherung und
-  // kann genutzt werden um z.B. pauseOnHover zu erzwingen.
-  const prefersReducedMotion = useReducedMotion()
+  // Reduced-motion wird rein per CSS-Guard in globals.css behandelt
+  // (`@media (prefers-reduced-motion: reduce)` → `.animate-marquee` paused).
+  // Keine JS-Hook-Lösung hier: useReducedMotion() liefert auf SSR null und
+  // auf Client true/false, was einen Hydration-Mismatch im className-String
+  // erzeugen würde (HI-01 aus Phase-20 code review).
 
   return (
     <section
@@ -47,10 +45,7 @@ export function TrustSection() {
           Im Sparring mit
         </p>
 
-        <Marquee
-          pauseOnHover
-          className={`[--duration:40s] ${prefersReducedMotion ? "[&_.animate-marquee]:![animation-play-state:paused]" : ""}`}
-        >
+        <Marquee pauseOnHover className="[--duration:40s]">
           {stubPartners.map((name) => (
             <PartnerTile key={name} name={name} />
           ))}
