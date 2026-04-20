@@ -2,21 +2,20 @@
 
 import Link from "next/link"
 import { motion, useReducedMotion } from "motion/react"
-import { AuroraBackground } from "@/components/ui/aurora-background"
+import { GridBackground } from "@/components/ui/grid-background"
 
-// Plan 03 Task 1 — Hero: Aurora-Background + Claim-Placeholder + Primary-CTA → /join.
-// Claim-Wording ist explizit Deferred (CONTEXT.md "Deferred Ideas" —
-// "Hero-Claim finales Wording" kommt mit Marketing-Pass, nicht Phase 20).
-// Wir setzen einen sprechenden Platzhalter, der die Section-Funktion erfuellt.
+// Plan 06 Task 1 (UAT) — Hero: GridBackground (Raycast/Vercel-style) +
+// Claim-Placeholder + Primary-CTA → /join.
+//
+// UAT-Entscheidung 2026-04-20: AuroraBackground durch animated GridBackground
+// ersetzt — Aurora war im aktuellen Theming-Kontext visuell gebrochen, Luca hat
+// "geiles grid oder so" explizit freigegeben. Brand-Vibe: Terminal/hacker
+// (siehe components/terminal-splash.tsx).
 //
 // Reduced-motion-Verhalten:
-//   - Aurora-CSS-Keyframe pausiert ueber globals.css @media (prefers-reduced-motion)
+//   - Grid-Spotlight-Keyframe pausiert ueber globals.css @media
+//     (prefers-reduced-motion) + zusaetzliches JS-Guard im GridBackground
 //   - motion.div-Entry-Animation wird via useReducedMotion() ausgeschaltet
-//
-// Hinweis: AuroraBackground rendert intern ein <main>-Wrapper (Aceternity-Upstream).
-// Das home-client.tsx <main id="main-content"> umschliesst diese Section — das
-// erzeugt ein verschachteltes <main>. Bekannter Pre-existing-Issue aus Plan 01
-// (Aceternity-Copy), nicht Teil dieses Plans (siehe deferred-items.md).
 export function HeroSection() {
   const prefersReducedMotion = useReducedMotion()
 
@@ -30,7 +29,7 @@ export function HeroSection() {
       data-section="hero"
       className="relative isolate"
     >
-      <AuroraBackground className="min-h-[80vh]">
+      <GridBackground className="min-h-[80vh]">
         <motion.div
           initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
           animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
@@ -61,7 +60,7 @@ export function HeroSection() {
             Kostenlos · gemeinnützig · für Studierende und Early-Career
           </p>
         </motion.div>
-      </AuroraBackground>
+      </GridBackground>
     </section>
   )
 }

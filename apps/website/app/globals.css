@@ -167,6 +167,12 @@ textarea:focus-visible,
   --brand-aurora-3: var(--brand-blue-4, #93c5fd);
   --brand-aurora-4: var(--brand-neon-3, #ddd6fe);
   --brand-aurora-5: var(--brand-blue-6, #60a5fa);
+
+  /* Grid-Background tokens — dark default: neon-lines + blue glow */
+  --grid-line-color: rgba(206, 255, 50, 0.06);
+  --grid-dot-color: rgba(206, 255, 50, 0.14);
+  --grid-glow-color: rgba(206, 255, 50, 0.10);
+  --grid-glow-color-secondary: rgba(58, 58, 255, 0.12);
 }
 
 /* Light-mode Aurora swirl (brand-pink + brand-red) */
@@ -176,6 +182,36 @@ textarea:focus-visible,
   --brand-aurora-3: var(--brand-pink-4, #f9a8d4);
   --brand-aurora-4: var(--brand-red-3, #fecaca);
   --brand-aurora-5: var(--brand-pink-6, #ec4899);
+
+  /* Grid-Background tokens — light: red-lines + pink glow */
+  --grid-line-color: rgba(245, 19, 59, 0.08);
+  --grid-dot-color: rgba(245, 19, 59, 0.16);
+  --grid-glow-color: rgba(245, 19, 59, 0.09);
+  --grid-glow-color-secondary: rgba(252, 120, 254, 0.14);
+}
+
+/* Grid-Spotlight slow drift — paused on reduced-motion via media query below */
+@keyframes grid-spotlight {
+  0%   { --spotlight-x: 20%; --spotlight-y: 30%; }
+  25%  { --spotlight-x: 70%; --spotlight-y: 20%; }
+  50%  { --spotlight-x: 80%; --spotlight-y: 60%; }
+  75%  { --spotlight-x: 30%; --spotlight-y: 70%; }
+  100% { --spotlight-x: 20%; --spotlight-y: 30%; }
+}
+
+@property --spotlight-x {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 50%;
+}
+@property --spotlight-y {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 40%;
+}
+
+.animate-grid-spotlight {
+  animation: grid-spotlight 24s ease-in-out infinite;
 }
 
 /* Reduced-Motion: pause all Phase-20 loop animations (D-06 PFLICHT) */
@@ -183,7 +219,8 @@ textarea:focus-visible,
   .animate-aurora,
   .animate-scroll,
   .animate-marquee,
-  .animate-marquee-vertical {
+  .animate-marquee-vertical,
+  .animate-grid-spotlight {
     animation-play-state: paused !important;
   }
 }
