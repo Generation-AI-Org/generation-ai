@@ -29,53 +29,39 @@ export const InfiniteMovingCards = ({
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const scrollerRef = React.useRef<HTMLUListElement>(null);
+  const [start, setStart] = useState(false);
 
   useEffect(() => {
-    addAnimation();
-  }, []);
-  const [start, setStart] = useState(false);
-  function addAnimation() {
-    if (containerRef.current && scrollerRef.current) {
-      const scrollerContent = Array.from(scrollerRef.current.children);
+    const container = containerRef.current;
+    const scroller = scrollerRef.current;
+    if (!container || !scroller) return;
 
-      scrollerContent.forEach((item) => {
-        const duplicatedItem = item.cloneNode(true);
-        if (scrollerRef.current) {
-          scrollerRef.current.appendChild(duplicatedItem);
-        }
-      });
+    // Duplicate items for the infinite-scroll illusion. Track clones so
+    // StrictMode double-mount (React 19 dev) cleans up instead of stacking.
+    // Clones get aria-hidden="true" so screenreaders don't re-announce.
+    const originals = Array.from(scroller.children);
+    const clones = originals.map((item) => {
+      const clone = item.cloneNode(true) as HTMLElement;
+      clone.setAttribute("aria-hidden", "true");
+      scroller.appendChild(clone);
+      return clone;
+    });
 
-      getDirection();
-      getSpeed();
-      setStart(true);
-    }
-  }
-  const getDirection = () => {
-    if (containerRef.current) {
-      if (direction === "left") {
-        containerRef.current.style.setProperty(
-          "--animation-direction",
-          "forwards",
-        );
-      } else {
-        containerRef.current.style.setProperty(
-          "--animation-direction",
-          "reverse",
-        );
-      }
-    }
-  };
-  const getSpeed = () => {
-    if (containerRef.current) {
-      if (speed === "fast") {
-        containerRef.current.style.setProperty("--scroll-duration", "20s");
-      } else if (speed === "normal") {
-        containerRef.current.style.setProperty("--scroll-duration", "40s");
-      } else {
-        containerRef.current.style.setProperty("--scroll-duration", "80s");
-      }
-    }
-  };
+    container.style.setProperty(
+      "--animation-direction",
+      direction === "left" ? "forwards" : "reverse",
+    );
+    const duration =
+      speed === "fast" ? "20s" : speed === "normal" ? "40s" : "80s";
+    container.style.setProperty("--scroll-duration", duration);
+
+    setStart(true);
+
+    return () => {
+      clones.forEach((c) => c.remove());
+      setStart(false);
+    };
+  }, [direction, speed, items]);
   return (
     <div
       ref={containerRef}
