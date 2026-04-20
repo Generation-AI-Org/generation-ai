@@ -230,11 +230,14 @@ export function DiscrepancySection() {
         {/* Chart */}
         <div className="w-full max-w-[1200px] mx-auto">
           <svg
-            viewBox={`0 0 ${CHART_W} ${CHART_H + 10}`}
+            viewBox="-10 -4 120 68"
             className="w-full h-auto"
             role="img"
-            aria-label="Divergenz-Chart: Was die Wirtschaft will (steigend) versus was Studierende mitbringen (flach)"
+            aria-labelledby="discrepancy-chart-title"
           >
+            <title id="discrepancy-chart-title">
+              Split-Line-Chart: Wirtschaftsbedarf (steigt) versus Studi-KI-Kompetenz (flach) über 3 Dimensionen — Nachfrage, Vergütung, Ausbildung.
+            </title>
             <defs>
               {/* Gap fill gradient — neon top → red bottom */}
               <linearGradient id="gap-gradient" x1="0" y1="0" x2="0" y2="1">
@@ -243,31 +246,99 @@ export function DiscrepancySection() {
               </linearGradient>
             </defs>
 
+            {/* ─── Axes ────────────────────────────────────────────────────
+                Render FIRST (below everything) so they read as structure,
+                not as narrative. No fade-in — always visible.
+                Chart surface spans x 0..100, y 0..50 (viewBox logical units).
+                Axis lines sit just outside so they frame the data. */}
+            {/* Horizontal gridlines */}
+            <line
+              x1={0} y1={2} x2={100} y2={2}
+              stroke="var(--text-muted)" strokeWidth={0.2}
+              strokeDasharray="1 1" opacity={0.3}
+            />
+            <line
+              x1={0} y1={26} x2={100} y2={26}
+              stroke="var(--text-muted)" strokeWidth={0.2}
+              strokeDasharray="1 1" opacity={0.3}
+            />
+            {/* Y-axis line (left edge) */}
+            <line
+              x1={-1} y1={2} x2={-1} y2={50}
+              stroke="var(--text-muted)" strokeWidth={0.3}
+            />
+            {/* Y-axis ticks */}
+            <line x1={-1.8} y1={2}  x2={-1} y2={2}  stroke="var(--text-muted)" strokeWidth={0.3} />
+            <line x1={-1.8} y1={26} x2={-1} y2={26} stroke="var(--text-muted)" strokeWidth={0.3} />
+            <line x1={-1.8} y1={50} x2={-1} y2={50} stroke="var(--text-muted)" strokeWidth={0.3} />
+            {/* Y-axis tick labels */}
+            <text
+              x={-2.6} y={2.8} textAnchor="end" fill="var(--text-muted)"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px" }}
+            >hoch</text>
+            <text
+              x={-2.6} y={26.8} textAnchor="end" fill="var(--text-muted)"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px" }}
+            >mittel</text>
+            <text
+              x={-2.6} y={50.8} textAnchor="end" fill="var(--text-muted)"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px" }}
+            >niedrig</text>
+            {/* Y-axis rotated title */}
+            <text
+              transform="translate(-8, 26) rotate(-90)" textAnchor="middle"
+              fill="var(--text-muted)"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.4px", fontWeight: 700, letterSpacing: "0.15em" }}
+            >LEVEL</text>
+
+            {/* X-axis line (bottom) */}
+            <line
+              x1={-1} y1={51} x2={100} y2={51}
+              stroke="var(--text-muted)" strokeWidth={0.3}
+            />
+            {/* X-axis ticks at the 3 anchor positions */}
+            <line x1={12} y1={51} x2={12} y2={51.8} stroke="var(--text-muted)" strokeWidth={0.3} />
+            <line x1={50} y1={51} x2={50} y2={51.8} stroke="var(--text-muted)" strokeWidth={0.3} />
+            <line x1={86} y1={51} x2={86} y2={51.8} stroke="var(--text-muted)" strokeWidth={0.3} />
+            {/* X-axis tick labels */}
+            <text
+              x={12} y={55} textAnchor="middle" fill="var(--text-muted)"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.4px", fontWeight: 600 }}
+            >Nachfrage</text>
+            <text
+              x={50} y={55} textAnchor="middle" fill="var(--text-muted)"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.4px", fontWeight: 600 }}
+            >Vergütung</text>
+            <text
+              x={86} y={55} textAnchor="middle" fill="var(--text-muted)"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.4px", fontWeight: 600 }}
+            >Ausbildung</text>
+            {/* X-axis title */}
+            <text
+              x={50} y={60.5} textAnchor="middle" fill="var(--text-muted)"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px", letterSpacing: "0.15em" }}
+            >DIMENSION</text>
+
+            {/* ─── Legend (top-right) ────────────────────────────────────── */}
+            <g transform="translate(58, -2.5)">
+              <circle cx={0} cy={0} r={0.9} fill="var(--neon-9)" />
+              <text
+                x={1.8} y={0.8} fill="var(--text-secondary)"
+                style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px" }}
+              >Was die Wirtschaft will</text>
+              <circle cx={20} cy={0} r={0.9} fill="var(--red-9)" />
+              <text
+                x={21.8} y={0.8} fill="var(--text-secondary)"
+                style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px" }}
+              >Was Studis mitbringen</text>
+            </g>
+
             {/* Area between lines — fades in after both lines drawn */}
             <motion.path
               d={AREA_PATH}
               fill="url(#gap-gradient)"
               style={{ opacity: areaOpacity }}
             />
-
-            {/* Axis hint (symbolic, not time) */}
-            <text
-              x={2}
-              y={CHART_H + 8}
-              fill="var(--text-muted)"
-              style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px" }}
-            >
-              Bedarf →
-            </text>
-            <text
-              x={CHART_W - 2}
-              y={CHART_H + 8}
-              textAnchor="end"
-              fill="var(--text-muted)"
-              style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px" }}
-            >
-              ← Realität
-            </text>
 
             {/* UPPER line: Was die Wirtschaft will (neon) */}
             <motion.path
@@ -282,21 +353,6 @@ export function DiscrepancySection() {
                 strokeDashoffset: upperDraw,
               }}
             />
-            {/* Upper line label */}
-            <motion.text
-              x={UPPER_POINTS[2][0] + 2}
-              y={UPPER_POINTS[2][1] - 2}
-              fill="var(--neon-9)"
-              textAnchor="end"
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "2.6px",
-                fontWeight: 700,
-                opacity: upperDotsOpacity,
-              }}
-            >
-              Was die Wirtschaft will
-            </motion.text>
 
             {/* LOWER line: Was Studierende mitbringen (red) */}
             <motion.path
@@ -311,21 +367,8 @@ export function DiscrepancySection() {
                 strokeDashoffset: lowerDraw,
               }}
             />
-            {/* Lower line label */}
-            <motion.text
-              x={LOWER_POINTS[2][0] + 2}
-              y={LOWER_POINTS[2][1] + 4}
-              fill="var(--red-9)"
-              textAnchor="end"
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "2.6px",
-                fontWeight: 700,
-                opacity: lowerDotsOpacity,
-              }}
-            >
-              Was Studierende mitbringen
-            </motion.text>
+            {/* End-of-line labels removed — redundant with the top-right legend
+                that now identifies each line by colour + description. */}
 
             {/* Upper dots (number-ticker alternative: value text) */}
             {UPPER_POINTS.map((pt, i) => (
