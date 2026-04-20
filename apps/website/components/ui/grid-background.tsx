@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import type { ReactNode } from "react"
+import { useEffect, useRef, type ReactNode } from "react"
 import { useReducedMotion } from "motion/react"
 
 interface GridBackgroundProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -17,8 +17,11 @@ interface GridBackgroundProps extends React.HTMLAttributes<HTMLDivElement> {
  *
  * Stack:
  *   - Layer 1: tiled linear-gradient grid lines (subtle, theme-aware via CSS vars)
- *   - Layer 2: slow-drifting radial "spotlight" glow (accent color) — respects
- *     prefers-reduced-motion (CSS media query in globals.css pauses the keyframe)
+ *   - Layer 2: radial "spotlight" glow that follows the cursor on desktop
+ *     (~300 ms soft-delay via CSS transition on --spotlight-x/y) and falls
+ *     back to the autonomous slow-loop keyframe when the mouse leaves or on
+ *     touch/hover-less devices. Respects prefers-reduced-motion: spotlight
+ *     pinned to center-upper, no cursor tracking, no loop.
  *   - Radial mask fades everything to bg-color at the edges so the page feels
  *     contained, not wallpapered.
  *
@@ -30,9 +33,70 @@ export function GridBackground({
   ...props
 }: GridBackgroundProps) {
   const prefersReducedMotion = useReducedMotion()
+  const containerRef = useRef<HTMLDivElement>(null)
+  const spotlightRef = useRef<HTMLDivElement>(null)
+  // Track whether the cursor is currently over the container so we can
+  // toggle the autonomous animation off/on smoothly.
+  const trackingRef = useRef(false)
+
+  useEffect(() => {
+    if (prefersReducedMotion) return
+    const container = containerRef.current
+    const spotlight = spotlightRef.current
+    if (!container || !spotlight) return
+
+    // Skip cursor tracking on touch / hover-less devices — keyframe loop
+    // continues to play in that case (class stays on, see JSX below).
+    const supportsHover = window.matchMedia("(hover: hover)").matches
+    if (!supportsHover) return
+
+    let rafId: number | null = null
+    let pendingX = 50
+    let pendingY = 35
+
+    const flush = () => {
+      rafId = null
+      spotlight.style.setProperty("--spotlight-x", `${pendingX}%`)
+      spotlight.style.setProperty("--spotlight-y", `${pendingY}%`)
+    }
+
+    const handleMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect()
+      pendingX = ((e.clientX - rect.left) / rect.width) * 100
+      pendingY = ((e.clientY - rect.top) / rect.height) * 100
+      if (rafId === null) rafId = requestAnimationFrame(flush)
+    }
+
+    const handleEnter = () => {
+      trackingRef.current = true
+      // Switch off the autonomous loop while cursor drives the spotlight
+      // and enable the soft-delay transition on the CSS custom props.
+      spotlight.classList.remove("animate-grid-spotlight")
+      spotlight.classList.add("grid-spotlight-tracking")
+    }
+
+    const handleLeave = () => {
+      trackingRef.current = false
+      // Hand control back to the autonomous keyframe loop.
+      spotlight.classList.remove("grid-spotlight-tracking")
+      spotlight.classList.add("animate-grid-spotlight")
+    }
+
+    container.addEventListener("mousemove", handleMove)
+    container.addEventListener("mouseenter", handleEnter)
+    container.addEventListener("mouseleave", handleLeave)
+
+    return () => {
+      container.removeEventListener("mousemove", handleMove)
+      container.removeEventListener("mouseenter", handleEnter)
+      container.removeEventListener("mouseleave", handleLeave)
+      if (rafId !== null) cancelAnimationFrame(rafId)
+    }
+  }, [prefersReducedMotion])
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         "relative flex h-[100vh] flex-col items-center justify-center overflow-hidden bg-bg text-text",
         className,
@@ -72,8 +136,11 @@ export function GridBackground({
         }}
       />
 
-      {/* Spotlight glow — slow drift via keyframes, paused on reduced-motion */}
+      {/* Spotlight glow — follows cursor on hover-capable devices, falls back
+          to the slow-drift keyframe loop otherwise. pointer-events-none so the
+          grid stays purely decorative and children remain clickable. */}
       <div
+        ref={spotlightRef}
         aria-hidden="true"
         className={cn(
           "pointer-events-none absolute inset-0",

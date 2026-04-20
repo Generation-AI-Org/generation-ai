@@ -214,6 +214,16 @@ textarea:focus-visible,
   animation: grid-spotlight 24s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
+/* Cursor-driven spotlight on desktop: --spotlight-x/y are updated via JS
+   on mousemove (throttled to rAF). The CSS transition smooths those
+   discrete updates into a ~300 ms trail so the glow "chases" the cursor
+   instead of snapping to it. */
+.grid-spotlight-tracking {
+  transition:
+    --spotlight-x 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    --spotlight-y 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
 /* Reduced-Motion: pause all Phase-20 loop animations (D-06 PFLICHT) */
 @media (prefers-reduced-motion: reduce) {
   .animate-aurora,
