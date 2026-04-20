@@ -32,6 +32,7 @@ pnpm-debug.log*
 # Testing
 coverage/
 .nyc_output/
+.lighthouseci/
 
 # Dev-Screenshots am Repo-Root (Playwright/Browser-Debug-Artefakte)
 /*.png
