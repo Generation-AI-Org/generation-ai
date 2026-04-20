@@ -5,157 +5,365 @@ import {
   motion,
   useScroll,
   useTransform,
-  useInView,
   useReducedMotion,
+  type MotionValue,
 } from "motion/react"
-import { NumberTicker } from "@/components/ui/number-ticker"
 
-// Plan 03 Task 2 — Discrepancy: das zentrale Wow-Stueck der Landing (D-09).
-// Custom Bento-Split mit 6 Number-Tickern + scroll-getriebener Divergenz + Closer.
+// Plan 06 Task 2 (UAT Option A) — Sticky-Scroll Split-Line-Chart for the
+// Discrepancy section. Replaces Plan-03 Bento-Split (kept LOCKED numbers
+// per D-09) with a scroll-driven SVG divergent-line visualisation.
 //
 // LOCKED Daten aus .planning/phases/20-navigation-landing-skeleton/20-RESEARCH.md
 // § Component Recipes D-09 (die 6 Kernzahlen duerfen NICHT geaendert werden).
 //
-// Reduced-motion-Verhalten:
-//   - useReducedMotion() → useTransform liefert konstante 0% (kein Panel-Movement)
-//   - motion-Entries (Intro, Closer) skippen Animation, springen in End-State
-//   - NumberTicker zeigt Final-Werte (NumberTicker hat internen useInView-Start)
+// Layout:
+//   - Outer <section> gives scroll distance (h-[200vh] / h-[150vh] mobile)
+//   - Inner sticky container (top-0, h-screen) holds the chart
+//   - useScroll + useTransform maps scrollYProgress → line draw + opacity
+//
+// Reduced-motion:
+//   - useTransform outputs are bypassed — everything renders in final state
+//   - motion-entries skip to final state
+//   - SVG paths render fully drawn (no stroke-dashoffset animation)
 
 const wirtschaftStats = [
-  { value: 7,  decimals: 0, suffix: "×",  label: "Nachfrage nach KI-Talent (2023→2025)" },
-  { value: 56, decimals: 0, suffix: " %", label: "Lohnaufschlag für KI-Kompetenz" },
-  { value: 73, decimals: 0, suffix: " %", label: "Unternehmen können KI nicht ausschöpfen" },
+  { value: "7×",     label: "KI-Talent-Nachfrage",      xPct: 12 },
+  { value: "56 %",   label: "Lohnaufschlag",            xPct: 50 },
+  { value: "73 %",   label: "ungenutztes Potenzial",    xPct: 86 },
 ] as const
 
 const studisStats = [
-  { value: 83.5, decimals: 1, suffix: " %", label: "auf Anfänger-Level" },
-  { value: 75,   decimals: 0, suffix: " %", label: "„Studium bereitet mich nicht vor.“" },
-  { value: 6.4,  decimals: 1, suffix: " %", label: "intensive KI-Lehre im Studium" },
+  { value: "83,5 %", label: "auf Anfänger-Level",       xPct: 12 },
+  { value: "75 %",   label: "„Studium bereitet nicht vor.“", xPct: 50 },
+  { value: "6,4 %",  label: "intensive KI-Lehre",       xPct: 86 },
 ] as const
+
+// SVG viewBox in logical units — chart surface is 100 × 50
+// Upper line (Wirtschaft): rises steeply left→right
+// Lower line (Studis): stays near-flat, slight downward
+const CHART_W = 100
+const CHART_H = 50
+const UPPER_POINTS: Array<[number, number]> = [
+  [12, 38], // start low-left
+  [50, 22], // climbs mid
+  [86, 6],  // steep top-right
+]
+const LOWER_POINTS: Array<[number, number]> = [
+  [12, 40], // start
+  [50, 42], // slight dip
+  [86, 45], // slight decline further
+]
+
+// Build a smooth-ish path through 3 points with cubic curves.
+function buildPath(points: Array<[number, number]>): string {
+  const [p0, p1, p2] = points
+  // two cubic Bezier segments for an organic curve
+  const c1x = (p0[0] + p1[0]) / 2
+  const c2x = (p1[0] + p2[0]) / 2
+  return `M ${p0[0]} ${p0[1]} C ${c1x} ${p0[1]}, ${c1x} ${p1[1]}, ${p1[0]} ${p1[1]} C ${c2x} ${p1[1]}, ${c2x} ${p2[1]}, ${p2[0]} ${p2[1]}`
+}
+
+const UPPER_PATH = buildPath(UPPER_POINTS)
+const LOWER_PATH = buildPath(LOWER_POINTS)
+
+// Area-between-lines polygon (upper forward, lower reversed)
+const AREA_PATH = `${UPPER_PATH} L ${LOWER_POINTS[2][0]} ${LOWER_POINTS[2][1]} C ${(LOWER_POINTS[2][0] + LOWER_POINTS[1][0]) / 2} ${LOWER_POINTS[2][1]}, ${(LOWER_POINTS[2][0] + LOWER_POINTS[1][0]) / 2} ${LOWER_POINTS[1][1]}, ${LOWER_POINTS[1][0]} ${LOWER_POINTS[1][1]} C ${(LOWER_POINTS[1][0] + LOWER_POINTS[0][0]) / 2} ${LOWER_POINTS[1][1]}, ${(LOWER_POINTS[1][0] + LOWER_POINTS[0][0]) / 2} ${LOWER_POINTS[0][1]}, ${LOWER_POINTS[0][0]} ${LOWER_POINTS[0][1]} Z`
+
+interface ChartDotProps {
+  x: number
+  y: number
+  value: string
+  label: string
+  opacity: MotionValue<number>
+  color: "neon" | "red"
+  align: "top" | "bottom"
+}
+
+function ChartDot({ x, y, value, label, opacity, color, align }: ChartDotProps) {
+  const fillVar = color === "neon" ? "var(--neon-9)" : "var(--red-9)"
+  const textVar = color === "neon" ? "var(--neon-9)" : "var(--red-9)"
+  // Label offset above/below the point, in viewBox units
+  const labelY = align === "top" ? y - 4 : y + 8
+
+  return (
+    <motion.g style={{ opacity }}>
+      {/* Glow halo */}
+      <circle cx={x} cy={y} r={2.4} fill={fillVar} opacity={0.25} />
+      <circle cx={x} cy={y} r={1.2} fill={fillVar} />
+      {/* Number */}
+      <text
+        x={x}
+        y={labelY}
+        textAnchor="middle"
+        fill={textVar}
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "4px",
+          fontWeight: 700,
+        }}
+      >
+        {value}
+      </text>
+      {/* Label */}
+      <text
+        x={x}
+        y={labelY + (align === "top" ? -2.8 : 3)}
+        textAnchor="middle"
+        fill="var(--text-secondary)"
+        style={{
+          fontFamily: "var(--font-sans)",
+          fontSize: "2.2px",
+          fontWeight: 400,
+        }}
+      >
+        {label}
+      </text>
+    </motion.g>
+  )
+}
 
 export function DiscrepancySection() {
   const sectionRef = useRef<HTMLElement>(null)
-  const tickersRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
 
-  // Scroll-Divergenz: linke Spalte wandert leicht nach links, rechte nach rechts.
-  // Maximal ±4% Transform — innerhalb overflow-hidden, kein Layout-Shift
-  // (siehe 20-RESEARCH.md § OQ-5 CLS-Mitigation).
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start 80%", "end 20%"],
+    offset: ["start start", "end end"],
   })
-  const leftX = useTransform(
+
+  // Progress stages:
+  //   0.00 – 0.20  title fades in
+  //   0.20 – 0.45  upper line draws + 3 dots
+  //   0.45 – 0.70  lower line draws + 3 dots
+  //   0.70 – 0.85  area fills + "DIE LÜCKE" label
+  //   0.85 – 1.00  closer fades in
+  //
+  // Reduced-motion: all values pinned to final state (1).
+  const titleOpacity = useTransform(
     scrollYProgress,
-    [0, 1],
-    prefersReducedMotion ? ["0%", "0%"] : ["0%", "-4%"],
-  )
-  const rightX = useTransform(
-    scrollYProgress,
-    [0, 1],
-    prefersReducedMotion ? ["0%", "0%"] : ["0%", "4%"],
+    [0, 0.1, 0.2],
+    prefersReducedMotion ? [1, 1, 1] : [0, 0.5, 1],
   )
 
-  // Gate fuer Number-Ticker-Start auf die tatsaechliche Ticker-Sichtbarkeit —
-  // verhindert, dass Ticker schon vor Scroll in den Viewport "losrennen".
-  const tickersInView = useInView(tickersRef, { once: true, amount: 0.3 })
+  const upperDraw = useTransform(
+    scrollYProgress,
+    [0.2, 0.45],
+    prefersReducedMotion ? [0, 0] : [1, 0],
+  )
+  const upperDotsOpacity = useTransform(
+    scrollYProgress,
+    [0.35, 0.45],
+    prefersReducedMotion ? [1, 1] : [0, 1],
+  )
+
+  const lowerDraw = useTransform(
+    scrollYProgress,
+    [0.45, 0.7],
+    prefersReducedMotion ? [0, 0] : [1, 0],
+  )
+  const lowerDotsOpacity = useTransform(
+    scrollYProgress,
+    [0.6, 0.7],
+    prefersReducedMotion ? [1, 1] : [0, 1],
+  )
+
+  const areaOpacity = useTransform(
+    scrollYProgress,
+    [0.7, 0.85],
+    prefersReducedMotion ? [0.5, 0.5] : [0, 0.5],
+  )
+  const gapLabelOpacity = useTransform(
+    scrollYProgress,
+    [0.75, 0.85],
+    prefersReducedMotion ? [1, 1] : [0, 1],
+  )
+
+  const closerOpacity = useTransform(
+    scrollYProgress,
+    [0.85, 0.95],
+    prefersReducedMotion ? [1, 1] : [0, 1],
+  )
+  const closerY = useTransform(
+    scrollYProgress,
+    [0.85, 0.95],
+    prefersReducedMotion ? [0, 0] : [20, 0],
+  )
 
   return (
     <section
       ref={sectionRef}
       aria-labelledby="discrepancy-heading"
       data-section="discrepancy"
-      className="relative overflow-hidden bg-bg py-24 sm:py-32 border-b border-border"
+      className="relative bg-bg border-b border-border h-[150vh] lg:h-[200vh]"
     >
-      <div className="mx-auto max-w-6xl px-6">
-        {/* Intro */}
+      <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden px-6">
+        {/* Title cluster */}
         <motion.div
-          initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
-          whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          style={{ opacity: titleOpacity }}
+          className="text-center max-w-4xl mb-8 sm:mb-12"
         >
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-text-muted mb-3">
             Die KI-Diskrepanz
           </p>
           <h2
             id="discrepancy-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-text"
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-text"
           >
             Was die Wirtschaft braucht — und was im Studium passiert.
           </h2>
         </motion.div>
 
-        {/* Bento-Split */}
-        <div
-          ref={tickersRef}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-border rounded-2xl overflow-hidden"
-        >
-          {/* LINKS: Was Wirtschaft will */}
-          <motion.div
-            style={{ x: leftX, willChange: "transform" }}
-            className="bg-brand-blue-2 dark:bg-brand-blue-12/40 p-8 sm:p-10"
+        {/* Chart */}
+        <div className="w-full max-w-[1200px] mx-auto">
+          <svg
+            viewBox={`0 0 ${CHART_W} ${CHART_H + 10}`}
+            className="w-full h-auto"
+            role="img"
+            aria-label="Divergenz-Chart: Was die Wirtschaft will (steigend) versus was Studierende mitbringen (flach)"
           >
-            <h3 className="font-mono text-sm uppercase tracking-wider text-brand-blue-11 dark:text-brand-neon-9 mb-8">
-              Was die Wirtschaft will
-            </h3>
-            <ul className="space-y-8">
-              {wirtschaftStats.map((stat) => (
-                <li key={stat.label}>
-                  <p className="font-mono text-5xl sm:text-6xl font-bold text-brand-blue-11 dark:text-brand-neon-9 leading-none">
-                    {tickersInView ? (
-                      <NumberTicker
-                        value={stat.value}
-                        decimalPlaces={stat.decimals}
-                      />
-                    ) : (
-                      <span>0</span>
-                    )}
-                    <span className="text-3xl sm:text-4xl ml-1">{stat.suffix}</span>
-                  </p>
-                  <p className="mt-2 text-sm text-brand-blue-11/90 dark:text-brand-neon-4">{stat.label}</p>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
+            <defs>
+              {/* Gap fill gradient — neon top → red bottom */}
+              <linearGradient id="gap-gradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--neon-9)" stopOpacity="0.35" />
+                <stop offset="100%" stopColor="var(--red-9)" stopOpacity="0.35" />
+              </linearGradient>
+            </defs>
 
-          {/* RECHTS: Was Studis mitbringen */}
-          <motion.div
-            style={{ x: rightX, willChange: "transform" }}
-            className="bg-brand-red-2 dark:bg-brand-red-12/40 p-8 sm:p-10"
-          >
-            <h3 className="font-mono text-sm uppercase tracking-wider text-brand-red-11 dark:text-brand-pink-9 mb-8">
+            {/* Area between lines — fades in after both lines drawn */}
+            <motion.path
+              d={AREA_PATH}
+              fill="url(#gap-gradient)"
+              style={{ opacity: areaOpacity }}
+            />
+
+            {/* Axis hint (symbolic, not time) */}
+            <text
+              x={2}
+              y={CHART_H + 8}
+              fill="var(--text-muted)"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px" }}
+            >
+              Bedarf →
+            </text>
+            <text
+              x={CHART_W - 2}
+              y={CHART_H + 8}
+              textAnchor="end"
+              fill="var(--text-muted)"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px" }}
+            >
+              ← Realität
+            </text>
+
+            {/* UPPER line: Was die Wirtschaft will (neon) */}
+            <motion.path
+              d={UPPER_PATH}
+              stroke="var(--neon-9)"
+              strokeWidth={0.9}
+              fill="none"
+              strokeLinecap="round"
+              pathLength={1}
+              style={{
+                strokeDasharray: 1,
+                strokeDashoffset: upperDraw,
+              }}
+            />
+            {/* Upper line label */}
+            <motion.text
+              x={UPPER_POINTS[2][0] + 2}
+              y={UPPER_POINTS[2][1] - 2}
+              fill="var(--neon-9)"
+              textAnchor="end"
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "2.6px",
+                fontWeight: 700,
+                opacity: upperDotsOpacity,
+              }}
+            >
+              Was die Wirtschaft will
+            </motion.text>
+
+            {/* LOWER line: Was Studierende mitbringen (red) */}
+            <motion.path
+              d={LOWER_PATH}
+              stroke="var(--red-9)"
+              strokeWidth={0.9}
+              fill="none"
+              strokeLinecap="round"
+              pathLength={1}
+              style={{
+                strokeDasharray: 1,
+                strokeDashoffset: lowerDraw,
+              }}
+            />
+            {/* Lower line label */}
+            <motion.text
+              x={LOWER_POINTS[2][0] + 2}
+              y={LOWER_POINTS[2][1] + 4}
+              fill="var(--red-9)"
+              textAnchor="end"
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "2.6px",
+                fontWeight: 700,
+                opacity: lowerDotsOpacity,
+              }}
+            >
               Was Studierende mitbringen
-            </h3>
-            <ul className="space-y-8">
-              {studisStats.map((stat) => (
-                <li key={stat.label}>
-                  <p className="font-mono text-5xl sm:text-6xl font-bold text-brand-red-11 dark:text-brand-pink-9 leading-none">
-                    {tickersInView ? (
-                      <NumberTicker
-                        value={stat.value}
-                        decimalPlaces={stat.decimals}
-                      />
-                    ) : (
-                      <span>0</span>
-                    )}
-                    <span className="text-3xl sm:text-4xl ml-1">{stat.suffix}</span>
-                  </p>
-                  <p className="mt-2 text-sm text-brand-red-11/90 dark:text-brand-pink-4">{stat.label}</p>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
+            </motion.text>
+
+            {/* Upper dots (number-ticker alternative: value text) */}
+            {UPPER_POINTS.map((pt, i) => (
+              <ChartDot
+                key={`u-${i}`}
+                x={pt[0]}
+                y={pt[1]}
+                value={wirtschaftStats[i].value}
+                label={wirtschaftStats[i].label}
+                opacity={upperDotsOpacity}
+                color="neon"
+                align="top"
+              />
+            ))}
+
+            {/* Lower dots */}
+            {LOWER_POINTS.map((pt, i) => (
+              <ChartDot
+                key={`l-${i}`}
+                x={pt[0]}
+                y={pt[1]}
+                value={studisStats[i].value}
+                label={studisStats[i].label}
+                opacity={lowerDotsOpacity}
+                color="red"
+                align="bottom"
+              />
+            ))}
+
+            {/* DIE LÜCKE label in the middle of gap */}
+            <motion.text
+              x={50}
+              y={32}
+              textAnchor="middle"
+              fill="var(--text)"
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "3.5px",
+                fontWeight: 700,
+                letterSpacing: "0.15em",
+                opacity: gapLabelOpacity,
+              }}
+            >
+              DIE LÜCKE
+            </motion.text>
+          </svg>
         </div>
 
-        {/* Closer-Zeile (R1.3 explicit) */}
+        {/* Closer */}
         <motion.p
-          initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
-          whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.6 }}
-          transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
-          className="mt-16 text-center font-mono text-2xl sm:text-3xl text-text"
+          style={{ opacity: closerOpacity, y: closerY }}
+          className="mt-8 sm:mt-12 text-center font-mono text-xl sm:text-2xl lg:text-3xl text-text max-w-3xl"
         >
           Generation AI schließt diese Lücke.
         </motion.p>
