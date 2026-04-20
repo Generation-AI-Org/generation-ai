@@ -53,10 +53,13 @@ export const AuroraBackground = ({
         }
       >
         <div
-          // Aurora layer — uses brand-rebranded CSS vars defined in globals.css
-          // (theme-aware: dark default + .light override)
+          // Aurora layer — theme-agnostic: uses white-gradient + invert filter.
+          // Theme is handled via --brand-aurora-* CSS vars (see globals.css:163 —
+          // dark default + .light override). No dark: classes needed because the
+          // project uses .light-based toggling, and the white-gradient+invert
+          // rendering path works identically in both themes.
           className={cn(
-            `after:animate-aurora pointer-events-none absolute -inset-[10px] [background-image:var(--white-gradient),var(--aurora)] [background-size:300%,_200%] [background-position:50%_50%,50%_50%] opacity-50 blur-[10px] invert filter will-change-transform after:absolute after:inset-0 after:[background-image:var(--white-gradient),var(--aurora)] after:[background-size:200%,_100%] after:[background-attachment:fixed] after:mix-blend-difference after:content-[""] dark:[background-image:var(--dark-gradient),var(--aurora)] dark:invert-0 after:dark:[background-image:var(--dark-gradient),var(--aurora)]`,
+            `after:animate-aurora pointer-events-none absolute -inset-[10px] [background-image:var(--white-gradient),var(--aurora)] [background-size:300%,_200%] [background-position:50%_50%,50%_50%] opacity-50 blur-[10px] invert filter will-change-transform after:absolute after:inset-0 after:[background-image:var(--white-gradient),var(--aurora)] after:[background-size:200%,_100%] after:[background-attachment:fixed] after:mix-blend-difference after:content-[""]`,
 
             showRadialGradient &&
               `[mask-image:radial-gradient(ellipse_at_100%_0%,black_10%,var(--transparent)_70%)]`,

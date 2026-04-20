@@ -114,7 +114,7 @@ export function DiscrepancySection() {
                     )}
                     <span className="text-3xl sm:text-4xl ml-1">{stat.suffix}</span>
                   </p>
-                  <p className="mt-2 text-sm text-text-secondary">{stat.label}</p>
+                  <p className="mt-2 text-sm text-brand-blue-11/90 dark:text-brand-neon-4">{stat.label}</p>
                 </li>
               ))}
             </ul>
@@ -142,7 +142,7 @@ export function DiscrepancySection() {
                     )}
                     <span className="text-3xl sm:text-4xl ml-1">{stat.suffix}</span>
                   </p>
-                  <p className="mt-2 text-sm text-text-secondary">{stat.label}</p>
+                  <p className="mt-2 text-sm text-brand-red-11/90 dark:text-brand-pink-4">{stat.label}</p>
                 </li>
               ))}
             </ul>
