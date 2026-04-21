@@ -517,7 +517,7 @@ Plans:
 | Phase | Name | Goal | Requirements | Autonom-fähig |
 |-------|------|------|--------------|---------------|
 | 20 | Navigation + Landing-Skeleton | 6/6 | Complete    | 2026-04-21 |
-| 20.5 | Landing Wow-Pass (Signal-Grid) | Hero + Discrepancy Polish + DS-Alignment | R1.2, R1.3 | ✅ (iteratives Co-Build mit Luca auf localhost) |
+| 20.5 | Landing Wow-Pass (Signal-Grid) | 1/5 | In Progress|  |
 | 21 | `/about`-Seite | Mission, Team, Sparringspartner, Verein | R2 | ✅ (statischer Content) |
 | 22 | `/partner`-Seite | 3 Anker-Sections + Kontakt-Formular | R3 | ✅ (statischer Content + Form) |
 | 23 | `/join` Fragebogen-Flow | Linearer 4-Step-Flow mit Validation (Backend-Stub) | R4 | ✅ |
@@ -578,10 +578,10 @@ Plans:
 **Design-System Source of Truth:** `brand/Generation AI Design System/` (canonical ab 2026-04-21)
 **Branch:** `feature/phase-20-landing-skeleton` (bleibt offen, baut on-top)
 **Out-of-Scope:** Andere Sections (Offering/Tool-Showcase/Community/Audience-Split/Trust/Final-CTA bleiben unangetastet), neue Pages, neue Daten, Sign-up-Reactivation.
-**Plans:** 5
+**Plans:** 1/5 plans executed
 
 Plans:
-- [ ] 20.5-01-PLAN.md — Design-System Alignment (Tokens, Typography, Motion-Easings)
+- [x] 20.5-01-PLAN.md — Design-System Alignment (Tokens, Typography, Motion-Easings)
 - [ ] 20.5-02-PLAN.md — Signal-Grid Canvas Component (Nodes + Linien + Cursor-Propagation + Radial-Fade-Overlay)
 - [ ] 20.5-03-PLAN.md — Hero Rewrite with Signal-Grid (DS-Typography + DS-Button-States)
 - [ ] 20.5-04-PLAN.md — Discrepancy Polish (smoother Springs + honest Achsen + Mobile-Readability)
