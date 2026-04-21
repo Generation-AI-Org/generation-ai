@@ -517,7 +517,8 @@ Plans:
 | Phase | Name | Goal | Requirements | Autonom-fähig |
 |-------|------|------|--------------|---------------|
 | 20 | Navigation + Landing-Skeleton | 6/6 | Complete    | 2026-04-21 |
-| 20.5 | Landing Wow-Pass (Signal-Grid) | 4/5 | In Progress|  |
+| 20.5 | Landing Wow-Pass (Signal-Grid) | 3/5 (Hero ✅, 20.5-04 + 20.5-05 deferred → 20.6) | Closed    | 2026-04-22 |
+| 20.6 | Landing Sections Rebuild | 0/8 | Planned | 2026-04-22 |
 | 21 | `/about`-Seite | Mission, Team, Sparringspartner, Verein | R2 | ✅ (statischer Content) |
 | 22 | `/partner`-Seite | 3 Anker-Sections + Kontakt-Formular | R3 | ✅ (statischer Content + Form) |
 | 23 | `/join` Fragebogen-Flow | Linearer 4-Step-Flow mit Validation (Backend-Stub) | R4 | ✅ |
@@ -578,14 +579,14 @@ Plans:
 **Design-System Source of Truth:** `brand/Generation AI Design System/` (canonical ab 2026-04-21)
 **Branch:** `feature/phase-20-landing-skeleton` (bleibt offen, baut on-top)
 **Out-of-Scope:** Andere Sections (Offering/Tool-Showcase/Community/Audience-Split/Trust/Final-CTA bleiben unangetastet), neue Pages, neue Daten, Sign-up-Reactivation.
-**Plans:** 4/5 plans executed
+**Plans:** 3/5 delivered, 2 deferred to Phase 20.6
 
 Plans:
 - [x] 20.5-01-PLAN.md — Design-System Alignment (Tokens, Typography, Motion-Easings)
 - [x] 20.5-02-PLAN.md — Signal-Grid Canvas Component (Nodes + Linien + Cursor-Propagation + Radial-Fade-Overlay)
 - [x] 20.5-03-PLAN.md — Hero Rewrite with Signal-Grid (DS-Typography + DS-Button-States)
-- [x] 20.5-04-PLAN.md — Discrepancy Polish (smoother Springs + honest Achsen + Mobile-Readability)
-- [ ] 20.5-05-PLAN.md — Hero → Discrepancy Transition-Animation (co-designed mid-flight mit Luca)
+- [~] 20.5-04-PLAN.md — Discrepancy Polish — ⚠️ Code shipped (`26a5b76`), visuelle Richtung von Luca verworfen 2026-04-21 → redesign from scratch in Phase 20.6-01
+- [~] 20.5-05-PLAN.md — Hero → Discrepancy Transition — ⚠️ Exploration only, deferred auf Phase 20.6-08 (Inter-section transitions)
 
 **Scope:**
 - GridBackground im Hero wird durch Signal-Grid ersetzt (DS-Spec)

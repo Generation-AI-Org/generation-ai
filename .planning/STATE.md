@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: executing
-last_updated: "2026-04-21T01:35:40.702Z"
+status: planning
+last_updated: "2026-04-21T11:18:15.547Z"
 progress:
   total_phases: 14
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 37
-  completed_plans: 33
-  percent: 89
+  completed_plans: 34
+  percent: 92
 ---
 
 # Project State — Generation AI Monorepo
@@ -19,7 +19,7 @@ progress:
 ## Current Status
 
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 skeleton complete, Phase 20.5 Landing Wow-Pass next, dann Phase 21 /about)
-**Phase:** 20.5 IN PROGRESS — Landing Wow-Pass (Signal-Grid), 4/5 Plans ✅ (01 DS-Align, 02 SignalGrid, 03 Hero-Swap, 04 Discrepancy-Polish), Plan 20.5-05 next (Hero → Discrepancy Transition). Phase 20 Skeleton ✅ approved 2026-04-21.
+**Phase:** 21
 **Last Updated:** 2026-04-21 (Plan 20.5-04 complete — Discrepancy smoother springs + honest axes)
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
 
@@ -76,7 +76,7 @@ progress:
 
 ### Phase 20.5 Progress
 
-**Status:** IN PROGRESS. 4/5 Plans ✅, 1 remaining. Update 2026-04-21.
+**Status:** Ready to plan
 
 - CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
 - 5 PLAN.md angelegt:
