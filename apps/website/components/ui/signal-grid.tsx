@@ -62,13 +62,14 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *     Cursor fühlt sich "auf der near plane" an. Kleine Hitbox bewusst —
  *     die Kette wird durch Hop-Propagation in die Tiefe getragen, nicht durch
  *     einen breiten Cursor-Radius.
- *   - Nearest-Neighbor-Queries für Hop-Propagation laufen in 3D-Worldspace
- *     (euclidean in (x,y,z)), nicht Screenspace — so bleibt die Signal-Web-
- *     Topologie an die Cloud-Geometrie geknüpft, nicht an die 2D-Projektion.
- *   - Seed aktiviert 2 nearest neighbors (hop-1 @ +80ms), dann je 1 weiterer
- *     pro hop-1 (hop-2 @ +160ms), dann je 1 weiterer pro hop-2 (hop-3 @ +240ms).
- *     Max 3 hops tief, max 7 aktive Nodes pro Kette. Ripple-Geschwindigkeit
- *     (80ms pro Level) lässt die Kette direkt spürbar aber sichtbar kaskadieren.
+ *   - Nearest-Neighbor-Queries für Hop-Propagation laufen in 2D-Screenspace
+ *     (projected sx, sy der Nodes nach Rotation+Projection). So bleibt die
+ *     Kette visuell kohärent: kurze Linien auf dem Screen, auch wenn die
+ *     3D-Worldspace-Distanz variiert. Kein "Chain wandert in den Hintergrund".
+ *   - Seed aktiviert 2 nearest neighbors (hop-1 @ +120ms), dann je 1 weiterer
+ *     pro hop-1 (hop-2 @ +240ms). Max 2 hops tief, max 5 aktive Nodes pro
+ *     Kette. Ripple-Geschwindigkeit (120ms pro Level) lässt die Kette
+ *     spürbar aber sichtbar cascaden — nicht instant.
  *   - Activation-Pulse: 300ms scale-bump, keine Halos.
  *   - Activation-Decay: 2800ms.
  *
@@ -163,24 +164,20 @@ export function SignalGrid({
   const cursorRef = useRef({ x: -9999, y: -9999, active: false })
 
   // Track the currently-seeded node index (-1 = none) and when propagation fired.
-  // hop1/hop2/hop3 indices carried between phases so each hop propagates from
-  // the previous level's nodes (3D NN, worldspace).
+  // hop1 indices carried between phases so hop-2 propagates from hop-1 nodes
+  // (screen-space NN).
   const seedRef = useRef<{
     index: number
     hop1Fired: boolean
     hop2Fired: boolean
-    hop3Fired: boolean
     seededAt: number
     hop1Indices: number[]
-    hop2Indices: number[]
   }>({
     index: -1,
     hop1Fired: false,
     hop2Fired: false,
-    hop3Fired: false,
     seededAt: 0,
     hop1Indices: [],
-    hop2Indices: [],
   })
 
   // Resolved CSS-var color + pre-parsed RGB, re-read on theme change.
@@ -372,10 +369,8 @@ export function SignalGrid({
         index: -1,
         hop1Fired: false,
         hop2Fired: false,
-        hop3Fired: false,
         seededAt: 0,
         hop1Indices: [],
-        hop2Indices: [],
       }
       lastTickRef.current = null
     }
@@ -397,7 +392,6 @@ export function SignalGrid({
       cursorRef.current.active = false
       seedRef.current.index = -1
       seedRef.current.hop1Indices = []
-      seedRef.current.hop2Indices = []
     }
     container.addEventListener("mousemove", handleMove)
     container.addEventListener("mouseleave", handleLeave)
@@ -417,15 +411,14 @@ export function SignalGrid({
     io.observe(container)
 
     // ─── Interaction/Motion Constants ───
-    // UAT tuning: hop cascade faster (80/160/240 ms) → ripple feels immediate
-    // but still visibly cascading. Seed radius tightened (desktop 100→60,
+    // UAT tuning: 2-hop cascade at 120/240 ms → ripple feels spürbar aber
+    // visibly cascading, not instant. Seed radius tightened (desktop 100→60,
     // mobile 70→40) so only nodes really near the cursor become seeds —
-    // propagation chain now carries the signal into depth instead of
-    // activating whole cursor neighborhood.
-    const HOP1_DELAY_MS = 80
-    const HOP2_DELAY_MS = 160
-    const HOP3_DELAY_MS = 240
-    const HOP_RETRIGGER_GUARD_MS = 80 // min spacing before re-activating a node
+    // propagation chain now carries the signal outward in screen-space
+    // instead of activating whole cursor neighborhood.
+    const HOP1_DELAY_MS = 120
+    const HOP2_DELAY_MS = 240
+    const HOP_RETRIGGER_GUARD_MS = 120 // min spacing before re-activating a node
     const ACTIVATION_MS = 2800
     const SEED_RADIUS_DESKTOP = 60
     const SEED_RADIUS_MOBILE = 40
@@ -434,14 +427,14 @@ export function SignalGrid({
     // Scratch buffer for the per-frame painter sort
     let sortBuf: number[] = []
 
-    // ─── Helper: find 2 nearest nodes in 3D WORLDSPACE (euclidean x,y,z) ───
-    // Used for on-demand mini-net propagation after a seed has been found in
-    // screen-space. Worldspace-NN keeps the signal-web tied to cloud geometry,
-    // not the flat projection.
-    const findTwoNearest3D = (
-      px: number,
-      py: number,
-      pz: number,
+    // ─── Helper: find 2 nearest nodes in 2D SCREEN-space (projected sx, sy) ───
+    // Used for on-demand mini-net propagation after a seed has been found. The
+    // NN query reads each node's cached `screenX`/`screenY` (refreshed each
+    // frame during PHASE C), so chains stay visually coherent on screen — no
+    // more "chain spreads into the background" via worldspace distance.
+    const findTwoNearestScreen = (
+      sx: number,
+      sy: number,
       nodes: typeof nodesRef.current,
       exclude: Set<number>,
     ): number[] => {
@@ -452,10 +445,9 @@ export function SignalGrid({
       for (let i = 0; i < nodes.length; i++) {
         if (exclude.has(i)) continue
         const n = nodes[i]!
-        const dx = n.x - px
-        const dy = n.y - py
-        const dz = n.z - pz
-        const dSq = dx * dx + dy * dy + dz * dz
+        const dx = n.screenX - sx
+        const dy = n.screenY - sy
+        const dSq = dx * dx + dy * dy
         if (dSq < firstDSq) {
           secondDSq = firstDSq
           secondIdx = firstIdx
@@ -640,24 +632,21 @@ export function SignalGrid({
             seed.index = nearestIdx
             seed.hop1Fired = false
             seed.hop2Fired = false
-            seed.hop3Fired = false
             seed.seededAt = nowMs
             seed.hop1Indices = []
-            seed.hop2Indices = []
             const n = nodes[nearestIdx]!
             n.activationStart = nowMs
             n.activationDepth = 0
             n.pulseStart = nowMs
           }
 
-          // Hop-1: 2 nearest to seed (3D worldspace NN).
+          // Hop-1: 2 nearest to seed (screen-space NN).
           if (!seed.hop1Fired && nowMs - seed.seededAt >= HOP1_DELAY_MS) {
             const seedNode = nodes[seed.index]!
             const exclude = new Set<number>([seed.index])
-            const hop1 = findTwoNearest3D(
-              seedNode.x,
-              seedNode.y,
-              seedNode.z,
+            const hop1 = findTwoNearestScreen(
+              seedNode.screenX,
+              seedNode.screenY,
               nodes,
               exclude,
             )
@@ -673,17 +662,21 @@ export function SignalGrid({
             seed.hop1Fired = true
           }
 
-          // Hop-2: each hop1 node promotes 1 nearest-neighbor (3D NN).
+          // Hop-2: each hop1 node promotes 1 nearest-neighbor (screen-space NN).
           if (
             !seed.hop2Fired &&
             seed.hop1Fired &&
             nowMs - seed.seededAt >= HOP2_DELAY_MS
           ) {
             const usedSet = new Set<number>([seed.index, ...seed.hop1Indices])
-            const hop2Collected: number[] = []
             for (const h1idx of seed.hop1Indices) {
               const h1 = nodes[h1idx]!
-              const found = findTwoNearest3D(h1.x, h1.y, h1.z, nodes, usedSet)
+              const found = findTwoNearestScreen(
+                h1.screenX,
+                h1.screenY,
+                nodes,
+                usedSet,
+              )
               if (found.length > 0) {
                 const cand = found[0]!
                 const n = nodes[cand]!
@@ -693,45 +686,13 @@ export function SignalGrid({
                   n.pulseStart = nowMs
                 }
                 usedSet.add(cand)
-                hop2Collected.push(cand)
               }
             }
-            seed.hop2Indices = hop2Collected
             seed.hop2Fired = true
-          }
-
-          // Hop-3 (new, UAT): each hop2 node promotes 1 more nearest-neighbor
-          // so the "Verbindungs-Kette" travels further into the cloud depth.
-          if (
-            !seed.hop3Fired &&
-            seed.hop2Fired &&
-            nowMs - seed.seededAt >= HOP3_DELAY_MS
-          ) {
-            const usedSet = new Set<number>([
-              seed.index,
-              ...seed.hop1Indices,
-              ...seed.hop2Indices,
-            ])
-            for (const h2idx of seed.hop2Indices) {
-              const h2 = nodes[h2idx]!
-              const found = findTwoNearest3D(h2.x, h2.y, h2.z, nodes, usedSet)
-              if (found.length > 0) {
-                const cand = found[0]!
-                const n = nodes[cand]!
-                if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
-                  n.activationStart = nowMs
-                  n.activationDepth = 3
-                  n.pulseStart = nowMs
-                }
-                usedSet.add(cand)
-              }
-            }
-            seed.hop3Fired = true
           }
         } else {
           seedRef.current.index = -1
           seedRef.current.hop1Indices = []
-          seedRef.current.hop2Indices = []
         }
       }
 
