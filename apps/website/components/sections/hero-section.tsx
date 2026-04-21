@@ -2,20 +2,33 @@
 
 import Link from "next/link"
 import { motion, useReducedMotion } from "motion/react"
-import { GridBackground } from "@/components/ui/grid-background"
+import { SignalGrid } from "@/components/ui/signal-grid"
 
-// Plan 06 Task 1 (UAT) — Hero: GridBackground (Raycast/Vercel-style) +
-// Claim-Placeholder + Primary-CTA → /join.
+// Phase 20.5 Plan 03 — Hero: SignalGrid (DS Connection-Motif) +
+// DS-aligned Typography + Primary-CTA Button-States.
 //
-// UAT-Entscheidung 2026-04-20: AuroraBackground durch animated GridBackground
-// ersetzt — Aurora war im aktuellen Theming-Kontext visuell gebrochen, Luca hat
-// "geiles grid oder so" explizit freigegeben. Brand-Vibe: Terminal/hacker
-// (siehe components/terminal-splash.tsx).
+// Background-History:
+//   Phase 20.6 (UAT): AuroraBackground → GridBackground (Raycast/Vercel-Look).
+//   Phase 20.5: GridBackground → SignalGrid, weil Design-System-Spezifikation
+//   (brand/Generation AI Design System/README.md §Visual Foundations → Backgrounds)
+//   explizit Nodes + Propagation-Ripple als Motif definiert. GridBackground
+//   bleibt als @deprecated Component erhalten für evtl. andere Contexts.
 //
 // Reduced-motion-Verhalten:
-//   - Grid-Spotlight-Keyframe pausiert ueber globals.css @media
-//     (prefers-reduced-motion) + zusaetzliches JS-Guard im GridBackground
-//   - motion.div-Entry-Animation wird via useReducedMotion() ausgeschaltet
+//   - SignalGrid respektiert `prefers-reduced-motion: reduce` intern
+//     (statischer Grid, keine Breathing, keine Cursor-Propagation, keine Linien).
+//   - motion.div-Entry-Animation wird via useReducedMotion() ausgeschaltet.
+//
+// Typography (DS-konform):
+//   - H1 Geist Mono 700, tracking -0.02em via `tracking-tight`, line-height 1.05
+//   - Body/Subline Geist Sans (default)
+//   - Eyebrow + Tagline Geist Mono uppercase tracked-out
+//
+// Button-States (DS §D Component-Defaults + §E Motion):
+//   - Pill (`rounded-full`), Geist Mono 700 tracked +0.02em
+//   - Hover: scale 1.03 + shadow-glow (--accent-glow)
+//   - Active/Press: scale 0.98 (DS §C Interaction-States)
+//   - Transition: 300ms cubic-bezier(0.16, 1, 0.3, 1) (≈ --dur-normal / --ease-out)
 export function HeroSection() {
   const prefersReducedMotion = useReducedMotion()
 
@@ -29,7 +42,7 @@ export function HeroSection() {
       data-section="hero"
       className="relative isolate"
     >
-      <GridBackground className="min-h-[80vh]">
+      <SignalGrid className="flex min-h-[80vh] flex-col items-center justify-center">
         <motion.div
           initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
           animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
@@ -51,7 +64,7 @@ export function HeroSection() {
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/join"
-              className="inline-flex items-center justify-center bg-[var(--accent)] text-[var(--text-on-accent)] px-6 py-3 rounded-full text-sm font-mono font-bold transition-all duration-300 hover:shadow-[0_0_20px_var(--accent-glow)] hover:scale-[1.03]"
+              className="inline-flex items-center justify-center rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-mono font-bold tracking-[0.02em] text-[var(--text-on-accent)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.03] hover:shadow-[0_0_20px_var(--accent-glow)] active:scale-[0.98]"
             >
               Jetzt beitreten
             </Link>
@@ -60,7 +73,7 @@ export function HeroSection() {
             Kostenlos · gemeinnützig · für Studierende und Early-Career
           </p>
         </motion.div>
-      </GridBackground>
+      </SignalGrid>
     </section>
   )
 }
