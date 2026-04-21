@@ -90,6 +90,9 @@
 /* Dark Mode (Default) — Blue/Neon Green */
 :root {
   --bg: #141414;
+  /* RGB triplet companion for rgba(var(--bg-rgb), α) usage (e.g. hero text
+   * backdrop radial-gradient over Signal-Grid). Keep in sync with --bg. */
+  --bg-rgb: 20, 20, 20;
   --bg-card: #1C1C1C;
   --bg-elevated: #222222;
   --bg-header: #3A3AFF;
@@ -235,6 +238,7 @@
 /* Light Mode — Pink/Red CI (exakte CI-Werte) */
 .light {
   --bg: #F6F6F6;
+  --bg-rgb: 246, 246, 246;
   --bg-card: #FFFFFF;
   --bg-elevated: #EFEFEF;
   --bg-header: #FC78FE;

@@ -63,7 +63,7 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *   - zDepth seeded distribution: 0.12..1.0 mit pow(0.7)-Skew → mehr Nodes
  *     im far/mid Band als im near Band → Horizont-Feel.
  *   - Depth wird AUSSCHLIESSLICH über SIZE + ALPHA getragen — keine Desaturation,
- *     keine Hue-Änderung. Alle Nodes sind voll `--accent` (theme-aware).
+ *     keine Hue-Änderung. Alle Nodes sind voll `--text` (theme-aware).
  *     sizeFactor = 0.30 + 1.70 * pow(zDepth, 0.9)   → 0.51× .. 2.00×
  *     alphaFactor = 0.55 + 0.45 * zDepth             → 0.55 .. 1.00
  *   - Wander-speed is depth-scaled (0.35×..1.00×): far nodes drift slower
@@ -85,7 +85,7 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *   - IntersectionObserver pausiert Loop wenn Container offscreen.
  *   - Mouse-Events throttled auf rAF (letzte Position cached, applied nächster Frame).
  *   - Retina/HiDPI: Canvas-Buffer * devicePixelRatio, CSS-Size separat.
- *   - Color-Cache: accent wird pro Frame EINMAL aufgelöst, nicht per Node.
+ *   - Color-Cache: node-color wird pro Frame EINMAL aufgelöst, nicht per Node.
  *   - Sort per frame: 576 nodes × Array.sort ≈ 0.3ms.
  *
  * Reduced-Motion:
@@ -95,10 +95,13 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *     am seeded Wert → Depth-Effekt via size+alpha bleibt sichtbar, aber statisch.
  *
  * Theme-Awareness:
- *   - Nie hardcoded Hex. `--accent` (theme-aware: neon in dark, red in light) +
- *     `--bg` via getComputedStyle auf document.documentElement.
- *     MutationObserver auf html.class resolved Vars beim Theme-Toggle neu →
- *     Light/Dark Symmetrie automatisch.
+ *   - Nie hardcoded Hex. `--text` (theme-aware: near-white in dark, near-black
+ *     in light) wird als Node-Farbe genutzt, damit Nodes + Header-Nav-Text
+ *     aus derselben Farbfamilie kommen und Nodes nicht mit --accent (neon/rot)
+ *     konkurrieren. `--bg` weiterhin für Radial-Fade-Overlay.
+ *     Via getComputedStyle auf document.documentElement; MutationObserver auf
+ *     html.class resolved Vars beim Theme-Toggle neu → Light/Dark Symmetrie
+ *     automatisch.
  */
 export function SignalGrid({
   children,
@@ -168,12 +171,14 @@ export function SignalGrid({
   }>({ index: -1, hop1Fired: false, hop2Fired: false, seededAt: 0, hop1Indices: [] })
 
   // Resolved CSS-var color + pre-parsed RGB, re-read on theme change.
-  // Single accent color (theme-aware: neon in dark, red in light). No muted-mix
-  // anymore — depth is carried purely via size + alpha.
+  // Node color sources from --text (theme-aware: near-white in dark, near-black
+  // in light). Matches header-nav-text family so nodes don't compete visually
+  // with --accent (neon/red). No muted-mix — depth is carried purely via
+  // size + alpha.
   const colorsRef = useRef({
-    accent: "rgb(206, 255, 50)",
+    node: "rgb(246, 246, 246)",
     bg: "rgb(20, 20, 20)",
-    accentRgb: { r: 206, g: 255, b: 50 },
+    nodeRgb: { r: 246, g: 246, b: 246 },
   })
 
   // rAF handle for start/stop during offscreen / unmount
@@ -195,16 +200,17 @@ export function SignalGrid({
     if (!ctx) return
 
     // ─── 1. Resolve CSS-Var color once + on theme change ───
-    // We read --accent (theme-aware: neon in dark, red in light) as the signal
-    // color. Fallback auf DS-Default wenn Var noch nicht resolved.
+    // We read --text (theme-aware: near-white in dark, near-black in light) as
+    // the node color — same family as header-nav-text. Fallback auf DS-Default
+    // wenn Var noch nicht resolved.
     const resolveColors = () => {
       const styles = getComputedStyle(document.documentElement)
-      const accent = styles.getPropertyValue("--accent").trim() || "#CEFF32"
+      const node = styles.getPropertyValue("--text").trim() || "#F6F6F6"
       const bg = styles.getPropertyValue("--bg").trim() || "#141414"
       colorsRef.current = {
-        accent,
+        node,
         bg,
-        accentRgb: parseColorToRgb(accent),
+        nodeRgb: parseColorToRgb(node),
       }
     }
     resolveColors()
@@ -453,7 +459,7 @@ export function SignalGrid({
       const height = rect.height
       const { cellW, cellH } = gridMetricsRef.current
       const cellDistance = Math.min(cellW, cellH)
-      const { accentRgb } = colorsRef.current
+      const { nodeRgb } = colorsRef.current
 
       ctx.clearRect(0, 0, width, height)
 
@@ -711,7 +717,7 @@ export function SignalGrid({
 
         ctx.beginPath()
         ctx.arc(rx, ry, radius, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, ${opacity})`
+        ctx.fillStyle = `rgba(${nodeRgb.r}, ${nodeRgb.g}, ${nodeRgb.b}, ${opacity})`
         ctx.fill()
       }
 
@@ -759,7 +765,7 @@ export function SignalGrid({
             )
             const lineWidth = 0.5 + 1.0 * minZ
 
-            ctx.strokeStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, ${alpha})`
+            ctx.strokeStyle = `rgba(${nodeRgb.r}, ${nodeRgb.g}, ${nodeRgb.b}, ${alpha})`
             ctx.lineWidth = lineWidth
             ctx.beginPath()
             ctx.moveTo(a.x, a.y)
@@ -828,8 +834,8 @@ function pseudoRandom(seed: number): number {
 }
 
 /**
- * Parse a CSS color string (hex or rgb/rgba) to {r,g,b}. Falls back to neon
- * brand color on parse failure so we never crash.
+ * Parse a CSS color string (hex or rgb/rgba) to {r,g,b}. Falls back to
+ * near-white (dark-mode --text) on parse failure so we never crash.
  */
 function parseColorToRgb(color: string): { r: number; g: number; b: number } {
   const trimmed = color.trim()
@@ -863,6 +869,6 @@ function parseColorToRgb(color: string): { r: number; g: number; b: number } {
     }
   }
 
-  // Fallback — DS neon
-  return { r: 206, g: 255, b: 50 }
+  // Fallback — near-white (matches dark-mode --text)
+  return { r: 246, g: 246, b: 246 }
 }

@@ -49,6 +49,19 @@ export function HeroSection() {
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="relative z-10 mx-auto max-w-4xl px-6 py-24 text-center"
         >
+          {/* Text-backdrop: subtle radial halo in theme-bg color so H1/subline/CTA
+              stay readable over the animated Signal-Grid. Uses --bg-rgb triplet
+              so opacity works in both themes. Sits behind content (-z-10) +
+              inside the content wrapper so it tracks the actual text cluster
+              (not the full hero rectangle). */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-[-2rem] -z-10 rounded-3xl"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, rgba(var(--bg-rgb), 0.55) 0%, rgba(var(--bg-rgb), 0.25) 55%, transparent 85%)",
+            }}
+          />
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-text-secondary mb-6">
             Generation AI · DACH-Community
           </p>
