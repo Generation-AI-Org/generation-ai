@@ -19,7 +19,7 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * SignalGrid — DS-spec Hero background ("Universe"-Pass, Plan 20.5-02).
+ * SignalGrid — DS-spec Hero background (Plan 20.5-02, crisp-dot pass).
  *
  * Design System: `brand/Generation AI Design System/DESIGN.md` + README.md
  *   §Visual Foundations → Backgrounds.
@@ -35,63 +35,68 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  * Mouse ist am Container-Wrapper abgegriffen (onMouseMove/onMouseLeave), damit
  * Children ihre eigenen pointer-events behalten.
  *
- * Motion-Model (universe-pass):
+ * Motion-Model:
  *   - Jeder Node hat eine XY-Velocity (vx, vy) in px/s, die langsam zu einem
  *     seeded random Target-Velocity hin-lerpt (~2-3s glatter Richtungswechsel).
  *   - Alle 4-8s (per-node seeded) wird ein neues Target-Velocity (uniform
  *     random angle, magnitude ≤ MAX_SPEED) gewählt → Nodes drift "irgendwohin".
  *   - Zusätzlich hat jeder Node eine Z-Velocity (vz) in depth/sec, die alle
  *     8-14s ein frisches Target bekommt. Nodes driften also auch in der Tiefe,
- *     was das Universum "atmen" lässt. Clamped auf [Z_MIN, Z_MAX].
+ *     was das Feld "atmen" lässt. Clamped auf [Z_MIN, Z_MAX].
  *   - Boundary-Bounce mit 10% margin (XY) bzw. reflection (Z).
  *   - deltaTime bei tab-suspend auf 16ms geclampt.
+ *   - Parallax: entfernt. Cursor bewegt den Hintergrund NICHT mehr mit.
  *
- * Interaction-Model (universe-pass):
+ * Interaction-Model:
  *   - Mini-Net Propagation: Cursor findet EINEN seed-node (<100px desktop /
  *     <70px mobile), aber NUR aus mid/near Band (zDepth ≥ SEED_Z_MIN = 0.3).
- *     Far-Stars sind nicht interaktiv → verstärkt das räumliche Gefühl, dass
+ *     Far-Nodes sind nicht interaktiv → verstärkt das räumliche Gefühl, dass
  *     der Cursor auf der "near layer" ist.
  *   - Seed aktiviert on-demand 2 nearest neighbors mit 140ms-Hop-Delay, max
  *     2 hops tief, ~5 nodes gleichzeitig aktiv.
  *   - Activation-Pulse: bei Activation-Start speichert sich der Node einen
  *     pulseStart-Timestamp. Erste 300ms rendered er mit scale-bump
- *     (1.0 + 0.6 * (1 - t/300)) → fühlt sich wie "Signal trifft ein".
+ *     (1.0 + 0.5 * (1 - t/300)) → fühlt sich wie "Signal trifft ein". Kein Halo.
  *   - Decays: jede Activation über 1500ms unabhängig.
  *
- * Depth-Model (universe-pass) — "3D universe going back":
+ * Depth-Model — "Ebenen die voreinander herfliegen":
  *   - zDepth seeded distribution: 0.12..1.0 mit pow(0.7)-Skew → mehr Nodes
  *     im far/mid Band als im near Band → Horizont-Feel.
- *   - 3 Bands rendered mit unterschiedlicher Visual-Sprache:
- *       FAR  (z<0.35): klein, stark desaturated Richtung text-muted, low alpha
- *       MID  (0.35≤z<0.7): normal accent-color, normale radius/opacity
- *       NEAR (z≥0.7): größer, mit Halo (2-Pass: weicher halo + core), full alpha
+ *   - Depth wird AUSSCHLIESSLICH über SIZE + ALPHA getragen — keine Desaturation,
+ *     keine Hue-Änderung. Alle Nodes sind voll `--accent` (theme-aware).
+ *     sizeFactor = 0.25 + 1.25 * pow(zDepth, 0.9)   → 0.40× .. 1.50×
+ *     alphaFactor = 0.20 + 0.80 * zDepth             → 0.30 .. 1.00
  *   - Render-Reihenfolge: nodes werden per-frame nach zDepth ASC sortiert,
  *     damit near nodes über far nodes gezeichnet werden (Painter's Algorithm).
- *   - Linien: alpha ∝ min(za, zb) × activation. NEAR-NEAR Linien bekommen
- *     zusätzlich einen shadowBlur-Glow für extra Luminosität.
- *   - Parallax: factor 0.02 (halbiert ggü. v1) × zDepth × mouseDelta
- *     → max ±6px Offset. Subtil, nicht irritierend.
+ *   - Jeder Node ist ein einziger crisp-filled Kreis — kein Halo, kein Blur,
+ *     kein shadowBlur. Physische Punkte, kein Sternenfeld-Feel.
+ *
+ * Line-Rendering:
+ *   - alpha = pow(min(zA, zB), 1.5) * 0.9 * activation + 0.05
+ *     → Verbindung zum kleineren/ferneren Node wird deutlich schwächer.
+ *   - lineWidth = 0.5 + 1.0 * min(zA, zB) → far-connecting lines dünn,
+ *     near-near Lines bolder.
+ *   - NO shadowBlur.
  *
  * Performance-Discipline:
- *   - Single rAF-Loop, ein Canvas-Pass pro Frame
- *   - IntersectionObserver pausiert Loop wenn Container offscreen
- *   - Mouse-Events throttled auf rAF (letzte Position cached, applied nächster Frame)
- *   - Retina/HiDPI: Canvas-Buffer * devicePixelRatio, CSS-Size separat
- *   - Color-Interpolation-Cache: accent + text-muted RGB werden pro Frame EINMAL
- *     aufgelöst (oder on theme change), NICHT im Render-Loop per Node geparst.
- *   - Sort per frame: 576 nodes × Array.sort ≈ 0.3ms
+ *   - Single rAF-Loop, ein Canvas-Pass pro Frame, ein Draw-Pass pro Node.
+ *   - IntersectionObserver pausiert Loop wenn Container offscreen.
+ *   - Mouse-Events throttled auf rAF (letzte Position cached, applied nächster Frame).
+ *   - Retina/HiDPI: Canvas-Buffer * devicePixelRatio, CSS-Size separat.
+ *   - Color-Cache: accent wird pro Frame EINMAL aufgelöst, nicht per Node.
+ *   - Sort per frame: 576 nodes × Array.sort ≈ 0.3ms.
  *
  * Reduced-Motion:
  *   - `prefers-reduced-motion: reduce` → statischer Grid (keine XY-Wander, keine
- *     Z-Drift, kein Breathing, kein Mouse-Tracking, keine Linien, kein Parallax,
- *     keine Activation). Nodes bleiben auf initialen Grid-Positionen, zDepth
- *     bleibt am seeded Wert → Depth-Bänder sichtbar, aber statisch.
+ *     Z-Drift, kein Breathing, kein Mouse-Tracking, keine Linien, keine
+ *     Activation). Nodes bleiben auf initialen Grid-Positionen, zDepth bleibt
+ *     am seeded Wert → Depth-Effekt via size+alpha bleibt sichtbar, aber statisch.
  *
  * Theme-Awareness:
  *   - Nie hardcoded Hex. `--accent` (theme-aware: neon in dark, red in light) +
- *     `--text-muted` (theme-aware) + `--bg` via getComputedStyle auf
- *     document.documentElement. MutationObserver auf html.class resolved Vars
- *     beim Theme-Toggle neu → Light/Dark Symmetrie automatisch.
+ *     `--bg` via getComputedStyle auf document.documentElement.
+ *     MutationObserver auf html.class resolved Vars beim Theme-Toggle neu →
+ *     Light/Dark Symmetrie automatisch.
  */
 export function SignalGrid({
   children,
@@ -112,7 +117,7 @@ export function SignalGrid({
       // Initial grid position (used only for reduced-motion static layout)
       initialX: number
       initialY: number
-      // Seeded initial zDepth (used under reduced-motion so depth-bands stay
+      // Seeded initial zDepth (used under reduced-motion so depth stays
       // visible but static).
       initialZ: number
       // Current position in CSS-px (wander state, authoritative)
@@ -150,9 +155,6 @@ export function SignalGrid({
   // Cursor position in canvas CSS-px coords; active=false means "not over container"
   const cursorRef = useRef({ x: -9999, y: -9999, active: false })
 
-  // Container center (for parallax reference). Recomputed per frame from rect.
-  const centerRef = useRef({ x: 0, y: 0 })
-
   // Track the currently-seeded node index (-1 = none) and when propagation fired
   // so hops fire once per seed-cycle, not every frame.
   const seedRef = useRef<{
@@ -163,15 +165,13 @@ export function SignalGrid({
     hop1Indices: number[]     // indices of hop-1 nodes for this seed
   }>({ index: -1, hop1Fired: false, hop2Fired: false, seededAt: 0, hop1Indices: [] })
 
-  // Resolved CSS-var colors + pre-parsed RGB, re-read on theme change.
-  // `accent` = theme-aware signal color (neon in dark, red in light).
-  // `muted` = theme-aware desaturation target for far-band color-mix.
+  // Resolved CSS-var color + pre-parsed RGB, re-read on theme change.
+  // Single accent color (theme-aware: neon in dark, red in light). No muted-mix
+  // anymore — depth is carried purely via size + alpha.
   const colorsRef = useRef({
     accent: "rgb(206, 255, 50)",
-    muted: "rgb(138, 138, 138)",
     bg: "rgb(20, 20, 20)",
     accentRgb: { r: 206, g: 255, b: 50 },
-    mutedRgb: { r: 138, g: 138, b: 138 },
   })
 
   // rAF handle for start/stop during offscreen / unmount
@@ -192,26 +192,22 @@ export function SignalGrid({
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    // ─── 1. Resolve CSS-Var colors once + on theme change ───
+    // ─── 1. Resolve CSS-Var color once + on theme change ───
     // We read --accent (theme-aware: neon in dark, red in light) as the signal
-    // color, and --text-muted (theme-aware) as the desaturation target for the
-    // far-band. Falls zurück auf DS-Defaults wenn Vars noch nicht resolved.
+    // color. Fallback auf DS-Default wenn Var noch nicht resolved.
     const resolveColors = () => {
       const styles = getComputedStyle(document.documentElement)
       const accent = styles.getPropertyValue("--accent").trim() || "#CEFF32"
-      const muted = styles.getPropertyValue("--text-muted").trim() || "#8A8A8A"
       const bg = styles.getPropertyValue("--bg").trim() || "#141414"
       colorsRef.current = {
         accent,
-        muted,
         bg,
         accentRgb: parseColorToRgb(accent),
-        mutedRgb: parseColorToRgb(muted),
       }
     }
     resolveColors()
 
-    // Theme-Toggle triggers html.class mutation → re-read vars
+    // Theme-Toggle triggers html.class mutation → re-read var
     const themeObserver = new MutationObserver(resolveColors)
     themeObserver.observe(document.documentElement, {
       attributes: true,
@@ -233,8 +229,6 @@ export function SignalGrid({
     const Z_POW = 0.7                   // mild bias toward lower zDepth = more
                                         // far/mid nodes, fewer near nodes →
                                         // "horizon going back" feel.
-    const FAR_MAX = 0.35                // z < 0.35 = far band
-    const NEAR_MIN = 0.7                // z ≥ 0.7 = near band
     const SEED_Z_MIN = 0.3              // nodes below this can't be activated
     const Z_VEL_MAX = 0.03              // max |vz| in depth/sec
     const Z_LERP_PER_SEC = 0.33         // ~3s to reach target vz
@@ -261,8 +255,7 @@ export function SignalGrid({
       const cellH = rect.height / (rows + 1)
       gridMetricsRef.current = { cellW, cellH, cols, rows }
 
-      // Slow wander bumped up: 18 px/s desktop, 12 px/s mobile (still drifting,
-      // but noticeable) — v2 speed-bump per UAT "etwas schneller".
+      // Slow wander: 18 px/s desktop, 12 px/s mobile.
       const maxSpeed = isMobile ? 12 : 18
 
       const nodes: typeof nodesRef.current = []
@@ -278,7 +271,7 @@ export function SignalGrid({
           const phase = pseudoRandom(idx * 5 + 11) * Math.PI * 2
 
           // zDepth widened + pow-skewed: more nodes in far/mid band, fewer near
-          // → "universe going back" horizon feel.
+          // → "layers going back" horizon feel.
           const rawZ = pseudoRandom(idx * 13 + 29)
           const zDepth = Z_MIN + Z_RANGE * Math.pow(rawZ, Z_POW)
 
@@ -341,6 +334,8 @@ export function SignalGrid({
     ro.observe(container)
 
     // ─── 5. Mouse tracking (throttled via rAF; stored, applied next frame) ───
+    // NOTE: Cursor drives seed detection ONLY. No parallax — background does
+    // not shift with the mouse.
     const handleMove = (e: MouseEvent) => {
       if (reducedMotionRef.current) return
       const rect = container.getBoundingClientRect()
@@ -377,7 +372,6 @@ export function SignalGrid({
     const ACTIVATION_MS = 1500          // decay window per node
     const SEED_RADIUS_DESKTOP = 100
     const SEED_RADIUS_MOBILE = 70
-    const PARALLAX_FACTOR = 0.02        // halved ggü. v1 — subtiler aber da
     const VELOCITY_LERP_PER_SEC = 0.4   // ~63% toward target after 1s
 
     // Scratch buffer for the per-frame sort — allocated once, reused to avoid
@@ -444,10 +438,7 @@ export function SignalGrid({
       const height = rect.height
       const { cellW, cellH } = gridMetricsRef.current
       const cellDistance = Math.min(cellW, cellH)
-      const { accentRgb, mutedRgb } = colorsRef.current
-
-      centerRef.current.x = width / 2
-      centerRef.current.y = height / 2
+      const { accentRgb } = colorsRef.current
 
       ctx.clearRect(0, 0, width, height)
 
@@ -458,14 +449,6 @@ export function SignalGrid({
       const isMobile = width < 768
       const nodes = nodesRef.current
       const maxSpeed = isMobile ? 12 : 18
-
-      // Parallax delta: offset from container center. Zero if reduced or no cursor.
-      let mouseDx = 0
-      let mouseDy = 0
-      if (!reduced && cursor.active) {
-        mouseDx = cursor.x - centerRef.current.x
-        mouseDy = cursor.y - centerRef.current.y
-      }
 
       // ─── PHASE A: XY Velocity update (target reroll + lerp toward target) ───
       if (!reduced && dt > 0) {
@@ -546,7 +529,7 @@ export function SignalGrid({
         }
       } else if (reduced) {
         // Static layout under reduced-motion — snap to initial grid positions
-        // AND reset zDepth to seeded value (so bands stay visible but static).
+        // AND reset zDepth to seeded value (so depth stays visible but static).
         for (let i = 0; i < nodes.length; i++) {
           const n = nodes[i]!
           n.x = n.initialX
@@ -651,19 +634,22 @@ export function SignalGrid({
         return nodes[a]!.idx - nodes[b]!.idx
       })
 
-      // ─── PHASE E: Render nodes (3 depth bands) ──────────────────────────
-      // Parallax ist Overlay ohne wander-Einfluss → smooth drift auch bei still
-      // stehendem Cursor.
+      // ─── PHASE E: Render nodes — single crisp circle per node ───────────
+      // Depth is carried ONLY via SIZE + ALPHA. No halo, no blur, no
+      // desaturation. Unified render path.
+      //   sizeFactor  = 0.25 + 1.25 * pow(z, 0.9)   → 0.40×..1.50× baseRadius
+      //   alphaFactor = 0.20 + 0.80 * z             → 0.30..1.00
+      //   breathingFactor multiplies opacity by (1 ± 0.3) around base
+      //   activationBoost lifts opacity toward 1.0 when active
+      //   pulse bumps radius +50% in the first PULSE_MS after activation
       const baseRadius = isMobile ? 1.1 : 1.4
       for (let s = 0; s < sortBuf.length; s++) {
         const i = sortBuf[s]!
         const n = nodes[i]!
 
         const zDepth = n.zDepth
-        const parallaxX = reduced ? 0 : mouseDx * zDepth * PARALLAX_FACTOR
-        const parallaxY = reduced ? 0 : mouseDy * zDepth * PARALLAX_FACTOR
-        const rx = n.x + parallaxX
-        const ry = n.y + parallaxY
+        const rx = n.x
+        const ry = n.y
 
         // Activation intensity: decays from 1.0 to 0 over ACTIVATION_MS
         let activation = 0
@@ -677,89 +663,44 @@ export function SignalGrid({
         }
 
         // Activation-Pulse: first PULSE_MS after activation, scale bumps by up
-        // to +60% → feels like "signal arriving".
+        // to +50% → feels like "signal arriving". No halo.
         let pulse = 0
         if (!reduced && n.pulseStart > 0) {
           const pulseAge = nowMs - n.pulseStart
           if (pulseAge >= PULSE_MS) {
             n.pulseStart = 0
           } else {
-            pulse = 0.6 * (1 - pulseAge / PULSE_MS)
+            pulse = 0.5 * (1 - pulseAge / PULSE_MS)
           }
         }
 
+        // Breathing: gentle opacity oscillation (±30% of baseOpacity)
         const breathing = reduced
           ? 0
           : Math.sin(nowSec * 1.2 + n.phase) * 0.3 * n.baseOpacity
 
-        // ─── Band-aware render ─────────────────────────────────────────────
-        if (zDepth < FAR_MAX) {
-          // FAR band: klein, desaturated toward text-muted, low alpha,
-          // kein Halo. Desaturations-Weight: 0 an FAR_MAX (= full accent),
-          // max ~0.65 an Z_MIN (= sehr gräulich).
-          const tFar = 1 - zDepth / FAR_MAX // 0..1 as zDepth goes FAR_MAX→Z_MIN
-          const desaturate = 0.65 * tFar
-          const r = Math.round(
-            accentRgb.r * (1 - desaturate) + mutedRgb.r * desaturate,
-          )
-          const g = Math.round(
-            accentRgb.g * (1 - desaturate) + mutedRgb.g * desaturate,
-          )
-          const b = Math.round(
-            accentRgb.b * (1 - desaturate) + mutedRgb.b * desaturate,
-          )
-          const radius = baseRadius * 0.35 * (1 + pulse)
-          const opacity = Math.min(
-            1,
-            (n.baseOpacity + breathing) * 0.35 + activation * 0.5,
-          )
-          ctx.beginPath()
-          ctx.arc(rx, ry, radius, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`
-          ctx.fill()
-        } else if (zDepth < NEAR_MIN) {
-          // MID band: full accent color, normale radius/opacity.
-          const radius = baseRadius * (0.5 + 0.8 * zDepth) * (1 + pulse)
-          const opacity = Math.min(
-            1,
-            (n.baseOpacity + breathing) * (0.7 + 0.3 * zDepth) +
-              activation * 0.75,
-          )
-          ctx.beginPath()
-          ctx.arc(rx, ry, radius, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, ${opacity})`
-          ctx.fill()
-        } else {
-          // NEAR band: glow halo + bright core. Two draws, no shadowBlur.
-          //   Outer halo: ~2.2× radius, low alpha scaled by (zDepth - 0.5)
-          //   Inner core: normal filled circle, full-ish alpha
-          const radius = baseRadius * (0.9 + 0.7 * zDepth) * (1 + pulse)
-          const haloRadius = radius * 2.2
-          const haloAlpha =
-            0.18 * (zDepth - 0.5) + activation * 0.25 // brighter when active
-          const coreOpacity = Math.min(
-            1,
-            (n.baseOpacity + breathing) * (0.85 + 0.15 * zDepth) +
-              activation * 0.9,
-          )
-          // Halo (soft outer glow)
-          ctx.beginPath()
-          ctx.arc(rx, ry, haloRadius, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, ${Math.max(0, Math.min(1, haloAlpha))})`
-          ctx.fill()
-          // Core
-          ctx.beginPath()
-          ctx.arc(rx, ry, radius, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, ${coreOpacity})`
-          ctx.fill()
-        }
+        // Depth-driven size + alpha (unified ramp)
+        const sizeFactor = 0.25 + 1.25 * Math.pow(zDepth, 0.9)
+        const alphaFactor = 0.2 + 0.8 * zDepth
+
+        const radius = baseRadius * sizeFactor * (1 + pulse)
+        const opacity = Math.min(
+          1,
+          (n.baseOpacity + breathing) * alphaFactor + activation * 0.8,
+        )
+
+        ctx.beginPath()
+        ctx.arc(rx, ry, radius, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, ${opacity})`
+        ctx.fill()
       }
 
-      // ─── PHASE F: Lines between active nodes (depth-aware + glow) ────────
-      // With free wander, pre-computed neighbors are invalid. Iterate over
-      // active pairs and draw a line if they're close enough. Threshold
-      // stays 2.0× cellDistance to accommodate nodes drifted apart.
-      // NEAR-NEAR pairs get shadowBlur for extra luminosity. MID/FAR stay flat.
+      // ─── PHASE F: Lines between active nodes (depth-weighted alpha+width) ──
+      // Alpha weighted strongly toward the SMALLER (farther) node so lines to
+      // distant nodes fade — reinforces the "layers floating in front of each
+      // other" feel. No shadowBlur.
+      //   alpha = pow(minZ, 1.5) * 0.9 * activation + 0.05
+      //   lineWidth = 0.5 + 1.0 * minZ
       if (!reduced) {
         const lineThreshold = cellDistance * 2.0
         const lineThresholdSq = lineThreshold * lineThreshold
@@ -772,50 +713,40 @@ export function SignalGrid({
           activeIdxs.push(i)
         }
 
+        // Ensure no blur bleed from elsewhere
+        ctx.shadowBlur = 0
+
         for (let ai = 0; ai < activeIdxs.length; ai++) {
           const aIdx = activeIdxs[ai]!
           const a = nodes[aIdx]!
           const aAct = 1 - (nowMs - a.activationStart) / ACTIVATION_MS
-          const aParallaxX = mouseDx * a.zDepth * PARALLAX_FACTOR
-          const aParallaxY = mouseDy * a.zDepth * PARALLAX_FACTOR
-          const aRx = a.x + aParallaxX
-          const aRy = a.y + aParallaxY
 
           for (let bi = ai + 1; bi < activeIdxs.length; bi++) {
             const bIdx = activeIdxs[bi]!
             const b = nodes[bIdx]!
             const bAct = 1 - (nowMs - b.activationStart) / ACTIVATION_MS
-            const bParallaxX = mouseDx * b.zDepth * PARALLAX_FACTOR
-            const bParallaxY = mouseDy * b.zDepth * PARALLAX_FACTOR
-            const bRx = b.x + bParallaxX
-            const bRy = b.y + bParallaxY
 
-            const dx = aRx - bRx
-            const dy = aRy - bRy
+            const dx = a.x - b.x
+            const dy = a.y - b.y
             const dSq = dx * dx + dy * dy
             if (dSq > lineThresholdSq) continue
 
-            // Depth-aware alpha: far-far lines barely visible, near-near bright.
             const minZ = Math.min(a.zDepth, b.zDepth)
-            const alpha = Math.min(aAct, bAct) * (minZ * 0.8 + 0.2) * 0.7
-            const bothNear = a.zDepth >= NEAR_MIN && b.zDepth >= NEAR_MIN
+            const activationIntensity = Math.min(aAct, bAct)
+            const alpha = Math.min(
+              1,
+              Math.pow(minZ, 1.5) * 0.9 * activationIntensity + 0.05,
+            )
+            const lineWidth = 0.5 + 1.0 * minZ
 
             ctx.strokeStyle = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, ${alpha})`
-            ctx.lineWidth = bothNear ? 1.2 : 0.8
-            if (bothNear) {
-              ctx.shadowBlur = 3
-              ctx.shadowColor = `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.7)`
-            } else {
-              ctx.shadowBlur = 0
-            }
+            ctx.lineWidth = lineWidth
             ctx.beginPath()
-            ctx.moveTo(aRx, aRy)
-            ctx.lineTo(bRx, bRy)
+            ctx.moveTo(a.x, a.y)
+            ctx.lineTo(b.x, b.y)
             ctx.stroke()
           }
         }
-        // Reset shadow so it doesn't bleed into the next frame's node pass.
-        ctx.shadowBlur = 0
       }
 
       rafRef.current = requestAnimationFrame(tick)
