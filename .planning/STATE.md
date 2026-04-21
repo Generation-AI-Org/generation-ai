@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: READY. Artifacts angelegt 2026-04-21. Kein Plan gestartet.
-last_updated: "2026-04-21T01:27:58.984Z"
+status: executing
+last_updated: "2026-04-21T01:35:40.702Z"
 progress:
   total_phases: 14
   completed_phases: 6
   total_plans: 37
-  completed_plans: 32
-  percent: 86
+  completed_plans: 33
+  percent: 89
 ---
 
 # Project State — Generation AI Monorepo
@@ -19,8 +19,8 @@ progress:
 ## Current Status
 
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 skeleton complete, Phase 20.5 Landing Wow-Pass next, dann Phase 21 /about)
-**Phase:** 20.5 IN PROGRESS — Landing Wow-Pass (Signal-Grid), 3/5 Plans ✅ (01 DS-Align, 02 SignalGrid, 03 Hero-Swap), Plan 20.5-04 next (Discrepancy Polish). Phase 20 Skeleton ✅ approved 2026-04-21.
-**Last Updated:** 2026-04-21 (Plan 20.5-03 complete — Hero uses SignalGrid)
+**Phase:** 20.5 IN PROGRESS — Landing Wow-Pass (Signal-Grid), 4/5 Plans ✅ (01 DS-Align, 02 SignalGrid, 03 Hero-Swap, 04 Discrepancy-Polish), Plan 20.5-05 next (Hero → Discrepancy Transition). Phase 20 Skeleton ✅ approved 2026-04-21.
+**Last Updated:** 2026-04-21 (Plan 20.5-04 complete — Discrepancy smoother springs + honest axes)
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
 
 **Phase 20 Skeleton — Status 2026-04-21:** formal approved auf Skeleton-Scope. Automated Gates alle grün (Build `ƒ /`, CSP nonce, Playwright 8/8, Lighthouse A11y 1.00 / BP 0.96 / SEO 1.00 / CLS 0.00, Perf 0.88 flaky-tolerated). Hero + Discrepancy Wow-Peaks explicit deferred auf Phase 20.5. Changeset `phase-20-navigation-landing-skeleton.md` liegt committed, Merge + `pnpm version` erst nach 20.5. Branch `feature/phase-20-landing-skeleton` bleibt offen für 20.5. Details: `.planning/phases/20-navigation-landing-skeleton/20-VALIDATION.md` (Skeleton-Scope-Sign-Off-Section).
@@ -76,18 +76,18 @@ progress:
 
 ### Phase 20.5 Progress
 
-**Status:** IN PROGRESS. 3/5 Plans ✅, 2 remaining. Update 2026-04-21.
+**Status:** IN PROGRESS. 4/5 Plans ✅, 1 remaining. Update 2026-04-21.
 
 - CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
 - 5 PLAN.md angelegt:
   - 20.5-01 Design-System Alignment (Wave 1, autonomous) — ✅ COMPLETE
   - 20.5-02 Signal-Grid Canvas Component (Wave 2, autonomous) — ✅ COMPLETE
   - 20.5-03 Hero Rewrite with Signal-Grid (Wave 3, autonomous) — ✅ COMPLETE (2026-04-21, commits 996f3fb + e2c337b, 2 files, ~10 min, Playwright 8/8 grün, Build `ƒ /`)
-  - 20.5-04 Discrepancy Polish (Wave 3, autonomous, parallel zu 03) — next
-  - 20.5-05 Hero → Discrepancy Transition-Animation (Wave 4, autonomous, co-designed mid-flight)
+  - 20.5-04 Discrepancy Polish (Wave 3, autonomous, parallel zu 03) — ✅ COMPLETE (2026-04-21, commit `26a5b76`, 1 file, ~30 min, Playwright 8/8 grün, Build `ƒ /`, Option A: Paar-IDs 01/02/03 + HTML-Caption unter Chart, Spring-Tuning 140/32/0.4, mobile dichte Ticks ausgeblendet)
+  - 20.5-05 Hero → Discrepancy Transition-Animation (Wave 4, autonomous, co-designed mid-flight) — next
 - Branch bleibt `feature/phase-20-landing-skeleton` (on-top-build, kein neuer Branch).
 - Working-Mode: Luca co-builds live auf localhost:3000, tight Feedback-Loops, kleine Commits, kein Push, kein Deploy.
-- Next: Plan 20.5-04 (Discrepancy Polish).
+- Next: Plan 20.5-05 (Hero → Discrepancy Transition).
 
 ---
 
