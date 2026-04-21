@@ -18,11 +18,25 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 skeleton ✅, Phase 20.5 Hero ✅, Phase 20.6 Landing Sections Rebuild next, dann Phase 21 /about)
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 skeleton ✅, Phase 20.5 Hero ✅ merged+deployed, Phase 20.6 Landing Sections Rebuild next, dann Phase 21 /about)
 **Phase:** 20.6 Landing Sections Rebuild — PLANNED (8 skeleton plans scaffolded 2026-04-22, bereit zur Execution)
-**Branch:** `feature/phase-20-landing-skeleton` (bleibt offen durch 20.6 — Changeset v4.5.0 wird nach 20.6-Abschluss als gemeinsamer Minor-Bump released)
-**Last Updated:** 2026-04-22 (Phase 20.5 closed at Hero-level, Phase 20.6 scaffold created, Phase 24 route renamed /level-test → /test)
-**Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
+**Branch:** `main` (Phase 20 Skeleton + 20.5 Hero gemerged + gepusht 2026-04-22, Vercel auto-deployed) — neue Phasen starten auf frischem Feature-Branch
+**Last Updated:** 2026-04-22 (Phase 20.5 closed, merged to main, Discrepancy-Section unmounted pending 20.6 redesign, Phase 24 route renamed /level-test → /test)
+**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, andere Sections (Offering, Tool-Showcase, Community, Audience-Split, Trust, Final-CTA) auf Phase-20-Skeleton-Level bis 20.6 drüber polished, Discrepancy-Section unmounted.
+
+## 🚀 Next Session Start Here
+
+**Next phase:** 20.6 Landing Sections Rebuild
+**First command:** `/gsd-discuss-phase 20.6` (oder direkt `/gsd-plan-phase 20.6-01` für den ersten Plan: neue Discrepancy-Section)
+**Context für neue Session:**
+- `.planning/phases/20.6-landing-sections-rebuild/20.6-CONTEXT.md` — Phase-Scope + Decisions
+- `.planning/phases/20.6-landing-sections-rebuild/20.6-0{1..8}-PLAN.md` — 8 Skeleton-Plans
+- `brand/Generation AI Design System/` — Design-System Nordstern (canonical)
+- `.planning/phases/20.5-landing-wow-pass-signal-grid/20.5-SUMMARY.md` — was Hero delivered
+- `apps/website/components/ui/signal-grid.tsx` — der Qualitäts-Maßstab für alle Sections
+- Dev-Server: `pnpm --filter @genai/website dev` (auf localhost:3000 oder :3001)
+
+**Roadmap nach 20.6:** Phase 21 `/about` → 22 `/partner` → 23 `/join` → 24 `/test` → 25 Circle-API-Sync → 26 Subdomain-Integration
 
 **Phase 20 Skeleton — Status 2026-04-21:** formal approved auf Skeleton-Scope. Automated Gates alle grün (Build `ƒ /`, CSP nonce, Playwright 8/8, Lighthouse A11y 1.00 / BP 0.96 / SEO 1.00 / CLS 0.00, Perf 0.88 flaky-tolerated). Hero + Discrepancy Wow-Peaks explicit deferred auf Phase 20.5. Changeset `phase-20-navigation-landing-skeleton.md` liegt committed, Merge + `pnpm version` erst nach 20.5. Branch `feature/phase-20-landing-skeleton` bleibt offen für 20.5. Details: `.planning/phases/20-navigation-landing-skeleton/20-VALIDATION.md` (Skeleton-Scope-Sign-Off-Section).
 
