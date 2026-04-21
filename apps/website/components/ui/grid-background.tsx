@@ -1,5 +1,18 @@
 "use client"
 
+/**
+ * @deprecated Since Phase 20.5 (2026-04-21).
+ *
+ * Ersetzt durch `SignalGrid` (`./signal-grid.tsx`), welches der Design-System-
+ * Spezifikation entspricht (brand/Generation AI Design System/README.md
+ * §Visual Foundations → Backgrounds — Connection/Signal-Motif mit Nodes und
+ * Propagation-Ripple statt Raycast-Style Spotlight-Grid).
+ *
+ * Nicht mehr im Hero verwendet. Behalten für evtl. zukünftige Contexts, wo
+ * ein dezenterer Linien-Grid-Background gewünscht ist. Bei endgültigem
+ * Nicht-Gebrauch löschbar.
+ */
+
 import { cn } from "@/lib/utils"
 import { useEffect, useRef, type ReactNode } from "react"
 import { useReducedMotion } from "motion/react"
