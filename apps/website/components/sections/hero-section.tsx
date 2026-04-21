@@ -56,10 +56,10 @@ export function HeroSection() {
               (not the full hero rectangle). */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-[-2rem] -z-10 rounded-3xl"
+            className="pointer-events-none absolute inset-[-3rem] -z-10 rounded-[2rem]"
             style={{
               background:
-                "radial-gradient(ellipse at center, rgba(var(--bg-rgb), 0.30) 0%, rgba(var(--bg-rgb), 0.12) 55%, transparent 85%)",
+                "radial-gradient(ellipse at center, rgba(var(--bg-rgb), 0.72) 0%, rgba(var(--bg-rgb), 0.48) 45%, rgba(var(--bg-rgb), 0.18) 75%, transparent 95%)",
             }}
           />
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-text-secondary mb-6">
