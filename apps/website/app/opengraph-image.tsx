@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "fs/promises";
+import { join } from "path";
 
 export const alt = "Generation AI — KI-Community für Studierende";
 export const size = {
@@ -8,6 +10,17 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
+  // Inline Brand-Logo SVG als data-URL laden (Satori-friendly)
+  const svgPath = join(
+    process.cwd(),
+    "public",
+    "brand",
+    "logos",
+    "logo-wide-neon-on-blue.svg",
+  );
+  const svgBuffer = await readFile(svgPath);
+  const svgDataUrl = `data:image/svg+xml;base64,${svgBuffer.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -15,68 +28,23 @@ export default async function Image() {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          justifyContent: "center",
-          background: "#141414",
-          padding: "80px 96px",
-          fontFamily:
-            "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-          color: "#F6F6F6",
+          background: "#3A3AFF",
         }}
       >
-        {/* Kommentar-Zeile (Brand Voice) */}
-        <div
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={svgDataUrl}
+          alt=""
+          width={1200}
+          height={630}
           style={{
-            fontSize: 28,
-            color: "#8A8A8A",
-            marginBottom: 28,
-            letterSpacing: "-0.01em",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
           }}
-        >
-          // KI-Community für Studierende im DACH-Raum
-        </div>
-
-        {/* Claim */}
-        <div
-          style={{
-            fontSize: 128,
-            fontWeight: 700,
-            letterSpacing: "-0.04em",
-            lineHeight: 1.02,
-            color: "#F6F6F6",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          Generation AI
-          <span
-            style={{
-              color: "#CEFF32",
-              marginLeft: 12,
-            }}
-          >
-            .
-          </span>
-        </div>
-
-        {/* Footer-Leiste */}
-        <div
-          style={{
-            display: "flex",
-            marginTop: 48,
-            fontSize: 24,
-            color: "#8A8A8A",
-            gap: 32,
-          }}
-        >
-          <span>generation-ai.org</span>
-          <span style={{ color: "#CEFF32" }}>kostenlos · für Studierende</span>
-        </div>
+        />
       </div>
     ),
-    {
-      ...size,
-    }
+    { ...size },
   );
 }
