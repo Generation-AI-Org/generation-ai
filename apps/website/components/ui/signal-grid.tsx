@@ -427,41 +427,62 @@ export function SignalGrid({
     // Scratch buffer for the per-frame painter sort
     let sortBuf: number[] = []
 
-    // ─── Helper: find 2 nearest nodes in 2D SCREEN-space (projected sx, sy) ───
-    // Used for on-demand mini-net propagation after a seed has been found. The
-    // NN query reads each node's cached `screenX`/`screenY` (refreshed each
-    // frame during PHASE C), so chains stay visually coherent on screen — no
-    // more "chain spreads into the background" via worldspace distance.
-    const findTwoNearestScreen = (
+    // ─── Helpers: hybrid NN — one SCREEN-buddy + one WORLDSPACE-buddy per hop ──
+    // Rationale (UAT): pure screen-NN kept chains on the near-plane and never
+    // reached into the back cloud. We now propagate to BOTH:
+    //   - screen-nearest → visual coherence (short on-screen line)
+    //   - 3D-world-nearest → depth reach (pulls chain into z-volume)
+    // Chain size stays ≤5 (seed + 2 hop-1 + 2 hop-2); just the spread is
+    // balanced. If both helpers return the same idx (overlap), caller dedupes.
+    //
+    // Screen-buddy uses cached `screenX`/`screenY` (refreshed each frame in
+    // PHASE C). Depth-buddy uses raw worldspace (x, y, z) — pre-rotation, since
+    // we want the *intrinsic* 3D neighborhood, not the momentarily-projected
+    // one. That keeps depth-buddies stable across rotation frames.
+    const findOneNearestScreen = (
       sx: number,
       sy: number,
       nodes: typeof nodesRef.current,
       exclude: Set<number>,
-    ): number[] => {
-      let firstIdx = -1
-      let firstDSq = Infinity
-      let secondIdx = -1
-      let secondDSq = Infinity
+    ): number | null => {
+      let bestIdx = -1
+      let bestDSq = Infinity
       for (let i = 0; i < nodes.length; i++) {
         if (exclude.has(i)) continue
         const n = nodes[i]!
         const dx = n.screenX - sx
         const dy = n.screenY - sy
         const dSq = dx * dx + dy * dy
-        if (dSq < firstDSq) {
-          secondDSq = firstDSq
-          secondIdx = firstIdx
-          firstDSq = dSq
-          firstIdx = i
-        } else if (dSq < secondDSq) {
-          secondDSq = dSq
-          secondIdx = i
+        if (dSq < bestDSq) {
+          bestDSq = dSq
+          bestIdx = i
         }
       }
-      const out: number[] = []
-      if (firstIdx !== -1) out.push(firstIdx)
-      if (secondIdx !== -1) out.push(secondIdx)
-      return out
+      return bestIdx === -1 ? null : bestIdx
+    }
+
+    const findOneNearestWorld = (
+      wx: number,
+      wy: number,
+      wz: number,
+      nodes: typeof nodesRef.current,
+      exclude: Set<number>,
+    ): number | null => {
+      let bestIdx = -1
+      let bestDSq = Infinity
+      for (let i = 0; i < nodes.length; i++) {
+        if (exclude.has(i)) continue
+        const n = nodes[i]!
+        const dx = n.x - wx
+        const dy = n.y - wy
+        const dz = n.z - wz
+        const dSq = dx * dx + dy * dy + dz * dz
+        if (dSq < bestDSq) {
+          bestDSq = dSq
+          bestIdx = i
+        }
+      }
+      return bestIdx === -1 ? null : bestIdx
     }
 
     // ─── 7. rAF loop ───
@@ -640,16 +661,31 @@ export function SignalGrid({
             n.pulseStart = nowMs
           }
 
-          // Hop-1: 2 nearest to seed (screen-space NN).
+          // Hop-1: 1 screen-buddy + 1 depth-buddy (hybrid NN).
+          // Screen-buddy = visual coherence on-plane. Depth-buddy = pulls the
+          // chain into z-volume, so back-cloud nodes actually get connections.
           if (!seed.hop1Fired && nowMs - seed.seededAt >= HOP1_DELAY_MS) {
             const seedNode = nodes[seed.index]!
             const exclude = new Set<number>([seed.index])
-            const hop1 = findTwoNearestScreen(
+            const screenBuddy = findOneNearestScreen(
               seedNode.screenX,
               seedNode.screenY,
               nodes,
               exclude,
             )
+            if (screenBuddy !== null) exclude.add(screenBuddy)
+            const depthBuddy = findOneNearestWorld(
+              seedNode.x,
+              seedNode.y,
+              seedNode.z,
+              nodes,
+              exclude,
+            )
+            const hop1: number[] = []
+            if (screenBuddy !== null) hop1.push(screenBuddy)
+            if (depthBuddy !== null && depthBuddy !== screenBuddy) {
+              hop1.push(depthBuddy)
+            }
             for (const idx of hop1) {
               const n = nodes[idx]!
               if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
@@ -662,23 +698,34 @@ export function SignalGrid({
             seed.hop1Fired = true
           }
 
-          // Hop-2: each hop1 node promotes 1 nearest-neighbor (screen-space NN).
+          // Hop-2: deterministic split — the "front-most" hop-1 node (smaller
+          // zRot after rotation ≈ closer to camera) propagates via screen-NN
+          // to stay visible; the "deeper" hop-1 node propagates via world-NN
+          // to reach further into the back cloud. Natural division of labor:
+          // near nodes stay on-plane, deep nodes pull depth further.
           if (
             !seed.hop2Fired &&
             seed.hop1Fired &&
             nowMs - seed.seededAt >= HOP2_DELAY_MS
           ) {
             const usedSet = new Set<number>([seed.index, ...seed.hop1Indices])
-            for (const h1idx of seed.hop1Indices) {
+
+            // Sort hop-1 by zRot ASC → index 0 is front-most (most negative z),
+            // last is deepest. Works for 1- or 2-element arrays.
+            const h1Sorted = [...seed.hop1Indices].sort(
+              (a, b) => nodes[a]!.zRot - nodes[b]!.zRot,
+            )
+
+            for (let i = 0; i < h1Sorted.length; i++) {
+              const h1idx = h1Sorted[i]!
               const h1 = nodes[h1idx]!
-              const found = findTwoNearestScreen(
-                h1.screenX,
-                h1.screenY,
-                nodes,
-                usedSet,
-              )
-              if (found.length > 0) {
-                const cand = found[0]!
+              // Front hop-1 → screen-NN; deeper hop-1 → world-NN.
+              // If only one hop-1 exists, treat it as the front one.
+              const useWorld = i === h1Sorted.length - 1 && h1Sorted.length > 1
+              const cand = useWorld
+                ? findOneNearestWorld(h1.x, h1.y, h1.z, nodes, usedSet)
+                : findOneNearestScreen(h1.screenX, h1.screenY, nodes, usedSet)
+              if (cand !== null) {
                 const n = nodes[cand]!
                 if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
                   n.activationStart = nowMs
