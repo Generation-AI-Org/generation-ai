@@ -7,12 +7,12 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: ReactNode
   /**
    * Node columns. Auto-responsive if omitted:
-   *   desktop (>=768px): 27, mobile: 14
+   *   desktop (>=768px): 30, mobile: 16
    */
   nodeCountX?: number
   /**
    * Node rows. Auto-responsive if omitted:
-   *   desktop (>=768px): 15, mobile: 9
+   *   desktop (>=768px): 17, mobile: 10
    */
   nodeCountY?: number
   className?: string
@@ -34,7 +34,7 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *
  * 3D-Model — "Volume-through-rotation" (research 20.5-DEPTH-RESEARCH.md):
  *   - Jeder Node lebt in echtem 3D-Worldspace (x, y, z), Origin = Cloud-Center.
- *     Cloud-Dimensionen: W = containerWidth, H = containerHeight, D = 0.5 × W.
+ *     Cloud-Dimensionen: W = containerWidth, H = containerHeight, D = 0.75 × W.
  *   - Pro Frame: gesamte Wolke wird langsam um Y- (75s/Umdrehung) und X-Achse
  *     (130s/Umdrehung) rotiert. Kein Z-Roll (würde schwindelig machen).
  *   - Danach Pinhole-Perspective-Projektion: scale = FOV / (z - CAMERA_Z), mit
@@ -236,10 +236,11 @@ export function SignalGrid({
     const CAMERA_Z = -500
     // Cap projection scale so near-camera nodes can't explode into huge blobs.
     // scale = FOV / relZ → clamping relZ from below clamps scale from above.
-    // MAX_PROJECTION_SCALE = 2.2 → MIN_REL_Z = FOV/2.2 ≈ 364. Nodes still MOVE
+    // MAX_PROJECTION_SCALE = 3.0 → MIN_REL_Z = FOV/3.0 ≈ 267. Nodes still MOVE
     // in full 3D (wander/rotation unaffected, sort still uses real zRot); only
-    // the visual projection is capped.
-    const MAX_PROJECTION_SCALE = 2.2
+    // the visual projection is capped. Raised from 2.2 to restore 3D feel —
+    // let near-camera nodes grow meaningfully to sell the perspective.
+    const MAX_PROJECTION_SCALE = 3.0
     const MIN_REL_Z = FOV / MAX_PROJECTION_SCALE
     // Rotation speeds: research-recommended sweet spot. No Z-roll.
     const ROT_SPEED_Y = (2 * Math.PI) / 120_000 // 120s per full Y rotation (ms)
@@ -260,14 +261,14 @@ export function SignalGrid({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
       const isMobile = rect.width < 768
-      const cols = nodeCountX ?? (isMobile ? 14 : 27)
-      const rows = nodeCountY ?? (isMobile ? 9 : 15)
+      const cols = nodeCountX ?? (isMobile ? 16 : 30)
+      const rows = nodeCountY ?? (isMobile ? 10 : 17)
 
       // Cloud volume dimensions in worldspace units (1 unit = 1 CSS-px).
-      // Depth = half the width → deeper than tall, less deep than wide.
+      // Depth = 0.75 × width → deeper cloud, stronger "vorne/hinten" range.
       const W = rect.width
       const H = rect.height
-      const D = rect.width * 0.5
+      const D = rect.width * 0.75
       const vpX = W / 2
       const vpY = H / 2
       volumeRef.current = { W, H, D, vpX, vpY }
@@ -276,8 +277,9 @@ export function SignalGrid({
       const cellW = W / (cols + 1)
       const cellH = H / (rows + 1)
 
-      // Slow wander: 18 units/s desktop, 12 units/s mobile (3D magnitude cap).
-      const maxSpeed = isMobile ? 12 : 18
+      // Calm wander: 12 units/s desktop, 8 units/s mobile (3D magnitude cap).
+      // Lowered from 18/12 → smoother continuous rotation read, less twitch.
+      const maxSpeed = isMobile ? 8 : 12
 
       const reducedInit = reducedMotionRef.current
       const nodes: typeof nodesRef.current = []
@@ -468,7 +470,7 @@ export function SignalGrid({
       const nowMs = t
       const isMobile = width < 768
       const nodes = nodesRef.current
-      const maxSpeed = isMobile ? 12 : 18
+      const maxSpeed = isMobile ? 8 : 12
 
       // ─── PHASE A: Global rotation accumulate ──────────────────────────────
       if (!reduced) {
@@ -709,13 +711,14 @@ export function SignalGrid({
           : Math.sin(nowSec * 1.2 + n.phase) * 0.3 * n.baseOpacity
 
         // Size + alpha from projected scale (honest 3D, not simulated).
-        // scale typical range: ~0.55 (very far) .. 2.2 (near-cap from
-        // MAX_PROJECTION_SCALE clamp). Defensive cap at baseRadius × 3.5 so
+        // scale typical range: ~0.55 (very far) .. 3.0 (near-cap from
+        // MAX_PROJECTION_SCALE clamp). Defensive cap at baseRadius × 5.0 so
         // the multiplicative combo (scale × sizeVar × pulse) can't stack into
-        // an oversized blob even if any factor drifts.
+        // an oversized blob even if any factor drifts. Raised from 3.5 → 5.0
+        // to match the higher projection-scale cap.
         const radius = Math.min(
           baseRadius * n.sizeVar * n.scale * (1 + pulse),
-          baseRadius * 3.5,
+          baseRadius * 5.0,
         )
         // Scale-alpha factor: far nodes softer. Normalized bluntly: clamp 0.4..1.0.
         const scaleAlpha = Math.min(1, Math.max(0.4, 0.4 + 0.6 * (n.scale - 0.4)))
@@ -755,9 +758,9 @@ export function SignalGrid({
       if (!reduced) {
         // Line threshold in SCREEN-space: connect only when close on screen.
         // Tied to average cell size: cols-based → similar density feel.
-        // Updated to match new default grid (27×15 desktop / 14×9 mobile).
-        const lineCellsX = isMobile ? 15 : 28
-        const lineCellsY = isMobile ? 10 : 16
+        // Updated to match new default grid (30×17 desktop / 16×10 mobile).
+        const lineCellsX = isMobile ? 17 : 31
+        const lineCellsY = isMobile ? 11 : 18
         const cellW = W / lineCellsX
         const cellH = H / lineCellsY
         const lineThreshold = Math.min(cellW, cellH) * 2.0
