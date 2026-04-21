@@ -7,12 +7,12 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: ReactNode
   /**
    * Node columns. Auto-responsive if omitted:
-   *   desktop (>=768px): 30, mobile: 16
+   *   desktop (>=768px): 34, mobile: 18
    */
   nodeCountX?: number
   /**
    * Node rows. Auto-responsive if omitted:
-   *   desktop (>=768px): 17, mobile: 10
+   *   desktop (>=768px): 19, mobile: 11
    */
   nodeCountY?: number
   className?: string
@@ -56,14 +56,19 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *   - Parallax: entfernt. Cursor bewegt den Hintergrund NICHT mehr mit.
  *
  * Interaction-Model:
- *   - Cursor findet den nearest Node in 2D-Screenspace (<100px desktop /
- *     <70px mobile), aber NUR aus der "Front-Half" des Volumens (rotiertes
+ *   - Cursor findet den nearest Node in 2D-Screenspace (<60px desktop /
+ *     <40px mobile), aber NUR aus der "Front-Half" des Volumens (rotiertes
  *     z < 0, also näher als Cloud-Center). Far-Nodes sind nicht interaktiv →
- *     Cursor fühlt sich "auf der near plane" an.
+ *     Cursor fühlt sich "auf der near plane" an. Kleine Hitbox bewusst —
+ *     die Kette wird durch Hop-Propagation in die Tiefe getragen, nicht durch
+ *     einen breiten Cursor-Radius.
  *   - Nearest-Neighbor-Queries für Hop-Propagation laufen in 3D-Worldspace
  *     (euclidean in (x,y,z)), nicht Screenspace — so bleibt die Signal-Web-
  *     Topologie an die Cloud-Geometrie geknüpft, nicht an die 2D-Projektion.
- *   - Seed aktiviert 2 nearest neighbors mit 140ms-Hop-Delay, max 2 hops tief.
+ *   - Seed aktiviert 2 nearest neighbors (hop-1 @ +80ms), dann je 1 weiterer
+ *     pro hop-1 (hop-2 @ +160ms), dann je 1 weiterer pro hop-2 (hop-3 @ +240ms).
+ *     Max 3 hops tief, max 7 aktive Nodes pro Kette. Ripple-Geschwindigkeit
+ *     (80ms pro Level) lässt die Kette direkt spürbar aber sichtbar kaskadieren.
  *   - Activation-Pulse: 300ms scale-bump, keine Halos.
  *   - Activation-Decay: 2800ms.
  *
@@ -157,14 +162,26 @@ export function SignalGrid({
   // Cursor position in canvas CSS-px coords; active=false means "not over container"
   const cursorRef = useRef({ x: -9999, y: -9999, active: false })
 
-  // Track the currently-seeded node index (-1 = none) and when propagation fired
+  // Track the currently-seeded node index (-1 = none) and when propagation fired.
+  // hop1/hop2/hop3 indices carried between phases so each hop propagates from
+  // the previous level's nodes (3D NN, worldspace).
   const seedRef = useRef<{
     index: number
     hop1Fired: boolean
     hop2Fired: boolean
+    hop3Fired: boolean
     seededAt: number
     hop1Indices: number[]
-  }>({ index: -1, hop1Fired: false, hop2Fired: false, seededAt: 0, hop1Indices: [] })
+    hop2Indices: number[]
+  }>({
+    index: -1,
+    hop1Fired: false,
+    hop2Fired: false,
+    hop3Fired: false,
+    seededAt: 0,
+    hop1Indices: [],
+    hop2Indices: [],
+  })
 
   // Resolved CSS-var color + pre-parsed RGB, re-read on theme change.
   // textRgb drives idle (unactivated) nodes — white in dark / dark in light.
@@ -243,8 +260,10 @@ export function SignalGrid({
     const MAX_PROJECTION_SCALE = 3.0
     const MIN_REL_Z = FOV / MAX_PROJECTION_SCALE
     // Rotation speeds: research-recommended sweet spot. No Z-roll.
-    const ROT_SPEED_Y = (2 * Math.PI) / 120_000 // 120s per full Y rotation (ms)
-    const ROT_SPEED_X = (2 * Math.PI) / 200_000 // 200s per full X rotation (ms)
+    // Slowed (UAT): Luca wanted less horizontal "zischen" — calmer drift, KDE
+    // still kicks in. Y 120s→200s, X 200s→260s.
+    const ROT_SPEED_Y = (2 * Math.PI) / 200_000 // 200s per full Y rotation (ms)
+    const ROT_SPEED_X = (2 * Math.PI) / 260_000 // 260s per full X rotation (ms)
     const PULSE_MS = 300
 
     // ─── 3. Node-Grid builder (responsive, deterministic jitter, 3D velocities) ───
@@ -261,8 +280,10 @@ export function SignalGrid({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
       const isMobile = rect.width < 768
-      const cols = nodeCountX ?? (isMobile ? 16 : 30)
-      const rows = nodeCountY ?? (isMobile ? 10 : 17)
+      // UAT: +~25% density so chain propagation can reach more neighbors fast.
+      // Desktop 30×17 (510) → 34×19 (646); mobile 16×10 (160) → 18×11 (198).
+      const cols = nodeCountX ?? (isMobile ? 18 : 34)
+      const rows = nodeCountY ?? (isMobile ? 11 : 19)
 
       // Cloud volume dimensions in worldspace units (1 unit = 1 CSS-px).
       // Depth = 0.75 × width → deeper cloud, stronger "vorne/hinten" range.
@@ -351,8 +372,10 @@ export function SignalGrid({
         index: -1,
         hop1Fired: false,
         hop2Fired: false,
+        hop3Fired: false,
         seededAt: 0,
         hop1Indices: [],
+        hop2Indices: [],
       }
       lastTickRef.current = null
     }
@@ -374,6 +397,7 @@ export function SignalGrid({
       cursorRef.current.active = false
       seedRef.current.index = -1
       seedRef.current.hop1Indices = []
+      seedRef.current.hop2Indices = []
     }
     container.addEventListener("mousemove", handleMove)
     container.addEventListener("mouseleave", handleLeave)
@@ -393,10 +417,18 @@ export function SignalGrid({
     io.observe(container)
 
     // ─── Interaction/Motion Constants ───
-    const HOP_DELAY_MS = 140
+    // UAT tuning: hop cascade faster (80/160/240 ms) → ripple feels immediate
+    // but still visibly cascading. Seed radius tightened (desktop 100→60,
+    // mobile 70→40) so only nodes really near the cursor become seeds —
+    // propagation chain now carries the signal into depth instead of
+    // activating whole cursor neighborhood.
+    const HOP1_DELAY_MS = 80
+    const HOP2_DELAY_MS = 160
+    const HOP3_DELAY_MS = 240
+    const HOP_RETRIGGER_GUARD_MS = 80 // min spacing before re-activating a node
     const ACTIVATION_MS = 2800
-    const SEED_RADIUS_DESKTOP = 100
-    const SEED_RADIUS_MOBILE = 70
+    const SEED_RADIUS_DESKTOP = 60
+    const SEED_RADIUS_MOBILE = 40
     const VELOCITY_LERP_PER_SEC = 0.4
 
     // Scratch buffer for the per-frame painter sort
@@ -608,18 +640,20 @@ export function SignalGrid({
             seed.index = nearestIdx
             seed.hop1Fired = false
             seed.hop2Fired = false
+            seed.hop3Fired = false
             seed.seededAt = nowMs
             seed.hop1Indices = []
+            seed.hop2Indices = []
             const n = nodes[nearestIdx]!
             n.activationStart = nowMs
             n.activationDepth = 0
             n.pulseStart = nowMs
           }
 
-          if (!seed.hop1Fired && nowMs - seed.seededAt >= HOP_DELAY_MS) {
+          // Hop-1: 2 nearest to seed (3D worldspace NN).
+          if (!seed.hop1Fired && nowMs - seed.seededAt >= HOP1_DELAY_MS) {
             const seedNode = nodes[seed.index]!
             const exclude = new Set<number>([seed.index])
-            // 3D NN in worldspace
             const hop1 = findTwoNearest3D(
               seedNode.x,
               seedNode.y,
@@ -629,7 +663,7 @@ export function SignalGrid({
             )
             for (const idx of hop1) {
               const n = nodes[idx]!
-              if (nowMs - n.activationStart > HOP_DELAY_MS) {
+              if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
                 n.activationStart = nowMs
                 n.activationDepth = 1
                 n.pulseStart = nowMs
@@ -639,31 +673,65 @@ export function SignalGrid({
             seed.hop1Fired = true
           }
 
+          // Hop-2: each hop1 node promotes 1 nearest-neighbor (3D NN).
           if (
             !seed.hop2Fired &&
             seed.hop1Fired &&
-            nowMs - seed.seededAt >= HOP_DELAY_MS * 2
+            nowMs - seed.seededAt >= HOP2_DELAY_MS
           ) {
             const usedSet = new Set<number>([seed.index, ...seed.hop1Indices])
+            const hop2Collected: number[] = []
             for (const h1idx of seed.hop1Indices) {
               const h1 = nodes[h1idx]!
               const found = findTwoNearest3D(h1.x, h1.y, h1.z, nodes, usedSet)
               if (found.length > 0) {
                 const cand = found[0]!
                 const n = nodes[cand]!
-                if (nowMs - n.activationStart > HOP_DELAY_MS) {
+                if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
                   n.activationStart = nowMs
                   n.activationDepth = 2
                   n.pulseStart = nowMs
                 }
                 usedSet.add(cand)
+                hop2Collected.push(cand)
               }
             }
+            seed.hop2Indices = hop2Collected
             seed.hop2Fired = true
+          }
+
+          // Hop-3 (new, UAT): each hop2 node promotes 1 more nearest-neighbor
+          // so the "Verbindungs-Kette" travels further into the cloud depth.
+          if (
+            !seed.hop3Fired &&
+            seed.hop2Fired &&
+            nowMs - seed.seededAt >= HOP3_DELAY_MS
+          ) {
+            const usedSet = new Set<number>([
+              seed.index,
+              ...seed.hop1Indices,
+              ...seed.hop2Indices,
+            ])
+            for (const h2idx of seed.hop2Indices) {
+              const h2 = nodes[h2idx]!
+              const found = findTwoNearest3D(h2.x, h2.y, h2.z, nodes, usedSet)
+              if (found.length > 0) {
+                const cand = found[0]!
+                const n = nodes[cand]!
+                if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
+                  n.activationStart = nowMs
+                  n.activationDepth = 3
+                  n.pulseStart = nowMs
+                }
+                usedSet.add(cand)
+              }
+            }
+            seed.hop3Fired = true
           }
         } else {
           seedRef.current.index = -1
           seedRef.current.hop1Indices = []
+          seedRef.current.hop2Indices = []
         }
       }
 
@@ -758,9 +826,9 @@ export function SignalGrid({
       if (!reduced) {
         // Line threshold in SCREEN-space: connect only when close on screen.
         // Tied to average cell size: cols-based → similar density feel.
-        // Updated to match new default grid (30×17 desktop / 16×10 mobile).
-        const lineCellsX = isMobile ? 17 : 31
-        const lineCellsY = isMobile ? 11 : 18
+        // Updated to match new default grid (34×19 desktop / 18×11 mobile).
+        const lineCellsX = isMobile ? 19 : 35
+        const lineCellsY = isMobile ? 12 : 20
         const cellW = W / lineCellsX
         const cellH = H / lineCellsY
         const lineThreshold = Math.min(cellW, cellH) * 2.0
