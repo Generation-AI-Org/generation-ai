@@ -133,24 +133,27 @@ export function DiscrepancySection() {
   })
 
   // Dämpfung: scrollYProgress wird über eine Spring geglättet, damit die
-  // Phasenübergänge nicht hart an den Stop-Punkten „einrasten“. Stiffness/
-  // Damping sind so gewählt, dass die Spring nicht überschwingt
-  // (kein Rubber-Band) — nur die Flanken der Transforms werden weicher.
+  // Phasenübergänge nicht hart an den Stop-Punkten „einrasten". Plan-04
+  // Polish: stiffness etwas höher (140) für Responsiveness, damping 32 gegen
+  // Wobble, mass 0.4 für leichteres Gefühl. Keine rest-Settings → Defaults.
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 30,
-    mass: 0.5,
+    stiffness: 140,
+    damping: 32,
+    mass: 0.4,
   })
 
-  // Progress stages (breiter überlappend für weichere Phasenwechsel):
+  // Progress stages — Plan-04 Polish-Pass: overlapping bumps auf ≥0.05, so
+  // dass keine Phase eine harte Step-Grenze zur nächsten hat. Previous-Phase
+  // fadet noch aus während next-Phase schon beginnt → continuous flow.
+  //
   //   0.00 – 0.22  title fades in
   //   0.15 – 0.50  upper line draws
-  //   0.32 – 0.52  upper dots appear
-  //   0.42 – 0.75  lower line draws
-  //   0.58 – 0.78  lower dots appear
-  //   0.68 – 0.90  area fills
-  //   0.72 – 0.90  "DIE LÜCKE" label
-  //   0.82 – 0.98  closer fades in
+  //   0.30 – 0.52  upper dots appear
+  //   0.40 – 0.75  lower line draws
+  //   0.55 – 0.78  lower dots appear
+  //   0.65 – 0.90  area fills
+  //   0.70 – 0.92  "DIE LÜCKE" label
+  //   0.80 – 0.98  closer fades in
   //
   // Reduced-motion: all values pinned to final state (1).
   const titleOpacity = useTransform(
@@ -166,40 +169,40 @@ export function DiscrepancySection() {
   )
   const upperDotsOpacity = useTransform(
     smoothProgress,
-    [0.32, 0.52],
+    [0.3, 0.52],
     prefersReducedMotion ? [1, 1] : [0, 1],
   )
 
   const lowerDraw = useTransform(
     smoothProgress,
-    [0.42, 0.75],
+    [0.4, 0.75],
     prefersReducedMotion ? [0, 0] : [1, 0],
   )
   const lowerDotsOpacity = useTransform(
     smoothProgress,
-    [0.58, 0.78],
+    [0.55, 0.78],
     prefersReducedMotion ? [1, 1] : [0, 1],
   )
 
   const areaOpacity = useTransform(
     smoothProgress,
-    [0.68, 0.9],
+    [0.65, 0.9],
     prefersReducedMotion ? [0.5, 0.5] : [0, 0.5],
   )
   const gapLabelOpacity = useTransform(
     smoothProgress,
-    [0.72, 0.9],
+    [0.7, 0.92],
     prefersReducedMotion ? [1, 1] : [0, 1],
   )
 
   const closerOpacity = useTransform(
     smoothProgress,
-    [0.82, 0.98],
+    [0.8, 0.98],
     prefersReducedMotion ? [1, 1] : [0, 1],
   )
   const closerY = useTransform(
     smoothProgress,
-    [0.82, 0.98],
+    [0.8, 0.98],
     prefersReducedMotion ? [0, 0] : [20, 0],
   )
 
@@ -236,7 +239,7 @@ export function DiscrepancySection() {
             aria-labelledby="discrepancy-chart-title"
           >
             <title id="discrepancy-chart-title">
-              Split-Line-Chart: Wirtschaftsbedarf (steigt) versus Studi-KI-Kompetenz (flach) über 3 Dimensionen — Nachfrage, Vergütung, Ausbildung.
+              Split-Line-Chart: Wirtschaftsbedarf (steigt) versus Studi-KI-Kompetenz (flach) über drei Datenpaare — Markt-Signal oben (neon), Studi-Realität unten (rot). Die Fläche zwischen den Linien ist die Lücke.
             </title>
             <defs>
               {/* Gap fill gradient — neon top → red bottom */}
@@ -300,38 +303,33 @@ export function DiscrepancySection() {
             <line x1={12} y1={51} x2={12} y2={51.8} stroke="var(--text-muted)" strokeWidth={0.3} />
             <line x1={50} y1={51} x2={50} y2={51.8} stroke="var(--text-muted)" strokeWidth={0.3} />
             <line x1={86} y1={51} x2={86} y2={51.8} stroke="var(--text-muted)" strokeWidth={0.3} />
-            {/* X-axis tick labels */}
+            {/* X-axis tick labels — Plan-04 Polish: neutral Paar-IDs "01/02/03"
+                statt strapazierte Kategorien. Honest: das Chart zeigt 3 Paare,
+                keine getreuen Dimensionen. Die Paar-Semantik trägt die Caption
+                unter dem Chart.
+                Mobile (<640px): dichte Ticks ausblenden via sr-only-Pattern —
+                Pair-Caption unter Chart reicht dann als Orientierung. */}
             <text
               x={12} y={55} textAnchor="middle" fill="var(--text-muted)"
-              style={{ fontFamily: "var(--font-mono)", fontSize: "2.4px", fontWeight: 600 }}
-            >Nachfrage</text>
+              className="max-sm:hidden"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.4px", fontWeight: 600, letterSpacing: "0.1em" }}
+            >01</text>
             <text
               x={50} y={55} textAnchor="middle" fill="var(--text-muted)"
-              style={{ fontFamily: "var(--font-mono)", fontSize: "2.4px", fontWeight: 600 }}
-            >Vergütung</text>
+              className="max-sm:hidden"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.4px", fontWeight: 600, letterSpacing: "0.1em" }}
+            >02</text>
             <text
               x={86} y={55} textAnchor="middle" fill="var(--text-muted)"
-              style={{ fontFamily: "var(--font-mono)", fontSize: "2.4px", fontWeight: 600 }}
-            >Ausbildung</text>
+              className="max-sm:hidden"
+              style={{ fontFamily: "var(--font-mono)", fontSize: "2.4px", fontWeight: 600, letterSpacing: "0.1em" }}
+            >03</text>
             {/* X-axis title */}
             <text
               x={50} y={60.5} textAnchor="middle" fill="var(--text-muted)"
+              className="max-sm:hidden"
               style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px", letterSpacing: "0.15em" }}
-            >DIMENSION</text>
-
-            {/* ─── Legend (top-right) ────────────────────────────────────── */}
-            <g transform="translate(58, -2.5)">
-              <circle cx={0} cy={0} r={0.9} fill="var(--neon-9)" />
-              <text
-                x={1.8} y={0.8} fill="var(--text-secondary)"
-                style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px" }}
-              >Was die Wirtschaft will</text>
-              <circle cx={20} cy={0} r={0.9} fill="var(--red-9)" />
-              <text
-                x={21.8} y={0.8} fill="var(--text-secondary)"
-                style={{ fontFamily: "var(--font-mono)", fontSize: "2.2px" }}
-              >Was Studis mitbringen</text>
-            </g>
+            >PAAR</text>
 
             {/* Area between lines — fades in after both lines drawn */}
             <motion.path
@@ -415,6 +413,48 @@ export function DiscrepancySection() {
               DIE LÜCKE
             </motion.text>
           </svg>
+
+          {/* ─── Chart-Caption + Legend (HTML, unter Chart) ──────────────────
+              Plan-04 Polish: raus aus dem SVG für Mobile-Readability. Legend
+              stackt unter Chart → keine Overlap-Gefahr auf <640px. Caption
+              erklärt die 3 Paare (Markt-Signal vs. Studi-Realität) und macht
+              die symbolische Y-Skala explizit (mischt × und %).             */}
+          <div className="mt-4 sm:mt-6 flex flex-col items-center gap-3 sm:gap-4 px-2">
+            {/* Legend */}
+            <div
+              role="list"
+              aria-label="Chart-Legende"
+              className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-[11px] sm:text-xs uppercase tracking-[0.12em] text-text-secondary"
+            >
+              <span role="listitem" className="flex items-center gap-2">
+                <span
+                  aria-hidden="true"
+                  className="inline-block h-2 w-2 rounded-full"
+                  style={{ backgroundColor: "var(--neon-9)" }}
+                />
+                Markt-Signal — Was die Wirtschaft will
+              </span>
+              <span role="listitem" className="flex items-center gap-2">
+                <span
+                  aria-hidden="true"
+                  className="inline-block h-2 w-2 rounded-full"
+                  style={{ backgroundColor: "var(--red-9)" }}
+                />
+                Studi-Realität — Was Studis mitbringen
+              </span>
+            </div>
+
+            {/* Pair-Caption + Y-Scale-Disambiguation */}
+            <p className="max-w-2xl text-center font-mono text-[11px] sm:text-xs leading-relaxed tracking-[0.05em] text-text-muted">
+              Drei Paare gegenübergestellt:{" "}
+              <span className="text-text-secondary">01</span> Bedarf vs. Anfänger-Level ·{" "}
+              <span className="text-text-secondary">02</span> Vergütung vs. Vorbereitung ·{" "}
+              <span className="text-text-secondary">03</span> Potenzial vs. Ausbildung.{" "}
+              <span className="block mt-2 sm:mt-1">
+                Y-Achse symbolisch (niedrig / mittel / hoch) — die Werte mischen × und %.
+              </span>
+            </p>
+          </div>
         </div>
 
         {/* Closer */}
