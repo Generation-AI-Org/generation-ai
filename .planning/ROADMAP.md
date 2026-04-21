@@ -522,14 +522,14 @@ Plans:
 | 21 | `/about`-Seite | Mission, Team, Sparringspartner, Verein | R2 | ✅ (statischer Content) |
 | 22 | `/partner`-Seite | 3 Anker-Sections + Kontakt-Formular | R3 | ✅ (statischer Content + Form) |
 | 23 | `/join` Fragebogen-Flow | Linearer 4-Step-Flow mit Validation (Backend-Stub) | R4 | ✅ |
-| 24 | `/level-test` Assessment | Optionaler Test mit DSGVO-Consent, Score-Migration | R5 | ⚠️ (Test-Fragen als Placeholder, Content-Pass durch Luca) |
+| 24 | `/test` Assessment | Optionaler Test mit DSGVO-Consent, Score-Migration | R5 | ⚠️ (Test-Fragen als Placeholder, Content-Pass durch Luca) |
 | 25 | Circle-API-Sync (Unified Signup) | Server-Action: Supabase+Circle anlegen, SSO-Link in Welcome-Flow | R6 | ❌ (Live-Credentials + Luca-Approval für Go-Live) |
 | 26 | Subdomain-Integration | Featured-Tools API + Community-Preview via Circle API | R7 | ⚠️ (Content-Schema-Migration, Rate-Limit-Tuning) |
 
 **Dependencies:**
 - Phase 20 blockt visuell nichts anderes, aber alle weiteren Pages beerben die Nav → 20 zuerst.
 - Phase 23 (`/join` UI) **kann** vor 25 (Circle-Sync) gebaut werden — Submit stubbed als 503.
-- Phase 24 (`/level-test`) optional aus 23 verlinkt — beide können parallel, aber 23 zuerst für State-Contract.
+- Phase 24 (`/test`) optional aus 23 verlinkt — beide können parallel, aber 23 zuerst für State-Contract.
 - Phase 25 (Circle-Sync) aktiviert Live-Signup-Pfad — depends on 23 fertig.
 - Phase 26 (Subdomain-Integration) kann parallel zu allen anderen laufen, liefert echte Daten in Phase 20 (nachträglich).
 
@@ -665,7 +665,7 @@ Plans:
 
 **Scope:**
 - Step 1: Fragebogen (Name, Email, Status, Uni, Motivation, Self-Select Level 1-5)
-- Step 2: Assessment-Weiche (Link zu `/level-test` oder Skip)
+- Step 2: Assessment-Weiche (Link zu `/test` oder Skip)
 - Step 3: Account + Circle-Flow-Stub (Submit-Button, aktuell mit 503-Response)
 - Step 4: Confirmation-Screen
 - Progress-Indicator, SessionStorage-State, Validation inline + aria-live
@@ -682,7 +682,7 @@ Plans:
 
 ---
 
-### Phase 24: `/level-test` Assessment
+### Phase 24: `/test` Assessment
 
 **Goal:** Optionaler Kompetenz-Test mit Level-Score-Output, DSGVO-konform, Standalone-fähig.
 **Requirements:** R5.1-R5.7
