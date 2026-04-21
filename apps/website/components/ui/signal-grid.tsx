@@ -19,7 +19,7 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * SignalGrid — DS-spec Hero background (Plan 20.5-02, crisp-dot pass).
+ * SignalGrid — DS-spec Hero background (Plan 20.5-02, true-3D pass).
  *
  * Design System: `brand/Generation AI Design System/DESIGN.md` + README.md
  *   §Visual Foundations → Backgrounds.
@@ -32,76 +32,66 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *   z-1   <div>               Radial-Fade-Overlay (pointer-events-none)
  *   z-10  <div>{children}     Content (interactive)
  *
- * Mouse ist am Container-Wrapper abgegriffen (onMouseMove/onMouseLeave), damit
- * Children ihre eigenen pointer-events behalten.
+ * 3D-Model — "Volume-through-rotation" (research 20.5-DEPTH-RESEARCH.md):
+ *   - Jeder Node lebt in echtem 3D-Worldspace (x, y, z), Origin = Cloud-Center.
+ *     Cloud-Dimensionen: W = containerWidth, H = containerHeight, D = 0.5 × W.
+ *   - Pro Frame: gesamte Wolke wird langsam um Y- (75s/Umdrehung) und X-Achse
+ *     (130s/Umdrehung) rotiert. Kein Z-Roll (würde schwindelig machen).
+ *   - Danach Pinhole-Perspective-Projektion: scale = FOV / (z - CAMERA_Z), mit
+ *     FOV = 800, CAMERA_Z = -500. Vanishing Point zentriert (containerCenter).
+ *   - `scale` treibt Render-Size (radius × scale) und Alpha-Faktor → Near-Nodes
+ *     sind größer und leuchtender als Far-Nodes, aber honest-geometrisch,
+ *     nicht als Skalar simuliert.
+ *   - Kinetic Depth Effect: durch die gemeinsame Rotation schalten Hirne nach
+ *     ~5-10s automatisch auf "3D-Volumen" — Nodes gleiten sichtbar voreinander
+ *     her, occlusion flippt wenn sie sich überkreuzen.
  *
  * Motion-Model:
- *   - Jeder Node hat eine XY-Velocity (vx, vy) in px/s, die langsam zu einem
- *     seeded random Target-Velocity hin-lerpt (~2-3s glatter Richtungswechsel).
- *   - Alle 4-8s (per-node seeded) wird ein neues Target-Velocity (uniform
- *     random angle, magnitude ≤ MAX_SPEED) gewählt → Nodes drift "irgendwohin".
- *   - Zusätzlich hat jeder Node eine Z-Velocity (vz) in depth/sec, die alle
- *     8-14s ein frisches Target bekommt. Nodes driften also auch in der Tiefe,
- *     was das Feld "atmen" lässt. Clamped auf [Z_MIN, Z_MAX].
- *   - Boundary-Bounce mit 10% margin (XY) bzw. reflection (Z).
- *   - deltaTime bei tab-suspend auf 16ms geclampt.
+ *   - Jeder Node hat 3D-Velocity (vx, vy, vz) in worldspace-units/s, die
+ *     langsam zu seeded random Target-Velocity hin-lerpen. Retarget alle 4-8s.
+ *   - Position wird in Worldspace integriert, mit weicher Reflection an den
+ *     Volumen-Grenzen (±W/2, ±H/2, ±D/2).
+ *   - Wander-Speed skaliert mit projected scale → Near-Nodes wandern schneller,
+ *     Far-Nodes langsamer (differential motion parallax).
  *   - Parallax: entfernt. Cursor bewegt den Hintergrund NICHT mehr mit.
  *
  * Interaction-Model:
- *   - Mini-Net Propagation: Cursor findet EINEN seed-node (<100px desktop /
- *     <70px mobile), aber NUR aus mid/near Band (zDepth ≥ SEED_Z_MIN = 0.3).
- *     Far-Nodes sind nicht interaktiv → verstärkt das räumliche Gefühl, dass
- *     der Cursor auf der "near layer" ist.
- *   - Seed aktiviert on-demand 2 nearest neighbors mit 140ms-Hop-Delay, max
- *     2 hops tief, ~5 nodes gleichzeitig aktiv.
- *   - Activation-Pulse: bei Activation-Start speichert sich der Node einen
- *     pulseStart-Timestamp. Erste 300ms rendered er mit scale-bump
- *     (1.0 + 0.5 * (1 - t/300)) → fühlt sich wie "Signal trifft ein". Kein Halo.
- *   - Decays: jede Activation über 2800ms unabhängig.
- *
- * Depth-Model — "Ebenen die voreinander herfliegen":
- *   - zDepth seeded distribution: 0.12..1.0 mit pow(0.7)-Skew → mehr Nodes
- *     im far/mid Band als im near Band → Horizont-Feel.
- *   - Depth wird AUSSCHLIESSLICH über SIZE + ALPHA getragen — keine Desaturation,
- *     keine Hue-Änderung. Alle Nodes sind voll `--text` (theme-aware).
- *     sizeFactor = 0.30 + 1.70 * pow(zDepth, 0.9)   → 0.51× .. 2.00×
- *     alphaFactor = 0.55 + 0.45 * zDepth             → 0.55 .. 1.00
- *   - Wander-speed is depth-scaled (0.35×..1.00×): far nodes drift slower
- *     than near ones → motion-parallax depth cue without actual parallax.
- *   - Render-Reihenfolge: nodes werden per-frame nach zDepth ASC sortiert,
- *     damit near nodes über far nodes gezeichnet werden (Painter's Algorithm).
- *   - Jeder Node ist ein einziger crisp-filled Kreis — kein Halo, kein Blur,
- *     kein shadowBlur. Physische Punkte, kein Sternenfeld-Feel.
+ *   - Cursor findet den nearest Node in 2D-Screenspace (<100px desktop /
+ *     <70px mobile), aber NUR aus der "Front-Half" des Volumens (rotiertes
+ *     z < 0, also näher als Cloud-Center). Far-Nodes sind nicht interaktiv →
+ *     Cursor fühlt sich "auf der near plane" an.
+ *   - Nearest-Neighbor-Queries für Hop-Propagation laufen in 3D-Worldspace
+ *     (euclidean in (x,y,z)), nicht Screenspace — so bleibt die Signal-Web-
+ *     Topologie an die Cloud-Geometrie geknüpft, nicht an die 2D-Projektion.
+ *   - Seed aktiviert 2 nearest neighbors mit 140ms-Hop-Delay, max 2 hops tief.
+ *   - Activation-Pulse: 300ms scale-bump, keine Halos.
+ *   - Activation-Decay: 2800ms.
  *
  * Line-Rendering:
- *   - alpha = pow(min(zA, zB), 1.5) * 0.9 * activation + 0.05
- *     → Verbindung zum kleineren/ferneren Node wird deutlich schwächer.
- *   - lineWidth = 0.5 + 1.0 * min(zA, zB) → far-connecting lines dünn,
- *     near-near Lines bolder.
- *   - NO shadowBlur.
+ *   - Linien zwischen aktiven Nodes werden als `createLinearGradient` gestroked:
+ *     Alpha fadet entlang der Strecke von Endpoint-A's scale-alpha zu
+ *     Endpoint-B's scale-alpha → Depth-Cue entlang der Linien-Länge.
+ *   - lineWidth basiert auf minimaler projected scale der Endpoints.
+ *   - Keine shadowBlur, keine Halos.
  *
  * Performance-Discipline:
- *   - Single rAF-Loop, ein Canvas-Pass pro Frame, ein Draw-Pass pro Node.
+ *   - Single rAF-Loop, ein Canvas-Pass pro Frame.
+ *   - rotY/rotX cos/sin werden EINMAL pro Frame gecached (nicht pro Node).
+ *   - Pro Frame pro Node: rotate → project → sort → render = ~6 Mul + 1 Div.
  *   - IntersectionObserver pausiert Loop wenn Container offscreen.
- *   - Mouse-Events throttled auf rAF (letzte Position cached, applied nächster Frame).
- *   - Retina/HiDPI: Canvas-Buffer * devicePixelRatio, CSS-Size separat.
- *   - Color-Cache: node-color wird pro Frame EINMAL aufgelöst, nicht per Node.
+ *   - Retina/HiDPI: Canvas-Buffer × devicePixelRatio.
  *   - Sort per frame: 576 nodes × Array.sort ≈ 0.3ms.
  *
  * Reduced-Motion:
- *   - `prefers-reduced-motion: reduce` → statischer Grid (keine XY-Wander, keine
- *     Z-Drift, kein Breathing, kein Mouse-Tracking, keine Linien, keine
- *     Activation). Nodes bleiben auf initialen Grid-Positionen, zDepth bleibt
- *     am seeded Wert → Depth-Effekt via size+alpha bleibt sichtbar, aber statisch.
+ *   - `prefers-reduced-motion: reduce` → statische 3D-Cloud (keine Rotation,
+ *     kein Wander, kein Breathing, keine Activation, keine Linien). Nodes
+ *     bleiben an seeded 3D-Positionen → Depth via size+alpha bleibt sichtbar,
+ *     aber eingefroren.
  *
  * Theme-Awareness:
- *   - Nie hardcoded Hex. `--text` (theme-aware: near-white in dark, near-black
- *     in light) wird als Node-Farbe genutzt, damit Nodes + Header-Nav-Text
- *     aus derselben Farbfamilie kommen und Nodes nicht mit --accent (neon/rot)
- *     konkurrieren. `--bg` weiterhin für Radial-Fade-Overlay.
+ *   - `--text` als Node-Farbe (theme-aware: near-white dark / near-black light).
  *     Via getComputedStyle auf document.documentElement; MutationObserver auf
- *     html.class resolved Vars beim Theme-Toggle neu → Light/Dark Symmetrie
- *     automatisch.
+ *     html.class resolved Vars beim Theme-Toggle neu.
  */
 export function SignalGrid({
   children,
@@ -114,67 +104,60 @@ export function SignalGrid({
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   // ─── Node-Data-Struktur (imperative canvas, kein React-State) ───
+  // Jeder Node hat echte 3D-Position (x,y,z) in cloud-local space, Origin =
+  // Cloud-Center. Initial-Positionen werden unter reduced-motion gehalten
+  // (damit Depth sichtbar bleibt, aber statisch).
   const nodesRef = useRef<
     Array<{
-      // Stable identity/sort-key: original grid index, used for tie-break in
-      // depth-sort so flickering is eliminated when two nodes share zDepth.
       idx: number
-      // Initial grid position (used only for reduced-motion static layout)
-      initialX: number
-      initialY: number
-      // Seeded initial zDepth (used under reduced-motion so depth stays
-      // visible but static).
-      initialZ: number
-      // Current position in CSS-px (wander state, authoritative)
+      // Stable 3D initial position (used under reduced-motion to snap back)
+      x0: number
+      y0: number
+      z0: number
+      // Live 3D position (worldspace, cloud-local)
       x: number
       y: number
-      // Velocity in px/s
+      z: number
+      // 3D velocity in worldspace-units/s
       vx: number
       vy: number
-      // Target velocity we lerp toward (refreshed every retargetIn seconds)
+      vz: number
+      // Target velocities we lerp toward
       targetVx: number
       targetVy: number
-      // Time until next target-velocity reroll (seconds)
-      retargetIn: number
-      baseOpacity: number       // 0.15-0.25, organic variance
-      phase: number             // breathing phase offset (0..2π)
-      // 3D depth (Z_MIN..1.0) — drifts over time via vz
-      zDepth: number
-      // Z-velocity (depth per sec) — lerps toward targetVz
-      vz: number
       targetVz: number
-      retargetZIn: number       // seconds until next vz target reroll
+      retargetIn: number
+      baseOpacity: number       // 0.38-0.52, organic variance
+      phase: number             // breathing phase offset (0..2π)
+      sizeVar: number           // 0.7-1.3 per-node seeded size variance
       // Activation timestamp in ms (performance.now). 0 = not active.
       activationStart: number
-      // Hop-depth of the last activation (0 = seed, 1-2 = propagated)
       activationDepth: number
-      // Pulse-start ms: set = activationStart on activation. Used for the
-      // first-300ms scale bump regardless of decay phase.
       pulseStart: number
+      // ─── Scratch — refilled per frame, read in downstream phases ───
+      // After rotate+project: screen-space + scale factor for render & NN.
+      screenX: number
+      screenY: number
+      scale: number
+      // Rotated worldspace z (before projection) — used for painter sort
+      // and front-half filter (z < 0 ≈ near-half).
+      zRot: number
     }>
   >([])
-
-  // Grid geometry cache — used by line-threshold + resize logic
-  const gridMetricsRef = useRef({ cellW: 0, cellH: 0, cols: 0, rows: 0 })
 
   // Cursor position in canvas CSS-px coords; active=false means "not over container"
   const cursorRef = useRef({ x: -9999, y: -9999, active: false })
 
   // Track the currently-seeded node index (-1 = none) and when propagation fired
-  // so hops fire once per seed-cycle, not every frame.
   const seedRef = useRef<{
-    index: number             // -1 = no active seed
-    hop1Fired: boolean        // depth-1 neighbors enqueued?
-    hop2Fired: boolean        // depth-2 neighbors enqueued?
-    seededAt: number          // performance.now() when seed was set
-    hop1Indices: number[]     // indices of hop-1 nodes for this seed
+    index: number
+    hop1Fired: boolean
+    hop2Fired: boolean
+    seededAt: number
+    hop1Indices: number[]
   }>({ index: -1, hop1Fired: false, hop2Fired: false, seededAt: 0, hop1Indices: [] })
 
   // Resolved CSS-var color + pre-parsed RGB, re-read on theme change.
-  // Node color sources from --text (theme-aware: near-white in dark, near-black
-  // in light). Matches header-nav-text family so nodes don't compete visually
-  // with --accent (neon/red). No muted-mix — depth is carried purely via
-  // size + alpha.
   const colorsRef = useRef({
     node: "rgb(246, 246, 246)",
     bg: "rgb(20, 20, 20)",
@@ -188,8 +171,13 @@ export function SignalGrid({
   const reducedMotionRef = useRef(false)
 
   // Previous frame timestamp in ms — used to compute deltaTime per frame.
-  // Null on first tick (no dt yet).
   const lastTickRef = useRef<number | null>(null)
+
+  // Accumulated rotation angles (rad). Updated each frame, never reset.
+  const rotRef = useRef({ y: 0, x: 0 })
+
+  // Cloud volume dims + viewport center — refreshed on buildGrid/resize.
+  const volumeRef = useRef({ W: 0, H: 0, D: 0, vpX: 0, vpY: 0 })
 
   useEffect(() => {
     const container = containerRef.current
@@ -200,9 +188,6 @@ export function SignalGrid({
     if (!ctx) return
 
     // ─── 1. Resolve CSS-Var color once + on theme change ───
-    // We read --text (theme-aware: near-white in dark, near-black in light) as
-    // the node color — same family as header-nav-text. Fallback auf DS-Default
-    // wenn Var noch nicht resolved.
     const resolveColors = () => {
       const styles = getComputedStyle(document.documentElement)
       const node = styles.getPropertyValue("--text").trim() || "#F6F6F6"
@@ -215,7 +200,6 @@ export function SignalGrid({
     }
     resolveColors()
 
-    // Theme-Toggle triggers html.class mutation → re-read var
     const themeObserver = new MutationObserver(resolveColors)
     themeObserver.observe(document.documentElement, {
       attributes: true,
@@ -230,19 +214,15 @@ export function SignalGrid({
     }
     mql.addEventListener("change", handleMotionChange)
 
-    // ─── Depth-Model Constants ──────────────────────────────────────────────
-    const Z_MIN = 0.12
-    const Z_MAX = 1.0
-    const Z_RANGE = Z_MAX - Z_MIN       // 0.88
-    const Z_POW = 0.7                   // mild bias toward lower zDepth = more
-                                        // far/mid nodes, fewer near nodes →
-                                        // "horizon going back" feel.
-    const SEED_Z_MIN = 0.3              // nodes below this can't be activated
-    const Z_VEL_MAX = 0.03              // max |vz| in depth/sec
-    const Z_LERP_PER_SEC = 0.33         // ~3s to reach target vz
-    const PULSE_MS = 300                // activation-pulse duration
+    // ─── 3D Projection Constants ─────────────────────────────────────────────
+    const FOV = 800
+    const CAMERA_Z = -500
+    // Rotation speeds: research-recommended sweet spot. No Z-roll.
+    const ROT_SPEED_Y = (2 * Math.PI) / 75_000 // 75s per full Y rotation (ms)
+    const ROT_SPEED_X = (2 * Math.PI) / 130_000 // 130s per full X rotation (ms)
+    const PULSE_MS = 300
 
-    // ─── 3. Node-Grid builder (responsive, deterministic jitter, velocities) ───
+    // ─── 3. Node-Grid builder (responsive, deterministic jitter, 3D velocities) ───
     const buildGrid = () => {
       const rect = container.getBoundingClientRect()
       const dpr = window.devicePixelRatio || 1
@@ -259,11 +239,20 @@ export function SignalGrid({
       const cols = nodeCountX ?? (isMobile ? 16 : 32)
       const rows = nodeCountY ?? (isMobile ? 10 : 18)
 
-      const cellW = rect.width / (cols + 1)
-      const cellH = rect.height / (rows + 1)
-      gridMetricsRef.current = { cellW, cellH, cols, rows }
+      // Cloud volume dimensions in worldspace units (1 unit = 1 CSS-px).
+      // Depth = half the width → deeper than tall, less deep than wide.
+      const W = rect.width
+      const H = rect.height
+      const D = rect.width * 0.5
+      const vpX = W / 2
+      const vpY = H / 2
+      volumeRef.current = { W, H, D, vpX, vpY }
 
-      // Slow wander: 18 px/s desktop, 12 px/s mobile.
+      // Grid cell size — sets the structured-but-jittered XY layout.
+      const cellW = W / (cols + 1)
+      const cellH = H / (rows + 1)
+
+      // Slow wander: 18 units/s desktop, 12 units/s mobile (3D magnitude cap).
       const maxSpeed = isMobile ? 12 : 18
 
       const reducedInit = reducedMotionRef.current
@@ -271,73 +260,67 @@ export function SignalGrid({
       for (let ry = 0; ry < rows; ry++) {
         for (let rx = 0; rx < cols; rx++) {
           const idx = ry * cols + rx
-          // Deterministic jitter (seeded per index) for initial placement.
-          // Widened to ±42% of cell so nodes visibly break the lattice on
-          // first paint — overlapping into neighboring cell territory.
+          // Deterministic XY jitter (seeded per index), widened ±42% so nodes
+          // break the lattice on first paint.
           const jitterX = (pseudoRandom(idx * 2 + 1) - 0.5) * 0.84 * cellW
           const jitterY = (pseudoRandom(idx * 2 + 2) - 0.5) * 0.84 * cellH
-          const initialX = (rx + 1) * cellW + jitterX
-          const initialY = (ry + 1) * cellH + jitterY
-          const baseOpacity = 0.38 + pseudoRandom(idx * 3 + 7) * 0.14 // 0.38-0.52
+          // World-space XY: centered at cloud origin (0, 0)
+          const gridX = (rx + 1) * cellW - vpX + jitterX
+          const gridY = (ry + 1) * cellH - vpY + jitterY
+          // Z seeded uniform in full volume depth [-D/2, +D/2]
+          const zNorm = pseudoRandom(idx * 13 + 29) // 0..1
+          const z0 = (zNorm - 0.5) * D
+
+          const baseOpacity = 0.38 + pseudoRandom(idx * 3 + 7) * 0.14
           const phase = pseudoRandom(idx * 5 + 11) * Math.PI * 2
+          const sizeVar = 0.7 + pseudoRandom(idx * 41 + 61) * 0.6 // 0.7..1.3
 
-          // zDepth widened + pow-skewed: more nodes in far/mid band, fewer near
-          // → "layers going back" horizon feel.
-          const rawZ = pseudoRandom(idx * 13 + 29)
-          const zDepth = Z_MIN + Z_RANGE * Math.pow(rawZ, Z_POW)
+          // Seeded initial 3D target-velocity — random direction in 3D.
+          // Use spherical-ish sampling (not perfectly uniform but visually fine).
+          const theta = pseudoRandom(idx * 17 + 31) * Math.PI * 2
+          const phiCos = pseudoRandom(idx * 19 + 37) * 2 - 1 // -1..1
+          const phiSin = Math.sqrt(Math.max(0, 1 - phiCos * phiCos))
+          const speed0 = maxSpeed * (0.3 + pseudoRandom(idx * 23 + 41) * 0.4)
+          const tvx = Math.cos(theta) * phiSin * speed0
+          const tvy = Math.sin(theta) * phiSin * speed0
+          const tvz = phiCos * speed0
+          // Stagger first retarget across [0, 4-8s]
+          const retargetIn = pseudoRandom(idx * 29 + 47) * 8
 
-          // Seed initial target-velocity (random angle, half-speed so first
-          // wander ramps up gently)
-          const angle0 = pseudoRandom(idx * 17 + 31) * Math.PI * 2
-          const speed0 = maxSpeed * (0.3 + pseudoRandom(idx * 19 + 37) * 0.4)
-          const targetVx = Math.cos(angle0) * speed0
-          const targetVy = Math.sin(angle0) * speed0
-          // Stagger first retarget across [0, 4-8s] so nodes don't all change
-          // direction in sync right after mount.
-          const retargetIn = pseudoRandom(idx * 23 + 41) * 8 // 0-8s
-
-          // Z-velocity seeded: start with calm target, slower retarget cycle
-          const zSign = pseudoRandom(idx * 29 + 47) < 0.5 ? -1 : 1
-          const zMag = Z_VEL_MAX * (0.3 + pseudoRandom(idx * 31 + 53) * 0.7)
-          const targetVz = zSign * zMag
-          // Scatter first z-retarget across [0, 8-14s] so depth-breathing
-          // starts non-uniformly.
-          const retargetZIn = pseudoRandom(idx * 37 + 59) * 14 // 0-14s
-
-          // Non-zero starting velocities: same as target so there's no big
-          // lerp-transient on frame 1. Suppressed under reduced-motion so
-          // the grid stays truly static (but still scattered).
-          const startVx = reducedInit ? 0 : targetVx
-          const startVy = reducedInit ? 0 : targetVy
-          const startVz = reducedInit ? 0 : targetVz
+          const startVx = reducedInit ? 0 : tvx
+          const startVy = reducedInit ? 0 : tvy
+          const startVz = reducedInit ? 0 : tvz
 
           nodes.push({
             idx,
-            initialX,
-            initialY,
-            initialZ: zDepth,
-            x: initialX,
-            y: initialY,
+            x0: gridX,
+            y0: gridY,
+            z0,
+            x: gridX,
+            y: gridY,
+            z: z0,
             vx: startVx,
             vy: startVy,
-            targetVx,
-            targetVy,
+            vz: startVz,
+            targetVx: tvx,
+            targetVy: tvy,
+            targetVz: tvz,
             retargetIn,
             baseOpacity,
             phase,
-            zDepth,
-            vz: startVz,
-            targetVz,
-            retargetZIn,
+            sizeVar,
             activationStart: 0,
             activationDepth: 0,
             pulseStart: 0,
+            screenX: 0,
+            screenY: 0,
+            scale: 1,
+            zRot: z0,
           })
         }
       }
 
       nodesRef.current = nodes
-      // Reset seed tracking on rebuild
       seedRef.current = {
         index: -1,
         hop1Fired: false,
@@ -345,7 +328,6 @@ export function SignalGrid({
         seededAt: 0,
         hop1Indices: [],
       }
-      // Force fresh dt on next tick after rebuild (avoid huge dt jump)
       lastTickRef.current = null
     }
     buildGrid()
@@ -354,9 +336,7 @@ export function SignalGrid({
     const ro = new ResizeObserver(buildGrid)
     ro.observe(container)
 
-    // ─── 5. Mouse tracking (throttled via rAF; stored, applied next frame) ───
-    // NOTE: Cursor drives seed detection ONLY. No parallax — background does
-    // not shift with the mouse.
+    // ─── 5. Mouse tracking (cursor drives seed only; no parallax) ───
     const handleMove = (e: MouseEvent) => {
       if (reducedMotionRef.current) return
       const rect = container.getBoundingClientRect()
@@ -366,7 +346,6 @@ export function SignalGrid({
     }
     const handleLeave = () => {
       cursorRef.current.active = false
-      // Seed clears; existing activations decay naturally via timestamps
       seedRef.current.index = -1
       seedRef.current.hop1Indices = []
     }
@@ -379,7 +358,6 @@ export function SignalGrid({
       ([entry]) => {
         inView = entry?.isIntersecting ?? true
         if (inView && rafRef.current === null) {
-          // Resume — reset last-tick to avoid huge dt after pause
           lastTickRef.current = null
           rafRef.current = requestAnimationFrame(tick)
         }
@@ -389,24 +367,23 @@ export function SignalGrid({
     io.observe(container)
 
     // ─── Interaction/Motion Constants ───
-    const HOP_DELAY_MS = 140            // Δt between graph-hops
-    const ACTIVATION_MS = 2800          // decay window per node
+    const HOP_DELAY_MS = 140
+    const ACTIVATION_MS = 2800
     const SEED_RADIUS_DESKTOP = 100
     const SEED_RADIUS_MOBILE = 70
-    const VELOCITY_LERP_PER_SEC = 0.4   // ~63% toward target after 1s
+    const VELOCITY_LERP_PER_SEC = 0.4
 
-    // Scratch buffer for the per-frame sort — allocated once, reused to avoid
-    // GC pressure. Filled and sorted each frame (576 ints sort ≈ 0.3ms).
+    // Scratch buffer for the per-frame painter sort
     let sortBuf: number[] = []
 
-    // ─── Helper: find 2 nearest nodes to a point, excluding a set of indices ─
-    // Used for on-demand mini-net propagation (hop-1 finds 2 from seed, each
-    // hop-1 finds 1 fresh from itself). Far-band exclusion is handled at the
-    // seed-detection phase only — once a seed is chosen, neighbors can be in
-    // any band (gives the net depth-variety for the "3D" look).
-    const findTwoNearest = (
+    // ─── Helper: find 2 nearest nodes in 3D WORLDSPACE (euclidean x,y,z) ───
+    // Used for on-demand mini-net propagation after a seed has been found in
+    // screen-space. Worldspace-NN keeps the signal-web tied to cloud geometry,
+    // not the flat projection.
+    const findTwoNearest3D = (
       px: number,
       py: number,
+      pz: number,
       nodes: typeof nodesRef.current,
       exclude: Set<number>,
     ): number[] => {
@@ -419,7 +396,8 @@ export function SignalGrid({
         const n = nodes[i]!
         const dx = n.x - px
         const dy = n.y - py
-        const dSq = dx * dx + dy * dy
+        const dz = n.z - pz
+        const dSq = dx * dx + dy * dy + dz * dz
         if (dSq < firstDSq) {
           secondDSq = firstDSq
           secondIdx = firstIdx
@@ -439,13 +417,11 @@ export function SignalGrid({
     // ─── 7. rAF loop ───
     const tick = (t: number) => {
       if (!inView) {
-        // Don't re-schedule — IO will resume us
         rafRef.current = null
         return
       }
 
-      // deltaTime in seconds, clamped to 16ms if tab was backgrounded (prevent
-      // teleport). 0 on first tick.
+      // deltaTime in ms, clamped to 16ms if tab was backgrounded. 0 on first tick.
       let dtMs = 0
       if (lastTickRef.current !== null) {
         dtMs = t - lastTickRef.current
@@ -457,118 +433,130 @@ export function SignalGrid({
       const rect = container.getBoundingClientRect()
       const width = rect.width
       const height = rect.height
-      const { cellW, cellH } = gridMetricsRef.current
-      const cellDistance = Math.min(cellW, cellH)
+      const { W, H, D, vpX, vpY } = volumeRef.current
       const { nodeRgb } = colorsRef.current
 
       ctx.clearRect(0, 0, width, height)
 
       const reduced = reducedMotionRef.current
       const cursor = cursorRef.current
-      const nowSec = t / 1000 // for breathing (seconds)
-      const nowMs = t         // for activation timestamps (ms)
+      const nowSec = t / 1000
+      const nowMs = t
       const isMobile = width < 768
       const nodes = nodesRef.current
       const maxSpeed = isMobile ? 12 : 18
 
-      // ─── PHASE A: XY Velocity update (target reroll + lerp toward target) ───
+      // ─── PHASE A: Global rotation accumulate ──────────────────────────────
+      if (!reduced) {
+        rotRef.current.y = (rotRef.current.y + ROT_SPEED_Y * dtMs) % (Math.PI * 2)
+        rotRef.current.x = (rotRef.current.x + ROT_SPEED_X * dtMs) % (Math.PI * 2)
+      }
+      const cosY = Math.cos(rotRef.current.y)
+      const sinY = Math.sin(rotRef.current.y)
+      const cosX = Math.cos(rotRef.current.x)
+      const sinX = Math.sin(rotRef.current.x)
+
+      // ─── PHASE B: 3D velocity update + 3D position integration ─────────────
       if (!reduced && dt > 0) {
-        // Lerp factor bounded to [0,1] to stay stable at any frame rate
         const lerpT = Math.min(1, VELOCITY_LERP_PER_SEC * dt)
-        const zLerpT = Math.min(1, Z_LERP_PER_SEC * dt)
+        const halfW = W / 2
+        const halfH = H / 2
+        const halfD = D / 2
+
         for (let i = 0; i < nodes.length; i++) {
           const n = nodes[i]!
-          // XY velocity target reroll
+
+          // Retarget 3D velocity
           n.retargetIn -= dt
           if (n.retargetIn <= 0) {
-            const angle = Math.random() * Math.PI * 2
-            // Depth-differential wander speed — far nodes drift slower than near
-            // ones. Real physics-of-perception depth cue without parallax/glow.
-            const speedScale = 0.35 + 0.65 * n.zDepth // 0.35..1.00
-            const speed = maxSpeed * (0.4 + Math.random() * 0.6) * speedScale
-            n.targetVx = Math.cos(angle) * speed
-            n.targetVy = Math.sin(angle) * speed
-            n.retargetIn = 4 + Math.random() * 4 // next reroll 4-8s out
+            const theta = Math.random() * Math.PI * 2
+            const phiCos = Math.random() * 2 - 1
+            const phiSin = Math.sqrt(Math.max(0, 1 - phiCos * phiCos))
+            const speed = maxSpeed * (0.4 + Math.random() * 0.6)
+            n.targetVx = Math.cos(theta) * phiSin * speed
+            n.targetVy = Math.sin(theta) * phiSin * speed
+            n.targetVz = phiCos * speed
+            n.retargetIn = 4 + Math.random() * 4
           }
-          // Smooth lerp toward target XY-velocity
+          // Lerp current toward target
           n.vx += (n.targetVx - n.vx) * lerpT
           n.vy += (n.targetVy - n.vy) * lerpT
+          n.vz += (n.targetVz - n.vz) * lerpT
 
-          // Z velocity target reroll (slower cycle than XY → calmer depth drift)
-          n.retargetZIn -= dt
-          if (n.retargetZIn <= 0) {
-            const zSign = Math.random() < 0.5 ? -1 : 1
-            const zMag = Z_VEL_MAX * (0.3 + Math.random() * 0.7)
-            n.targetVz = zSign * zMag
-            n.retargetZIn = 8 + Math.random() * 6 // 8-14s
-          }
-          // Smooth lerp toward target Z-velocity
-          n.vz += (n.targetVz - n.vz) * zLerpT
-        }
-      }
-
-      // ─── PHASE B: Position update (integrate + soft boundary bounce; +Z) ───
-      if (!reduced && dt > 0) {
-        const marginX = width * 0.1 // BOUNDARY_MARGIN_FRAC
-        const marginY = height * 0.1
-        const minX = -marginX
-        const maxX = width + marginX
-        const minY = -marginY
-        const maxY = height + marginY
-        for (let i = 0; i < nodes.length; i++) {
-          const n = nodes[i]!
+          // Integrate position
           n.x += n.vx * dt
           n.y += n.vy * dt
-          // Soft XY bounce: reflect velocity (current + target) and clamp
-          if (n.x < minX) {
-            n.x = minX
+          n.z += n.vz * dt
+
+          // Soft reflection at volume boundaries
+          if (n.x < -halfW) {
+            n.x = -halfW
             if (n.vx < 0) n.vx = -n.vx
             if (n.targetVx < 0) n.targetVx = -n.targetVx
-          } else if (n.x > maxX) {
-            n.x = maxX
+          } else if (n.x > halfW) {
+            n.x = halfW
             if (n.vx > 0) n.vx = -n.vx
             if (n.targetVx > 0) n.targetVx = -n.targetVx
           }
-          if (n.y < minY) {
-            n.y = minY
+          if (n.y < -halfH) {
+            n.y = -halfH
             if (n.vy < 0) n.vy = -n.vy
             if (n.targetVy < 0) n.targetVy = -n.targetVy
-          } else if (n.y > maxY) {
-            n.y = maxY
+          } else if (n.y > halfH) {
+            n.y = halfH
             if (n.vy > 0) n.vy = -n.vy
             if (n.targetVy > 0) n.targetVy = -n.targetVy
           }
-
-          // Z integrate + clamp with reflection
-          n.zDepth += n.vz * dt
-          if (n.zDepth < Z_MIN) {
-            n.zDepth = Z_MIN
-            n.vz = -n.vz
-            n.targetVz = -n.targetVz
-          } else if (n.zDepth > Z_MAX) {
-            n.zDepth = Z_MAX
-            n.vz = -n.vz
-            n.targetVz = -n.targetVz
+          if (n.z < -halfD) {
+            n.z = -halfD
+            if (n.vz < 0) n.vz = -n.vz
+            if (n.targetVz < 0) n.targetVz = -n.targetVz
+          } else if (n.z > halfD) {
+            n.z = halfD
+            if (n.vz > 0) n.vz = -n.vz
+            if (n.targetVz > 0) n.targetVz = -n.targetVz
           }
         }
-      } else if (reduced) {
-        // Static layout under reduced-motion — snap to initial grid positions
-        // AND reset zDepth to seeded value (so depth stays visible but static).
+      } else {
+        // Reduced-motion: snap all nodes back to seeded 3D origin
         for (let i = 0; i < nodes.length; i++) {
           const n = nodes[i]!
-          n.x = n.initialX
-          n.y = n.initialY
+          n.x = n.x0
+          n.y = n.y0
+          n.z = n.z0
           n.vx = 0
           n.vy = 0
-          n.zDepth = n.initialZ
           n.vz = 0
         }
       }
 
-      // ─── PHASE C: Seed detection & mini-net propagation (on-demand NN) ───
-      // Far-band nodes (zDepth < SEED_Z_MIN) are unreachable seeds → cursor
-      // only interacts with mid/near layer. Once a seed is chosen, neighbors
-      // can come from any band.
+      // ─── PHASE C: Rotate + project each node → screen-space + scale ────────
+      // Rotate around Y first (affects x+z), then X (affects y+z').
+      // Pre-computed cosY/sinY/cosX/sinX per frame — no per-node trig.
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i]!
+        // Y-rotation
+        const x1 = n.x * cosY + n.z * sinY
+        const z1 = -n.x * sinY + n.z * cosY
+        const y1 = n.y
+        // X-rotation
+        const y2 = y1 * cosX - z1 * sinX
+        const z2 = y1 * sinX + z1 * cosX
+        const x2 = x1
+        // Perspective projection
+        const relZ = z2 - CAMERA_Z // relative depth from camera
+        // relZ should always be > 0 since CAMERA_Z = -500 and z2 ∈ [-halfD, +halfD]
+        // with halfD ≤ W/4 ≈ <500. Guard anyway.
+        const scale = relZ > 1 ? FOV / relZ : FOV
+        n.screenX = x2 * scale + vpX
+        n.screenY = y2 * scale + vpY
+        n.scale = scale
+        n.zRot = z2
+      }
+
+      // ─── PHASE D: Seed detection (2D screen-space, front-half only) ────────
+      // Cursor finds nearest projected point, but only among nodes in front
+      // half of the cloud (zRot < 0). Keeps activation on the near plane.
       if (!reduced && cursor.active) {
         const seedRadius = isMobile ? SEED_RADIUS_MOBILE : SEED_RADIUS_DESKTOP
         const seedRadiusSq = seedRadius * seedRadius
@@ -577,9 +565,9 @@ export function SignalGrid({
         let nearestDSq = seedRadiusSq
         for (let i = 0; i < nodes.length; i++) {
           const n = nodes[i]!
-          if (n.zDepth < SEED_Z_MIN) continue
-          const dx = n.x - cursor.x
-          const dy = n.y - cursor.y
+          if (n.zRot >= 0) continue // front-half only (near the camera)
+          const dx = n.screenX - cursor.x
+          const dy = n.screenY - cursor.y
           const dSq = dx * dx + dy * dy
           if (dSq < nearestDSq) {
             nearestDSq = dSq
@@ -595,7 +583,6 @@ export function SignalGrid({
             seed.hop2Fired = false
             seed.seededAt = nowMs
             seed.hop1Indices = []
-            // Activate seed now (depth 0) — pulse starts
             const n = nodes[nearestIdx]!
             n.activationStart = nowMs
             n.activationDepth = 0
@@ -605,7 +592,14 @@ export function SignalGrid({
           if (!seed.hop1Fired && nowMs - seed.seededAt >= HOP_DELAY_MS) {
             const seedNode = nodes[seed.index]!
             const exclude = new Set<number>([seed.index])
-            const hop1 = findTwoNearest(seedNode.x, seedNode.y, nodes, exclude)
+            // 3D NN in worldspace
+            const hop1 = findTwoNearest3D(
+              seedNode.x,
+              seedNode.y,
+              seedNode.z,
+              nodes,
+              exclude,
+            )
             for (const idx of hop1) {
               const n = nodes[idx]!
               if (nowMs - n.activationStart > HOP_DELAY_MS) {
@@ -626,7 +620,7 @@ export function SignalGrid({
             const usedSet = new Set<number>([seed.index, ...seed.hop1Indices])
             for (const h1idx of seed.hop1Indices) {
               const h1 = nodes[h1idx]!
-              const found = findTwoNearest(h1.x, h1.y, nodes, usedSet)
+              const found = findTwoNearest3D(h1.x, h1.y, h1.z, nodes, usedSet)
               if (found.length > 0) {
                 const cand = found[0]!
                 const n = nodes[cand]!
@@ -646,36 +640,23 @@ export function SignalGrid({
         }
       }
 
-      // ─── PHASE D: Sort nodes far→near (painter's algorithm) ─────────────
-      // Fill scratch buffer with indices, sort by zDepth ASC so near nodes are
-      // drawn on top of far nodes. Tie-break on original idx for stability.
+      // ─── PHASE E: Painter sort by projected zRot DESC (far drawn first) ────
       if (sortBuf.length !== nodes.length) sortBuf = new Array(nodes.length)
       for (let i = 0; i < nodes.length; i++) sortBuf[i] = i
       sortBuf.sort((a, b) => {
-        const za = nodes[a]!.zDepth
-        const zb = nodes[b]!.zDepth
-        if (za !== zb) return za - zb
+        const za = nodes[a]!.zRot
+        const zb = nodes[b]!.zRot
+        if (za !== zb) return zb - za // DESC: larger z (farther) first
         return nodes[a]!.idx - nodes[b]!.idx
       })
 
-      // ─── PHASE E: Render nodes — single crisp circle per node ───────────
-      // Depth is carried ONLY via SIZE + ALPHA. No halo, no blur, no
-      // desaturation. Unified render path.
-      //   sizeFactor  = 0.30 + 1.70 * pow(z, 0.9)   → 0.51×..2.00× baseRadius
-      //   alphaFactor = 0.55 + 0.45 * z             → 0.55..1.00
-      //   breathingFactor multiplies opacity by (1 ± 0.3) around base
-      //   activationBoost lifts opacity toward 1.0 when active
-      //   pulse bumps radius +50% in the first PULSE_MS after activation
+      // ─── PHASE F: Render nodes — crisp single-fill, size+alpha from scale ──
       const baseRadius = isMobile ? 1.1 : 1.4
       for (let s = 0; s < sortBuf.length; s++) {
         const i = sortBuf[s]!
         const n = nodes[i]!
 
-        const zDepth = n.zDepth
-        const rx = n.x
-        const ry = n.y
-
-        // Activation intensity: decays from 1.0 to 0 over ACTIVATION_MS
+        // Activation intensity: decays 1→0 over ACTIVATION_MS
         let activation = 0
         if (!reduced && n.activationStart > 0) {
           const age = nowMs - n.activationStart
@@ -686,8 +667,7 @@ export function SignalGrid({
           }
         }
 
-        // Activation-Pulse: first PULSE_MS after activation, scale bumps by up
-        // to +50% → feels like "signal arriving". No halo.
+        // Activation-Pulse: first PULSE_MS → +50% scale-bump
         let pulse = 0
         if (!reduced && n.pulseStart > 0) {
           const pulseAge = nowMs - n.pulseStart
@@ -703,32 +683,31 @@ export function SignalGrid({
           ? 0
           : Math.sin(nowSec * 1.2 + n.phase) * 0.3 * n.baseOpacity
 
-        // Depth-driven size + alpha (unified ramp)
-        // Size spread widened (0.30..2.00×) — near nodes obviously bigger.
-        // Alpha floor lifted (0.55..1.00) — far nodes clearly visible.
-        const sizeFactor = 0.30 + 1.70 * Math.pow(zDepth, 0.9)
-        const alphaFactor = 0.55 + 0.45 * zDepth
-
-        const radius = baseRadius * sizeFactor * (1 + pulse)
+        // Size + alpha from projected scale (honest 3D, not simulated).
+        // scale typical range: ~0.55 (very far) .. ~1.8 (very near).
+        const radius = baseRadius * n.sizeVar * n.scale * (1 + pulse)
+        // Scale-alpha factor: far nodes softer. Normalized bluntly: clamp 0.4..1.0.
+        const scaleAlpha = Math.min(1, Math.max(0.4, 0.4 + 0.6 * (n.scale - 0.4)))
         const opacity = Math.min(
           1,
-          (n.baseOpacity + breathing) * alphaFactor + activation * 0.8,
+          (n.baseOpacity + breathing) * scaleAlpha + activation * 0.8,
         )
 
         ctx.beginPath()
-        ctx.arc(rx, ry, radius, 0, Math.PI * 2)
+        ctx.arc(n.screenX, n.screenY, Math.max(0.2, radius), 0, Math.PI * 2)
         ctx.fillStyle = `rgba(${nodeRgb.r}, ${nodeRgb.g}, ${nodeRgb.b}, ${opacity})`
         ctx.fill()
       }
 
-      // ─── PHASE F: Lines between active nodes (depth-weighted alpha+width) ──
-      // Alpha weighted strongly toward the SMALLER (farther) node so lines to
-      // distant nodes fade — reinforces the "layers floating in front of each
-      // other" feel. No shadowBlur.
-      //   alpha = pow(minZ, 1.5) * 0.9 * activation + 0.05
-      //   lineWidth = 0.5 + 1.0 * minZ
+      // ─── PHASE G: Lines between active nodes — linear-gradient stroke ──────
+      // Alpha varies along the line from endpoint-A's scaleAlpha to endpoint-B's
+      // scaleAlpha. Gives honest 3D depth across the segment length.
       if (!reduced) {
-        const lineThreshold = cellDistance * 2.0
+        // Line threshold in SCREEN-space: connect only when close on screen.
+        // Tied to average cell size: cols-based → similar density feel.
+        const cellW = W / 33
+        const cellH = H / 19
+        const lineThreshold = Math.min(cellW, cellH) * 2.0
         const lineThresholdSq = lineThreshold * lineThreshold
 
         const activeIdxs: number[] = []
@@ -739,37 +718,62 @@ export function SignalGrid({
           activeIdxs.push(i)
         }
 
-        // Ensure no blur bleed from elsewhere
         ctx.shadowBlur = 0
 
         for (let ai = 0; ai < activeIdxs.length; ai++) {
           const aIdx = activeIdxs[ai]!
           const a = nodes[aIdx]!
           const aAct = 1 - (nowMs - a.activationStart) / ACTIVATION_MS
+          const aScaleAlpha = Math.min(1, Math.max(0.4, 0.4 + 0.6 * (a.scale - 0.4)))
 
           for (let bi = ai + 1; bi < activeIdxs.length; bi++) {
             const bIdx = activeIdxs[bi]!
             const b = nodes[bIdx]!
             const bAct = 1 - (nowMs - b.activationStart) / ACTIVATION_MS
+            const bScaleAlpha = Math.min(
+              1,
+              Math.max(0.4, 0.4 + 0.6 * (b.scale - 0.4)),
+            )
 
-            const dx = a.x - b.x
-            const dy = a.y - b.y
+            const dx = a.screenX - b.screenX
+            const dy = a.screenY - b.screenY
             const dSq = dx * dx + dy * dy
             if (dSq > lineThresholdSq) continue
 
-            const minZ = Math.min(a.zDepth, b.zDepth)
             const activationIntensity = Math.min(aAct, bAct)
-            const alpha = Math.min(
+            const alphaA = Math.min(
               1,
-              Math.pow(minZ, 1.5) * 0.9 * activationIntensity + 0.05,
+              aScaleAlpha * 0.9 * activationIntensity + 0.05,
             )
-            const lineWidth = 0.5 + 1.0 * minZ
+            const alphaB = Math.min(
+              1,
+              bScaleAlpha * 0.9 * activationIntensity + 0.05,
+            )
 
-            ctx.strokeStyle = `rgba(${nodeRgb.r}, ${nodeRgb.g}, ${nodeRgb.b}, ${alpha})`
+            // Line width scales with minimum endpoint scale
+            const minScale = Math.min(a.scale, b.scale)
+            const lineWidth = Math.max(0.3, 0.5 + 1.0 * Math.min(1, minScale))
+
+            const grad = ctx.createLinearGradient(
+              a.screenX,
+              a.screenY,
+              b.screenX,
+              b.screenY,
+            )
+            grad.addColorStop(
+              0,
+              `rgba(${nodeRgb.r}, ${nodeRgb.g}, ${nodeRgb.b}, ${alphaA})`,
+            )
+            grad.addColorStop(
+              1,
+              `rgba(${nodeRgb.r}, ${nodeRgb.g}, ${nodeRgb.b}, ${alphaB})`,
+            )
+
+            ctx.strokeStyle = grad
             ctx.lineWidth = lineWidth
             ctx.beginPath()
-            ctx.moveTo(a.x, a.y)
-            ctx.lineTo(b.x, b.y)
+            ctx.moveTo(a.screenX, a.screenY)
+            ctx.lineTo(b.screenX, b.screenY)
             ctx.stroke()
           }
         }
