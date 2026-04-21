@@ -66,12 +66,14 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *     (projected sx, sy der Nodes nach Rotation+Projection). So bleibt die
  *     Kette visuell kohärent: kurze Linien auf dem Screen, auch wenn die
  *     3D-Worldspace-Distanz variiert. Kein "Chain wandert in den Hintergrund".
- *   - Seed aktiviert 2 nearest neighbors (hop-1 @ +60ms), dann je 1 weiterer
- *     pro hop-1 (hop-2 @ +200ms). Max 2 hops tief, max 5 aktive Nodes pro
- *     Kette, max 2 Ketten gleichzeitig in-flight (FIFO drop). Super-schnelles
- *     Flicken überspringt hop-1 absichtlich — tamer für "zu viele
- *     Verbindungen". Depth-buddy hat screen-distance cap (~2.2× cell-spacing)
- *     damit Linien spatial geclustert bleiben, nicht über das ganze Hero.
+ *   - Seed aktiviert 2 screen-nearest neighbors (hop-1 @ +60ms, beide in der
+ *     horizontal/near-plane-Ebene), dann je 1 depth-buddy pro hop-1 (hop-2
+ *     @ +200ms, 3D-worldspace-NN mit Screen- und Z-Delta-Caps). Max 2 hops
+ *     tief, max 5 aktive Nodes pro Kette, max 2 Ketten gleichzeitig in-flight
+ *     (FIFO drop). Super-schnelles Flicken überspringt hop-1 absichtlich —
+ *     tamer für "zu viele Verbindungen". Depth-buddy hat screen-distance cap
+ *     (~2.2× cell-spacing) UND z-delta cap (35 % der Cloud-Tiefe) → Tiefe
+ *     bleibt lokal-sphärisch, keine Sprünge quer durch die ganze Wolke.
  *   - Activation-Pulse: 300ms scale-bump, keine Halos.
  *   - Activation-Decay: 2800ms.
  *
@@ -168,14 +170,14 @@ export function SignalGrid({
   // Chain-Queue: multiple activation chains can be in-flight simultaneously
   // (fast cursor scribble spawns new chains; old chains keep decaying in peace).
   // Per chain: seed node, hop-1 buddies (up to 2), timing, and hop-2 flag.
-  // Hop-1 fires INSTANTLY at seed-time so even fast moves leave a mini-web
-  // (seed + 2 buddies) behind; hop-2 fires delayed at HOP2_DELAY_MS.
+  // Hop-1 fires delayed (HOP1_DELAY_MS) so super-fast flicks skip it entirely;
+  // hop-2 fires at HOP2_DELAY_MS.
   interface ChainState {
     seedIdx: number
     seedStart: number
     hop1Fired: boolean
     hop2Fired: boolean
-    hop1Indices: number[] // up to 2 — [screenBuddy, depthBuddy]
+    hop1Indices: number[] // up to 2 — both screen-NN buddies from seed
   }
   const chainsRef = useRef<ChainState[]>([])
 
@@ -430,50 +432,73 @@ export function SignalGrid({
     // within screen bounds. Keeps depth-buddies reaching into the back cloud
     // without sling-shotting across the whole hero.
     const DEPTH_BUDDY_SCREEN_CAP_MULT = 2.2
+    // Depth-buddy z-delta cap (fraction of cloud depth D). Depth-buddies must
+    // be within this z-delta of their anchor → prevents "all the way through
+    // the cloud" jumps. Combined with the screen-cap, depth-buddies land in a
+    // local spherical region: not too far on screen, not too deep.
+    const DEPTH_BUDDY_Z_DELTA_FRAC = 0.35
 
     // Scratch buffer for the per-frame painter sort
     let sortBuf: number[] = []
 
-    // ─── Helpers: hybrid NN — one SCREEN-buddy + one WORLDSPACE-buddy per hop ──
-    // Rationale (UAT): pure screen-NN kept chains on the near-plane and never
-    // reached into the back cloud. We now propagate to BOTH:
-    //   - screen-nearest → visual coherence (short on-screen line)
-    //   - 3D-world-nearest → depth reach (pulls chain into z-volume)
-    // Chain size stays ≤5 (seed + 2 hop-1 + 2 hop-2); just the spread is
-    // balanced. If both helpers return the same idx (overlap), caller dedupes.
+    // ─── Helpers: screen-NN (hop-1) + worldspace-NN with caps (hop-2) ──────
+    // Rationale (UAT): horizontal/screen connections were underserved by the
+    // previous "one screen + one depth" hop-1. New shape:
+    //   - hop-1: two screen-buddies from seed → horizontal core on near-plane
+    //   - hop-2: one depth-buddy per hop-1 node → controlled depth reach from
+    //     TWO different anchors (not from a single seed), with screen-cap +
+    //     z-delta-cap keeping each buddy in a local spherical region.
+    // Chain size stays ≤5 (seed + 2 screen + 2 depth). Dedup via `exclude`.
     //
     // Screen-buddy uses cached `screenX`/`screenY` (refreshed each frame in
     // PHASE C). Depth-buddy uses raw worldspace (x, y, z) — pre-rotation, since
     // we want the *intrinsic* 3D neighborhood, not the momentarily-projected
     // one. That keeps depth-buddies stable across rotation frames.
-    const findOneNearestScreen = (
+    //
+    // findTwoNearestScreen: returns up to 2 screen-NN indices (ascending
+    // distance order) from (sx,sy), skipping anything in `exclude`. Used for
+    // hop-1 — both buddies land in the horizontal/near-plane layer, keeping
+    // the chain-core visually on-screen before hop-2 reaches into depth.
+    const findTwoNearestScreen = (
       sx: number,
       sy: number,
       nodes: typeof nodesRef.current,
       exclude: Set<number>,
-    ): number | null => {
-      let bestIdx = -1
-      let bestDSq = Infinity
+    ): number[] => {
+      let best1Idx = -1
+      let best1DSq = Infinity
+      let best2Idx = -1
+      let best2DSq = Infinity
       for (let i = 0; i < nodes.length; i++) {
         if (exclude.has(i)) continue
         const n = nodes[i]!
         const dx = n.screenX - sx
         const dy = n.screenY - sy
         const dSq = dx * dx + dy * dy
-        if (dSq < bestDSq) {
-          bestDSq = dSq
-          bestIdx = i
+        if (dSq < best1DSq) {
+          best2DSq = best1DSq
+          best2Idx = best1Idx
+          best1DSq = dSq
+          best1Idx = i
+        } else if (dSq < best2DSq) {
+          best2DSq = dSq
+          best2Idx = i
         }
       }
-      return bestIdx === -1 ? null : bestIdx
+      const out: number[] = []
+      if (best1Idx !== -1) out.push(best1Idx)
+      if (best2Idx !== -1) out.push(best2Idx)
+      return out
     }
 
-    // Depth-buddy NN with optional screen-distance cap. When `srcSx`/`srcSy` and
-    // `maxScreenDistSq` are provided, candidates whose projected distance from
-    // the source on screen exceeds the cap are skipped — so the true 3D-nearest
-    // is only returned if it's also near on screen. Falls back to the
-    // next-best 3D candidate that IS within screen bounds. Returns null if
-    // nothing qualifies.
+    // Depth-buddy NN with optional caps:
+    //   - screen-distance cap (srcSx, srcSy, maxScreenDistSq): skip candidates
+    //     whose projected distance from the source exceeds the cap. Keeps the
+    //     buddy visually near the anchor on screen.
+    //   - z-delta cap (maxZDelta): skip candidates whose |n.z - wz| exceeds it.
+    //     Prevents "all the way through the cloud" jumps — depth-buddy stays
+    //     in a local spherical region around the anchor.
+    // Returns null if nothing qualifies under both caps.
     const findOneNearestWorld = (
       wx: number,
       wy: number,
@@ -483,19 +508,26 @@ export function SignalGrid({
       srcSx?: number,
       srcSy?: number,
       maxScreenDistSq?: number,
+      maxZDelta?: number,
     ): number | null => {
-      const useCap =
+      const useScreenCap =
         srcSx !== undefined && srcSy !== undefined && maxScreenDistSq !== undefined
+      const useZCap = maxZDelta !== undefined
       let bestIdx = -1
       let bestDSq = Infinity
       for (let i = 0; i < nodes.length; i++) {
         if (exclude.has(i)) continue
         const n = nodes[i]!
-        if (useCap) {
+        if (useScreenCap) {
           const sdx = n.screenX - (srcSx as number)
           const sdy = n.screenY - (srcSy as number)
           const sdSq = sdx * sdx + sdy * sdy
           if (sdSq > (maxScreenDistSq as number)) continue
+        }
+        if (useZCap) {
+          const zd = n.z - wz
+          if (zd < 0 ? -zd > (maxZDelta as number) : zd > (maxZDelta as number))
+            continue
         }
         const dx = n.x - wx
         const dy = n.y - wy
@@ -728,45 +760,35 @@ export function SignalGrid({
 
         // 2. Per-chain hop-1 + hop-2 firing + pruning (runs regardless of
         // cursor state so in-flight chains complete even after mouseleave).
-        // Depth-buddy uses a screen-distance cap based on current cell spacing
-        // so connections stay spatially clustered.
+        //
+        // Hop-1: two screen-nearest buddies from the seed — keeps the chain
+        //   core horizontally/on-screen, the part the user "reads" first.
+        // Hop-2: one depth-buddy per hop-1 node — both reach into z-volume,
+        //   from different anchors. Depth-buddy uses screen-distance cap +
+        //   z-delta cap so the reach stays local-spherical (no slingshot
+        //   through the whole cloud).
         const chains = chainsRef.current
-        const { W: volW, H: volH } = volumeRef.current
+        const { W: volW, H: volH, D: volD } = volumeRef.current
         const hopCellW = volW / (isMobile ? 19 : 35)
         const hopCellH = volH / (isMobile ? 12 : 20)
         const depthBuddyScreenCap =
           Math.min(hopCellW, hopCellH) * DEPTH_BUDDY_SCREEN_CAP_MULT
         const depthBuddyScreenCapSq = depthBuddyScreenCap * depthBuddyScreenCap
+        const depthBuddyMaxZDelta = volD * DEPTH_BUDDY_Z_DELTA_FRAC
         for (let ci = chains.length - 1; ci >= 0; ci--) {
           const c = chains[ci]!
 
-          // Fire hop-1 once the hop-1 delay has elapsed (was instant pre-UAT)
+          // Fire hop-1 once the hop-1 delay has elapsed.
           if (!c.hop1Fired && nowMs - c.seedStart >= HOP1_DELAY_MS) {
             const seedNode = nodes[c.seedIdx]!
             const exclude = new Set<number>([c.seedIdx])
-            const screenBuddy = findOneNearestScreen(
+            // Two screen-buddies — both on the horizontal/near-plane layer.
+            const hop1 = findTwoNearestScreen(
               seedNode.screenX,
               seedNode.screenY,
               nodes,
               exclude,
             )
-            if (screenBuddy !== null) exclude.add(screenBuddy)
-            // Depth-buddy with screen-distance cap — no far slingshots.
-            const depthBuddy = findOneNearestWorld(
-              seedNode.x,
-              seedNode.y,
-              seedNode.z,
-              nodes,
-              exclude,
-              seedNode.screenX,
-              seedNode.screenY,
-              depthBuddyScreenCapSq,
-            )
-            const hop1: number[] = []
-            if (screenBuddy !== null) hop1.push(screenBuddy)
-            if (depthBuddy !== null && depthBuddy !== screenBuddy) {
-              hop1.push(depthBuddy)
-            }
             for (const idx of hop1) {
               const n = nodes[idx]!
               if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
@@ -779,30 +801,25 @@ export function SignalGrid({
             c.hop1Fired = true
           }
 
-          // Fire hop-2 once the hop-2 delay has elapsed (and hop-1 fired)
+          // Fire hop-2 once the hop-2 delay has elapsed (and hop-1 fired).
+          // Each hop-1 node emits ONE depth-buddy (world-NN, screen- + z-capped).
+          // Chain shape: seed + 2 screen + 2 depth = max 5 nodes.
           if (c.hop1Fired && !c.hop2Fired && nowMs - c.seedStart >= HOP2_DELAY_MS) {
             const usedSet = new Set<number>([c.seedIdx, ...c.hop1Indices])
-            // Sort hop-1 by zRot ASC → front-most first, deepest last.
-            const h1Sorted = [...c.hop1Indices].sort(
-              (a, b) => nodes[a]!.zRot - nodes[b]!.zRot,
-            )
-            for (let i = 0; i < h1Sorted.length; i++) {
-              const h1idx = h1Sorted[i]!
+            for (let i = 0; i < c.hop1Indices.length; i++) {
+              const h1idx = c.hop1Indices[i]!
               const h1 = nodes[h1idx]!
-              // Front hop-1 → screen-NN; deepest hop-1 → world-NN (capped).
-              const useWorld = i === h1Sorted.length - 1 && h1Sorted.length > 1
-              const cand = useWorld
-                ? findOneNearestWorld(
-                    h1.x,
-                    h1.y,
-                    h1.z,
-                    nodes,
-                    usedSet,
-                    h1.screenX,
-                    h1.screenY,
-                    depthBuddyScreenCapSq,
-                  )
-                : findOneNearestScreen(h1.screenX, h1.screenY, nodes, usedSet)
+              const cand = findOneNearestWorld(
+                h1.x,
+                h1.y,
+                h1.z,
+                nodes,
+                usedSet,
+                h1.screenX,
+                h1.screenY,
+                depthBuddyScreenCapSq,
+                depthBuddyMaxZDelta,
+              )
               if (cand !== null) {
                 const n = nodes[cand]!
                 if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
@@ -812,6 +829,8 @@ export function SignalGrid({
                 }
                 usedSet.add(cand)
               }
+              // If no candidate fits both caps → chain is just shorter, no
+              // depth-buddy for this anchor.
             }
             c.hop2Fired = true
           }
