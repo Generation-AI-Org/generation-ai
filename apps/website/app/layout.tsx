@@ -34,16 +34,7 @@ export const metadata: Metadata = {
   description:
     "Die erste kostenlose KI-Community für Studierende im DACH-Raum",
 
-  icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-  },
+  // Icons werden automatisch über app/icon.svg (Next.js file convention) bereitgestellt.
   keywords: [
     "KI",
     "AI",
@@ -63,21 +54,14 @@ export const metadata: Metadata = {
     description:
       "Die erste kostenlose KI-Community für Studierende im DACH-Raum. Tools, Wissen und Austausch.",
     url: "https://generation-ai.org",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Generation AI",
-      },
-    ],
+    // OG-Image wird automatisch über app/opengraph-image.tsx (Next.js file convention) bereitgestellt.
   },
   twitter: {
     card: "summary_large_image",
     title: "Generation AI - Die KI-Community für Studierende",
     description:
       "Die erste kostenlose KI-Community für Studierende im DACH-Raum. Tools, Wissen und Austausch.",
-    images: ["/og-image.jpg"],
+    // Twitter-Image wird automatisch über app/twitter-image.tsx (Next.js file convention) bereitgestellt.
   },
   robots: {
     index: true,
