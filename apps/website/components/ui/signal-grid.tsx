@@ -66,10 +66,12 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *     (projected sx, sy der Nodes nach Rotation+Projection). So bleibt die
  *     Kette visuell kohärent: kurze Linien auf dem Screen, auch wenn die
  *     3D-Worldspace-Distanz variiert. Kein "Chain wandert in den Hintergrund".
- *   - Seed aktiviert 2 nearest neighbors (hop-1 @ +120ms), dann je 1 weiterer
- *     pro hop-1 (hop-2 @ +240ms). Max 2 hops tief, max 5 aktive Nodes pro
- *     Kette. Ripple-Geschwindigkeit (120ms pro Level) lässt die Kette
- *     spürbar aber sichtbar cascaden — nicht instant.
+ *   - Seed aktiviert 2 nearest neighbors (hop-1 @ +60ms), dann je 1 weiterer
+ *     pro hop-1 (hop-2 @ +200ms). Max 2 hops tief, max 5 aktive Nodes pro
+ *     Kette, max 2 Ketten gleichzeitig in-flight (FIFO drop). Super-schnelles
+ *     Flicken überspringt hop-1 absichtlich — tamer für "zu viele
+ *     Verbindungen". Depth-buddy hat screen-distance cap (~2.2× cell-spacing)
+ *     damit Linien spatial geclustert bleiben, nicht über das ganze Hero.
  *   - Activation-Pulse: 300ms scale-bump, keine Halos.
  *   - Activation-Decay: 2800ms.
  *
@@ -402,21 +404,32 @@ export function SignalGrid({
     io.observe(container)
 
     // ─── Interaction/Motion Constants ───
-    // Chain-Queue tuning: Hop-1 INSTANT (0ms) so even fast cursor moves leave
-    // a mini-web (seed + 2 buddies) behind every frame. Hop-2 at 240ms → gives
-    // the signal time to cascade when the user lingers. Seed radius tight
-    // (desktop 60 / mobile 40) so only nodes really near the cursor seed.
-    const HOP2_DELAY_MS = 240
+    // Chain-Queue tuning (UAT tame pass):
+    //   - Hop-1 60ms delay (was 0/instant). Super-flicking now skips hop-1 —
+    //     intentional silencer for "zu viele Verbindungen überall".
+    //   - Hop-2 200ms (was 240ms) — slight compression to keep the feel snappy
+    //     now that hop-1 has its own 60ms runway.
+    //   - MAX_CHAINS 2 (was 6) — FIFO drop oldest; tames fast-scribble flood.
+    // Seed radius tight (desktop 60 / mobile 40) so only nodes really near the
+    // cursor seed.
+    const HOP1_DELAY_MS = 60
+    const HOP2_DELAY_MS = 200
     const HOP_RETRIGGER_GUARD_MS = 120 // min spacing before re-activating a node
     const ACTIVATION_MS = 2800
     const SEED_RADIUS_DESKTOP = 60
     const SEED_RADIUS_MOBILE = 40
     const VELOCITY_LERP_PER_SEC = 0.4
     // Max simultaneous in-flight chains — sanity cap for fast scribbles.
-    const MAX_CHAINS = 6
+    const MAX_CHAINS = 2
     // Re-seeding the SAME node is suppressed while its previous chain is still
     // meaningfully alive (activation > this threshold 0..1).
     const CHAIN_RESEED_THRESHOLD = 0.05
+    // Depth-buddy screen-distance cap (multiplier on cell spacing). If the
+    // true-3D-nearest world-neighbor projects more than this × cell-spacing
+    // away on screen, skip it and fall back to the next 3D candidate that IS
+    // within screen bounds. Keeps depth-buddies reaching into the back cloud
+    // without sling-shotting across the whole hero.
+    const DEPTH_BUDDY_SCREEN_CAP_MULT = 2.2
 
     // Scratch buffer for the per-frame painter sort
     let sortBuf: number[] = []
@@ -455,18 +468,35 @@ export function SignalGrid({
       return bestIdx === -1 ? null : bestIdx
     }
 
+    // Depth-buddy NN with optional screen-distance cap. When `srcSx`/`srcSy` and
+    // `maxScreenDistSq` are provided, candidates whose projected distance from
+    // the source on screen exceeds the cap are skipped — so the true 3D-nearest
+    // is only returned if it's also near on screen. Falls back to the
+    // next-best 3D candidate that IS within screen bounds. Returns null if
+    // nothing qualifies.
     const findOneNearestWorld = (
       wx: number,
       wy: number,
       wz: number,
       nodes: typeof nodesRef.current,
       exclude: Set<number>,
+      srcSx?: number,
+      srcSy?: number,
+      maxScreenDistSq?: number,
     ): number | null => {
+      const useCap =
+        srcSx !== undefined && srcSy !== undefined && maxScreenDistSq !== undefined
       let bestIdx = -1
       let bestDSq = Infinity
       for (let i = 0; i < nodes.length; i++) {
         if (exclude.has(i)) continue
         const n = nodes[i]!
+        if (useCap) {
+          const sdx = n.screenX - (srcSx as number)
+          const sdy = n.screenY - (srcSy as number)
+          const sdSq = sdx * sdx + sdy * sdy
+          if (sdSq > (maxScreenDistSq as number)) continue
+        }
         const dx = n.x - wx
         const dy = n.y - wy
         const dz = n.z - wz
@@ -621,13 +651,14 @@ export function SignalGrid({
       }
 
       // ─── PHASE D: Seed detection + chain-queue propagation ─────────────────
-      // Multiple activation chains can be in-flight simultaneously. Cursor
-      // finds nearest projected node (front-half only, zRot < 0). When it
-      // latches onto a NEW seed (or an old seed whose chain has already
-      // decayed), a new ChainState is pushed onto the queue and Hop-1 fires
-      // INSTANTLY — that way fast moves always leave seed + 2 buddies behind,
-      // not just a lone point. Hop-2 fires delayed at HOP2_DELAY_MS via
-      // per-tick iteration below.
+      // Multiple activation chains can be in-flight simultaneously (capped at
+      // MAX_CHAINS with FIFO drop). Cursor finds nearest projected node
+      // (front-half only, zRot < 0). When it latches onto a NEW seed (or an
+      // old seed whose chain has already decayed), a new ChainState is pushed
+      // onto the queue with hop1Fired=false. Hop-1 and Hop-2 both fire
+      // DELAYED (HOP1_DELAY_MS / HOP2_DELAY_MS) via the per-tick iteration
+      // below — super-fast flicks that don't linger past HOP1_DELAY_MS skip
+      // hop-1 entirely, which is the intended noise-tamer behavior.
       if (!reduced) {
         // 1. Seed detection — only when cursor is over container
         if (cursor.active) {
@@ -669,7 +700,9 @@ export function SignalGrid({
             }
 
             if (!suppress) {
-              // Spawn new chain. Activate seed node.
+              // Spawn new chain. Activate seed node. Hop-1 fires DELAYED
+              // (HOP1_DELAY_MS) — super-fast flicks skip hop-1 entirely, which
+              // is the intended tamer behavior.
               const seedNode = nodes[nearestIdx]!
               if (nowMs - seedNode.activationStart > HOP_RETRIGGER_GUARD_MS) {
                 seedNode.activationStart = nowMs
@@ -677,47 +710,15 @@ export function SignalGrid({
                 seedNode.pulseStart = nowMs
               }
 
-              // INSTANT Hop-1 — one screen-buddy + one depth-buddy. Same
-              // hybrid NN logic as before; fires at seed-time (not +120ms)
-              // so fast moves still produce visible mini-webs.
-              const exclude = new Set<number>([nearestIdx])
-              const screenBuddy = findOneNearestScreen(
-                seedNode.screenX,
-                seedNode.screenY,
-                nodes,
-                exclude,
-              )
-              if (screenBuddy !== null) exclude.add(screenBuddy)
-              const depthBuddy = findOneNearestWorld(
-                seedNode.x,
-                seedNode.y,
-                seedNode.z,
-                nodes,
-                exclude,
-              )
-              const hop1: number[] = []
-              if (screenBuddy !== null) hop1.push(screenBuddy)
-              if (depthBuddy !== null && depthBuddy !== screenBuddy) {
-                hop1.push(depthBuddy)
-              }
-              for (const idx of hop1) {
-                const n = nodes[idx]!
-                if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
-                  n.activationStart = nowMs
-                  n.activationDepth = 1
-                  n.pulseStart = nowMs
-                }
-              }
-
               chains.push({
                 seedIdx: nearestIdx,
                 seedStart: nowMs,
-                hop1Fired: true,
+                hop1Fired: false,
                 hop2Fired: false,
-                hop1Indices: hop1,
+                hop1Indices: [],
               })
 
-              // Cap in-flight chains — drop oldest if over limit.
+              // Cap in-flight chains — drop oldest if over limit (FIFO).
               if (chains.length > MAX_CHAINS) {
                 chains.splice(0, chains.length - MAX_CHAINS)
               }
@@ -725,13 +726,61 @@ export function SignalGrid({
           }
         }
 
-        // 2. Per-chain hop-2 firing + pruning (runs regardless of cursor state
-        // so in-flight chains complete even after mouseleave).
+        // 2. Per-chain hop-1 + hop-2 firing + pruning (runs regardless of
+        // cursor state so in-flight chains complete even after mouseleave).
+        // Depth-buddy uses a screen-distance cap based on current cell spacing
+        // so connections stay spatially clustered.
         const chains = chainsRef.current
+        const { W: volW, H: volH } = volumeRef.current
+        const hopCellW = volW / (isMobile ? 19 : 35)
+        const hopCellH = volH / (isMobile ? 12 : 20)
+        const depthBuddyScreenCap =
+          Math.min(hopCellW, hopCellH) * DEPTH_BUDDY_SCREEN_CAP_MULT
+        const depthBuddyScreenCapSq = depthBuddyScreenCap * depthBuddyScreenCap
         for (let ci = chains.length - 1; ci >= 0; ci--) {
           const c = chains[ci]!
-          // Fire hop-2 once the delay has elapsed
-          if (!c.hop2Fired && nowMs - c.seedStart >= HOP2_DELAY_MS) {
+
+          // Fire hop-1 once the hop-1 delay has elapsed (was instant pre-UAT)
+          if (!c.hop1Fired && nowMs - c.seedStart >= HOP1_DELAY_MS) {
+            const seedNode = nodes[c.seedIdx]!
+            const exclude = new Set<number>([c.seedIdx])
+            const screenBuddy = findOneNearestScreen(
+              seedNode.screenX,
+              seedNode.screenY,
+              nodes,
+              exclude,
+            )
+            if (screenBuddy !== null) exclude.add(screenBuddy)
+            // Depth-buddy with screen-distance cap — no far slingshots.
+            const depthBuddy = findOneNearestWorld(
+              seedNode.x,
+              seedNode.y,
+              seedNode.z,
+              nodes,
+              exclude,
+              seedNode.screenX,
+              seedNode.screenY,
+              depthBuddyScreenCapSq,
+            )
+            const hop1: number[] = []
+            if (screenBuddy !== null) hop1.push(screenBuddy)
+            if (depthBuddy !== null && depthBuddy !== screenBuddy) {
+              hop1.push(depthBuddy)
+            }
+            for (const idx of hop1) {
+              const n = nodes[idx]!
+              if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
+                n.activationStart = nowMs
+                n.activationDepth = 1
+                n.pulseStart = nowMs
+              }
+            }
+            c.hop1Indices = hop1
+            c.hop1Fired = true
+          }
+
+          // Fire hop-2 once the hop-2 delay has elapsed (and hop-1 fired)
+          if (c.hop1Fired && !c.hop2Fired && nowMs - c.seedStart >= HOP2_DELAY_MS) {
             const usedSet = new Set<number>([c.seedIdx, ...c.hop1Indices])
             // Sort hop-1 by zRot ASC → front-most first, deepest last.
             const h1Sorted = [...c.hop1Indices].sort(
@@ -740,10 +789,19 @@ export function SignalGrid({
             for (let i = 0; i < h1Sorted.length; i++) {
               const h1idx = h1Sorted[i]!
               const h1 = nodes[h1idx]!
-              // Front hop-1 → screen-NN; deepest hop-1 → world-NN.
+              // Front hop-1 → screen-NN; deepest hop-1 → world-NN (capped).
               const useWorld = i === h1Sorted.length - 1 && h1Sorted.length > 1
               const cand = useWorld
-                ? findOneNearestWorld(h1.x, h1.y, h1.z, nodes, usedSet)
+                ? findOneNearestWorld(
+                    h1.x,
+                    h1.y,
+                    h1.z,
+                    nodes,
+                    usedSet,
+                    h1.screenX,
+                    h1.screenY,
+                    depthBuddyScreenCapSq,
+                  )
                 : findOneNearestScreen(h1.screenX, h1.screenY, nodes, usedSet)
               if (cand !== null) {
                 const n = nodes[cand]!
@@ -757,6 +815,7 @@ export function SignalGrid({
             }
             c.hop2Fired = true
           }
+
           // Prune chains past full decay (+ small grace for trailing paint)
           if (nowMs - c.seedStart > ACTIVATION_MS + 200) {
             chains.splice(ci, 1)
