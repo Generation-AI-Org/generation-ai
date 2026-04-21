@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: planning
-last_updated: "2026-04-21T11:18:15.547Z"
+status: executing
+last_updated: "2026-04-22T00:00:00.000Z"
 progress:
-  total_phases: 14
+  total_phases: 15
   completed_phases: 7
-  total_plans: 37
+  total_plans: 45
   completed_plans: 34
-  percent: 92
+  percent: 76
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,9 +18,10 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 skeleton complete, Phase 20.5 Landing Wow-Pass next, dann Phase 21 /about)
-**Phase:** 21
-**Last Updated:** 2026-04-21 (Plan 20.5-04 complete — Discrepancy smoother springs + honest axes)
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 skeleton ✅, Phase 20.5 Hero ✅, Phase 20.6 Landing Sections Rebuild next, dann Phase 21 /about)
+**Phase:** 20.6 Landing Sections Rebuild — PLANNED (8 skeleton plans scaffolded 2026-04-22, bereit zur Execution)
+**Branch:** `feature/phase-20-landing-skeleton` (bleibt offen durch 20.6 — Changeset v4.5.0 wird nach 20.6-Abschluss als gemeinsamer Minor-Bump released)
+**Last Updated:** 2026-04-22 (Phase 20.5 closed at Hero-level, Phase 20.6 scaffold created, Phase 24 route renamed /level-test → /test)
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
 
 **Phase 20 Skeleton — Status 2026-04-21:** formal approved auf Skeleton-Scope. Automated Gates alle grün (Build `ƒ /`, CSP nonce, Playwright 8/8, Lighthouse A11y 1.00 / BP 0.96 / SEO 1.00 / CLS 0.00, Perf 0.88 flaky-tolerated). Hero + Discrepancy Wow-Peaks explicit deferred auf Phase 20.5. Changeset `phase-20-navigation-landing-skeleton.md` liegt committed, Merge + `pnpm version` erst nach 20.5. Branch `feature/phase-20-landing-skeleton` bleibt offen für 20.5. Details: `.planning/phases/20-navigation-landing-skeleton/20-VALIDATION.md` (Skeleton-Scope-Sign-Off-Section).
@@ -76,18 +77,41 @@ progress:
 
 ### Phase 20.5 Progress
 
-**Status:** Ready to plan
+**Status:** ✅ CLOSED at Hero-level 2026-04-22. Hero approved by Luca („wirklich nice"). Discrepancy + Transition bewusst deferred auf Phase 20.6.
 
 - CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
-- 5 PLAN.md angelegt:
+- 5 PLAN.md angelegt, 3 delivered + 2 deferred:
   - 20.5-01 Design-System Alignment (Wave 1, autonomous) — ✅ COMPLETE
-  - 20.5-02 Signal-Grid Canvas Component (Wave 2, autonomous) — ✅ COMPLETE
-  - 20.5-03 Hero Rewrite with Signal-Grid (Wave 3, autonomous) — ✅ COMPLETE (2026-04-21, commits 996f3fb + e2c337b, 2 files, ~10 min, Playwright 8/8 grün, Build `ƒ /`)
-  - 20.5-04 Discrepancy Polish (Wave 3, autonomous, parallel zu 03) — ✅ COMPLETE (2026-04-21, commit `26a5b76`, 1 file, ~30 min, Playwright 8/8 grün, Build `ƒ /`, Option A: Paar-IDs 01/02/03 + HTML-Caption unter Chart, Spring-Tuning 140/32/0.4, mobile dichte Ticks ausgeblendet)
-  - 20.5-05 Hero → Discrepancy Transition-Animation (Wave 4, autonomous, co-designed mid-flight) — next
-- Branch bleibt `feature/phase-20-landing-skeleton` (on-top-build, kein neuer Branch).
+  - 20.5-02 Signal-Grid Canvas Component (Wave 2, autonomous) — ✅ COMPLETE (+ ~20 UAT-Tuning-Commits)
+  - 20.5-03 Hero Rewrite with Signal-Grid (Wave 3, autonomous) — ✅ COMPLETE (Luca signed-off 2026-04-22)
+  - 20.5-04 Discrepancy Polish — ⚠️ DEFERRED. Code shipped (`26a5b76`), visual direction rejected by Luca 2026-04-21 UAT. Redesign from scratch in Plan 20.6-01.
+  - 20.5-05 Hero → Discrepancy Transition — ⚠️ DEFERRED. Exploration-Doc (`20.5-05-EXPLORATION.md`) vorhanden, nicht gebaut. Continues in Plan 20.6-08 (Inter-section transitions).
+- Close-Out-Artefacts (commit `b8bae5b`):
+  - `20.5-SUMMARY.md` — phase-level summary, plans breakdown, hand-off zu 20.6
+  - `20.5-VALIDATION.md` — sign-off, gates, scope-reduction rationale
+  - `20.5-04-SUMMARY.md` + `20.5-05-EXPLORATION.md` frontmatter auf `status: deferred` gesetzt
+- Branch bleibt `feature/phase-20-landing-skeleton` (baut on-top in 20.6).
 - Working-Mode: Luca co-builds live auf localhost:3000, tight Feedback-Loops, kleine Commits, kein Push, kein Deploy.
-- Next: Plan 20.5-05 (Hero → Discrepancy Transition).
+
+### Phase 20.6 Progress
+
+**Status:** PLANNED 2026-04-22. Scaffold erstellt (commit `ed454f2`), Execution pending.
+
+- `20.6-CONTEXT.md` committed — 8 Decisions (D-01 Discrepancy from scratch, D-02 DS-compliance, D-03 section-order locked, D-04 Hero locked, D-05 transitions last, D-06 copy deferred, D-07 Playwright baseline, D-08 Lighthouse targets)
+- 8 skeleton PLAN.md Files angelegt (alle `status: skeleton`, werden bei Execution gefüllt):
+  - 20.6-01 New Discrepancy section (Wave 1) — Topic bleibt, Form TBD mit Luca
+  - 20.6-02 Offering polish (Wave 2)
+  - 20.6-03 Tool-Showcase polish (Wave 2)
+  - 20.6-04 Community-Preview polish (Wave 2)
+  - 20.6-05 Audience-Split polish (Wave 2)
+  - 20.6-06 Trust polish (Wave 2)
+  - 20.6-07 Final-CTA polish (Wave 2)
+  - 20.6-08 Inter-section transitions (Wave 3, depends on 01-07)
+- Requirements:
+  - R1.3 re-flagged ⚠️ (Topic bleibt, beide bisherigen Varianten verworfen)
+  - R1.4-R1.9 als skeleton done + polish pending markiert
+  - R1.11 neu hinzugefügt (inter-section transitions)
+- Next: Plan 20.6-01 New Discrepancy section — Planning-Session mit Luca (Form TBD).
 
 ---
 
@@ -101,13 +125,15 @@ progress:
 
 **Phasen (empfohlene Reihenfolge):**
 
-1. **Phase 20** — Navigation + Landing-Skeleton (Stub-Daten)
-2. **Phase 21** — `/about`-Seite
-3. **Phase 22** — `/partner`-Seite (3 Anker-Sections + Kontakt-Formular)
-4. **Phase 23** — `/join` Fragebogen-Flow (Backend-Stub 503)
-5. **Phase 24** — `/level-test` Assessment (optional, DSGVO-konform)
-6. **Phase 25** — Circle-API-Sync (Unified Signup: eine Mail via SSO-Link)
-7. **Phase 26** — Subdomain-Integration (Featured-Tools + Community-Preview)
+1. **Phase 20** — Navigation + Landing-Skeleton (Stub-Daten) ✅
+2. **Phase 20.5** — Landing Wow-Pass (Signal-Grid) — Hero ✅ delivered 2026-04-22, Discrepancy + Transition deferred auf 20.6
+3. **Phase 20.6** — Landing Sections Rebuild (new Discrepancy + polish aller übrigen Sections + transitions) ← NEXT
+4. **Phase 21** — `/about`-Seite
+5. **Phase 22** — `/partner`-Seite (3 Anker-Sections + Kontakt-Formular)
+6. **Phase 23** — `/join` Fragebogen-Flow (Backend-Stub 503)
+7. **Phase 24** — `/test` Assessment (optional, DSGVO-konform) — Route umbenannt 2026-04-22
+8. **Phase 25** — Circle-API-Sync (Unified Signup: eine Mail via SSO-Link)
+9. **Phase 26** — Subdomain-Integration (Featured-Tools + Community-Preview)
 
 **Kern-UX-Win:** Phase 25 Circle-API-Sync — User bekommt **eine** Mail statt zwei, landet nach Confirm via embedded SSO-Link direkt eingeloggt in Circle (Circle-Business-Plan API).
 
