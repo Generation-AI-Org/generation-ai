@@ -7,12 +7,12 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: ReactNode
   /**
    * Node columns. Auto-responsive if omitted:
-   *   desktop (>=768px): 32, mobile: 16
+   *   desktop (>=768px): 22, mobile: 12
    */
   nodeCountX?: number
   /**
    * Node rows. Auto-responsive if omitted:
-   *   desktop (>=768px): 18, mobile: 10
+   *   desktop (>=768px): 13, mobile: 8
    */
   nodeCountY?: number
   className?: string
@@ -67,12 +67,20 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *   - Activation-Pulse: 300ms scale-bump, keine Halos.
  *   - Activation-Decay: 2800ms.
  *
+ * Color-System (two colors):
+ *   - Idle Nodes (activation < 0.05): rendern in `--text` (white dark / dark light).
+ *   - Activated Nodes: lerpen von `--text` → `--accent` (neon-9 dark / red-9 light)
+ *     proportional zu Activation-Intensity (threshold 0.05, ramp ×1.2).
+ *   - Linien existieren nur zwischen aktiven Nodes → immer `--accent` gestroked.
+ *   - Sanfte Color-Transition wenn Activation über 2800ms abklingt (neon → white).
+ *
  * Line-Rendering:
  *   - Linien zwischen aktiven Nodes werden als `createLinearGradient` gestroked:
  *     Alpha fadet entlang der Strecke von Endpoint-A's scale-alpha zu
  *     Endpoint-B's scale-alpha → Depth-Cue entlang der Linien-Länge.
+ *   - Farbe: `--accent` an beiden Endpunkten (nur Alpha variiert).
  *   - lineWidth basiert auf minimaler projected scale der Endpoints.
- *   - Keine shadowBlur, keine Halos.
+ *   - Keine shadowBlur, keine Halos — Farbe ist das einzige Activation-Signal.
  *
  * Performance-Discipline:
  *   - Single rAF-Loop, ein Canvas-Pass pro Frame.
@@ -80,7 +88,7 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *   - Pro Frame pro Node: rotate → project → sort → render = ~6 Mul + 1 Div.
  *   - IntersectionObserver pausiert Loop wenn Container offscreen.
  *   - Retina/HiDPI: Canvas-Buffer × devicePixelRatio.
- *   - Sort per frame: 576 nodes × Array.sort ≈ 0.3ms.
+ *   - Sort per frame: 286 nodes × Array.sort ≈ 0.15ms.
  *
  * Reduced-Motion:
  *   - `prefers-reduced-motion: reduce` → statische 3D-Cloud (keine Rotation,
@@ -89,9 +97,10 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *     aber eingefroren.
  *
  * Theme-Awareness:
- *   - `--text` als Node-Farbe (theme-aware: near-white dark / near-black light).
- *     Via getComputedStyle auf document.documentElement; MutationObserver auf
- *     html.class resolved Vars beim Theme-Toggle neu.
+ *   - `--text` als Idle-Node-Farbe (theme-aware: near-white dark / near-black light).
+ *   - `--accent` als Activation-Farbe (theme-aware: neon-9 dark / red-9 light).
+ *     Beide Vars via getComputedStyle auf document.documentElement; MutationObserver
+ *     auf html.class resolved beide Vars beim Theme-Toggle neu.
  */
 export function SignalGrid({
   children,
@@ -158,10 +167,14 @@ export function SignalGrid({
   }>({ index: -1, hop1Fired: false, hop2Fired: false, seededAt: 0, hop1Indices: [] })
 
   // Resolved CSS-var color + pre-parsed RGB, re-read on theme change.
+  // textRgb drives idle (unactivated) nodes — white in dark / dark in light.
+  // accentRgb drives activated nodes + lines — neon-9 in dark / red-9 in light.
   const colorsRef = useRef({
     node: "rgb(246, 246, 246)",
     bg: "rgb(20, 20, 20)",
-    nodeRgb: { r: 246, g: 246, b: 246 },
+    accent: "rgb(0, 229, 255)",
+    textRgb: { r: 246, g: 246, b: 246 },
+    accentRgb: { r: 0, g: 229, b: 255 },
   })
 
   // rAF handle for start/stop during offscreen / unmount
@@ -187,15 +200,19 @@ export function SignalGrid({
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    // ─── 1. Resolve CSS-Var color once + on theme change ───
+    // ─── 1. Resolve CSS-Var colors once + on theme change ───
+    // Two-color system: text for idle nodes, accent (neon/red) for activated.
     const resolveColors = () => {
       const styles = getComputedStyle(document.documentElement)
       const node = styles.getPropertyValue("--text").trim() || "#F6F6F6"
       const bg = styles.getPropertyValue("--bg").trim() || "#141414"
+      const accent = styles.getPropertyValue("--accent").trim() || "#00E5FF"
       colorsRef.current = {
         node,
         bg,
-        nodeRgb: parseColorToRgb(node),
+        accent,
+        textRgb: parseColorToRgb(node),
+        accentRgb: parseColorToRgb(accent),
       }
     }
     resolveColors()
@@ -236,8 +253,8 @@ export function SignalGrid({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
       const isMobile = rect.width < 768
-      const cols = nodeCountX ?? (isMobile ? 16 : 32)
-      const rows = nodeCountY ?? (isMobile ? 10 : 18)
+      const cols = nodeCountX ?? (isMobile ? 12 : 22)
+      const rows = nodeCountY ?? (isMobile ? 8 : 13)
 
       // Cloud volume dimensions in worldspace units (1 unit = 1 CSS-px).
       // Depth = half the width → deeper than tall, less deep than wide.
@@ -434,7 +451,7 @@ export function SignalGrid({
       const width = rect.width
       const height = rect.height
       const { W, H, D, vpX, vpY } = volumeRef.current
-      const { nodeRgb } = colorsRef.current
+      const { textRgb, accentRgb } = colorsRef.current
 
       ctx.clearRect(0, 0, width, height)
 
@@ -693,20 +710,42 @@ export function SignalGrid({
           (n.baseOpacity + breathing) * scaleAlpha + activation * 0.8,
         )
 
+        // Two-color system: idle nodes render in --text (white in dark), active
+        // nodes lerp toward --accent (neon). Threshold 0.05 → below = idle.
+        // Lerp ramp: activation * 1.2 clamped to 1.0 → full neon slightly before
+        // peak so the pulse moment reads as "fully activated" neon.
+        let r: number
+        let g: number
+        let b: number
+        if (activation < 0.05) {
+          r = textRgb.r
+          g = textRgb.g
+          b = textRgb.b
+        } else {
+          const tMix = Math.min(1, activation * 1.2)
+          r = textRgb.r + (accentRgb.r - textRgb.r) * tMix
+          g = textRgb.g + (accentRgb.g - textRgb.g) * tMix
+          b = textRgb.b + (accentRgb.b - textRgb.b) * tMix
+        }
+
         ctx.beginPath()
         ctx.arc(n.screenX, n.screenY, Math.max(0.2, radius), 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(${nodeRgb.r}, ${nodeRgb.g}, ${nodeRgb.b}, ${opacity})`
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`
         ctx.fill()
       }
 
-      // ─── PHASE G: Lines between active nodes — linear-gradient stroke ──────
+      // ─── PHASE G: Lines between active nodes — neon gradient stroke ────────
+      // Lines only exist between active pairs → always rendered in --accent.
       // Alpha varies along the line from endpoint-A's scaleAlpha to endpoint-B's
       // scaleAlpha. Gives honest 3D depth across the segment length.
       if (!reduced) {
         // Line threshold in SCREEN-space: connect only when close on screen.
         // Tied to average cell size: cols-based → similar density feel.
-        const cellW = W / 33
-        const cellH = H / 19
+        // Updated to match new default grid (22×13 desktop / 12×8 mobile).
+        const lineCellsX = isMobile ? 13 : 23
+        const lineCellsY = isMobile ? 9 : 14
+        const cellW = W / lineCellsX
+        const cellH = H / lineCellsY
         const lineThreshold = Math.min(cellW, cellH) * 2.0
         const lineThresholdSq = lineThreshold * lineThreshold
 
@@ -762,11 +801,11 @@ export function SignalGrid({
             )
             grad.addColorStop(
               0,
-              `rgba(${nodeRgb.r}, ${nodeRgb.g}, ${nodeRgb.b}, ${alphaA})`,
+              `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, ${alphaA})`,
             )
             grad.addColorStop(
               1,
-              `rgba(${nodeRgb.r}, ${nodeRgb.g}, ${nodeRgb.b}, ${alphaB})`,
+              `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, ${alphaB})`,
             )
 
             ctx.strokeStyle = grad
