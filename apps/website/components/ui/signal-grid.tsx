@@ -255,7 +255,7 @@ export function SignalGrid({
     // in full 3D (wander/rotation unaffected, sort still uses real zRot); only
     // the visual projection is capped. Raised from 2.2 to restore 3D feel —
     // let near-camera nodes grow meaningfully to sell the perspective.
-    const MAX_PROJECTION_SCALE = 3.0
+    const MAX_PROJECTION_SCALE = 2.2
     const MIN_REL_Z = FOV / MAX_PROJECTION_SCALE
     // Rotation speeds: research-recommended sweet spot. No Z-roll.
     // Slowed (UAT): Luca wanted less horizontal "zischen" — calmer drift, KDE
@@ -312,8 +312,12 @@ export function SignalGrid({
           // World-space XY: centered at cloud origin (0, 0)
           const gridX = (rx + 1) * cellW - vpX + jitterX
           const gridY = (ry + 1) * cellH - vpY + jitterY
-          // Z seeded uniform in full volume depth [-D/2, +D/2]
-          const zNorm = pseudoRandom(idx * 13 + 29) // 0..1
+          // Z seeded with triangular bias toward the middle of the volume —
+          // uniform felt bimodal (everything reads as "near or far, not mid").
+          // Triangular distribution = avg of two uniforms, peaks at 0.5.
+          const zNormA = pseudoRandom(idx * 13 + 29)
+          const zNormB = pseudoRandom(idx * 17 + 53)
+          const zNorm = (zNormA + zNormB) * 0.5 // 0..1, peaked at 0.5
           const z0 = (zNorm - 0.5) * D
 
           const baseOpacity = 0.38 + pseudoRandom(idx * 3 + 7) * 0.14
@@ -895,8 +899,10 @@ export function SignalGrid({
           baseRadius * n.sizeVar * n.scale * (1 + pulse),
           baseRadius * 5.0,
         )
-        // Scale-alpha factor: far nodes softer. Normalized bluntly: clamp 0.4..1.0.
-        const scaleAlpha = Math.min(1, Math.max(0.4, 0.4 + 0.6 * (n.scale - 0.4)))
+        // Scale-alpha factor: far nodes softer. Widened range (0.3..0.95) so
+        // near-nodes don't all flatten at alpha=1.0 — keeps a visible near-mid
+        // gradient instead of a hard "on/off" feel.
+        const scaleAlpha = Math.min(0.95, Math.max(0.3, 0.3 + 0.5 * (n.scale - 0.4)))
         const opacity = Math.min(
           1,
           (n.baseOpacity + breathing) * scaleAlpha + activation * 0.8,
