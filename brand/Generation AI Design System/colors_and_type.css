@@ -1,0 +1,317 @@
+/* Generation AI — Colors & Type
+ * Source of truth: DESIGN.md + tokens.json + packages/config/tailwind/base.css
+ * Default theme = Dark (Neon on #141414). Add class "light" to <html> or <body> to switch.
+ */
+
+/* ─── Fonts (self-hosted, variable axis) ─────────────────────────────────── */
+@font-face {
+  font-family: 'Geist';
+  src: url('fonts/Geist-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('fonts/GeistMono-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ─── Dark (default) ───────────────────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --bg: #141414;
+  --bg-card: #1C1C1C;
+  --bg-elevated: #222222;
+  --bg-header: #3A3AFF;
+
+  /* Accent */
+  --accent: #CEFF32;
+  --accent-hover: #D4FF4D;
+  --accent-glow: rgba(206, 255, 50, 0.4);
+  --accent-soft: rgba(206, 255, 50, 0.15);
+
+  /* Text */
+  --text: #F6F6F6;
+  --text-secondary: #B0B0B0;
+  --text-muted: #8A8A8A;
+  --text-on-accent: #141414;
+  --text-on-header: rgba(255, 255, 255, 0.6);
+  --text-on-header-hover: rgba(255, 255, 255, 0.9);
+
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-accent: rgba(206, 255, 50, 0.6);
+
+  /* Semantic states — never collide with --accent */
+  --status-error:   #DC2626;
+  --status-success: #16A34A;
+  --status-warning: #F59E0B;
+  --status-info:    #2563EB;
+
+  /* ── Brand solids (raw CI) ── */
+  --brand-neon:   #CEFF32;
+  --brand-blue:   #3A3AFF;
+  --brand-pink:   #FC78FE;
+  --brand-red:    #F5133B;
+  --brand-black:  #141414;
+  --brand-light:  #F6F6F6;
+  --brand-sand:   #E8DEC8;
+
+  /* ── 12-step brand scales (Radix pattern; theme-independent) ── */
+  --neon-1:#FCFDF9; --neon-2:#F8FCEB; --neon-3:#F2FBD5; --neon-4:#ECFBBC;
+  --neon-5:#E4FB9D; --neon-6:#DCFC79; --neon-7:#D4FC54; --neon-8:#CDFD35;
+  --neon-9:#CEFF32; --neon-10:#C0F518; --neon-11:#89AE13; --neon-12:#39470A;
+
+  --blue-1:#F9F9FD; --blue-2:#EBEBFC; --blue-3:#D5D5FB; --blue-4:#BCBCFB;
+  --blue-5:#9D9DFB; --blue-6:#7979FC; --blue-7:#5454FC; --blue-8:#3535FD;
+  --blue-9:#3A3AFF; --blue-10:#2020F6; --blue-11:#1313AE; --blue-12:#0A0A47;
+
+  --pink-1:#FDF9FD; --pink-2:#FBECFB; --pink-3:#FAD6FB; --pink-4:#F9BCFA;
+  --pink-5:#F99EFA; --pink-6:#F97AFB; --pink-7:#F955FB; --pink-8:#F937FB;
+  --pink-9:#FC78FE; --pink-10:#F55BF7; --pink-11:#AB15AD; --pink-12:#460B47;
+
+  --red-1:#FDF9FA; --red-2:#FBECEF; --red-3:#F9D7DD; --red-4:#F8BEC9;
+  --red-5:#F7A1B0; --red-6:#F67E93; --red-7:#F65B76; --red-8:#F53D5E;
+  --red-9:#F5133B; --red-10:#D31234; --red-11:#A81A33; --red-12:#450D17;
+
+  /* ── Neutrals (Radix slate, dark values) ── */
+  --slate-1:#111113; --slate-2:#18191b; --slate-3:#212225; --slate-4:#272a2d;
+  --slate-5:#2e3135; --slate-6:#363a3f; --slate-7:#43484e; --slate-8:#5a6169;
+  --slate-9:#696e77; --slate-10:#777b84; --slate-11:#b0b4ba; --slate-12:#edeef0;
+
+  /* ─── Type stacks ─── */
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* ─── Type roles (raw values) ─── */
+  --fs-h1:       clamp(32px, 5vw, 48px);
+  --fs-h2:       clamp(24px, 3vw, 32px);
+  --fs-h3:       20px;
+  --fs-h4:       16px;
+  --fs-h5:       12px;
+  --fs-h6:       11px;
+  --fs-lede:     18px;
+  --fs-body:     16px;
+  --fs-small:    14px;
+  --fs-caption:  13px;
+  --fs-micro:    11px;
+  --fs-button:   14px;
+
+  --lh-tight:    1.05;
+  --lh-headline: 1.2;
+  --lh-sub:      1.3;
+  --lh-lede:     1.5;
+  --lh-body:     1.65;
+
+  --tracking-h1:     -0.02em;
+  --tracking-h2:     -0.015em;
+  --tracking-button: 0.02em;
+  --tracking-micro:  0.08em;
+
+  /* ─── Space (base 4) ─── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* ─── Radius (soft) ─── */
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   10px;
+  --radius-xl:   14px;
+  --radius-2xl:  16px;
+  --radius-3xl:  24px;
+  --radius-full: 9999px;
+
+  /* ─── Shadows ─── */
+  --shadow-sm:   0 1px 2px rgba(0,0,0,0.05);
+  --shadow-base: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md:   0 4px 6px rgba(0,0,0,0.10);
+  --shadow-lg:   0 10px 15px rgba(0,0,0,0.10);
+  --shadow-xl:   0 20px 25px rgba(0,0,0,0.15);
+  --shadow-glow: 0 0 20px var(--accent-glow);
+
+  /* ─── Motion ─── */
+  --dur-fast:   150ms;
+  --dur-normal: 300ms;
+  --dur-slow:   500ms;
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ─── Light ───────────────────────────────────────────────────────────────── */
+.light, [data-theme="light"] {
+  color-scheme: light;
+  --bg: #F6F6F6;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #EFEFEF;
+  --bg-header: #FC78FE;
+
+  --accent: #F5133B;
+  --accent-hover: #D9102F;
+  --accent-glow: rgba(245, 19, 59, 0.3);
+  --accent-soft: rgba(245, 19, 59, 0.08);
+
+  --text: #141414;
+  --text-secondary: #555555;
+  --text-muted: #777777;
+  --text-on-accent: #FFFFFF;
+  --text-on-header: rgba(255, 255, 255, 0.7);
+  --text-on-header-hover: rgba(255, 255, 255, 1);
+
+  --border: rgba(0, 0, 0, 0.1);
+  --border-accent: rgba(245, 19, 59, 0.4);
+
+  /* Slate — light values */
+  --slate-1:#fcfcfd; --slate-2:#f9f9fb; --slate-3:#eff0f3; --slate-4:#e7e8ec;
+  --slate-5:#e0e1e6; --slate-6:#d8d9e0; --slate-7:#cdced7; --slate-8:#b9bbc6;
+  --slate-9:#8b8d98; --slate-10:#80828d; --slate-11:#60646c; --slate-12:#1c2024;
+}
+
+/* ─── Base element styles ─────────────────────────────────────────────────── */
+:root, body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+/* H1 / Display — Geist Mono */
+.type-h1, h1 {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: var(--fs-h1);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-h1);
+  color: var(--text);
+}
+
+/* H2 — Geist Sans */
+.type-h2, h2 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--fs-h2);
+  line-height: var(--lh-headline);
+  letter-spacing: var(--tracking-h2);
+  color: var(--text);
+}
+
+/* H3 — Geist Sans */
+.type-h3, h3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-sub);
+  color: var(--text);
+}
+
+/* H4 — Geist Sans, paragraph-level subsection */
+.type-h4, h4 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-h4);
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+  color: var(--text);
+  margin: 0;
+}
+
+/* H5 — Geist Mono "eyebrow" / comment-in-code marker over a paragraph
+   Uppercase, tracked-out, muted. Signature editorial-tech move. */
+.type-h5, h5 {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: var(--fs-h5);
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* H6 — Mono micro-tag (e.g. legal list item headers, form-section dividers) */
+.type-h6, h6 {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-h6);
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Lede / Intro */
+.type-lede {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--text-secondary);
+}
+
+/* Body */
+.type-body, p {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text);
+}
+
+.type-small {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--fs-small);
+  line-height: 1.55;
+}
+
+.type-caption {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--fs-caption);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* Micro / Tag / Label — Geist Mono, the "comments-in-code" voice */
+.type-micro, .type-tag, .type-label {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--tracking-micro);
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Button label */
+.type-button, button {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: var(--fs-button);
+  letter-spacing: var(--tracking-button);
+  line-height: 1;
+}
+
+/* Code */
+.type-code, code, kbd, pre {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  line-height: 1.5;
+}
+
+/* ─── Focus ring — neutral-kontraststark, nie brand-farbig ────────────────── */
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}

@@ -45,3 +45,12 @@ coverage/
 .vercel
 .env.test.local
 .playwright-mcp/
+
+# Brand debug/scratch artifacts (intentional — only canonical SVGs + final PNGs committed)
+brand/_renders-tmp/
+brand/logos/blue-pink-vs-sand.png
+brand/logos/check-artifacts.png
+brand/logos/ds-actual-render.png
+brand/logos/ds-paths-isolated.png
+brand/logos/red-on-sand-zoom.png
+brand/logos/red-paths-isolated.png
