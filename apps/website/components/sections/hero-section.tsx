@@ -42,7 +42,7 @@ export function HeroSection() {
       data-section="hero"
       className="relative isolate"
     >
-      <SignalGrid className="flex min-h-[80vh] flex-col items-center justify-center">
+      <SignalGrid className="flex min-h-screen flex-col items-center justify-center">
         <motion.div
           initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
           animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
