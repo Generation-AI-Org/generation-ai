@@ -234,6 +234,13 @@ export function SignalGrid({
     // ─── 3D Projection Constants ─────────────────────────────────────────────
     const FOV = 800
     const CAMERA_Z = -500
+    // Cap projection scale so near-camera nodes can't explode into huge blobs.
+    // scale = FOV / relZ → clamping relZ from below clamps scale from above.
+    // MAX_PROJECTION_SCALE = 2.2 → MIN_REL_Z = FOV/2.2 ≈ 364. Nodes still MOVE
+    // in full 3D (wander/rotation unaffected, sort still uses real zRot); only
+    // the visual projection is capped.
+    const MAX_PROJECTION_SCALE = 2.2
+    const MIN_REL_Z = FOV / MAX_PROJECTION_SCALE
     // Rotation speeds: research-recommended sweet spot. No Z-roll.
     const ROT_SPEED_Y = (2 * Math.PI) / 120_000 // 120s per full Y rotation (ms)
     const ROT_SPEED_X = (2 * Math.PI) / 200_000 // 200s per full X rotation (ms)
@@ -561,10 +568,11 @@ export function SignalGrid({
         const z2 = y1 * sinX + z1 * cosX
         const x2 = x1
         // Perspective projection
-        const relZ = z2 - CAMERA_Z // relative depth from camera
-        // relZ should always be > 0 since CAMERA_Z = -500 and z2 ∈ [-halfD, +halfD]
-        // with halfD ≤ W/4 ≈ <500. Guard anyway.
-        const scale = relZ > 1 ? FOV / relZ : FOV
+        // Clamp relZ from below → scale from above (MAX_PROJECTION_SCALE).
+        // Real zRot is preserved separately for painter sort + front-half NN,
+        // so depth semantics stay intact; only the projected size is capped.
+        const relZ = Math.max(z2 - CAMERA_Z, MIN_REL_Z)
+        const scale = FOV / relZ
         n.screenX = x2 * scale + vpX
         n.screenY = y2 * scale + vpY
         n.scale = scale
@@ -701,8 +709,14 @@ export function SignalGrid({
           : Math.sin(nowSec * 1.2 + n.phase) * 0.3 * n.baseOpacity
 
         // Size + alpha from projected scale (honest 3D, not simulated).
-        // scale typical range: ~0.55 (very far) .. ~1.8 (very near).
-        const radius = baseRadius * n.sizeVar * n.scale * (1 + pulse)
+        // scale typical range: ~0.55 (very far) .. 2.2 (near-cap from
+        // MAX_PROJECTION_SCALE clamp). Defensive cap at baseRadius × 3.5 so
+        // the multiplicative combo (scale × sizeVar × pulse) can't stack into
+        // an oversized blob even if any factor drifts.
+        const radius = Math.min(
+          baseRadius * n.sizeVar * n.scale * (1 + pulse),
+          baseRadius * 3.5,
+        )
         // Scale-alpha factor: far nodes softer. Normalized bluntly: clamp 0.4..1.0.
         const scaleAlpha = Math.min(1, Math.max(0.4, 0.4 + 0.6 * (n.scale - 0.4)))
         const opacity = Math.min(
