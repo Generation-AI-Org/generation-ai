@@ -64,8 +64,10 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *     im far/mid Band als im near Band → Horizont-Feel.
  *   - Depth wird AUSSCHLIESSLICH über SIZE + ALPHA getragen — keine Desaturation,
  *     keine Hue-Änderung. Alle Nodes sind voll `--accent` (theme-aware).
- *     sizeFactor = 0.25 + 1.25 * pow(zDepth, 0.9)   → 0.40× .. 1.50×
- *     alphaFactor = 0.35 + 0.65 * zDepth             → 0.35 .. 1.00
+ *     sizeFactor = 0.30 + 1.70 * pow(zDepth, 0.9)   → 0.51× .. 2.00×
+ *     alphaFactor = 0.55 + 0.45 * zDepth             → 0.55 .. 1.00
+ *   - Wander-speed is depth-scaled (0.35×..1.00×): far nodes drift slower
+ *     than near ones → motion-parallax depth cue without actual parallax.
  *   - Render-Reihenfolge: nodes werden per-frame nach zDepth ASC sortiert,
  *     damit near nodes über far nodes gezeichnet werden (Painter's Algorithm).
  *   - Jeder Node ist ein einziger crisp-filled Kreis — kein Halo, kein Blur,
@@ -267,7 +269,7 @@ export function SignalGrid({
           const jitterY = (pseudoRandom(idx * 2 + 2) - 0.5) * 0.18 * cellH
           const initialX = (rx + 1) * cellW + jitterX
           const initialY = (ry + 1) * cellH + jitterY
-          const baseOpacity = 0.22 + pseudoRandom(idx * 3 + 7) * 0.1 // 0.22-0.32
+          const baseOpacity = 0.38 + pseudoRandom(idx * 3 + 7) * 0.14 // 0.38-0.52
           const phase = pseudoRandom(idx * 5 + 11) * Math.PI * 2
 
           // zDepth widened + pow-skewed: more nodes in far/mid band, fewer near
@@ -461,7 +463,10 @@ export function SignalGrid({
           n.retargetIn -= dt
           if (n.retargetIn <= 0) {
             const angle = Math.random() * Math.PI * 2
-            const speed = maxSpeed * (0.4 + Math.random() * 0.6) // 40-100%
+            // Depth-differential wander speed — far nodes drift slower than near
+            // ones. Real physics-of-perception depth cue without parallax/glow.
+            const speedScale = 0.35 + 0.65 * n.zDepth // 0.35..1.00
+            const speed = maxSpeed * (0.4 + Math.random() * 0.6) * speedScale
             n.targetVx = Math.cos(angle) * speed
             n.targetVy = Math.sin(angle) * speed
             n.retargetIn = 4 + Math.random() * 4 // next reroll 4-8s out
@@ -637,8 +642,8 @@ export function SignalGrid({
       // ─── PHASE E: Render nodes — single crisp circle per node ───────────
       // Depth is carried ONLY via SIZE + ALPHA. No halo, no blur, no
       // desaturation. Unified render path.
-      //   sizeFactor  = 0.25 + 1.25 * pow(z, 0.9)   → 0.40×..1.50× baseRadius
-      //   alphaFactor = 0.20 + 0.80 * z             → 0.30..1.00
+      //   sizeFactor  = 0.30 + 1.70 * pow(z, 0.9)   → 0.51×..2.00× baseRadius
+      //   alphaFactor = 0.55 + 0.45 * z             → 0.55..1.00
       //   breathingFactor multiplies opacity by (1 ± 0.3) around base
       //   activationBoost lifts opacity toward 1.0 when active
       //   pulse bumps radius +50% in the first PULSE_MS after activation
@@ -680,8 +685,10 @@ export function SignalGrid({
           : Math.sin(nowSec * 1.2 + n.phase) * 0.3 * n.baseOpacity
 
         // Depth-driven size + alpha (unified ramp)
-        const sizeFactor = 0.25 + 1.25 * Math.pow(zDepth, 0.9)
-        const alphaFactor = 0.35 + 0.65 * zDepth
+        // Size spread widened (0.30..2.00×) — near nodes obviously bigger.
+        // Alpha floor lifted (0.55..1.00) — far nodes clearly visible.
+        const sizeFactor = 0.30 + 1.70 * Math.pow(zDepth, 0.9)
+        const alphaFactor = 0.55 + 0.45 * zDepth
 
         const radius = baseRadius * sizeFactor * (1 + pulse)
         const opacity = Math.min(
