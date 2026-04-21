@@ -611,6 +611,49 @@ Plans:
 
 ---
 
+### Phase 20.6: Landing Sections Rebuild
+
+**Goal:** Bring all remaining landing sections to the quality level delivered by Hero in Phase 20.5. Re-design Discrepancy from scratch. Iterative co-build, Design-System continues as source of truth.
+**Requirements:** R1.3 (Discrepancy re-thought), R1.4-R1.9 (polish remaining sections), R1.11 (transitions)
+**Depends on:** Phase 20.5
+**Branch:** `feature/phase-20-landing-skeleton` (stays open, builds on top)
+**Out-of-Scope:** New sections, new pages, final copywriting (deferred to marketing pass), Hero changes (locked from Phase 20.5), sign-up reactivation (bleibt 503).
+**Plans:** 8
+
+Plans:
+- [ ] 20.6-01-PLAN.md — New Discrepancy section (re-designed from scratch)
+- [ ] 20.6-02-PLAN.md — Offering polish
+- [ ] 20.6-03-PLAN.md — Tool-Showcase polish
+- [ ] 20.6-04-PLAN.md — Community-Preview polish
+- [ ] 20.6-05-PLAN.md — Audience-Split polish
+- [ ] 20.6-06-PLAN.md — Trust polish
+- [ ] 20.6-07-PLAN.md — Final-CTA polish
+- [ ] 20.6-08-PLAN.md — Inter-section transitions
+
+**Scope:**
+- Section-by-section co-build mit Luca in localhost:3000
+- Jede Section bekommt Hero-Level-Treatment: Design-System-Tokens, crisp motion, two-color-system
+- Discrepancy-Topic bleibt („Bedarf vs Realität"), Representation redesigned from scratch
+- Inter-section transitions (inkl. des ursprünglich in Plan 20.5-05 geplanten Hero→Section-2-Übergangs) als letzter Plan, nachdem alle Sections stehen
+- Finale Section-Copy bleibt Placeholder — finaler Marketing-Pass kommt nach Phase 20.6
+
+**Success Criteria:**
+- [ ] Alle 8 Sections visually kohärent mit Hero's Signal-Grid-Ästhetik
+- [ ] Inter-section transitions fühlen sich intentional an
+- [ ] Lighthouse Landing bleibt > 90 in allen Kategorien
+- [ ] Reduced-motion Fallback funktioniert über alle neue Motion
+- [ ] Playwright landing-suite (8/8) bleibt grün
+- [ ] Build grün, `/` bleibt `ƒ`, CSP-Nonce intakt
+
+**Working-Mode:**
+- Iteratives Co-Build mit Luca auf localhost — kleine Commits, tight Feedback-Loops
+- Alle Plans `autonomous: true` — kein formaler UAT-Checkpoint, Luca macht Live-Review
+- Kein Push, kein Deploy während der Phase
+
+**Release:** patch innerhalb Milestone v4.5.0. Phase 20 Changeset bleibt weiterhin zurückgehalten bis 20.6 durch ist — dann gemeinsamer Minor-Bump für das komplette neue Landing (Hero + alle polierten Sections + Transitions).
+
+---
+
 ### Phase 21: `/about`-Seite
 
 **Goal:** Mission, Story, Team, Sparringspartner, Verein als eigene Seite. Vertrauens-Anker.
