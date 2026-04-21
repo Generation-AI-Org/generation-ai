@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: unknown
-last_updated: "2026-04-20T00:00:00.000Z"
+last_updated: "2026-04-21T00:49:13.652Z"
 progress:
   total_phases: 13
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 32
   completed_plans: 29
   percent: 91
@@ -18,10 +18,12 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20: 5/6 Plans done, alle 8 Sections gefüllt inkl. Wow-Peak 3, Plan 06 next)
-**Phase:** 20 — Plans 01+02+03+04+05/6 DONE
-**Last Updated:** 2026-04-20 (Plan 20-05 complete)
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 skeleton complete, Phase 20.5 Landing Wow-Pass next, dann Phase 21 /about)
+**Phase:** 20.5 (next) — Landing Wow-Pass (Hero + Discrepancy Polish + DS-Alignment). Phase 20 Skeleton ✅ approved by Luca 2026-04-21.
+**Last Updated:** 2026-04-21 (Phase 20 skeleton formally complete)
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
+
+**Phase 20 Skeleton — Status 2026-04-21:** formal approved auf Skeleton-Scope. Automated Gates alle grün (Build `ƒ /`, CSP nonce, Playwright 8/8, Lighthouse A11y 1.00 / BP 0.96 / SEO 1.00 / CLS 0.00, Perf 0.88 flaky-tolerated). Hero + Discrepancy Wow-Peaks explicit deferred auf Phase 20.5. Changeset `phase-20-navigation-landing-skeleton.md` liegt committed, Merge + `pnpm version` erst nach 20.5. Branch `feature/phase-20-landing-skeleton` bleibt offen für 20.5. Details: `.planning/phases/20-navigation-landing-skeleton/20-VALIDATION.md` (Skeleton-Scope-Sign-Off-Section).
 
 ### Phase 20 Progress
 
@@ -62,7 +64,15 @@ progress:
   - DOM-Smoke: 8 unique data-sections, 5× href="/join", 2× href="/partner", 4× animate-marquee, 24× Sparringspartner-Pills
   - Build grün `ƒ /`, CSP intakt
   - Requirements completed: R1.7, R1.8, R1.9
-- **Plan 20-06** Wave 4 next up (Polish + Lighthouse-Gate + Changeset v4.5.0)
+- **Plan 20-06** DONE 2026-04-21 — Phase-Gate + Skeleton-Sign-Off
+  - Automated Gates grün: Build `ƒ /`, CSP nonce, Playwright 8/8, Lighthouse A11y 1.00 / BP 0.96 / SEO 1.00 / CLS 0.00 (Perf 0.88 flaky-tolerated)
+  - Terminal-Splash A11y-Fix: `1717c24` (A11y 1.00 perfect)
+  - Code-Review BL+HI fixes: `36c771a` (BL-01 nested main), `58cb695` (HI-04 @custom-variant dark), `b4988e2` (HI-03 smooth-scroll), `4c50119` (HI-01 hydration), `0c93c95` (HI-02 marquee cleanup)
+  - UAT-Iterationen Hero+Discrepancy (stehen bleiben als Gesprächsgrundlage für 20.5): `858012e`, `6e24e7d`, `893b3a8`, `d8f4d53`, `8d577f6`, `25afcf6`
+  - Manual UAT approved by Luca 2026-04-21 — **Skeleton-Scope only, Hero + Discrepancy Wow-Pass explicit deferred auf Phase 20.5**
+  - Changeset `@genai/website: minor` (v4.5.0) committed, liegt zurückgehalten bis 20.5 durch ist
+  - Requirements completed: R1.1–R1.10 (alle 10)
+  - Artifacts: `.planning/phases/20-navigation-landing-skeleton/20-06-SUMMARY.md`, VALIDATION.md mit Skeleton-Scope-Sign-Off
 
 ---
 

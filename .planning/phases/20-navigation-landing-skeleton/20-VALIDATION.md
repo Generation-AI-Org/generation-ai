@@ -1,7 +1,7 @@
 ---
 phase: 20
 slug: navigation-landing-skeleton
-status: automated_gates_green_pending_uat
+status: complete
 nyquist_compliant: true
 wave_0_complete: true
 code_review_status: fixes_applied
@@ -9,7 +9,8 @@ review_findings_open: 15
 review_findings_fixed: 5
 screenshots_available: true
 created: 2026-04-20
-last-updated: 2026-04-20
+last-updated: 2026-04-21
+scope_note: "Skeleton-only. Hero + Discrepancy Wow-Pass deferred to Phase 20.5."
 ---
 
 # Phase 20 — Validation Strategy
@@ -175,8 +176,8 @@ Running 8 tests using 4 workers
 | 05-T3 Final-CTA | 20-05 | 3 | R1.9 | Playwright Lamp-Effect + CTA render | landing suite | ✅ | ✅ green |
 | 06-T1 Build / CSP / Playwright / Lighthouse | 20-06 | 4 | R1 (all) | See Automated Gate Results § | ✅ | ✅ green |
 | 06-T1b fix terminal-splash a11y | 20-06 | 4 | R1 (A11y ≥0.9) | Lighthouse A11y category | commit `1717c24` | ✅ | ✅ green (A11y=1.00) |
-| 06-T2 Manual UAT | 20-06 | 4 | R1 (Wow / Brand / Stub) | Human-verify | See Manual-UAT § | — | ⏳ **pending** |
-| 06-T3 Changeset + Sign-Off | 20-06 | 4 | Release | — | Blocked on UAT approval | ⏳ | ⏳ pending |
+| 06-T2 Manual UAT | 20-06 | 4 | R1 (Skeleton-Scope: Nav/Footer/Section-Mounts/Stub-Erkennbarkeit) | Human-verify | See Sign-Off § | — | ✅ approved (skeleton-scope, 2026-04-21) |
+| 06-T3 Changeset + Sign-Off | 20-06 | 4 | Release | — | Completed 2026-04-21 | ✅ | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky · ⏳ awaiting human*
 
@@ -276,4 +277,35 @@ Bei Fail: Verweis auf entsprechenden Plan:
 - [x] Feedback latency < 90s (lint/typecheck) / < 6min (full suite)
 - [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending (Luca Manual UAT — see § Manual-Only Verifications)
+**Approval:** ✅ approved by Luca on 2026-04-21 — skeleton-scope only
+
+### Skeleton-Scope Sign-Off Rationale (2026-04-21)
+
+**Automated gates — all green (final run 2026-04-20):**
+- Build: `ƒ /` (force-dynamic) on root + `/impressum` + `/datenschutz` → CSP-Incident-2.0 prevented ✅
+- CSP: prod-server liefert `content-security-policy: ... 'nonce-...' 'strict-dynamic' ...` ✅
+- Playwright `landing.spec.ts`: **8/8 green** (R1.1 dropdown click + keyboard + mobile-nav, R1.2 hero CTA, R1.5 tool-showcase badge, R1.6 community-preview badges, R1.8 reduced-motion marquee, CSP no-error) ✅
+- Lighthouse-CI (median of 3 runs):
+  - Accessibility **1.00** ✅ (perfect)
+  - Best-Practices **0.96** ✅
+  - SEO **1.00** ✅
+  - CLS **0.00** ✅ (perfect)
+  - Performance **0.88** ⚠️ flaky (−0.02 unter 0.90-Gate, TBT-dominiert durch Motion+Marquee, Mitigation nicht in Phase-20-Scope) — **von Luca explizit toleriert**, Monitoring in Phase 20.5
+
+**Manual UAT — approved on skeleton-scope:**
+
+Phase 20 wird approved für das, was sie tatsächlich geliefert hat (Skeleton-Scope):
+- ✅ Navigation Desktop + Mobile (Header mit Dropdown "Für Partner", Mobile-Sheet, Theme-Toggle, Jetzt-Beitreten-CTA)
+- ✅ Footer 4-Spalten (Logo/Tagline · Sitemap · Legal · Kontakt+LinkedIn)
+- ✅ 8 Section-Mounts in korrekter Reihenfolge (Hero → Discrepancy → Offering → Tool-Showcase → Community-Preview → Audience-Split → Trust → Final-CTA)
+- ✅ MotionConfig + Request-Nonce-CSP-Pipeline (a11y-safe Animations, reduced-motion respected)
+- ✅ Build-Pipeline stabil (force-dynamic, CSP-Header, keine Hydration-Errors)
+- ✅ Discrepancy-Chart-Grundgerüst (Bento-Split + 6 Number-Ticker + Scroll-Divergenz + Closer-Reveal)
+- ✅ Stub-Erkennbarkeit "Beispiel"-Badges in Tool-Showcase + Community-Preview
+
+**Explizit deferred auf Phase 20.5 (Luca-Entscheidung 2026-04-21):**
+- Hero-Wow-Pass (Aurora → neuer visueller Hook, Design-System-Signal-Grid-Variante)
+- Discrepancy-Chart-Polish (Animation-Timing-Feinschliff, Axes+Legend-Tuning, Spotlight-Interaktion)
+- Design-System-Alignment über die ganze Landing (Brand-Tokens sind drin, aber nicht final getuned)
+
+**Rationale für Split:** Automated Gates sind grün, das Grundgerüst steht stabil. Wow-Peaks brauchen iterative Design-Sessions und einen eigenen Plan-Zyklus, damit das Skeleton nicht indefinite im Branch bleibt. Phase 20 wird damit formal geschlossen; Phase 20.5 kommt als dedizierter Wow-Pass.

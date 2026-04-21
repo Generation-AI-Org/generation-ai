@@ -516,7 +516,7 @@ Plans:
 
 | Phase | Name | Goal | Requirements | Autonom-fähig |
 |-------|------|------|--------------|---------------|
-| 20 | Navigation + Landing-Skeleton | 4/6 | In Progress|  |
+| 20 | Navigation + Landing-Skeleton | 6/6 | Complete    | 2026-04-21 |
 | 21 | `/about`-Seite | Mission, Team, Sparringspartner, Verein | R2 | ✅ (statischer Content) |
 | 22 | `/partner`-Seite | 3 Anker-Sections + Kontakt-Formular | R3 | ✅ (statischer Content + Form) |
 | 23 | `/join` Fragebogen-Flow | Linearer 4-Step-Flow mit Validation (Backend-Stub) | R4 | ✅ |
@@ -541,7 +541,7 @@ Plans:
 **Requirements:** R1.1-R1.10
 **Depends on:** keine
 **Out-of-Scope:** Echte Tool-Showcase- und Community-Preview-Daten (→ Phase 26), Final-Wording Hero + Final-CTA (bleibt Placeholder).
-**Plans:** 5/6 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 - [x] 20-01-PLAN.md — Wave 1 Setup: motion + shadcn + Aceternity/MagicUI Copy-in, globals.css Keyframes, lighthouserc.json + landing.spec.ts skeleton, Alt-Sections löschen (D-21)
@@ -549,7 +549,7 @@ Plans:
 - [x] 20-03-PLAN.md — Wave 3 Wow-Peaks 1+2: Hero (Aurora) + Diskrepanz (Custom Bento-Split + 6 Number-Tickers + Scroll-Divergenz)
 - [x] 20-04-PLAN.md — Wave 3 ruhige Mitte: 4-Card-Angebot (Bento) + Tool-Showcase (Infinite Cards + Beispiel-Badge) + Community-Preview (statisch + Beispiel-Badges)
 - [x] 20-05-PLAN.md — Wave 3 Wow-Peak 3: Zielgruppen-Split + Trust (Marquee + reduced-motion) + Final-CTA (Lamp Effect) — R1.7/R1.8/R1.9 done, 8/8 Playwright green
-- [ ] 20-06-PLAN.md — Wave 4 Phase-Gate: Build/CSP/Playwright/Lighthouse + Manual UAT (Checkpoint) + Changeset v4.5.0 + VALIDATION.md sign-off
+- [x] 20-06-PLAN.md — Wave 4 Phase-Gate: Build/CSP/Playwright/Lighthouse + Manual UAT (Checkpoint) + Changeset v4.5.0 + VALIDATION.md sign-off
 
 **Scope:**
 - Top-Nav mit Dropdown "Für Partner" (a11y-korrekt, Desktop + Mobile-Burger)
