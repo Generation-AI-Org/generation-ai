@@ -7,12 +7,12 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: ReactNode
   /**
    * Node columns. Auto-responsive if omitted:
-   *   desktop (>=768px): 22, mobile: 12
+   *   desktop (>=768px): 27, mobile: 14
    */
   nodeCountX?: number
   /**
    * Node rows. Auto-responsive if omitted:
-   *   desktop (>=768px): 13, mobile: 8
+   *   desktop (>=768px): 15, mobile: 9
    */
   nodeCountY?: number
   className?: string
@@ -235,8 +235,8 @@ export function SignalGrid({
     const FOV = 800
     const CAMERA_Z = -500
     // Rotation speeds: research-recommended sweet spot. No Z-roll.
-    const ROT_SPEED_Y = (2 * Math.PI) / 75_000 // 75s per full Y rotation (ms)
-    const ROT_SPEED_X = (2 * Math.PI) / 130_000 // 130s per full X rotation (ms)
+    const ROT_SPEED_Y = (2 * Math.PI) / 120_000 // 120s per full Y rotation (ms)
+    const ROT_SPEED_X = (2 * Math.PI) / 200_000 // 200s per full X rotation (ms)
     const PULSE_MS = 300
 
     // ─── 3. Node-Grid builder (responsive, deterministic jitter, 3D velocities) ───
@@ -253,8 +253,8 @@ export function SignalGrid({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
       const isMobile = rect.width < 768
-      const cols = nodeCountX ?? (isMobile ? 12 : 22)
-      const rows = nodeCountY ?? (isMobile ? 8 : 13)
+      const cols = nodeCountX ?? (isMobile ? 14 : 27)
+      const rows = nodeCountY ?? (isMobile ? 9 : 15)
 
       // Cloud volume dimensions in worldspace units (1 unit = 1 CSS-px).
       // Depth = half the width → deeper than tall, less deep than wide.
@@ -741,9 +741,9 @@ export function SignalGrid({
       if (!reduced) {
         // Line threshold in SCREEN-space: connect only when close on screen.
         // Tied to average cell size: cols-based → similar density feel.
-        // Updated to match new default grid (22×13 desktop / 12×8 mobile).
-        const lineCellsX = isMobile ? 13 : 23
-        const lineCellsY = isMobile ? 9 : 14
+        // Updated to match new default grid (27×15 desktop / 14×9 mobile).
+        const lineCellsX = isMobile ? 15 : 28
+        const lineCellsY = isMobile ? 10 : 16
         const cellW = W / lineCellsX
         const cellH = H / lineCellsY
         const lineThreshold = Math.min(cellW, cellH) * 2.0
