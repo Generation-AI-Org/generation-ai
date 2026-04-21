@@ -163,22 +163,19 @@ export function SignalGrid({
   // Cursor position in canvas CSS-px coords; active=false means "not over container"
   const cursorRef = useRef({ x: -9999, y: -9999, active: false })
 
-  // Track the currently-seeded node index (-1 = none) and when propagation fired.
-  // hop1 indices carried between phases so hop-2 propagates from hop-1 nodes
-  // (screen-space NN).
-  const seedRef = useRef<{
-    index: number
+  // Chain-Queue: multiple activation chains can be in-flight simultaneously
+  // (fast cursor scribble spawns new chains; old chains keep decaying in peace).
+  // Per chain: seed node, hop-1 buddies (up to 2), timing, and hop-2 flag.
+  // Hop-1 fires INSTANTLY at seed-time so even fast moves leave a mini-web
+  // (seed + 2 buddies) behind; hop-2 fires delayed at HOP2_DELAY_MS.
+  interface ChainState {
+    seedIdx: number
+    seedStart: number
     hop1Fired: boolean
     hop2Fired: boolean
-    seededAt: number
-    hop1Indices: number[]
-  }>({
-    index: -1,
-    hop1Fired: false,
-    hop2Fired: false,
-    seededAt: 0,
-    hop1Indices: [],
-  })
+    hop1Indices: number[] // up to 2 — [screenBuddy, depthBuddy]
+  }
+  const chainsRef = useRef<ChainState[]>([])
 
   // Resolved CSS-var color + pre-parsed RGB, re-read on theme change.
   // textRgb drives idle (unactivated) nodes — white in dark / dark in light.
@@ -365,13 +362,7 @@ export function SignalGrid({
       }
 
       nodesRef.current = nodes
-      seedRef.current = {
-        index: -1,
-        hop1Fired: false,
-        hop2Fired: false,
-        seededAt: 0,
-        hop1Indices: [],
-      }
+      chainsRef.current = []
       lastTickRef.current = null
     }
     buildGrid()
@@ -390,8 +381,8 @@ export function SignalGrid({
     }
     const handleLeave = () => {
       cursorRef.current.active = false
-      seedRef.current.index = -1
-      seedRef.current.hop1Indices = []
+      // Chains keep decaying naturally — preserves the original "in-flight
+      // chain finishes even after mouseleave" behavior under the chain-queue.
     }
     container.addEventListener("mousemove", handleMove)
     container.addEventListener("mouseleave", handleLeave)
@@ -411,18 +402,21 @@ export function SignalGrid({
     io.observe(container)
 
     // ─── Interaction/Motion Constants ───
-    // UAT tuning: 2-hop cascade at 120/240 ms → ripple feels spürbar aber
-    // visibly cascading, not instant. Seed radius tightened (desktop 100→60,
-    // mobile 70→40) so only nodes really near the cursor become seeds —
-    // propagation chain now carries the signal outward in screen-space
-    // instead of activating whole cursor neighborhood.
-    const HOP1_DELAY_MS = 120
+    // Chain-Queue tuning: Hop-1 INSTANT (0ms) so even fast cursor moves leave
+    // a mini-web (seed + 2 buddies) behind every frame. Hop-2 at 240ms → gives
+    // the signal time to cascade when the user lingers. Seed radius tight
+    // (desktop 60 / mobile 40) so only nodes really near the cursor seed.
     const HOP2_DELAY_MS = 240
     const HOP_RETRIGGER_GUARD_MS = 120 // min spacing before re-activating a node
     const ACTIVATION_MS = 2800
     const SEED_RADIUS_DESKTOP = 60
     const SEED_RADIUS_MOBILE = 40
     const VELOCITY_LERP_PER_SEC = 0.4
+    // Max simultaneous in-flight chains — sanity cap for fast scribbles.
+    const MAX_CHAINS = 6
+    // Re-seeding the SAME node is suppressed while its previous chain is still
+    // meaningfully alive (activation > this threshold 0..1).
+    const CHAIN_RESEED_THRESHOLD = 0.05
 
     // Scratch buffer for the per-frame painter sort
     let sortBuf: number[] = []
@@ -626,101 +620,127 @@ export function SignalGrid({
         n.zRot = z2
       }
 
-      // ─── PHASE D: Seed detection (2D screen-space, front-half only) ────────
-      // Cursor finds nearest projected point, but only among nodes in front
-      // half of the cloud (zRot < 0). Keeps activation on the near plane.
-      if (!reduced && cursor.active) {
-        const seedRadius = isMobile ? SEED_RADIUS_MOBILE : SEED_RADIUS_DESKTOP
-        const seedRadiusSq = seedRadius * seedRadius
+      // ─── PHASE D: Seed detection + chain-queue propagation ─────────────────
+      // Multiple activation chains can be in-flight simultaneously. Cursor
+      // finds nearest projected node (front-half only, zRot < 0). When it
+      // latches onto a NEW seed (or an old seed whose chain has already
+      // decayed), a new ChainState is pushed onto the queue and Hop-1 fires
+      // INSTANTLY — that way fast moves always leave seed + 2 buddies behind,
+      // not just a lone point. Hop-2 fires delayed at HOP2_DELAY_MS via
+      // per-tick iteration below.
+      if (!reduced) {
+        // 1. Seed detection — only when cursor is over container
+        if (cursor.active) {
+          const seedRadius = isMobile ? SEED_RADIUS_MOBILE : SEED_RADIUS_DESKTOP
+          const seedRadiusSq = seedRadius * seedRadius
 
-        let nearestIdx = -1
-        let nearestDSq = seedRadiusSq
-        for (let i = 0; i < nodes.length; i++) {
-          const n = nodes[i]!
-          if (n.zRot >= 0) continue // front-half only (near the camera)
-          const dx = n.screenX - cursor.x
-          const dy = n.screenY - cursor.y
-          const dSq = dx * dx + dy * dy
-          if (dSq < nearestDSq) {
-            nearestDSq = dSq
-            nearestIdx = i
+          let nearestIdx = -1
+          let nearestDSq = seedRadiusSq
+          for (let i = 0; i < nodes.length; i++) {
+            const n = nodes[i]!
+            if (n.zRot >= 0) continue // front-half only (near the camera)
+            const dx = n.screenX - cursor.x
+            const dy = n.screenY - cursor.y
+            const dSq = dx * dx + dy * dy
+            if (dSq < nearestDSq) {
+              nearestDSq = dSq
+              nearestIdx = i
+            }
+          }
+
+          if (nearestIdx !== -1) {
+            // De-dup: don't spawn a new chain for the same seed while its
+            // most-recent chain is still meaningfully alive (activation above
+            // threshold). Lets the cursor linger without flood-retriggering.
+            const chains = chainsRef.current
+            let suppress = false
+            for (let i = chains.length - 1; i >= 0; i--) {
+              const c = chains[i]!
+              if (c.seedIdx === nearestIdx) {
+                const age = nowMs - c.seedStart
+                if (age < ACTIVATION_MS) {
+                  const act = 1 - age / ACTIVATION_MS
+                  if (act > CHAIN_RESEED_THRESHOLD) {
+                    suppress = true
+                  }
+                }
+                break // only the most-recent chain for this seed matters
+              }
+            }
+
+            if (!suppress) {
+              // Spawn new chain. Activate seed node.
+              const seedNode = nodes[nearestIdx]!
+              if (nowMs - seedNode.activationStart > HOP_RETRIGGER_GUARD_MS) {
+                seedNode.activationStart = nowMs
+                seedNode.activationDepth = 0
+                seedNode.pulseStart = nowMs
+              }
+
+              // INSTANT Hop-1 — one screen-buddy + one depth-buddy. Same
+              // hybrid NN logic as before; fires at seed-time (not +120ms)
+              // so fast moves still produce visible mini-webs.
+              const exclude = new Set<number>([nearestIdx])
+              const screenBuddy = findOneNearestScreen(
+                seedNode.screenX,
+                seedNode.screenY,
+                nodes,
+                exclude,
+              )
+              if (screenBuddy !== null) exclude.add(screenBuddy)
+              const depthBuddy = findOneNearestWorld(
+                seedNode.x,
+                seedNode.y,
+                seedNode.z,
+                nodes,
+                exclude,
+              )
+              const hop1: number[] = []
+              if (screenBuddy !== null) hop1.push(screenBuddy)
+              if (depthBuddy !== null && depthBuddy !== screenBuddy) {
+                hop1.push(depthBuddy)
+              }
+              for (const idx of hop1) {
+                const n = nodes[idx]!
+                if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
+                  n.activationStart = nowMs
+                  n.activationDepth = 1
+                  n.pulseStart = nowMs
+                }
+              }
+
+              chains.push({
+                seedIdx: nearestIdx,
+                seedStart: nowMs,
+                hop1Fired: true,
+                hop2Fired: false,
+                hop1Indices: hop1,
+              })
+
+              // Cap in-flight chains — drop oldest if over limit.
+              if (chains.length > MAX_CHAINS) {
+                chains.splice(0, chains.length - MAX_CHAINS)
+              }
+            }
           }
         }
 
-        const seed = seedRef.current
-        if (nearestIdx !== -1) {
-          if (nearestIdx !== seed.index) {
-            seed.index = nearestIdx
-            seed.hop1Fired = false
-            seed.hop2Fired = false
-            seed.seededAt = nowMs
-            seed.hop1Indices = []
-            const n = nodes[nearestIdx]!
-            n.activationStart = nowMs
-            n.activationDepth = 0
-            n.pulseStart = nowMs
-          }
-
-          // Hop-1: 1 screen-buddy + 1 depth-buddy (hybrid NN).
-          // Screen-buddy = visual coherence on-plane. Depth-buddy = pulls the
-          // chain into z-volume, so back-cloud nodes actually get connections.
-          if (!seed.hop1Fired && nowMs - seed.seededAt >= HOP1_DELAY_MS) {
-            const seedNode = nodes[seed.index]!
-            const exclude = new Set<number>([seed.index])
-            const screenBuddy = findOneNearestScreen(
-              seedNode.screenX,
-              seedNode.screenY,
-              nodes,
-              exclude,
-            )
-            if (screenBuddy !== null) exclude.add(screenBuddy)
-            const depthBuddy = findOneNearestWorld(
-              seedNode.x,
-              seedNode.y,
-              seedNode.z,
-              nodes,
-              exclude,
-            )
-            const hop1: number[] = []
-            if (screenBuddy !== null) hop1.push(screenBuddy)
-            if (depthBuddy !== null && depthBuddy !== screenBuddy) {
-              hop1.push(depthBuddy)
-            }
-            for (const idx of hop1) {
-              const n = nodes[idx]!
-              if (nowMs - n.activationStart > HOP_RETRIGGER_GUARD_MS) {
-                n.activationStart = nowMs
-                n.activationDepth = 1
-                n.pulseStart = nowMs
-              }
-            }
-            seed.hop1Indices = hop1
-            seed.hop1Fired = true
-          }
-
-          // Hop-2: deterministic split — the "front-most" hop-1 node (smaller
-          // zRot after rotation ≈ closer to camera) propagates via screen-NN
-          // to stay visible; the "deeper" hop-1 node propagates via world-NN
-          // to reach further into the back cloud. Natural division of labor:
-          // near nodes stay on-plane, deep nodes pull depth further.
-          if (
-            !seed.hop2Fired &&
-            seed.hop1Fired &&
-            nowMs - seed.seededAt >= HOP2_DELAY_MS
-          ) {
-            const usedSet = new Set<number>([seed.index, ...seed.hop1Indices])
-
-            // Sort hop-1 by zRot ASC → index 0 is front-most (most negative z),
-            // last is deepest. Works for 1- or 2-element arrays.
-            const h1Sorted = [...seed.hop1Indices].sort(
+        // 2. Per-chain hop-2 firing + pruning (runs regardless of cursor state
+        // so in-flight chains complete even after mouseleave).
+        const chains = chainsRef.current
+        for (let ci = chains.length - 1; ci >= 0; ci--) {
+          const c = chains[ci]!
+          // Fire hop-2 once the delay has elapsed
+          if (!c.hop2Fired && nowMs - c.seedStart >= HOP2_DELAY_MS) {
+            const usedSet = new Set<number>([c.seedIdx, ...c.hop1Indices])
+            // Sort hop-1 by zRot ASC → front-most first, deepest last.
+            const h1Sorted = [...c.hop1Indices].sort(
               (a, b) => nodes[a]!.zRot - nodes[b]!.zRot,
             )
-
             for (let i = 0; i < h1Sorted.length; i++) {
               const h1idx = h1Sorted[i]!
               const h1 = nodes[h1idx]!
-              // Front hop-1 → screen-NN; deeper hop-1 → world-NN.
-              // If only one hop-1 exists, treat it as the front one.
+              // Front hop-1 → screen-NN; deepest hop-1 → world-NN.
               const useWorld = i === h1Sorted.length - 1 && h1Sorted.length > 1
               const cand = useWorld
                 ? findOneNearestWorld(h1.x, h1.y, h1.z, nodes, usedSet)
@@ -735,11 +755,12 @@ export function SignalGrid({
                 usedSet.add(cand)
               }
             }
-            seed.hop2Fired = true
+            c.hop2Fired = true
           }
-        } else {
-          seedRef.current.index = -1
-          seedRef.current.hop1Indices = []
+          // Prune chains past full decay (+ small grace for trailing paint)
+          if (nowMs - c.seedStart > ACTIVATION_MS + 200) {
+            chains.splice(ci, 1)
+          }
         }
       }
 
@@ -852,20 +873,26 @@ export function SignalGrid({
 
         ctx.shadowBlur = 0
 
+        // Depth-weighting: quadratic scale factors make deep lines (small scale)
+        // clearly fainter + thinner than near lines, while near-to-near stays
+        // bold and bright. Per-endpoint weight drives gradient alpha so a line
+        // that spans a z-delta fades visibly from near → far along its length.
+        const depthW = (s: number) => {
+          const clamped = Math.min(1.5, Math.max(0.4, s))
+          return clamped * clamped // quadratic
+        }
+
         for (let ai = 0; ai < activeIdxs.length; ai++) {
           const aIdx = activeIdxs[ai]!
           const a = nodes[aIdx]!
           const aAct = 1 - (nowMs - a.activationStart) / ACTIVATION_MS
-          const aScaleAlpha = Math.min(1, Math.max(0.4, 0.4 + 0.6 * (a.scale - 0.4)))
+          const aDepthW = depthW(a.scale)
 
           for (let bi = ai + 1; bi < activeIdxs.length; bi++) {
             const bIdx = activeIdxs[bi]!
             const b = nodes[bIdx]!
             const bAct = 1 - (nowMs - b.activationStart) / ACTIVATION_MS
-            const bScaleAlpha = Math.min(
-              1,
-              Math.max(0.4, 0.4 + 0.6 * (b.scale - 0.4)),
-            )
+            const bDepthW = depthW(b.scale)
 
             const dx = a.screenX - b.screenX
             const dy = a.screenY - b.screenY
@@ -873,18 +900,21 @@ export function SignalGrid({
             if (dSq > lineThresholdSq) continue
 
             const activationIntensity = Math.min(aAct, bAct)
+            // Per-endpoint quadratic depth weight → gradient fades along the
+            // line when the endpoints span different z-depths.
             const alphaA = Math.min(
               1,
-              aScaleAlpha * 0.9 * activationIntensity + 0.05,
+              aDepthW * 0.95 * activationIntensity + 0.03,
             )
             const alphaB = Math.min(
               1,
-              bScaleAlpha * 0.9 * activationIntensity + 0.05,
+              bDepthW * 0.95 * activationIntensity + 0.03,
             )
 
-            // Line width scales with minimum endpoint scale
-            const minScale = Math.min(a.scale, b.scale)
-            const lineWidth = Math.max(0.3, 0.5 + 1.0 * Math.min(1, minScale))
+            // Line width uses the minimum endpoint's quadratic weight so a
+            // line reaching far visibly thins even at its thicker end.
+            const minDepthW = Math.min(aDepthW, bDepthW)
+            const lineWidth = Math.max(0.3, 0.3 + 1.2 * minDepthW)
 
             const grad = ctx.createLinearGradient(
               a.screenX,
