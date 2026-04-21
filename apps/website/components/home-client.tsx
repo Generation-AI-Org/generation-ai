@@ -6,7 +6,8 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { TerminalSplash } from "@/components/terminal-splash"
 import { HeroSection } from "@/components/sections/hero-section"
-import { DiscrepancySection } from "@/components/sections/discrepancy-section"
+// DiscrepancySection temporarily not mounted — visual concept rejected by Luca 2026-04-22, redesign in Phase 20.6
+// import { DiscrepancySection } from "@/components/sections/discrepancy-section"
 import { OfferingSection } from "@/components/sections/offering-section"
 import { ToolShowcaseSection } from "@/components/sections/tool-showcase-section"
 import { CommunityPreviewSection } from "@/components/sections/community-preview-section"
@@ -42,7 +43,7 @@ export function HomeClient({ nonce }: HomeClientProps) {
         <main id="main-content" className="min-h-screen pt-16">
           {/* Phase 20 Wave-3 sections — Plans 03 (Hero, Discrepancy), 04 (Offering, ToolShowcase, CommunityPreview), 05 (AudienceSplit, Trust, FinalCTA) */}
           <HeroSection />
-          <DiscrepancySection />
+          {/* <DiscrepancySection /> — deferred to Phase 20.6 rebuild */}
           <OfferingSection />
           <ToolShowcaseSection />
           <CommunityPreviewSection />
