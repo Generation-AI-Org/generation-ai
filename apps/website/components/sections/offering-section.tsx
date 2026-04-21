@@ -69,7 +69,7 @@ export function OfferingSection() {
               <span className="inline-flex items-center gap-2">
                 {card.title}
                 <ArrowUpRight
-                  className="w-4 h-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                  className="w-4 h-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform]"
                   aria-hidden="true"
                 />
               </span>
@@ -80,7 +80,7 @@ export function OfferingSection() {
               </div>
             )
             const itemClass =
-              "h-full bg-bg-card border border-border hover:border-brand-neon-6 hover:shadow-[0_0_20px_var(--accent-glow)] transition-all duration-300"
+              "h-full bg-bg-card border border-border hover:border-brand-neon-6 hover:shadow-[0_0_20px_var(--accent-glow)] transition-[border-color,box-shadow] duration-300"
 
             if (card.external) {
               return (

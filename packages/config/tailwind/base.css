@@ -339,6 +339,14 @@
   --color-brand-red-11: var(--red-11); --color-brand-red-12: var(--red-12);
 }
 
+/* Base html styles — tabular numerals prevent horizontal layout shift
+ * whenever numbers animate or swap (counters, timers, dynamic stats).
+ * Applied at root so every number in the tree inherits it for free.
+ */
+html {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Base body styles */
 body {
   background-color: var(--bg);
@@ -346,9 +354,18 @@ body {
   -webkit-font-smoothing: antialiased;
   /* Disable Ligaturen in UI-Text per UI-SPEC §B */
   font-feature-settings: "liga" 0, "calt" 0;
+  /* Avoid short-orphan last lines in paragraphs */
+  text-wrap: pretty;
 }
 
 /* ─── Typography roles per UI-SPEC §B (Phase 16) ───────────────────────── */
+
+/* Balance wrapping on display/section headings — prevents the lone-word
+ * last line that makes otherwise clean typography feel ragged.
+ */
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
 
 /* H1 / Display — Geist Mono */
 h1 {
