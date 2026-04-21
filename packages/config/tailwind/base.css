@@ -140,6 +140,96 @@
   --red-4: #F8BEC9; --red-5: #F7A1B0; --red-6: #F67E93;
   --red-7: #F65B76; --red-8: #F53D5E; --red-9: #F5133B;
   --red-10: #D31234; --red-11: #A81A33; --red-12: #450D17;
+
+  /* ─── Brand solids (raw CI) ───────────────────────────────────────────────
+   * Theme-unabhängige Rohfarben. Für Kontexte, in denen --accent (theme-abhängig)
+   * nicht das Richtige ist (z.B. fixe Brand-Bänder, Print-Assets).
+   * Source of Truth: brand/Generation AI Design System/colors_and_type.css.
+   */
+  --brand-neon:   #CEFF32;
+  --brand-blue:   #3A3AFF;
+  --brand-pink:   #FC78FE;
+  --brand-red:    #F5133B;
+  --brand-black:  #141414;
+  --brand-light:  #F6F6F6;
+  --brand-sand:   #E8DEC8;
+
+  /* ─── Type scale tokens (DS §B) ───────────────────────────────────────────
+   * Raw values; utility classes (.type-h1 etc.) aus DS colors_and_type.css
+   * werden nicht global eingebunden, weil Website eigene H1-Styles (s.u.) hat.
+   * Diese Vars sind für Inline-Use in Sections verfügbar.
+   */
+  --fs-h1:       clamp(32px, 5vw, 48px);
+  --fs-h2:       clamp(24px, 3vw, 32px);
+  --fs-h3:       20px;
+  --fs-h4:       16px;
+  --fs-h5:       12px;
+  --fs-h6:       11px;
+  --fs-lede:     18px;
+  --fs-body:     16px;
+  --fs-small:    14px;
+  --fs-caption:  13px;
+  --fs-micro:    11px;
+  --fs-button:   14px;
+
+  --lh-tight:    1.05;
+  --lh-headline: 1.2;
+  --lh-sub:      1.3;
+  --lh-lede:     1.5;
+  --lh-body:     1.65;
+
+  --tracking-h1:     -0.02em;
+  --tracking-h2:     -0.015em;
+  --tracking-button: 0.02em;
+  --tracking-micro:  0.08em;
+
+  /* ─── Spacing (DS §D, base 4) ─────────────────────────────────────────────
+   * Tailwind-Spacing (p-4, gap-6 etc.) deckt den Standardfall ab. Diese Vars
+   * sind für Inline-styles + für Design-System-Parität mit tokens.json.
+   */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* ─── Radius (DS §D) ──────────────────────────────────────────────────────
+   * DS-native Tokens in px. Globals.css @theme inline hat zusätzlich rem-Varianten
+   * für Shadcn-Kompat (--radius-sm..xl in rem) — die Werte matchen (6/8/10/14 px).
+   * Hier: 2xl/3xl/full für DS-Cards + Pills.
+   */
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   10px;
+  --radius-xl:   14px;
+  --radius-2xl:  16px;
+  --radius-3xl:  24px;
+  --radius-full: 9999px;
+
+  /* ─── Shadows (DS §D) ─────────────────────────────────────────────────────
+   * Dark-optimiert: Opacity auf Dark-BG höhergezogen passiert visuell über
+   * --accent-glow + bg-card. Hier die Basis-Werte.
+   */
+  --shadow-sm:   0 1px 2px rgba(0,0,0,0.05);
+  --shadow-base: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md:   0 4px 6px rgba(0,0,0,0.10);
+  --shadow-lg:   0 10px 15px rgba(0,0,0,0.10);
+  --shadow-xl:   0 20px 25px rgba(0,0,0,0.15);
+  --shadow-glow: 0 0 20px var(--accent-glow);
+
+  /* ─── Motion (DS §E) ──────────────────────────────────────────────────────
+   * Für Plan 20.5-02..05 (Signal-Grid, Hero, Discrepancy, Transition).
+   * Source of Truth: brand/Generation AI Design System/colors_and_type.css.
+   */
+  --dur-fast:    150ms;
+  --dur-normal:  300ms;
+  --dur-slow:    500ms;
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 /* Light Mode — Pink/Red CI (exakte CI-Werte) */
