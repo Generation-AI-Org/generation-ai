@@ -57,7 +57,7 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *   - Activation-Pulse: bei Activation-Start speichert sich der Node einen
  *     pulseStart-Timestamp. Erste 300ms rendered er mit scale-bump
  *     (1.0 + 0.5 * (1 - t/300)) → fühlt sich wie "Signal trifft ein". Kein Halo.
- *   - Decays: jede Activation über 1500ms unabhängig.
+ *   - Decays: jede Activation über 2800ms unabhängig.
  *
  * Depth-Model — "Ebenen die voreinander herfliegen":
  *   - zDepth seeded distribution: 0.12..1.0 mit pow(0.7)-Skew → mehr Nodes
@@ -65,7 +65,7 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  *   - Depth wird AUSSCHLIESSLICH über SIZE + ALPHA getragen — keine Desaturation,
  *     keine Hue-Änderung. Alle Nodes sind voll `--accent` (theme-aware).
  *     sizeFactor = 0.25 + 1.25 * pow(zDepth, 0.9)   → 0.40× .. 1.50×
- *     alphaFactor = 0.20 + 0.80 * zDepth             → 0.30 .. 1.00
+ *     alphaFactor = 0.35 + 0.65 * zDepth             → 0.35 .. 1.00
  *   - Render-Reihenfolge: nodes werden per-frame nach zDepth ASC sortiert,
  *     damit near nodes über far nodes gezeichnet werden (Painter's Algorithm).
  *   - Jeder Node ist ein einziger crisp-filled Kreis — kein Halo, kein Blur,
@@ -267,7 +267,7 @@ export function SignalGrid({
           const jitterY = (pseudoRandom(idx * 2 + 2) - 0.5) * 0.18 * cellH
           const initialX = (rx + 1) * cellW + jitterX
           const initialY = (ry + 1) * cellH + jitterY
-          const baseOpacity = 0.15 + pseudoRandom(idx * 3 + 7) * 0.1 // 0.15-0.25
+          const baseOpacity = 0.22 + pseudoRandom(idx * 3 + 7) * 0.1 // 0.22-0.32
           const phase = pseudoRandom(idx * 5 + 11) * Math.PI * 2
 
           // zDepth widened + pow-skewed: more nodes in far/mid band, fewer near
@@ -369,7 +369,7 @@ export function SignalGrid({
 
     // ─── Interaction/Motion Constants ───
     const HOP_DELAY_MS = 140            // Δt between graph-hops
-    const ACTIVATION_MS = 1500          // decay window per node
+    const ACTIVATION_MS = 2800          // decay window per node
     const SEED_RADIUS_DESKTOP = 100
     const SEED_RADIUS_MOBILE = 70
     const VELOCITY_LERP_PER_SEC = 0.4   // ~63% toward target after 1s
@@ -681,7 +681,7 @@ export function SignalGrid({
 
         // Depth-driven size + alpha (unified ramp)
         const sizeFactor = 0.25 + 1.25 * Math.pow(zDepth, 0.9)
-        const alphaFactor = 0.2 + 0.8 * zDepth
+        const alphaFactor = 0.35 + 0.65 * zDepth
 
         const radius = baseRadius * sizeFactor * (1 + pulse)
         const opacity = Math.min(

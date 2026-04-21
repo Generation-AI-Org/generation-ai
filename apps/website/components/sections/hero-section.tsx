@@ -49,7 +49,7 @@ export function HeroSection() {
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="relative z-10 mx-auto max-w-4xl px-6 py-24 text-center"
         >
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-text-muted mb-6">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-text-secondary mb-6">
             Generation AI · DACH-Community
           </p>
           <h1
