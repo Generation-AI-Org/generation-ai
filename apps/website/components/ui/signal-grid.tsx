@@ -260,13 +260,16 @@ export function SignalGrid({
       // Slow wander: 18 px/s desktop, 12 px/s mobile.
       const maxSpeed = isMobile ? 12 : 18
 
+      const reducedInit = reducedMotionRef.current
       const nodes: typeof nodesRef.current = []
       for (let ry = 0; ry < rows; ry++) {
         for (let rx = 0; rx < cols; rx++) {
           const idx = ry * cols + rx
-          // Deterministic jitter (seeded per index) for initial placement
-          const jitterX = (pseudoRandom(idx * 2 + 1) - 0.5) * 0.18 * cellW
-          const jitterY = (pseudoRandom(idx * 2 + 2) - 0.5) * 0.18 * cellH
+          // Deterministic jitter (seeded per index) for initial placement.
+          // Widened to ±42% of cell so nodes visibly break the lattice on
+          // first paint — overlapping into neighboring cell territory.
+          const jitterX = (pseudoRandom(idx * 2 + 1) - 0.5) * 0.84 * cellW
+          const jitterY = (pseudoRandom(idx * 2 + 2) - 0.5) * 0.84 * cellH
           const initialX = (rx + 1) * cellW + jitterX
           const initialY = (ry + 1) * cellH + jitterY
           const baseOpacity = 0.38 + pseudoRandom(idx * 3 + 7) * 0.14 // 0.38-0.52
@@ -283,14 +286,24 @@ export function SignalGrid({
           const speed0 = maxSpeed * (0.3 + pseudoRandom(idx * 19 + 37) * 0.4)
           const targetVx = Math.cos(angle0) * speed0
           const targetVy = Math.sin(angle0) * speed0
-          // Stagger first retarget so nodes don't all change direction in sync
-          const retargetIn = 4 + pseudoRandom(idx * 23 + 41) * 4 // 4-8s
+          // Stagger first retarget across [0, 4-8s] so nodes don't all change
+          // direction in sync right after mount.
+          const retargetIn = pseudoRandom(idx * 23 + 41) * 8 // 0-8s
 
           // Z-velocity seeded: start with calm target, slower retarget cycle
           const zSign = pseudoRandom(idx * 29 + 47) < 0.5 ? -1 : 1
           const zMag = Z_VEL_MAX * (0.3 + pseudoRandom(idx * 31 + 53) * 0.7)
           const targetVz = zSign * zMag
-          const retargetZIn = 8 + pseudoRandom(idx * 37 + 59) * 6 // 8-14s
+          // Scatter first z-retarget across [0, 8-14s] so depth-breathing
+          // starts non-uniformly.
+          const retargetZIn = pseudoRandom(idx * 37 + 59) * 14 // 0-14s
+
+          // Non-zero starting velocities: same as target so there's no big
+          // lerp-transient on frame 1. Suppressed under reduced-motion so
+          // the grid stays truly static (but still scattered).
+          const startVx = reducedInit ? 0 : targetVx
+          const startVy = reducedInit ? 0 : targetVy
+          const startVz = reducedInit ? 0 : targetVz
 
           nodes.push({
             idx,
@@ -299,15 +312,15 @@ export function SignalGrid({
             initialZ: zDepth,
             x: initialX,
             y: initialY,
-            vx: 0,
-            vy: 0,
+            vx: startVx,
+            vy: startVy,
             targetVx,
             targetVy,
             retargetIn,
             baseOpacity,
             phase,
             zDepth,
-            vz: 0,
+            vz: startVz,
             targetVz,
             retargetZIn,
             activationStart: 0,
