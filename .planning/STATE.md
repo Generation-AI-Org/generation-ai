@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: unknown
-last_updated: "2026-04-21T00:49:13.652Z"
+last_updated: "2026-04-21T12:00:00.000Z"
 progress:
-  total_phases: 13
+  total_phases: 14
   completed_phases: 6
-  total_plans: 32
+  total_plans: 37
   completed_plans: 29
-  percent: 91
+  percent: 78
 ---
 
 # Project State — Generation AI Monorepo
@@ -19,7 +19,7 @@ progress:
 ## Current Status
 
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 skeleton complete, Phase 20.5 Landing Wow-Pass next, dann Phase 21 /about)
-**Phase:** 20.5 (next) — Landing Wow-Pass (Hero + Discrepancy Polish + DS-Alignment). Phase 20 Skeleton ✅ approved by Luca 2026-04-21.
+**Phase:** 20.5 READY — Landing Wow-Pass (Signal-Grid), 5 Plans planned, Plan 20.5-01 next (Design-System Alignment). Phase 20 Skeleton ✅ approved 2026-04-21.
 **Last Updated:** 2026-04-21 (Phase 20 skeleton formally complete)
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
 
@@ -73,6 +73,23 @@ progress:
   - Changeset `@genai/website: minor` (v4.5.0) committed, liegt zurückgehalten bis 20.5 durch ist
   - Requirements completed: R1.1–R1.10 (alle 10)
   - Artifacts: `.planning/phases/20-navigation-landing-skeleton/20-06-SUMMARY.md`, VALIDATION.md mit Skeleton-Scope-Sign-Off
+
+### Phase 20.5 Progress
+
+**Status:** READY. Artifacts angelegt 2026-04-21. Kein Plan gestartet.
+
+- CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
+- 5 PLAN.md angelegt:
+  - 20.5-01 Design-System Alignment (Wave 1, autonomous)
+  - 20.5-02 Signal-Grid Canvas Component (Wave 2, autonomous)
+  - 20.5-03 Hero Rewrite with Signal-Grid (Wave 3, autonomous)
+  - 20.5-04 Discrepancy Polish (Wave 3, autonomous, parallel zu 03)
+  - 20.5-05 Hero → Discrepancy Transition-Animation (Wave 4, autonomous, co-designed mid-flight)
+- Branch bleibt `feature/phase-20-landing-skeleton` (on-top-build, kein neuer Branch).
+- Working-Mode: Luca co-builds live auf localhost:3000, tight Feedback-Loops, kleine Commits, kein Push, kein Deploy.
+- Next: `/gsd-execute-phase 20.5` oder direkt Plan 20.5-01 starten.
+
+---
 
 ---
 

@@ -517,6 +517,7 @@ Plans:
 | Phase | Name | Goal | Requirements | Autonom-fähig |
 |-------|------|------|--------------|---------------|
 | 20 | Navigation + Landing-Skeleton | 6/6 | Complete    | 2026-04-21 |
+| 20.5 | Landing Wow-Pass (Signal-Grid) | Hero + Discrepancy Polish + DS-Alignment | R1.2, R1.3 | ✅ (iteratives Co-Build mit Luca auf localhost) |
 | 21 | `/about`-Seite | Mission, Team, Sparringspartner, Verein | R2 | ✅ (statischer Content) |
 | 22 | `/partner`-Seite | 3 Anker-Sections + Kontakt-Formular | R3 | ✅ (statischer Content + Form) |
 | 23 | `/join` Fragebogen-Flow | Linearer 4-Step-Flow mit Validation (Backend-Stub) | R4 | ✅ |
@@ -531,7 +532,9 @@ Plans:
 - Phase 25 (Circle-Sync) aktiviert Live-Signup-Pfad — depends on 23 fertig.
 - Phase 26 (Subdomain-Integration) kann parallel zu allen anderen laufen, liefert echte Daten in Phase 20 (nachträglich).
 
-**Empfohlene Reihenfolge:** 20 → 21 → 22 → 23 → 24 → 25 → 26 (linear, klare Review-Checkpoints).
+**Empfohlene Reihenfolge:** 20 → 20.5 → 21 → 22 → 23 → 24 → 25 → 26 (linear, klare Review-Checkpoints).
+
+**Design-System Source of Truth (ab 2026-04-21):** `brand/Generation AI Design System/` ist canonical für alle UI-Arbeiten ab Phase 20.5. CSS-Variablen aus `colors_and_type.css`, Typografie per DS-Spec (Geist Sans für Body, Geist Mono für Display/H1/Buttons/Labels/Tags), Motion-Easings aus DS (`--ease-out: cubic-bezier(0.16, 1, 0.3, 1)`, `--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1)`, `--dur-fast|normal|slow`). Kein Gradient-Spam, kein Glassmorphism, keine Stock-Fotos, kein dekorativer Blob. Connection-Motif durchgezogen — Signal-Grid im Hero, Linien+Knoten+roter Faden als Leitsignatur.
 
 ---
 
@@ -564,6 +567,46 @@ Plans:
 - [ ] Stub-Content für Tool-Showcase + Community-Preview klar als Placeholder erkennbar (no fake trust signals)
 
 **Release:** minor (v5.0.0-alpha oder v4.5.0) — Breaking UX-Change (neue Nav, neue Landing-Struktur)
+
+---
+
+### Phase 20.5: Landing Wow-Pass (Signal-Grid)
+
+**Goal:** Hero + Discrepancy auf Design-System-Niveau heben (Signal-Grid, Connection-Motif). Polish-Pass, kein neuer Surface. Luca co-builds live in localhost.
+**Requirements:** R1.2 (Hero-Wow), R1.3 (Discrepancy-Wow) — Phase 20 lieferte Skeleton, 20.5 liefert das Wow.
+**Depends on:** Phase 20 (Skeleton complete 2026-04-21)
+**Design-System Source of Truth:** `brand/Generation AI Design System/` (canonical ab 2026-04-21)
+**Branch:** `feature/phase-20-landing-skeleton` (bleibt offen, baut on-top)
+**Out-of-Scope:** Andere Sections (Offering/Tool-Showcase/Community/Audience-Split/Trust/Final-CTA bleiben unangetastet), neue Pages, neue Daten, Sign-up-Reactivation.
+**Plans:** 5
+
+Plans:
+- [ ] 20.5-01-PLAN.md — Design-System Alignment (Tokens, Typography, Motion-Easings)
+- [ ] 20.5-02-PLAN.md — Signal-Grid Canvas Component (Nodes + Linien + Cursor-Propagation + Radial-Fade-Overlay)
+- [ ] 20.5-03-PLAN.md — Hero Rewrite with Signal-Grid (DS-Typography + DS-Button-States)
+- [ ] 20.5-04-PLAN.md — Discrepancy Polish (smoother Springs + honest Achsen + Mobile-Readability)
+- [ ] 20.5-05-PLAN.md — Hero → Discrepancy Transition-Animation (co-designed mid-flight mit Luca)
+
+**Scope:**
+- GridBackground im Hero wird durch Signal-Grid ersetzt (DS-Spec)
+- Tokens, Typografie, Motion-Easings in `apps/website` + `packages/config` mit Design-System abgeglichen
+- Discrepancy-Chart wird smoother + bekommt honest Achsen
+- Transition zwischen Hero und Discrepancy als bewusster Design-Moment
+
+**Success Criteria:**
+- [ ] Hero-Background matched DS Signal-Grid-Spec (Nodes + Cursor-Propagation + Radial-Fade-Overlay + reduced-motion Fallback)
+- [ ] Discrepancy Scroll-Animation fühlt sich smooth an (subjektiv Luca-OK auf localhost)
+- [ ] Chart-Achsen sind honest (keine semantisch strapazierten Label-Gruppierungen)
+- [ ] Transition zwischen Hero und Discrepancy fühlt sich intentional an
+- [ ] Alle UI nutzt DS-CSS-Vars, keine stray hardcoded Hex-Werte in Hero/Discrepancy
+- [ ] Build, Lint, Playwright bleiben grün (keine Regression auf Phase-20-Skeleton-Gates)
+
+**Working-Mode:**
+- Iteratives Co-Build mit Luca auf localhost — kleine Commits, tight Feedback-Loops
+- Alle Plans `autonomous: true` — kein formaler UAT-Checkpoint, Luca macht Live-Review
+- Kein Push, kein Deploy während der Phase
+
+**Release:** patch innerhalb v4.5.0 (Phase 20 Minor-Release bleibt zurück bis 20.5 durch ist)
 
 ---
 
