@@ -35,33 +35,46 @@ interface SignalGridProps extends React.HTMLAttributes<HTMLDivElement> {
  * Mouse ist am Container-Wrapper abgegriffen (onMouseMove/onMouseLeave), damit
  * Children ihre eigenen pointer-events behalten.
  *
+ * Motion-Model (UAT-revised, free wander):
+ *   - Jeder Node hat eine Velocity (vx, vy) in px/s, die langsam zu einem
+ *     seeded random Target-Velocity hin-lerpt (~2-3s glatter Richtungswechsel).
+ *   - Alle 4-8s (per-node seeded) wird ein neues Target-Velocity (uniform
+ *     random angle, magnitude ≤ MAX_SPEED) gewählt → Nodes drift "irgendwohin"
+ *     statt um einen festen Punkt zu oszillieren.
+ *   - Boundary-Bounce mit 10% margin: Nodes dürfen 10% über den Canvas
+ *     hinauswandern, werden dann durch velocity-reflection zurückgezogen.
+ *     (Bounce statt wrap-around → keine Teleport-Sprünge, fühlt sich räumlich an.)
+ *   - deltaTime wird bei tab-suspend auf 16ms geclampt, damit Nodes nicht
+ *     teleportieren.
+ *
+ * Interaction-Model:
+ *   - Mini-Net Propagation: Cursor findet EINEN seed-node (<100px desktop /
+ *     <70px mobile), scannend über live positions. Seed aktiviert on-demand
+ *     2 nearest neighbors mit 140ms-Hop-Delay, max 2 hops tief, ~5 nodes
+ *     gleichzeitig aktiv.
+ *   - Activation-Timestamps werden per-node getrackt → decay über 1500ms
+ *     unabhängig voneinander → Trails bleiben sichtbar wenn Cursor weiter-
+ *     wandert und neuen Seed findet.
+ *   - Keine pre-computed k-NN Tabelle mehr — Nachbarn werden pro Activation-
+ *     Event via linear scan gefunden (O(n) pro Event, Events sind selten).
+ *   - 3D: jeder Node hat zDepth (0.2-1.0) → Parallax-Offset auf mousemove,
+ *     leichte Größen/Opacity-Staffelung, Linien-Alpha nach min(zDepth).
+ *
  * Performance-Discipline:
  *   - Single rAF-Loop, ein Canvas-Pass pro Frame
  *   - IntersectionObserver pausiert Loop wenn Container offscreen
  *   - Mouse-Events throttled auf rAF (letzte Position cached, applied nächster Frame)
  *   - Retina/HiDPI: Canvas-Buffer * devicePixelRatio, CSS-Size separat
- *   - k-NN pre-computed at grid-build (k=4, O(n²) einmalig, dann O(1) lookup)
  *
  * Reduced-Motion:
- *   - `prefers-reduced-motion: reduce` → statischer Grid (keine Breathing,
- *     kein Drift, kein Mouse-Tracking, keine Linien, kein Parallax),
- *     nur Nodes bei baseOpacity
+ *   - `prefers-reduced-motion: reduce` → statischer Grid (keine Wander, keine
+ *     Breathing, kein Mouse-Tracking, keine Linien, kein Parallax). Nodes
+ *     bleiben auf initialen Grid-Positionen bei baseOpacity.
  *
  * Theme-Awareness:
  *   - Nie hardcoded Hex. `--neon-9` (Node-Accent) + `--bg` via
  *     getComputedStyle(document.documentElement). MutationObserver auf
  *     html.class resolved Vars beim Theme-Toggle neu.
- *
- * Interaction-Model (UAT-revised):
- *   - Mini-Net Propagation statt Ring-Falloff: Cursor findet EINEN seed-node
- *     (<100px desktop / <70px mobile). Seed aktiviert graph-neighbors mit
- *     140ms-Hop-Delay, max 2 hops tief, max ~5 nodes gleichzeitig aktiv.
- *   - Activation-Timestamps werden per-node getrackt → decay über 1500ms
- *     unabhängig voneinander → Trails bleiben sichtbar, wenn Cursor weiter-
- *     wandert und neuen Seed findet.
- *   - Idle: jeder Node hat eigene Drift-Phase (±3px X / ±2px Y, 10-18s Periode).
- *   - 3D: jeder Node hat zDepth (0.2-1.0) → Parallax-Offset auf mousemove,
- *     leichte Größen/Opacity-Staffelung, Linien-Alpha nach min(zDepth).
  */
 export function SignalGrid({
   children,
@@ -76,25 +89,24 @@ export function SignalGrid({
   // ─── Node-Data-Struktur (imperative canvas, kein React-State) ───
   const nodesRef = useRef<
     Array<{
-      // Base position in CSS-px (grid-slot + seeded jitter)
-      baseX: number
-      baseY: number
-      // Current rendered position (base + drift + parallax) — recomputed per frame
+      // Initial grid position (used only for reduced-motion static layout)
+      initialX: number
+      initialY: number
+      // Current position in CSS-px (wander state, authoritative)
       x: number
       y: number
+      // Velocity in px/s
+      vx: number
+      vy: number
+      // Target velocity we lerp toward (refreshed every retargetIn seconds)
+      targetVx: number
+      targetVy: number
+      // Time until next target-velocity reroll (seconds)
+      retargetIn: number
       baseOpacity: number       // 0.15-0.25, organic variance
       phase: number             // breathing phase offset (0..2π)
-      // Drift (idle self-motion)
-      driftPhaseX: number       // 0..2π
-      driftPhaseY: number
-      driftFreqX: number        // rad/s, ~2π/(10..18s)
-      driftFreqY: number
-      driftAmpX: number         // px, ~3 desktop / ~2 mobile
-      driftAmpY: number         // px, ~2 desktop / ~1.5 mobile
       // 3D depth (0.2 = far, 1.0 = near)
       zDepth: number
-      // Mini-net: pre-computed k-nearest-neighbor indices (k=4)
-      neighbors: number[]
       // Activation timestamp in ms (performance.now). 0 = not active.
       activationStart: number
       // Hop-depth of the last activation (0 = seed, 1-2 = propagated)
@@ -113,12 +125,15 @@ export function SignalGrid({
 
   // Track the currently-seeded node index (-1 = none) and when propagation fired
   // so hops fire once per seed-cycle, not every frame.
+  // hop1Indices/hop2Indices store the on-demand-found neighbors for line drawing
+  // and hop-2 source nodes.
   const seedRef = useRef<{
     index: number             // -1 = no active seed
     hop1Fired: boolean        // depth-1 neighbors enqueued?
     hop2Fired: boolean        // depth-2 neighbors enqueued?
     seededAt: number          // performance.now() when seed was set
-  }>({ index: -1, hop1Fired: false, hop2Fired: false, seededAt: 0 })
+    hop1Indices: number[]     // indices of hop-1 nodes for this seed
+  }>({ index: -1, hop1Fired: false, hop2Fired: false, seededAt: 0, hop1Indices: [] })
 
   // Resolved CSS-var colors, re-read on theme change
   const colorsRef = useRef({ neon: "rgb(206, 255, 50)", bg: "rgb(20, 20, 20)" })
@@ -128,6 +143,10 @@ export function SignalGrid({
 
   // Reduced-motion live flag (queried via media-query listener)
   const reducedMotionRef = useRef(false)
+
+  // Previous frame timestamp in ms — used to compute deltaTime per frame.
+  // Null on first tick (no dt yet).
+  const lastTickRef = useRef<number | null>(null)
 
   useEffect(() => {
     const container = containerRef.current
@@ -161,7 +180,7 @@ export function SignalGrid({
     }
     mql.addEventListener("change", handleMotionChange)
 
-    // ─── 3. Node-Grid builder (responsive, deterministic jitter, k-NN) ───
+    // ─── 3. Node-Grid builder (responsive, deterministic jitter, velocities) ───
     const buildGrid = () => {
       const rect = container.getBoundingClientRect()
       const dpr = window.devicePixelRatio || 1
@@ -182,70 +201,62 @@ export function SignalGrid({
       const cellH = rect.height / (rows + 1)
       gridMetricsRef.current = { cellW, cellH, cols, rows }
 
+      // Slow wander: 12 px/s desktop, 8 px/s mobile (feels drifting, not flying)
+      const maxSpeed = isMobile ? 8 : 12
+
       const nodes: typeof nodesRef.current = []
       for (let ry = 0; ry < rows; ry++) {
         for (let rx = 0; rx < cols; rx++) {
           const idx = ry * cols + rx
-          // Deterministic jitter (seeded per index) → nodes wackeln nicht bei
-          // jedem Render, fühlen sich aber organisch an
+          // Deterministic jitter (seeded per index) for initial placement
           const jitterX = (pseudoRandom(idx * 2 + 1) - 0.5) * 0.18 * cellW
           const jitterY = (pseudoRandom(idx * 2 + 2) - 0.5) * 0.18 * cellH
+          const initialX = (rx + 1) * cellW + jitterX
+          const initialY = (ry + 1) * cellH + jitterY
           const baseOpacity = 0.15 + pseudoRandom(idx * 3 + 7) * 0.1 // 0.15-0.25
           const phase = pseudoRandom(idx * 5 + 11) * Math.PI * 2
-          // Drift: per-node seeded phase + period (10-18s)
-          const driftPhaseX = pseudoRandom(idx * 7 + 13) * Math.PI * 2
-          const driftPhaseY = pseudoRandom(idx * 7 + 17) * Math.PI * 2
-          const periodX = 10 + pseudoRandom(idx * 11 + 19) * 8 // 10-18s
-          const periodY = 10 + pseudoRandom(idx * 11 + 23) * 8
-          const driftFreqX = (Math.PI * 2) / periodX
-          const driftFreqY = (Math.PI * 2) / periodY
-          const driftAmpX = isMobile ? 2 : 3
-          const driftAmpY = isMobile ? 1.5 : 2
           // zDepth 0.2..1.0 (seeded)
           const zDepth = 0.2 + pseudoRandom(idx * 13 + 29) * 0.8
 
+          // Seed initial target-velocity (random angle, half-speed so first
+          // wander ramps up gently)
+          const angle0 = pseudoRandom(idx * 17 + 31) * Math.PI * 2
+          const speed0 = maxSpeed * (0.3 + pseudoRandom(idx * 19 + 37) * 0.4)
+          const targetVx = Math.cos(angle0) * speed0
+          const targetVy = Math.sin(angle0) * speed0
+          // Stagger first retarget so nodes don't all change direction in sync
+          const retargetIn = 4 + pseudoRandom(idx * 23 + 41) * 4 // 4-8s
+
           nodes.push({
-            baseX: (rx + 1) * cellW + jitterX,
-            baseY: (ry + 1) * cellH + jitterY,
-            x: 0, // computed in tick
-            y: 0,
+            initialX,
+            initialY,
+            x: initialX,
+            y: initialY,
+            vx: 0,
+            vy: 0,
+            targetVx,
+            targetVy,
+            retargetIn,
             baseOpacity,
             phase,
-            driftPhaseX,
-            driftPhaseY,
-            driftFreqX,
-            driftFreqY,
-            driftAmpX,
-            driftAmpY,
             zDepth,
-            neighbors: [],
             activationStart: 0,
             activationDepth: 0,
           })
         }
       }
 
-      // ─── k-nearest-neighbor pre-computation (k=4, base positions only) ───
-      // Einmalig pro buildGrid — O(n²) über base-positions (drift/parallax sind
-      // klein genug um Nachbarschaft nicht zu ändern).
-      const k = 4
-      for (let i = 0; i < nodes.length; i++) {
-        const a = nodes[i]!
-        const dists: Array<{ idx: number; d: number }> = []
-        for (let j = 0; j < nodes.length; j++) {
-          if (j === i) continue
-          const b = nodes[j]!
-          const dx = a.baseX - b.baseX
-          const dy = a.baseY - b.baseY
-          dists.push({ idx: j, d: dx * dx + dy * dy })
-        }
-        dists.sort((x, y) => x.d - y.d)
-        a.neighbors = dists.slice(0, k).map((e) => e.idx)
-      }
-
       nodesRef.current = nodes
       // Reset seed tracking on rebuild
-      seedRef.current = { index: -1, hop1Fired: false, hop2Fired: false, seededAt: 0 }
+      seedRef.current = {
+        index: -1,
+        hop1Fired: false,
+        hop2Fired: false,
+        seededAt: 0,
+        hop1Indices: [],
+      }
+      // Force fresh dt on next tick after rebuild (avoid huge dt jump)
+      lastTickRef.current = null
     }
     buildGrid()
 
@@ -265,6 +276,7 @@ export function SignalGrid({
       cursorRef.current.active = false
       // Seed clears; existing activations decay naturally via timestamps
       seedRef.current.index = -1
+      seedRef.current.hop1Indices = []
     }
     container.addEventListener("mousemove", handleMove)
     container.addEventListener("mouseleave", handleLeave)
@@ -275,7 +287,8 @@ export function SignalGrid({
       ([entry]) => {
         inView = entry?.isIntersecting ?? true
         if (inView && rafRef.current === null) {
-          // Resume
+          // Resume — reset last-tick to avoid huge dt after pause
+          lastTickRef.current = null
           rafRef.current = requestAnimationFrame(tick)
         }
       },
@@ -283,12 +296,47 @@ export function SignalGrid({
     )
     io.observe(container)
 
-    // ─── Constants for mini-net propagation ───
+    // ─── Constants ───
     const HOP_DELAY_MS = 140       // Δt between graph-hops
     const ACTIVATION_MS = 1500     // decay window per node
     const SEED_RADIUS_DESKTOP = 100
     const SEED_RADIUS_MOBILE = 70
     const PARALLAX_FACTOR = 0.04   // mouse-delta × zDepth × factor
+    const VELOCITY_LERP_PER_SEC = 0.4 // ~63% toward target after 1s (smooth turns)
+    const BOUNDARY_MARGIN_FRAC = 0.1  // nodes can wander 10% past edges before bounce
+
+    // ─── Helper: find 2 nearest nodes to a point, excluding a set of indices ─
+    const findTwoNearest = (
+      px: number,
+      py: number,
+      nodes: typeof nodesRef.current,
+      exclude: Set<number>,
+    ): number[] => {
+      let firstIdx = -1
+      let firstDSq = Infinity
+      let secondIdx = -1
+      let secondDSq = Infinity
+      for (let i = 0; i < nodes.length; i++) {
+        if (exclude.has(i)) continue
+        const n = nodes[i]!
+        const dx = n.x - px
+        const dy = n.y - py
+        const dSq = dx * dx + dy * dy
+        if (dSq < firstDSq) {
+          secondDSq = firstDSq
+          secondIdx = firstIdx
+          firstDSq = dSq
+          firstIdx = i
+        } else if (dSq < secondDSq) {
+          secondDSq = dSq
+          secondIdx = i
+        }
+      }
+      const out: number[] = []
+      if (firstIdx !== -1) out.push(firstIdx)
+      if (secondIdx !== -1) out.push(secondIdx)
+      return out
+    }
 
     // ─── 7. rAF loop ───
     const tick = (t: number) => {
@@ -297,6 +345,16 @@ export function SignalGrid({
         rafRef.current = null
         return
       }
+
+      // deltaTime in seconds, clamped to 16ms if tab was backgrounded (prevent
+      // teleport). 0 on first tick.
+      let dtMs = 0
+      if (lastTickRef.current !== null) {
+        dtMs = t - lastTickRef.current
+        if (dtMs > 100) dtMs = 16
+      }
+      lastTickRef.current = t
+      const dt = dtMs / 1000
 
       const rect = container.getBoundingClientRect()
       const width = rect.width
@@ -313,10 +371,11 @@ export function SignalGrid({
 
       const reduced = reducedMotionRef.current
       const cursor = cursorRef.current
-      const nowSec = t / 1000 // for breathing/drift (seconds)
+      const nowSec = t / 1000 // for breathing (seconds)
       const nowMs = t         // for activation timestamps (ms)
       const isMobile = width < 768
       const nodes = nodesRef.current
+      const maxSpeed = isMobile ? 8 : 12
 
       // Parallax delta: offset from container center. Zero if reduced or no cursor.
       let mouseDx = 0
@@ -326,21 +385,84 @@ export function SignalGrid({
         mouseDy = cursor.y - centerRef.current.y
       }
 
-      // ─── PHASE A: Seed detection & mini-net propagation ─────────────────
-      // Find the nearest node to the cursor within SEED_RADIUS. If a new seed
-      // is found (or existing seed), enqueue hops at HOP_DELAY intervals.
-      // Activations are timestamps → they decay naturally, independent of seed.
+      // ─── PHASE A: Velocity update (target reroll + lerp toward target) ───
+      if (!reduced && dt > 0) {
+        // Lerp factor bounded to [0,1] to stay stable at any frame rate
+        const lerpT = Math.min(1, VELOCITY_LERP_PER_SEC * dt)
+        for (let i = 0; i < nodes.length; i++) {
+          const n = nodes[i]!
+          n.retargetIn -= dt
+          if (n.retargetIn <= 0) {
+            // Pick fresh uniform-random angle + random magnitude up to maxSpeed
+            const angle = Math.random() * Math.PI * 2
+            const speed = maxSpeed * (0.4 + Math.random() * 0.6) // 40-100%
+            n.targetVx = Math.cos(angle) * speed
+            n.targetVy = Math.sin(angle) * speed
+            n.retargetIn = 4 + Math.random() * 4 // next reroll 4-8s out
+          }
+          // Smooth lerp toward target velocity
+          n.vx += (n.targetVx - n.vx) * lerpT
+          n.vy += (n.targetVy - n.vy) * lerpT
+        }
+      }
+
+      // ─── PHASE B: Position update (integrate + soft boundary bounce) ─────
+      if (!reduced && dt > 0) {
+        const marginX = width * BOUNDARY_MARGIN_FRAC
+        const marginY = height * BOUNDARY_MARGIN_FRAC
+        const minX = -marginX
+        const maxX = width + marginX
+        const minY = -marginY
+        const maxY = height + marginY
+        for (let i = 0; i < nodes.length; i++) {
+          const n = nodes[i]!
+          n.x += n.vx * dt
+          n.y += n.vy * dt
+          // Soft bounce: reflect velocity (current + target) and clamp position
+          if (n.x < minX) {
+            n.x = minX
+            if (n.vx < 0) n.vx = -n.vx
+            if (n.targetVx < 0) n.targetVx = -n.targetVx
+          } else if (n.x > maxX) {
+            n.x = maxX
+            if (n.vx > 0) n.vx = -n.vx
+            if (n.targetVx > 0) n.targetVx = -n.targetVx
+          }
+          if (n.y < minY) {
+            n.y = minY
+            if (n.vy < 0) n.vy = -n.vy
+            if (n.targetVy < 0) n.targetVy = -n.targetVy
+          } else if (n.y > maxY) {
+            n.y = maxY
+            if (n.vy > 0) n.vy = -n.vy
+            if (n.targetVy > 0) n.targetVy = -n.targetVy
+          }
+        }
+      } else if (reduced) {
+        // Static layout under reduced-motion — snap to initial grid positions
+        for (let i = 0; i < nodes.length; i++) {
+          const n = nodes[i]!
+          n.x = n.initialX
+          n.y = n.initialY
+          n.vx = 0
+          n.vy = 0
+        }
+      }
+
+      // ─── PHASE C: Seed detection & mini-net propagation (on-demand NN) ───
+      // Uses live wandered positions. Neighbors are discovered via linear scan
+      // per activation event (3 scans max: seed hop-1, each hop-1 hop-2).
       if (!reduced && cursor.active) {
         const seedRadius = isMobile ? SEED_RADIUS_MOBILE : SEED_RADIUS_DESKTOP
         const seedRadiusSq = seedRadius * seedRadius
 
-        // Find closest node within seedRadius (base position — drift is tiny)
+        // Find closest node within seedRadius using CURRENT positions
         let nearestIdx = -1
         let nearestDSq = seedRadiusSq
         for (let i = 0; i < nodes.length; i++) {
           const n = nodes[i]!
-          const dx = n.baseX - cursor.x
-          const dy = n.baseY - cursor.y
+          const dx = n.x - cursor.x
+          const dy = n.y - cursor.y
           const dSq = dx * dx + dy * dy
           if (dSq < nearestDSq) {
             nearestDSq = dSq
@@ -356,51 +478,48 @@ export function SignalGrid({
             seed.hop1Fired = false
             seed.hop2Fired = false
             seed.seededAt = nowMs
+            seed.hop1Indices = []
             // Activate seed now (depth 0)
             const n = nodes[nearestIdx]!
             n.activationStart = nowMs
             n.activationDepth = 0
           }
 
-          // Hop 1: after HOP_DELAY_MS, activate seed's 2 nearest neighbors
+          // Hop 1: after HOP_DELAY_MS, find + activate seed's 2 nearest neighbors
           if (!seed.hop1Fired && nowMs - seed.seededAt >= HOP_DELAY_MS) {
             const seedNode = nodes[seed.index]!
-            const hop1 = seedNode.neighbors.slice(0, 2)
+            const exclude = new Set<number>([seed.index])
+            const hop1 = findTwoNearest(seedNode.x, seedNode.y, nodes, exclude)
             for (const idx of hop1) {
               const n = nodes[idx]!
-              // Only (re)activate if not already fresh — avoid resetting a
-              // still-hot node (keeps decay monotonic)
               if (nowMs - n.activationStart > HOP_DELAY_MS) {
                 n.activationStart = nowMs
                 n.activationDepth = 1
               }
             }
+            seed.hop1Indices = hop1
             seed.hop1Fired = true
           }
 
-          // Hop 2: after 2×HOP_DELAY, activate depth-2 neighbors (cap total ~5)
+          // Hop 2: after 2×HOP_DELAY, from each hop-1 node find 1 fresh nearest
+          // neighbor that isn't already active. Total cap ~5 nodes (1+2+2).
           if (
             !seed.hop2Fired &&
             seed.hop1Fired &&
             nowMs - seed.seededAt >= HOP_DELAY_MS * 2
           ) {
-            const seedNode = nodes[seed.index]!
-            const hop1 = seedNode.neighbors.slice(0, 2)
-            // From each hop-1 node, pick its nearest neighbor that isn't already
-            // seed or hop-1 → gives us ~2 fresh nodes (total so far: 1 + 2 + 2 = 5)
-            const usedSet = new Set<number>([seed.index, ...hop1])
-            for (const h1idx of hop1) {
+            const usedSet = new Set<number>([seed.index, ...seed.hop1Indices])
+            for (const h1idx of seed.hop1Indices) {
               const h1 = nodes[h1idx]!
-              for (const cand of h1.neighbors) {
-                if (!usedSet.has(cand)) {
-                  const n = nodes[cand]!
-                  if (nowMs - n.activationStart > HOP_DELAY_MS) {
-                    n.activationStart = nowMs
-                    n.activationDepth = 2
-                  }
-                  usedSet.add(cand)
-                  break // one new per hop-1 node
+              const found = findTwoNearest(h1.x, h1.y, nodes, usedSet)
+              if (found.length > 0) {
+                const cand = found[0]!
+                const n = nodes[cand]!
+                if (nowMs - n.activationStart > HOP_DELAY_MS) {
+                  n.activationStart = nowMs
+                  n.activationDepth = 2
                 }
+                usedSet.add(cand)
               }
             }
             seed.hop2Fired = true
@@ -408,42 +527,28 @@ export function SignalGrid({
         } else {
           // Nothing in range — clear seed, but let decays finish
           seedRef.current.index = -1
+          seedRef.current.hop1Indices = []
         }
       }
 
-      // ─── PHASE B: Per-node update (drift + parallax + activation decay) ──
+      // ─── PHASE D: Apply parallax + render nodes ──────────────────────────
+      // Parallax is an overlay on top of the wander position — not baked in —
+      // so that wander stays smooth when cursor is still.
       for (let i = 0; i < nodes.length; i++) {
         const n = nodes[i]!
 
-        // Drift (idle self-motion)
-        let driftX = 0
-        let driftY = 0
-        if (!reduced) {
-          driftX = Math.sin(nowSec * n.driftFreqX + n.driftPhaseX) * n.driftAmpX
-          driftY = Math.sin(nowSec * n.driftFreqY + n.driftPhaseY) * n.driftAmpY
-        }
-
-        // Parallax (zero if reduced — zDepth effectively 1.0 there anyway)
         const zDepth = reduced ? 1.0 : n.zDepth
         const parallaxX = reduced ? 0 : mouseDx * zDepth * PARALLAX_FACTOR
         const parallaxY = reduced ? 0 : mouseDy * zDepth * PARALLAX_FACTOR
-
-        n.x = n.baseX + driftX + parallaxX
-        n.y = n.baseY + driftY + parallaxY
-      }
-
-      // ─── PHASE C: Render nodes ────────────────────────────────────────────
-      // Idle breathing (skipped under reduced-motion): ±30% around baseOpacity,
-      // Periode 4-6s pro Node, stagger via phase-offset → organisch.
-      for (let i = 0; i < nodes.length; i++) {
-        const n = nodes[i]!
+        // Render position = wander position + parallax offset
+        const rx = n.x + parallaxX
+        const ry = n.y + parallaxY
 
         // Activation intensity: decays from 1.0 to 0 over ACTIVATION_MS
         let activation = 0
         if (!reduced && n.activationStart > 0) {
           const age = nowMs - n.activationStart
           if (age >= ACTIVATION_MS) {
-            // Expired — clear timestamp so we skip future cycles
             n.activationStart = 0
           } else {
             activation = 1 - age / ACTIVATION_MS
@@ -455,13 +560,12 @@ export function SignalGrid({
           breathing = Math.sin(nowSec * 1.2 + n.phase) * 0.3 * n.baseOpacity
         }
 
-        const zDepth = reduced ? 1.0 : n.zDepth
         // Far nodes slightly dimmer, near nodes slightly brighter
         const zOpacity = 0.8 + 0.2 * zDepth
         // Far nodes slightly smaller, near nodes slightly larger
         const zRadius = 0.7 + 0.3 * zDepth
 
-        // Activation bumps opacity toward 0.95 and radius ~2×
+        // Activation bumps opacity and radius
         const opacity = Math.min(
           1,
           (n.baseOpacity + breathing) * zOpacity + activation * 0.75,
@@ -470,46 +574,59 @@ export function SignalGrid({
         const radius = baseRadius * zRadius * (1 + activation * 1.0)
 
         ctx.beginPath()
-        ctx.arc(n.x, n.y, radius, 0, Math.PI * 2)
+        ctx.arc(rx, ry, radius, 0, Math.PI * 2)
         ctx.fillStyle = `rgba(${neonRgb.r}, ${neonRgb.g}, ${neonRgb.b}, ${opacity})`
         ctx.fill()
       }
 
-      // ─── PHASE D: Lines between active graph-adjacent nodes ──────────────
-      // Only draw if not reduced. Adjacency = index ∈ other.neighbors AND
-      // geometric distance ≤ cellDistance*1.5 (filters out wrap-arounds).
+      // ─── PHASE E: Lines between active nodes (pairwise on current pos) ───
+      // With free wander, pre-computed neighbors are invalid. Instead iterate
+      // over active pairs and draw a line if they're close enough. Threshold
+      // widened to 2.0× cellDistance to accommodate nodes drifted apart.
       if (!reduced) {
-        const lineThreshold = cellDistance * 1.5
+        const lineThreshold = cellDistance * 2.0
         const lineThresholdSq = lineThreshold * lineThreshold
+
+        // Collect active indices (bounded small — ~5 typical)
+        const activeIdxs: number[] = []
         for (let i = 0; i < nodes.length; i++) {
-          const a = nodes[i]!
-          if (a.activationStart === 0) continue
-          const aAge = nowMs - a.activationStart
-          if (aAge >= ACTIVATION_MS) continue
-          const aAct = 1 - aAge / ACTIVATION_MS
+          const n = nodes[i]!
+          if (n.activationStart === 0) continue
+          if (nowMs - n.activationStart >= ACTIVATION_MS) continue
+          activeIdxs.push(i)
+        }
 
-          for (const jIdx of a.neighbors) {
-            if (jIdx <= i) continue // dedupe pairs
-            const b = nodes[jIdx]!
-            if (b.activationStart === 0) continue
-            const bAge = nowMs - b.activationStart
-            if (bAge >= ACTIVATION_MS) continue
-            const bAct = 1 - bAge / ACTIVATION_MS
+        for (let ai = 0; ai < activeIdxs.length; ai++) {
+          const aIdx = activeIdxs[ai]!
+          const a = nodes[aIdx]!
+          const aAct = 1 - (nowMs - a.activationStart) / ACTIVATION_MS
+          const aParallaxX = mouseDx * a.zDepth * PARALLAX_FACTOR
+          const aParallaxY = mouseDy * a.zDepth * PARALLAX_FACTOR
+          const aRx = a.x + aParallaxX
+          const aRy = a.y + aParallaxY
 
-            const dx = a.x - b.x
-            const dy = a.y - b.y
+          for (let bi = ai + 1; bi < activeIdxs.length; bi++) {
+            const bIdx = activeIdxs[bi]!
+            const b = nodes[bIdx]!
+            const bAct = 1 - (nowMs - b.activationStart) / ACTIVATION_MS
+            const bParallaxX = mouseDx * b.zDepth * PARALLAX_FACTOR
+            const bParallaxY = mouseDy * b.zDepth * PARALLAX_FACTOR
+            const bRx = b.x + bParallaxX
+            const bRy = b.y + bParallaxY
+
+            const dx = aRx - bRx
+            const dy = aRy - bRy
             const dSq = dx * dx + dy * dy
             if (dSq > lineThresholdSq) continue
 
-            // Line alpha: min of both activations, scaled by min zDepth (far
-            // lines fade). Cap at ~0.55.
+            // Line alpha: min of both activations, scaled by min zDepth.
             const minZ = Math.min(a.zDepth, b.zDepth)
             const alpha = Math.min(aAct, bAct) * (0.6 + 0.4 * minZ) * 0.7
             ctx.strokeStyle = `rgba(${neonRgb.r}, ${neonRgb.g}, ${neonRgb.b}, ${alpha})`
             ctx.lineWidth = 0.8
             ctx.beginPath()
-            ctx.moveTo(a.x, a.y)
-            ctx.lineTo(b.x, b.y)
+            ctx.moveTo(aRx, aRy)
+            ctx.lineTo(bRx, bRy)
             ctx.stroke()
           }
         }
