@@ -59,7 +59,7 @@ export function HeroSection() {
             className="pointer-events-none absolute inset-[-2rem] -z-10 rounded-3xl"
             style={{
               background:
-                "radial-gradient(ellipse at center, rgba(var(--bg-rgb), 0.55) 0%, rgba(var(--bg-rgb), 0.25) 55%, transparent 85%)",
+                "radial-gradient(ellipse at center, rgba(var(--bg-rgb), 0.30) 0%, rgba(var(--bg-rgb), 0.12) 55%, transparent 85%)",
             }}
           />
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-text-secondary mb-6">
