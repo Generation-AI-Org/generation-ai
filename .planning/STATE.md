@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: Phase 19 complete, Phase 20 in progress
-last_updated: "2026-04-20T00:00:00.000Z"
+status: executing
+last_updated: "2026-04-22T00:00:00.000Z"
 progress:
-  total_phases: 13
-  completed_phases: 5
-  total_plans: 26
-  completed_plans: 23
-  percent: 88
+  total_phases: 15
+  completed_phases: 7
+  total_plans: 45
+  completed_plans: 34
+  percent: 76
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,10 +18,102 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 PLANNING (Phases 20-26 definiert, noch nicht gestartet)
-**Phase:** 20
-**Last Updated:** 2026-04-19
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 skeleton ✅, Phase 20.5 Hero ✅, Phase 20.6 Landing Sections Rebuild next, dann Phase 21 /about)
+**Phase:** 20.6 Landing Sections Rebuild — PLANNED (8 skeleton plans scaffolded 2026-04-22, bereit zur Execution)
+**Branch:** `feature/phase-20-landing-skeleton` (bleibt offen durch 20.6 — Changeset v4.5.0 wird nach 20.6-Abschluss als gemeinsamer Minor-Bump released)
+**Last Updated:** 2026-04-22 (Phase 20.5 closed at Hero-level, Phase 20.6 scaffold created, Phase 24 route renamed /level-test → /test)
 **Site Status:** ✅ Live — CSP A+, Auth stabil, Chat global, Brand v4.3, Auth-Mails v4.3.x, Simplify-Pass v4.3.x merged, Password-Flow + E2E-Prod-Baseline v4.4.0.
+
+**Phase 20 Skeleton — Status 2026-04-21:** formal approved auf Skeleton-Scope. Automated Gates alle grün (Build `ƒ /`, CSP nonce, Playwright 8/8, Lighthouse A11y 1.00 / BP 0.96 / SEO 1.00 / CLS 0.00, Perf 0.88 flaky-tolerated). Hero + Discrepancy Wow-Peaks explicit deferred auf Phase 20.5. Changeset `phase-20-navigation-landing-skeleton.md` liegt committed, Merge + `pnpm version` erst nach 20.5. Branch `feature/phase-20-landing-skeleton` bleibt offen für 20.5. Details: `.planning/phases/20-navigation-landing-skeleton/20-VALIDATION.md` (Skeleton-Scope-Sign-Off-Section).
+
+### Phase 20 Progress
+
+- **Plan 20-01** DONE 2026-04-20 — Stack-Setup (motion + shadcn + Aceternity/MagicUI copy-ins), legacy sections deleted, lighthouserc.json + landing.spec.ts skeleton
+  - Commits: `27a645d`, `5c9e9ee`, `6a52f21`
+  - Branch: `feature/phase-20-landing-skeleton`
+  - Build grün, `ƒ /`, CSP OK
+- **Plan 20-02** DONE 2026-04-20 — Navigation + Layout-Shell (Header-Umbau mit Dropdown + Mobile-Sheet, Footer 4-Spalten mit Sitemap+Legal+Kontakt+LinkedIn, 8 Section-Stubs in home-client gemountet, MotionConfig mit Request-Nonce via `await headers()` in page.tsx)
+  - Commits: `96d690c` (header), `c945a88` (footer), `81d6ca4` (sections + MotionConfig)
+  - Deviations: 5 auto-fixed (3 Rule-1 Bugs: lucide Linkedin fehlt → Inline-SVG; base-ui Menu Error #31 → DropdownMenuGroup wrapper; 2 Close-Buttons → showCloseButton=false + custom; 2 Rule-3 Test-Infra: splash-skip beforeEach, CSP waitUntil=domcontentloaded)
+  - R1.1 Playwright (Dropdown click+keyboard, Mobile-Nav) + CSP-Test grün (4/4)
+  - Build grün, `ƒ /`, CSP-Header mit Nonce intakt, 8 unique data-sections im DOM
+  - Requirements completed: R1.1, R1.10
+- **Plan 20-03** DONE 2026-04-20 — Wow-Peaks 1+2 (Hero + Discrepancy)
+  - Commits: `c52cc4f` (hero), `55b286a` (discrepancy)
+  - Hero: AuroraBackground + Claim-Placeholder + CTA → /join, useReducedMotion-Guard
+  - Discrepancy: Bento-Split + 6 NumberTicker (7× / 56% / 73% | 83.5% / 75% / 6.4%) + useScroll ±4%-Divergenz (CLS-safe via overflow-hidden) + Closer "Generation AI schließt diese Lücke."
+  - Reduced-Motion: useTransform liefert 0%→0%, motion-Entries skippen, CSS-Aurora-Keyframe pausiert
+  - Deviations: 0 (Plan 1:1 ausgeführt, keine Rule-Fixes nötig)
+  - R1.2 + CSP Playwright grün (2/2 local prod), Build grün, `ƒ /`, 3× `href="/join"` im DOM
+  - Requirements completed: R1.2, R1.3
+- **Plan 20-04** DONE 2026-04-20 — Ruhige Mitte (Offering + Tool-Showcase + Community-Preview)
+  - Commits: `05c0cf4` (offering), `abb8442` (tool-showcase), `cedf3e2` (community-preview)
+  - Offering: 4-Card BentoGrid mit Community/Wissensplattform/Events/Expert-Formate + Lucide-Icons (Users/BookOpen/Calendar/Mic2) + Hover-Glow + Deep-Links
+  - Tool-Showcase: InfiniteMovingCards mit 5 locked Stub-Tools (ChatPDF Pro / Notion AI / Perplexity / ElevenLabs / Gamma) + Header-BeispielBadge + 'Beispiel'-Suffix im title-Feld pro Card + CTA zu tools.generation-ai.org
+  - Community-Preview: statisches 2-Spalten (3 Artikel + 2 Events) mit BeispielBadge pro Item, keine Animation, kein Skeleton (D-24 explicit)
+  - BeispielBadge: theme-aware via useTheme (`.light` → brand-red, dark → brand-neon), lokal in tool-showcase exportiert + in community-preview reused
+  - Deviations: 0 (Plan 1:1 ausgeführt)
+  - R1.5 + R1.6 + CSP Playwright grün (3/3 local prod PORT=3030), Build grün `ƒ /`, 11× "Beispiel" im DOM, alle Stub-Titles sichtbar
+  - Requirements completed: R1.4, R1.5, R1.6
+- **Plan 20-05** DONE 2026-04-20 — Wow-Peak 3 (AudienceSplit + Trust + FinalCTA)
+  - Commits: `c7575c6` (audience-split), `e8a8860` (trust), `333c977` (final-cta)
+  - Audience-Split: dominante Studi-Section (H2 text-5xl + Primary-CTA → /join + secondary → tools) + dezenter B2B-Streifen (text-xs/sm + bg-bg-elevated + /partner link)
+  - Trust: MagicUI Marquee mit 6 Stub-Partner-Tiles ("Sparringspartner 1..6" Text-Pills, Logo-Assets deferred) + Microproof "N=109 · März 2026" + doppelter reduced-motion-Guard (CSS @media in globals.css + JS useReducedMotion → Tailwind-arbitrary `[&_.animate-marquee]:![animation-play-state:paused]`)
+  - Final-CTA: LampContainer (min-h-[70vh] override) + motion.div Content-Layer mit useReducedMotion-Gate + substantive Claim-Placeholder "Bereit, KI ernst zu nehmen?" + Primary-CTA → /join + Sekundär-Link → tools.generation-ai.org
+  - Deviations: 0 (Plan 1:1 ausgeführt, first-try grün auf allen Tasks)
+  - Playwright **8/8 grün** (R1.1×3 + R1.2 + R1.5 + R1.6 + R1.8 + CSP) gegen lokalen Prod PORT=3031
+  - DOM-Smoke: 8 unique data-sections, 5× href="/join", 2× href="/partner", 4× animate-marquee, 24× Sparringspartner-Pills
+  - Build grün `ƒ /`, CSP intakt
+  - Requirements completed: R1.7, R1.8, R1.9
+- **Plan 20-06** DONE 2026-04-21 — Phase-Gate + Skeleton-Sign-Off
+  - Automated Gates grün: Build `ƒ /`, CSP nonce, Playwright 8/8, Lighthouse A11y 1.00 / BP 0.96 / SEO 1.00 / CLS 0.00 (Perf 0.88 flaky-tolerated)
+  - Terminal-Splash A11y-Fix: `1717c24` (A11y 1.00 perfect)
+  - Code-Review BL+HI fixes: `36c771a` (BL-01 nested main), `58cb695` (HI-04 @custom-variant dark), `b4988e2` (HI-03 smooth-scroll), `4c50119` (HI-01 hydration), `0c93c95` (HI-02 marquee cleanup)
+  - UAT-Iterationen Hero+Discrepancy (stehen bleiben als Gesprächsgrundlage für 20.5): `858012e`, `6e24e7d`, `893b3a8`, `d8f4d53`, `8d577f6`, `25afcf6`
+  - Manual UAT approved by Luca 2026-04-21 — **Skeleton-Scope only, Hero + Discrepancy Wow-Pass explicit deferred auf Phase 20.5**
+  - Changeset `@genai/website: minor` (v4.5.0) committed, liegt zurückgehalten bis 20.5 durch ist
+  - Requirements completed: R1.1–R1.10 (alle 10)
+  - Artifacts: `.planning/phases/20-navigation-landing-skeleton/20-06-SUMMARY.md`, VALIDATION.md mit Skeleton-Scope-Sign-Off
+
+### Phase 20.5 Progress
+
+**Status:** ✅ CLOSED at Hero-level 2026-04-22. Hero approved by Luca („wirklich nice"). Discrepancy + Transition bewusst deferred auf Phase 20.6.
+
+- CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
+- 5 PLAN.md angelegt, 3 delivered + 2 deferred:
+  - 20.5-01 Design-System Alignment (Wave 1, autonomous) — ✅ COMPLETE
+  - 20.5-02 Signal-Grid Canvas Component (Wave 2, autonomous) — ✅ COMPLETE (+ ~20 UAT-Tuning-Commits)
+  - 20.5-03 Hero Rewrite with Signal-Grid (Wave 3, autonomous) — ✅ COMPLETE (Luca signed-off 2026-04-22)
+  - 20.5-04 Discrepancy Polish — ⚠️ DEFERRED. Code shipped (`26a5b76`), visual direction rejected by Luca 2026-04-21 UAT. Redesign from scratch in Plan 20.6-01.
+  - 20.5-05 Hero → Discrepancy Transition — ⚠️ DEFERRED. Exploration-Doc (`20.5-05-EXPLORATION.md`) vorhanden, nicht gebaut. Continues in Plan 20.6-08 (Inter-section transitions).
+- Close-Out-Artefacts (commit `b8bae5b`):
+  - `20.5-SUMMARY.md` — phase-level summary, plans breakdown, hand-off zu 20.6
+  - `20.5-VALIDATION.md` — sign-off, gates, scope-reduction rationale
+  - `20.5-04-SUMMARY.md` + `20.5-05-EXPLORATION.md` frontmatter auf `status: deferred` gesetzt
+- Branch bleibt `feature/phase-20-landing-skeleton` (baut on-top in 20.6).
+- Working-Mode: Luca co-builds live auf localhost:3000, tight Feedback-Loops, kleine Commits, kein Push, kein Deploy.
+
+### Phase 20.6 Progress
+
+**Status:** PLANNED 2026-04-22. Scaffold erstellt (commit `ed454f2`), Execution pending.
+
+- `20.6-CONTEXT.md` committed — 8 Decisions (D-01 Discrepancy from scratch, D-02 DS-compliance, D-03 section-order locked, D-04 Hero locked, D-05 transitions last, D-06 copy deferred, D-07 Playwright baseline, D-08 Lighthouse targets)
+- 8 skeleton PLAN.md Files angelegt (alle `status: skeleton`, werden bei Execution gefüllt):
+  - 20.6-01 New Discrepancy section (Wave 1) — Topic bleibt, Form TBD mit Luca
+  - 20.6-02 Offering polish (Wave 2)
+  - 20.6-03 Tool-Showcase polish (Wave 2)
+  - 20.6-04 Community-Preview polish (Wave 2)
+  - 20.6-05 Audience-Split polish (Wave 2)
+  - 20.6-06 Trust polish (Wave 2)
+  - 20.6-07 Final-CTA polish (Wave 2)
+  - 20.6-08 Inter-section transitions (Wave 3, depends on 01-07)
+- Requirements:
+  - R1.3 re-flagged ⚠️ (Topic bleibt, beide bisherigen Varianten verworfen)
+  - R1.4-R1.9 als skeleton done + polish pending markiert
+  - R1.11 neu hinzugefügt (inter-section transitions)
+- Next: Plan 20.6-01 New Discrepancy section — Planning-Session mit Luca (Form TBD).
+
+---
 
 ---
 
@@ -33,13 +125,15 @@ progress:
 
 **Phasen (empfohlene Reihenfolge):**
 
-1. **Phase 20** — Navigation + Landing-Skeleton (Stub-Daten)
-2. **Phase 21** — `/about`-Seite
-3. **Phase 22** — `/partner`-Seite (3 Anker-Sections + Kontakt-Formular)
-4. **Phase 23** — `/join` Fragebogen-Flow (Backend-Stub 503)
-5. **Phase 24** — `/level-test` Assessment (optional, DSGVO-konform)
-6. **Phase 25** — Circle-API-Sync (Unified Signup: eine Mail via SSO-Link)
-7. **Phase 26** — Subdomain-Integration (Featured-Tools + Community-Preview)
+1. **Phase 20** — Navigation + Landing-Skeleton (Stub-Daten) ✅
+2. **Phase 20.5** — Landing Wow-Pass (Signal-Grid) — Hero ✅ delivered 2026-04-22, Discrepancy + Transition deferred auf 20.6
+3. **Phase 20.6** — Landing Sections Rebuild (new Discrepancy + polish aller übrigen Sections + transitions) ← NEXT
+4. **Phase 21** — `/about`-Seite
+5. **Phase 22** — `/partner`-Seite (3 Anker-Sections + Kontakt-Formular)
+6. **Phase 23** — `/join` Fragebogen-Flow (Backend-Stub 503)
+7. **Phase 24** — `/test` Assessment (optional, DSGVO-konform) — Route umbenannt 2026-04-22
+8. **Phase 25** — Circle-API-Sync (Unified Signup: eine Mail via SSO-Link)
+9. **Phase 26** — Subdomain-Integration (Featured-Tools + Community-Preview)
 
 **Kern-UX-Win:** Phase 25 Circle-API-Sync — User bekommt **eine** Mail statt zwei, landet nach Confirm via embedded SSO-Link direkt eingeloggt in Circle (Circle-Business-Plan API).
 

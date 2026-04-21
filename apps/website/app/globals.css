@@ -3,6 +3,8 @@
 @import "../../../packages/config/tailwind/base.css";
 @import "tw-animate-css";
 
+@custom-variant dark (&:not(.light *));
+
 /* ─── website-specific additions ──────────────────────────────────────────── */
 
 /* shadcn compatibility */
@@ -32,12 +34,36 @@
   /* Typography */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  @keyframes marquee {
+  from {
+    transform: translateX(0);
+    }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+    }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
 }
 
 /* Base Styles */
 html {
-  scroll-behavior: smooth;
   background-color: var(--bg);
+}
+
+/* Smooth scroll only when user has no motion-reduce preference (WCAG 2.3.3) */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -115,5 +141,96 @@ textarea:focus-visible,
 @layer utilities {
   .animate-float {
     animation: float 2.5s ease-in-out infinite;
+  }
+}
+
+/* ─── Phase 20: Aceternity/MagicUI Animation Keyframes ───────────────────── */
+
+@theme inline {
+  --animate-aurora: aurora 60s linear infinite;
+  --animate-scroll: scroll var(--scroll-duration, 40s) linear infinite;
+}
+
+@keyframes aurora {
+  from { background-position: 50% 50%, 50% 50%; }
+  to { background-position: 350% 50%, 350% 50%; }
+}
+
+@keyframes scroll {
+  to { transform: translate(calc(-50% - 0.5rem)); }
+}
+
+/* Aurora brand-rebrand colors — dark default (brand-neon + brand-blue swirl) */
+:root {
+  --brand-aurora-1: var(--brand-blue-5, #3b82f6);
+  --brand-aurora-2: var(--brand-neon-4, #a5b4fc);
+  --brand-aurora-3: var(--brand-blue-4, #93c5fd);
+  --brand-aurora-4: var(--brand-neon-3, #ddd6fe);
+  --brand-aurora-5: var(--brand-blue-6, #60a5fa);
+
+  /* Grid-Background tokens — dark default: neon-lines + blue glow */
+  --grid-line-color: rgba(206, 255, 50, 0.06);
+  --grid-dot-color: rgba(206, 255, 50, 0.14);
+  --grid-glow-color: rgba(206, 255, 50, 0.10);
+  --grid-glow-color-secondary: rgba(58, 58, 255, 0.12);
+}
+
+/* Light-mode Aurora swirl (brand-pink + brand-red) */
+.light {
+  --brand-aurora-1: var(--brand-pink-5, #f472b6);
+  --brand-aurora-2: var(--brand-red-4, #fca5a5);
+  --brand-aurora-3: var(--brand-pink-4, #f9a8d4);
+  --brand-aurora-4: var(--brand-red-3, #fecaca);
+  --brand-aurora-5: var(--brand-pink-6, #ec4899);
+
+  /* Grid-Background tokens — light: red-lines + pink glow */
+  --grid-line-color: rgba(245, 19, 59, 0.08);
+  --grid-dot-color: rgba(245, 19, 59, 0.16);
+  --grid-glow-color: rgba(245, 19, 59, 0.09);
+  --grid-glow-color-secondary: rgba(252, 120, 254, 0.14);
+}
+
+/* Grid-Spotlight slow drift — paused on reduced-motion via media query below */
+@keyframes grid-spotlight {
+  0%   { --spotlight-x: 20%; --spotlight-y: 30%; }
+  25%  { --spotlight-x: 70%; --spotlight-y: 20%; }
+  50%  { --spotlight-x: 80%; --spotlight-y: 60%; }
+  75%  { --spotlight-x: 30%; --spotlight-y: 70%; }
+  100% { --spotlight-x: 20%; --spotlight-y: 30%; }
+}
+
+@property --spotlight-x {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 50%;
+}
+@property --spotlight-y {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 40%;
+}
+
+.animate-grid-spotlight {
+  animation: grid-spotlight 24s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* Cursor-driven spotlight on desktop: --spotlight-x/y are updated via JS
+   on mousemove (throttled to rAF). The CSS transition smooths those
+   discrete updates into a ~300 ms trail so the glow "chases" the cursor
+   instead of snapping to it. */
+.grid-spotlight-tracking {
+  transition:
+    --spotlight-x 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    --spotlight-y 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Reduced-Motion: pause all Phase-20 loop animations (D-06 PFLICHT) */
+@media (prefers-reduced-motion: reduce) {
+  .animate-aurora,
+  .animate-scroll,
+  .animate-marquee,
+  .animate-marquee-vertical,
+  .animate-grid-spotlight {
+    animation-play-state: paused !important;
   }
 }

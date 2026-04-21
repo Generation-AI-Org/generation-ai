@@ -11,16 +11,17 @@
 **Problem:** Aktuelle Website ist One-Pager (Hero → Features → TargetAudience → Signup). Keine Navigation, kein Funnel, keine Deep-Dive-Pfade. Landing transportiert Generation AI als e.V. nicht.
 
 **Requirements:**
-- R1.1: Top-Nav mit `Tools · Community · Für Partner ▾ · Über uns · [Jetzt beitreten]`. Tools + Community als externe Links zu Subdomains. Kein Login-Button im Header.
-- R1.2: Hero-Section — Claim + Subline + Primary CTA "Jetzt beitreten" (kein Login, keine Zahlen).
-- R1.3: Diskrepanz-Section — zentraler Hook mit Gegenüberstellung "Was Wirtschaft will" vs "Was Studis mitbringen" (6 Kernzahlen aus Value-Prop-v2). Custom data-viz mit Scroll-Animation. Closer: *"Generation AI schließt diese Lücke."*
-- R1.4: 4-Card-Angebot (Community, Wissensplattform, Events & Workshops, Expert-Formate) mit Icon + Titel + 1-Satz + Deep-Link.
-- R1.5: Tool-Showcase Teaser — 3-5 featured Tools aus tools-app (Featured-Flag im Content-Schema). CTA zu `tools.generation-ai.org`.
-- R1.6: Community-Preview — zweispaltig (letzte Artikel + kommende Events via Circle API). Fallback-Placeholder bei API-Down.
-- R1.7: Zielgruppen-Split — Studi-Section groß mit CTA zu `/join`, dezenter B2B-Streifen Richtung `/partner`.
-- R1.8: Trust — Logo-Strip Sparringspartner + Micro-Proof Survey-Quelle ("N=109 · März 2026").
-- R1.9: Final CTA — Claim-Wiederholung + `[Jetzt beitreten]` + Sub-Line + kleiner Sekundär-Link "Erst mal umschauen → tools.generation-ai.org".
-- R1.10: Footer — Legal, Sitemap, Social (LinkedIn), Kontakt-Mail, Copyright.
+- R1.1: ✅ Top-Nav mit `Tools · Community · Für Partner ▾ · Über uns · [Jetzt beitreten]`. Tools + Community als externe Links zu Subdomains. Kein Login-Button im Header. *(done in 20-02: Header umgebaut, Dropdown + Mobile-Sheet funktional, 3/3 R1.1 Playwright-Tests grün)*
+- R1.2: ✅ Hero-Section — Claim + Subline + Primary CTA "Jetzt beitreten" (kein Login, keine Zahlen). *(done in 20-03: Aurora-Background + Claim-Placeholder + CTA → /join, R1.2 Playwright-Test grün)*
+- R1.3: ⚠️ Diskrepanz-Section — zentraler Hook mit Gegenüberstellung "Was Wirtschaft will" vs "Was Studis mitbringen" (6 Kernzahlen aus Value-Prop-v2). Custom data-viz. Closer: *"Generation AI schließt diese Lücke."* *(Phase 20-03 lieferte Bento-Split-Variante, Phase 20.5-04 lieferte Sticky-Scroll-Chart-Variante (commit `26a5b76`) — beide während UAT 2026-04-21 von Luca verworfen. Topic bleibt, Representation wird in Plan 20.6-01 von Grund auf neu konzipiert.)*
+- R1.4: ✅ 4-Card-Angebot (Community, Wissensplattform, Events & Workshops, Expert-Formate) mit Icon + Titel + 1-Satz + Deep-Link. *(skeleton done in 20-04, Hero-level polish pending in 20.6-02)*
+- R1.5: ✅ Tool-Showcase Teaser — 3-5 featured Tools aus tools-app (Featured-Flag im Content-Schema). CTA zu `tools.generation-ai.org`. *(skeleton done in 20-04 mit 5 Stub-Tools + BeispielBadge, Hero-level polish pending in 20.6-03)*
+- R1.6: ✅ Community-Preview — zweispaltig (letzte Artikel + kommende Events via Circle API). Fallback-Placeholder bei API-Down. *(skeleton done in 20-04 mit statischen Stubs + BeispielBadge, Hero-level polish pending in 20.6-04)*
+- R1.7: ✅ Zielgruppen-Split — Studi-Section groß mit CTA zu `/join`, dezenter B2B-Streifen Richtung `/partner`. *(skeleton done in 20-05, Hero-level polish pending in 20.6-05)*
+- R1.8: ✅ Trust — Logo-Strip Sparringspartner + Micro-Proof Survey-Quelle ("N=109 · März 2026"). *(skeleton done in 20-05 mit 6 Text-Pills + Marquee + doppeltem reduced-motion guard, Logo-Assets deferred, Hero-level polish pending in 20.6-06)*
+- R1.9: ✅ Final CTA — Claim-Wiederholung + `[Jetzt beitreten]` + Sub-Line + kleiner Sekundär-Link "Erst mal umschauen → tools.generation-ai.org". *(skeleton done in 20-05 mit LampContainer, Hero-level polish pending in 20.6-07)*
+- R1.10: ✅ Footer — Legal, Sitemap, Social (LinkedIn), Kontakt-Mail, Copyright. *(done in 20-02: 4-Spalten-Grid mit Logo+Tagline, Sitemap (5 links), Legal (2 links), Kontakt (admin@generation-ai.org mailto + LinkedIn inline-SVG), Copyright mit Vereinsnennung)*
+- R1.11: Inter-section transitions — kohärente vertikale Übergänge zwischen allen 8 Landing-Sections, DS-motion-konform, Connection-Motif-konsistent. *(planned for 20.6-08, enthält auch den ursprünglich in Plan 20.5-05 geplanten Hero→Section-2-Übergang)*
 
 **Akzeptanzkriterien:**
 - [ ] Nav-Dropdown "Für Partner" funktioniert auf Desktop + Mobile (a11y-korrekt)

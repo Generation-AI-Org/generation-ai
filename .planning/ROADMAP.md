@@ -516,22 +516,26 @@ Plans:
 
 | Phase | Name | Goal | Requirements | Autonom-fähig |
 |-------|------|------|--------------|---------------|
-| 20 | Navigation + Landing-Skeleton | Top-Nav + Landing-Sections mit Stub-Daten | R1 | ⚠️ teilweise (Claim-Wording bleibt Placeholder) |
+| 20 | Navigation + Landing-Skeleton | 6/6 | Complete    | 2026-04-21 |
+| 20.5 | Landing Wow-Pass (Signal-Grid) | 3/5 (Hero ✅, 20.5-04 + 20.5-05 deferred → 20.6) | Closed    | 2026-04-22 |
+| 20.6 | Landing Sections Rebuild | 0/8 | Planned | 2026-04-22 |
 | 21 | `/about`-Seite | Mission, Team, Sparringspartner, Verein | R2 | ✅ (statischer Content) |
 | 22 | `/partner`-Seite | 3 Anker-Sections + Kontakt-Formular | R3 | ✅ (statischer Content + Form) |
 | 23 | `/join` Fragebogen-Flow | Linearer 4-Step-Flow mit Validation (Backend-Stub) | R4 | ✅ |
-| 24 | `/level-test` Assessment | Optionaler Test mit DSGVO-Consent, Score-Migration | R5 | ⚠️ (Test-Fragen als Placeholder, Content-Pass durch Luca) |
+| 24 | `/test` Assessment | Optionaler Test mit DSGVO-Consent, Score-Migration | R5 | ⚠️ (Test-Fragen als Placeholder, Content-Pass durch Luca) |
 | 25 | Circle-API-Sync (Unified Signup) | Server-Action: Supabase+Circle anlegen, SSO-Link in Welcome-Flow | R6 | ❌ (Live-Credentials + Luca-Approval für Go-Live) |
 | 26 | Subdomain-Integration | Featured-Tools API + Community-Preview via Circle API | R7 | ⚠️ (Content-Schema-Migration, Rate-Limit-Tuning) |
 
 **Dependencies:**
 - Phase 20 blockt visuell nichts anderes, aber alle weiteren Pages beerben die Nav → 20 zuerst.
 - Phase 23 (`/join` UI) **kann** vor 25 (Circle-Sync) gebaut werden — Submit stubbed als 503.
-- Phase 24 (`/level-test`) optional aus 23 verlinkt — beide können parallel, aber 23 zuerst für State-Contract.
+- Phase 24 (`/test`) optional aus 23 verlinkt — beide können parallel, aber 23 zuerst für State-Contract.
 - Phase 25 (Circle-Sync) aktiviert Live-Signup-Pfad — depends on 23 fertig.
 - Phase 26 (Subdomain-Integration) kann parallel zu allen anderen laufen, liefert echte Daten in Phase 20 (nachträglich).
 
-**Empfohlene Reihenfolge:** 20 → 21 → 22 → 23 → 24 → 25 → 26 (linear, klare Review-Checkpoints).
+**Empfohlene Reihenfolge:** 20 → 20.5 → 21 → 22 → 23 → 24 → 25 → 26 (linear, klare Review-Checkpoints).
+
+**Design-System Source of Truth (ab 2026-04-21):** `brand/Generation AI Design System/` ist canonical für alle UI-Arbeiten ab Phase 20.5. CSS-Variablen aus `colors_and_type.css`, Typografie per DS-Spec (Geist Sans für Body, Geist Mono für Display/H1/Buttons/Labels/Tags), Motion-Easings aus DS (`--ease-out: cubic-bezier(0.16, 1, 0.3, 1)`, `--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1)`, `--dur-fast|normal|slow`). Kein Gradient-Spam, kein Glassmorphism, keine Stock-Fotos, kein dekorativer Blob. Connection-Motif durchgezogen — Signal-Grid im Hero, Linien+Knoten+roter Faden als Leitsignatur.
 
 ---
 
@@ -541,15 +545,15 @@ Plans:
 **Requirements:** R1.1-R1.10
 **Depends on:** keine
 **Out-of-Scope:** Echte Tool-Showcase- und Community-Preview-Daten (→ Phase 26), Final-Wording Hero + Final-CTA (bleibt Placeholder).
-**Plans:** 6 plans
+**Plans:** 6/6 plans complete
 
 Plans:
-- [ ] 20-01-PLAN.md — Wave 1 Setup: motion + shadcn + Aceternity/MagicUI Copy-in, globals.css Keyframes, lighthouserc.json + landing.spec.ts skeleton, Alt-Sections löschen (D-21)
-- [ ] 20-02-PLAN.md — Wave 2 Layout-Shell: Header-Umbau (Dropdown + Mobile-Sheet), Footer-Erweiterung, 8 Section-Stubs + home-client.tsx wiring + MotionConfig nonce
-- [ ] 20-03-PLAN.md — Wave 3 Wow-Peaks 1+2: Hero (Aurora) + Diskrepanz (Custom Bento-Split + 6 Number-Tickers + Scroll-Divergenz)
-- [ ] 20-04-PLAN.md — Wave 3 ruhige Mitte: 4-Card-Angebot (Bento) + Tool-Showcase (Infinite Cards + Beispiel-Badge) + Community-Preview (statisch + Beispiel-Badges)
-- [ ] 20-05-PLAN.md — Wave 3 Wow-Peak 3: Zielgruppen-Split + Trust (Marquee + reduced-motion) + Final-CTA (Lamp Effect)
-- [ ] 20-06-PLAN.md — Wave 4 Phase-Gate: Build/CSP/Playwright/Lighthouse + Manual UAT (Checkpoint) + Changeset v4.5.0 + VALIDATION.md sign-off
+- [x] 20-01-PLAN.md — Wave 1 Setup: motion + shadcn + Aceternity/MagicUI Copy-in, globals.css Keyframes, lighthouserc.json + landing.spec.ts skeleton, Alt-Sections löschen (D-21)
+- [x] 20-02-PLAN.md — Wave 2 Layout-Shell: Header-Umbau (Dropdown + Mobile-Sheet), Footer-Erweiterung, 8 Section-Stubs + home-client.tsx wiring + MotionConfig nonce (R1.1 + R1.10 done, 4/4 Playwright R1.1+CSP green)
+- [x] 20-03-PLAN.md — Wave 3 Wow-Peaks 1+2: Hero (Aurora) + Diskrepanz (Custom Bento-Split + 6 Number-Tickers + Scroll-Divergenz)
+- [x] 20-04-PLAN.md — Wave 3 ruhige Mitte: 4-Card-Angebot (Bento) + Tool-Showcase (Infinite Cards + Beispiel-Badge) + Community-Preview (statisch + Beispiel-Badges)
+- [x] 20-05-PLAN.md — Wave 3 Wow-Peak 3: Zielgruppen-Split + Trust (Marquee + reduced-motion) + Final-CTA (Lamp Effect) — R1.7/R1.8/R1.9 done, 8/8 Playwright green
+- [x] 20-06-PLAN.md — Wave 4 Phase-Gate: Build/CSP/Playwright/Lighthouse + Manual UAT (Checkpoint) + Changeset v4.5.0 + VALIDATION.md sign-off
 
 **Scope:**
 - Top-Nav mit Dropdown "Für Partner" (a11y-korrekt, Desktop + Mobile-Burger)
@@ -564,6 +568,89 @@ Plans:
 - [ ] Stub-Content für Tool-Showcase + Community-Preview klar als Placeholder erkennbar (no fake trust signals)
 
 **Release:** minor (v5.0.0-alpha oder v4.5.0) — Breaking UX-Change (neue Nav, neue Landing-Struktur)
+
+---
+
+### Phase 20.5: Landing Wow-Pass (Signal-Grid)
+
+**Goal:** Hero + Discrepancy auf Design-System-Niveau heben (Signal-Grid, Connection-Motif). Polish-Pass, kein neuer Surface. Luca co-builds live in localhost.
+**Requirements:** R1.2 (Hero-Wow), R1.3 (Discrepancy-Wow) — Phase 20 lieferte Skeleton, 20.5 liefert das Wow.
+**Depends on:** Phase 20 (Skeleton complete 2026-04-21)
+**Design-System Source of Truth:** `brand/Generation AI Design System/` (canonical ab 2026-04-21)
+**Branch:** `feature/phase-20-landing-skeleton` (bleibt offen, baut on-top)
+**Out-of-Scope:** Andere Sections (Offering/Tool-Showcase/Community/Audience-Split/Trust/Final-CTA bleiben unangetastet), neue Pages, neue Daten, Sign-up-Reactivation.
+**Plans:** 3/5 delivered, 2 deferred to Phase 20.6
+
+Plans:
+- [x] 20.5-01-PLAN.md — Design-System Alignment (Tokens, Typography, Motion-Easings)
+- [x] 20.5-02-PLAN.md — Signal-Grid Canvas Component (Nodes + Linien + Cursor-Propagation + Radial-Fade-Overlay)
+- [x] 20.5-03-PLAN.md — Hero Rewrite with Signal-Grid (DS-Typography + DS-Button-States)
+- [~] 20.5-04-PLAN.md — Discrepancy Polish — ⚠️ Code shipped (`26a5b76`), visuelle Richtung von Luca verworfen 2026-04-21 → redesign from scratch in Phase 20.6-01
+- [~] 20.5-05-PLAN.md — Hero → Discrepancy Transition — ⚠️ Exploration only, deferred auf Phase 20.6-08 (Inter-section transitions)
+
+**Scope:**
+- GridBackground im Hero wird durch Signal-Grid ersetzt (DS-Spec)
+- Tokens, Typografie, Motion-Easings in `apps/website` + `packages/config` mit Design-System abgeglichen
+- Discrepancy-Chart wird smoother + bekommt honest Achsen
+- Transition zwischen Hero und Discrepancy als bewusster Design-Moment
+
+**Success Criteria:**
+- [ ] Hero-Background matched DS Signal-Grid-Spec (Nodes + Cursor-Propagation + Radial-Fade-Overlay + reduced-motion Fallback)
+- [ ] Discrepancy Scroll-Animation fühlt sich smooth an (subjektiv Luca-OK auf localhost)
+- [ ] Chart-Achsen sind honest (keine semantisch strapazierten Label-Gruppierungen)
+- [ ] Transition zwischen Hero und Discrepancy fühlt sich intentional an
+- [ ] Alle UI nutzt DS-CSS-Vars, keine stray hardcoded Hex-Werte in Hero/Discrepancy
+- [ ] Build, Lint, Playwright bleiben grün (keine Regression auf Phase-20-Skeleton-Gates)
+
+**Working-Mode:**
+- Iteratives Co-Build mit Luca auf localhost — kleine Commits, tight Feedback-Loops
+- Alle Plans `autonomous: true` — kein formaler UAT-Checkpoint, Luca macht Live-Review
+- Kein Push, kein Deploy während der Phase
+
+**Release:** patch innerhalb v4.5.0 (Phase 20 Minor-Release bleibt zurück bis 20.5 durch ist)
+
+---
+
+### Phase 20.6: Landing Sections Rebuild
+
+**Goal:** Bring all remaining landing sections to the quality level delivered by Hero in Phase 20.5. Re-design Discrepancy from scratch. Iterative co-build, Design-System continues as source of truth.
+**Requirements:** R1.3 (Discrepancy re-thought), R1.4-R1.9 (polish remaining sections), R1.11 (transitions)
+**Depends on:** Phase 20.5
+**Branch:** `feature/phase-20-landing-skeleton` (stays open, builds on top)
+**Out-of-Scope:** New sections, new pages, final copywriting (deferred to marketing pass), Hero changes (locked from Phase 20.5), sign-up reactivation (bleibt 503).
+**Plans:** 8
+
+Plans:
+- [ ] 20.6-01-PLAN.md — New Discrepancy section (re-designed from scratch)
+- [ ] 20.6-02-PLAN.md — Offering polish
+- [ ] 20.6-03-PLAN.md — Tool-Showcase polish
+- [ ] 20.6-04-PLAN.md — Community-Preview polish
+- [ ] 20.6-05-PLAN.md — Audience-Split polish
+- [ ] 20.6-06-PLAN.md — Trust polish
+- [ ] 20.6-07-PLAN.md — Final-CTA polish
+- [ ] 20.6-08-PLAN.md — Inter-section transitions
+
+**Scope:**
+- Section-by-section co-build mit Luca in localhost:3000
+- Jede Section bekommt Hero-Level-Treatment: Design-System-Tokens, crisp motion, two-color-system
+- Discrepancy-Topic bleibt („Bedarf vs Realität"), Representation redesigned from scratch
+- Inter-section transitions (inkl. des ursprünglich in Plan 20.5-05 geplanten Hero→Section-2-Übergangs) als letzter Plan, nachdem alle Sections stehen
+- Finale Section-Copy bleibt Placeholder — finaler Marketing-Pass kommt nach Phase 20.6
+
+**Success Criteria:**
+- [ ] Alle 8 Sections visually kohärent mit Hero's Signal-Grid-Ästhetik
+- [ ] Inter-section transitions fühlen sich intentional an
+- [ ] Lighthouse Landing bleibt > 90 in allen Kategorien
+- [ ] Reduced-motion Fallback funktioniert über alle neue Motion
+- [ ] Playwright landing-suite (8/8) bleibt grün
+- [ ] Build grün, `/` bleibt `ƒ`, CSP-Nonce intakt
+
+**Working-Mode:**
+- Iteratives Co-Build mit Luca auf localhost — kleine Commits, tight Feedback-Loops
+- Alle Plans `autonomous: true` — kein formaler UAT-Checkpoint, Luca macht Live-Review
+- Kein Push, kein Deploy während der Phase
+
+**Release:** patch innerhalb Milestone v4.5.0. Phase 20 Changeset bleibt weiterhin zurückgehalten bis 20.6 durch ist — dann gemeinsamer Minor-Bump für das komplette neue Landing (Hero + alle polierten Sections + Transitions).
 
 ---
 
@@ -621,7 +708,7 @@ Plans:
 
 **Scope:**
 - Step 1: Fragebogen (Name, Email, Status, Uni, Motivation, Self-Select Level 1-5)
-- Step 2: Assessment-Weiche (Link zu `/level-test` oder Skip)
+- Step 2: Assessment-Weiche (Link zu `/test` oder Skip)
 - Step 3: Account + Circle-Flow-Stub (Submit-Button, aktuell mit 503-Response)
 - Step 4: Confirmation-Screen
 - Progress-Indicator, SessionStorage-State, Validation inline + aria-live
@@ -638,7 +725,7 @@ Plans:
 
 ---
 
-### Phase 24: `/level-test` Assessment
+### Phase 24: `/test` Assessment
 
 **Goal:** Optionaler Kompetenz-Test mit Level-Score-Output, DSGVO-konform, Standalone-fähig.
 **Requirements:** R5.1-R5.7

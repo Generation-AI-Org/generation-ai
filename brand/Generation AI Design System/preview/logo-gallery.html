@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--font-sans);min-height:100vh;}
+  .wrap{padding:28px;box-sizing:border-box;width:100%;}
+  .meta{font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+  .sub{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-bottom:20px;}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+  .cell{padding:32px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;position:relative;}
+  .cell img{height:120px;display:block;width:auto;}
+  .tag{position:absolute;top:10px;left:12px;font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.55;}
+  .section{font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin:24px 0 10px;}
+  .solo{grid-column:1/-1;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="meta">// logos · wide · colorway matrix</div>
+  <div class="sub">11 colorways · 2-zeiliges lockup mit verbindendem „A"</div>
+
+  <div class="section">// primary — single-tone on solid</div>
+  <div class="grid">
+    <div class="cell" style="background:#141414;"><span class="tag" style="color:#CEFF32;">neon / dark</span><img src="../assets/logos/logo-wide-neon.svg?v=5"></div>
+    <div class="cell" style="background:#F6F1E8;"><span class="tag" style="color:#E63946;">red / sand</span><img src="../assets/logos/logo-wide-red.svg?v=5"></div>
+    <div class="cell" style="background:#3A3AFF;"><span class="tag" style="color:#fff;">white / blue</span><img src="../assets/logos/logo-wide-white.svg?v=5"></div>
+    <div class="cell" style="background:#F6F1E8;"><span class="tag" style="color:#141414;">black / sand</span><img src="../assets/logos/logo-wide-black.svg?v=5"></div>
+  </div>
+
+  <div class="section">// dual-tone — letter stacks in two colors</div>
+  <div class="grid">
+    <div class="cell" style="background:#141414;"><span class="tag" style="color:#CEFF32;">neon+blue / dark</span><img src="../assets/logos/logo-wide-blue-neon.svg?v=5"></div>
+    <div class="cell" style="background:#F6F1E8;"><span class="tag" style="color:#E63946;">pink+red / sand</span><img src="../assets/logos/logo-wide-pink-red.svg?v=5"></div>
+    <div class="cell" style="background:#3A3AFF;"><span class="tag" style="color:#CEFF32;">neon-on-blue</span><img src="../assets/logos/logo-wide-neon-on-blue.svg?v=5"></div>
+    <div class="cell" style="background:#FC78FE;"><span class="tag" style="color:#E63946;">red-on-pink</span><img src="../assets/logos/logo-wide-red-on-pink.svg?v=5"></div>
+  </div>
+
+  <div class="section">// single-tone — accent colors</div>
+  <div class="grid">
+    <div class="cell" style="background:#F6F1E8;"><span class="tag" style="color:#3A3AFF;">blue / sand</span><img src="../assets/logos/logo-wide-blue.svg?v=5"></div>
+    <div class="cell" style="background:#F6F1E8;"><span class="tag" style="color:#FC78FE;">pink / sand</span><img src="../assets/logos/logo-wide-pink.svg?v=5"></div>
+    <div class="cell solo" style="background:#141414;"><span class="tag" style="color:#F6F1E8;">sand / dark</span><img src="../assets/logos/logo-wide-sand.svg?v=5"></div>
+  </div>
+</div>
+</body>
+</html>

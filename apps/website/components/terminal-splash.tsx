@@ -41,10 +41,10 @@ const LaunchProgressBar = ({ progress }: { progress: number }) => {
   const empty = 20 - filled
   return (
     <div className="font-mono">
-      <span className="text-[#6c6c6c]">[</span>
+      <span className="text-[#a0a0a0]">[</span>
       <span className="text-[#96d461]">{'█'.repeat(filled)}</span>
       <span className="text-[#3a3a3c]">{'░'.repeat(empty)}</span>
-      <span className="text-[#6c6c6c]">]</span>
+      <span className="text-[#a0a0a0]">]</span>
       <span className="text-[#78dce8] ml-2">{progress}%</span>
       <span className="text-[#a0a0a0] ml-2">Launching...</span>
     </div>
@@ -330,9 +330,9 @@ export function TerminalSplash({
   const Prompt = () => (
     <span className="flex-shrink-0 select-none">
       <span className="text-[#78dce8]">{USERNAME}</span>
-      <span className="text-[#6c6c6c]">@</span>
+      <span className="text-[#a0a0a0]">@</span>
       <span className="text-[#96d461]">generation-ai</span>
-      <span className="text-[#6c6c6c] ml-1.5">%</span>
+      <span className="text-[#a0a0a0] ml-1.5">%</span>
     </span>
   )
 
@@ -363,11 +363,29 @@ export function TerminalSplash({
         <div className="rounded-xl overflow-hidden shadow-2xl" style={{ boxShadow: '0 25px 80px -20px rgba(0,0,0,0.6)' }}>
           {/* Title Bar - macOS Sonoma style */}
           <div className="flex items-center px-4 py-3 bg-[#3a3a3c] border-b border-[#2a2a2c]">
-            {/* Traffic Lights */}
-            <div className="flex gap-2">
-              <button className="w-3 h-3 rounded-full bg-[#ff5f57] hover:bg-[#ff5f57]/80 transition-colors" />
-              <button className="w-3 h-3 rounded-full bg-[#febc2e] hover:bg-[#febc2e]/80 transition-colors" />
-              <button className="w-3 h-3 rounded-full bg-[#28c840] hover:bg-[#28c840]/80 transition-colors" />
+            {/* Traffic Lights — visual dots 12x12, hit-target ≥24x24 via padding */}
+            <div className="flex gap-0.5">
+              <button
+                type="button"
+                aria-label="Schließen"
+                className="p-1.5 rounded-full flex items-center justify-center"
+              >
+                <span className="block w-3 h-3 rounded-full bg-[#ff5f57] hover:bg-[#ff5f57]/80 transition-colors" />
+              </button>
+              <button
+                type="button"
+                aria-label="Minimieren"
+                className="p-1.5 rounded-full flex items-center justify-center"
+              >
+                <span className="block w-3 h-3 rounded-full bg-[#febc2e] hover:bg-[#febc2e]/80 transition-colors" />
+              </button>
+              <button
+                type="button"
+                aria-label="Maximieren"
+                className="p-1.5 rounded-full flex items-center justify-center"
+              >
+                <span className="block w-3 h-3 rounded-full bg-[#28c840] hover:bg-[#28c840]/80 transition-colors" />
+              </button>
             </div>
             {/* Title */}
             <div className="flex-1 text-center">
@@ -418,7 +436,7 @@ export function TerminalSplash({
                     }}
                   />
                 </div>
-                <div className="text-[#6c6c6c] text-center">
+                <div className="text-[#a0a0a0] text-center">
                   <div className="flex items-center justify-center gap-2 text-sm">
                     <span>Press any key or click to start</span>
                   </div>
@@ -475,7 +493,7 @@ export function TerminalSplash({
                   </span>
                 </div>
                 <div
-                  className="text-[#6c6c6c] flex items-center gap-2 cursor-pointer hover:text-[#a0a0a0] transition-colors"
+                  className="text-[#a0a0a0] flex items-center gap-2 cursor-pointer hover:text-[#e0e0e0] transition-colors"
                   onClick={handleLaunch}
                 >
                   <span>Press</span>
@@ -498,13 +516,13 @@ export function TerminalSplash({
 
         {/* Skip */}
         {phase !== 'launching' && (
-          <div className="mt-4 text-center text-[#6c6c6c] text-sm">
+          <div className="mt-4 text-center text-[#a0a0a0] text-sm">
             <button
               onClick={() => {
                 if (skipIfSeen) sessionStorage.setItem('terminal-splash-seen', 'true')
                 onComplete()
               }}
-              className="hover:text-[#a0a0a0] transition-colors cursor-pointer"
+              className="hover:text-[#e0e0e0] transition-colors cursor-pointer"
             >
               Skip intro
             </button>
