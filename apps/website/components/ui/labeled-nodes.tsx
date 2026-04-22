@@ -463,7 +463,7 @@ export function LabeledNodes({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0"
       />
-      {/* z-1 — Radial-Fade-Overlay: schützt Text-Readability im Zentrum.
+      {/* z-1 — Outer Radial-Fade: blendet Nodes an den Rändern aus (bg-Farbe).
           Theme-aware via var(--bg). */}
       <div
         aria-hidden="true"
@@ -473,6 +473,71 @@ export function LabeledNodes({
             "radial-gradient(ellipse at center, transparent 0%, transparent 45%, var(--bg) 95%)",
         }}
       />
+      {/* z-2 — Inner Content-Protect: dedizierte Ellipse direkt hinter dem
+          Text-Block, die Nodes/Labels/Lines in der Mitte dämpft. User-Feedback
+          2026-04-22: Auf Light-Mode stechen die roten Nodes durch den Text —
+          diese Schicht überdeckt sie mit bg-Farbe (im Light zusätzlich mit
+          minimalem Dark-Tint, damit es nicht ins Flache kippt). */}
+      <div
+        aria-hidden="true"
+        className="labeled-nodes-content-protect pointer-events-none absolute inset-0 z-[2]"
+      />
+      <style jsx>{`
+        /* Dämpft Signal-Grid hinter dem Text, ohne es komplett wegzunehmen.
+           Ziel: Main-Message gut lesbar, Grid bleibt aber als Motiv spürbar. */
+        .labeled-nodes-content-protect {
+          background: radial-gradient(
+            ellipse 48% 38% at center,
+            rgba(var(--bg-rgb), 0.4) 0%,
+            rgba(var(--bg-rgb), 0.22) 40%,
+            rgba(var(--bg-rgb), 0.08) 65%,
+            transparent 85%
+          );
+        }
+        :global(.light) .labeled-nodes-content-protect {
+          background:
+            radial-gradient(
+              ellipse 52% 42% at center,
+              rgba(0, 0, 0, 0.045) 0%,
+              rgba(0, 0, 0, 0.02) 45%,
+              transparent 78%
+            ),
+            radial-gradient(
+              ellipse 52% 42% at center,
+              rgba(var(--bg-rgb), 0.45) 0%,
+              rgba(var(--bg-rgb), 0.25) 40%,
+              rgba(var(--bg-rgb), 0.08) 65%,
+              transparent 85%
+            );
+        }
+        @media (max-width: 640px) {
+          .labeled-nodes-content-protect {
+            background: radial-gradient(
+              ellipse 62% 40% at center,
+              rgba(var(--bg-rgb), 0.45) 0%,
+              rgba(var(--bg-rgb), 0.25) 40%,
+              rgba(var(--bg-rgb), 0.08) 65%,
+              transparent 85%
+            );
+          }
+          :global(.light) .labeled-nodes-content-protect {
+            background:
+              radial-gradient(
+                ellipse 66% 45% at center,
+                rgba(0, 0, 0, 0.045) 0%,
+                rgba(0, 0, 0, 0.02) 45%,
+                transparent 78%
+              ),
+              radial-gradient(
+                ellipse 66% 45% at center,
+                rgba(var(--bg-rgb), 0.5) 0%,
+                rgba(var(--bg-rgb), 0.28) 40%,
+                rgba(var(--bg-rgb), 0.1) 65%,
+                transparent 85%
+              );
+          }
+        }
+      `}</style>
       {/* z-10 — Content, clickable */}
       <div className="relative z-10">{children}</div>
     </div>

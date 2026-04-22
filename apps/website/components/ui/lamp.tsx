@@ -39,6 +39,17 @@ export const LampContainer = ({
   children: React.ReactNode;
   className?: string;
 }) => {
+  // Mobile-Values werden per Motion animiert (initial/whileInView). Die
+  // Original-Aceternity-Variante hatte nur feste `rem`-Werte — diese sprengten
+  // 375px-Viewports und verursachten horizontales Scrolling + abgeschnittene
+  // Lamp-Kegel. Breakpoint 640px matcht Tailwind `sm:`.
+  const coneInitial = { opacity: 0.5, width: "8rem" };
+  const coneAnimate = { opacity: 1, width: "min(26rem, 85vw)" };
+  const lineInitial = { width: "12rem" };
+  const lineAnimate = { width: "min(40rem, 90vw)" };
+  const glowInitial = { width: "6rem" };
+  const glowAnimate = { width: "min(14rem, 55vw)" };
+
   return (
     <div
       className={cn(
@@ -46,10 +57,10 @@ export const LampContainer = ({
         className
       )}
     >
-      <div className="relative flex w-full flex-1 scale-y-125 items-center justify-center isolate z-0 ">
+      <div className="relative flex w-full flex-1 scale-y-110 sm:scale-y-125 items-center justify-center isolate z-0 ">
         <motion.div
-          initial={{ opacity: 0.5, width: "12rem" }}
-          whileInView={{ opacity: 1, width: "26rem" }}
+          initial={coneInitial}
+          whileInView={coneAnimate}
           transition={{
             delay: 0.3,
             duration: 0.8,
@@ -58,14 +69,14 @@ export const LampContainer = ({
           style={{
             backgroundImage: `conic-gradient(var(--conic-position), var(--tw-gradient-stops))`,
           }}
-          className="absolute inset-auto right-1/2 h-44 overflow-visible w-[26rem] bg-gradient-conic from-brand-neon-9 via-transparent to-transparent text-text [--conic-position:from_70deg_at_center_top]"
+          className="absolute inset-auto right-1/2 h-36 sm:h-44 overflow-visible bg-gradient-conic from-brand-neon-9 via-transparent to-transparent text-text [--conic-position:from_70deg_at_center_top]"
         >
           <div className="absolute w-[100%] left-0 bg-bg h-32 bottom-0 z-20 [mask-image:linear-gradient(to_top,white,transparent)]" />
           <div className="absolute w-40 h-[100%] left-0 bg-bg bottom-0 z-20 [mask-image:linear-gradient(to_right,white,transparent)]" />
         </motion.div>
         <motion.div
-          initial={{ opacity: 0.5, width: "12rem" }}
-          whileInView={{ opacity: 1, width: "26rem" }}
+          initial={coneInitial}
+          whileInView={coneAnimate}
           transition={{
             delay: 0.3,
             duration: 0.8,
@@ -74,39 +85,39 @@ export const LampContainer = ({
           style={{
             backgroundImage: `conic-gradient(var(--conic-position), var(--tw-gradient-stops))`,
           }}
-          className="absolute inset-auto left-1/2 h-44 w-[26rem] bg-gradient-conic from-transparent via-transparent to-brand-neon-9 text-text [--conic-position:from_290deg_at_center_top]"
+          className="absolute inset-auto left-1/2 h-36 sm:h-44 bg-gradient-conic from-transparent via-transparent to-brand-neon-9 text-text [--conic-position:from_290deg_at_center_top]"
         >
           <div className="absolute w-40 h-[100%] right-0 bg-bg bottom-0 z-20 [mask-image:linear-gradient(to_left,white,transparent)]" />
           <div className="absolute w-[100%] right-0 bg-bg h-32 bottom-0 z-20 [mask-image:linear-gradient(to_top,white,transparent)]" />
         </motion.div>
         <div className="absolute top-1/2 h-48 w-full translate-y-12 scale-x-150 bg-bg blur-2xl"></div>
         <div className="absolute top-1/2 z-50 h-48 w-full bg-transparent opacity-10 backdrop-blur-md"></div>
-        <div className="absolute inset-auto z-50 h-28 w-[24rem] -translate-y-1/2 rounded-full bg-brand-blue-5/60 opacity-40 blur-3xl"></div>
+        <div className="absolute inset-auto z-50 h-20 sm:h-28 w-[85vw] max-w-[24rem] -translate-y-1/2 rounded-full bg-brand-blue-5/60 opacity-40 blur-3xl"></div>
         <motion.div
-          initial={{ width: "8rem" }}
-          whileInView={{ width: "14rem" }}
+          initial={glowInitial}
+          whileInView={glowAnimate}
           transition={{
             delay: 0.3,
             duration: 0.8,
             ease: "easeInOut",
           }}
-          className="absolute inset-auto z-30 h-28 w-56 -translate-y-[5rem] rounded-full bg-brand-neon-8 opacity-70 blur-2xl"
+          className="absolute inset-auto z-30 h-20 sm:h-28 -translate-y-[4rem] sm:-translate-y-[5rem] rounded-full bg-brand-neon-8 opacity-70 blur-2xl"
         ></motion.div>
         <motion.div
-          initial={{ width: "18rem" }}
-          whileInView={{ width: "40rem" }}
+          initial={lineInitial}
+          whileInView={lineAnimate}
           transition={{
             delay: 0.3,
             duration: 0.8,
             ease: "easeInOut",
           }}
-          className="absolute inset-auto z-50 h-0.5 w-[40rem] -translate-y-[7rem] bg-brand-neon-8"
+          className="absolute inset-auto z-50 h-0.5 -translate-y-[5.5rem] sm:-translate-y-[7rem] bg-brand-neon-8"
         ></motion.div>
 
-        <div className="absolute inset-auto z-40 h-44 w-full -translate-y-[12.5rem] bg-bg"></div>
+        <div className="absolute inset-auto z-40 h-36 sm:h-44 w-full -translate-y-[10rem] sm:-translate-y-[12.5rem] bg-bg"></div>
       </div>
 
-      <div className="relative z-50 flex -translate-y-52 flex-col items-center px-5">
+      <div className="relative z-50 flex -translate-y-40 sm:-translate-y-52 flex-col items-center px-5">
         {children}
       </div>
     </div>

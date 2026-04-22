@@ -41,10 +41,22 @@ for (const { name, url } of URLS) {
       if (!isWhitelisted(err.message)) pageErrors.push(err.message)
     })
 
+    // `domcontentloaded` statt `networkidle`: Analytics / Vercel-Insights /
+    // Motion-Loops halten das Netzwerk aktiv → `networkidle` timed out in CI,
+    // obwohl die Seite längst gerendert ist. Die anschliessenden Assertions
+    // (Body-Text > 20 chars, keine CSP-Violations) decken den eigentlichen
+    // Incident-Fall (schwarze Seite) weiterhin ab.
     const response = await page.goto(url, {
-      waitUntil: "networkidle",
-      timeout: 20_000,
+      waitUntil: "domcontentloaded",
+      timeout: 30_000,
     })
+
+    // Warte explizit bis der Body nicht leer ist (schützt gegen Race-Condition
+    // wo DOM geladen, aber React noch nicht hydriert → Body kurz leer).
+    await page.waitForFunction(
+      () => (document.body.innerText || "").trim().length > 20,
+      { timeout: 15_000 },
+    )
 
     expect(response?.status(), `HTTP-Status ${url}`).toBeLessThan(400)
 
