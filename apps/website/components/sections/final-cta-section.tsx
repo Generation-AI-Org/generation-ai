@@ -41,6 +41,7 @@ export function FinalCTASection() {
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/join"
+              prefetch={false}
               className="inline-flex items-center gap-2 bg-[var(--accent)] text-[var(--text-on-accent)] px-6 py-3 rounded-full text-sm font-mono font-bold transition-all duration-300 hover:shadow-[0_0_20px_var(--accent-glow)] hover:scale-[1.03]"
             >
               Jetzt beitreten

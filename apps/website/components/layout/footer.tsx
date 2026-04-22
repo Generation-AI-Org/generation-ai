@@ -35,6 +35,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/about"
+                  prefetch={false}
                   className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
                 >
                   Über uns
@@ -63,6 +64,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/partner"
+                  prefetch={false}
                   className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
                 >
                   Für Partner
@@ -71,6 +73,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/join"
+                  prefetch={false}
                   className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
                 >
                   Jetzt beitreten

@@ -127,6 +127,7 @@ export function Header() {
             {/* Primary CTA (Desktop only) */}
             <Link
               href="/join"
+              prefetch={false}
               className="hidden md:inline-flex bg-[var(--accent)] text-[var(--text-on-accent)] px-4 py-2 rounded-full text-sm font-mono font-bold hover:opacity-90 transition-opacity"
             >
               Jetzt beitreten
@@ -274,6 +275,7 @@ function MobileNavList({ prefersReducedMotion }: MobileNavListProps) {
         render={
           <Link
             href="/join"
+            prefetch={false}
             className="mt-4 inline-flex justify-center bg-[var(--accent)] text-[var(--text-on-accent)] px-4 py-3 rounded-full text-base font-mono font-bold hover:opacity-90 transition-opacity"
           >
             Jetzt beitreten
