@@ -2,39 +2,10 @@
 
 import Link from "next/link"
 import { motion, useReducedMotion } from "motion/react"
-import { SignalGrid } from "@/components/ui/signal-grid"
+import { LabeledNodes } from "@/components/ui/labeled-nodes"
 
-// Phase 20.5 Plan 03 — Hero: SignalGrid (DS Connection-Motif) +
-// DS-aligned Typography + Primary-CTA Button-States.
-//
-// Background-History:
-//   Phase 20.6 (UAT): AuroraBackground → GridBackground (Raycast/Vercel-Look).
-//   Phase 20.5: GridBackground → SignalGrid, weil Design-System-Spezifikation
-//   (brand/Generation AI Design System/README.md §Visual Foundations → Backgrounds)
-//   explizit Nodes + Propagation-Ripple als Motif definiert. GridBackground
-//   bleibt als @deprecated Component erhalten für evtl. andere Contexts.
-//
-// Reduced-motion-Verhalten:
-//   - SignalGrid respektiert `prefers-reduced-motion: reduce` intern
-//     (statischer Grid, keine Breathing, keine Cursor-Propagation, keine Linien).
-//   - motion.div-Entry-Animation wird via useReducedMotion() ausgeschaltet.
-//
-// Typography (DS-konform):
-//   - H1 Geist Mono 700, tracking -0.02em via `tracking-tight`, line-height 1.05
-//   - Body/Subline Geist Sans (default)
-//   - Eyebrow + Tagline Geist Mono uppercase tracked-out
-//
-// Button-States (DS §D Component-Defaults + §E Motion):
-//   - Pill (`rounded-full`), Geist Mono 700 tracked +0.02em
-//   - Hover: scale 1.03 + shadow-glow (--accent-glow)
-//   - Active/Press: scale 0.98 (DS §C Interaction-States)
-//   - Transition: 300ms cubic-bezier(0.16, 1, 0.3, 1) (≈ --dur-normal / --ease-out)
 export function HeroSection() {
   const prefersReducedMotion = useReducedMotion()
-
-  const heroClaim = "KI-Skills, die im Studium fehlen."
-  const heroSubline =
-    "Die Community für Studierende, die KI nicht nur benutzen, sondern verstehen wollen."
 
   return (
     <section
@@ -42,51 +13,165 @@ export function HeroSection() {
       data-section="hero"
       className="relative isolate"
     >
-      <SignalGrid className="flex min-h-screen flex-col items-center justify-center">
+      <LabeledNodes className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center">
         <motion.div
           initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
           animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="relative z-10 mx-auto max-w-4xl px-6 py-24 text-center"
+          className="relative z-10 mx-auto max-w-3xl px-6 py-20 text-center"
         >
-          {/* Text-backdrop: subtle radial halo in theme-bg color so H1/subline/CTA
-              stay readable over the animated Signal-Grid. Uses --bg-rgb triplet
-              so opacity works in both themes. Sits behind content (-z-10) +
-              inside the content wrapper so it tracks the actual text cluster
-              (not the full hero rectangle). */}
+          {/* Eyebrow mit LED-Dot */}
           <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-[-3rem] -z-10 rounded-[2rem]"
+            className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted"
             style={{
-              background:
-                "radial-gradient(ellipse at center, rgba(var(--bg-rgb), 0.72) 0%, rgba(var(--bg-rgb), 0.48) 45%, rgba(var(--bg-rgb), 0.18) 75%, transparent 95%)",
+              textShadow:
+                "0 0 10px rgba(var(--bg-rgb), 1), 0 0 4px rgba(var(--bg-rgb), 1)",
             }}
-          />
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-text-secondary mb-6">
+          >
+            <span
+              aria-hidden="true"
+              className="h-1.5 w-1.5 rounded-full"
+              style={{
+                background: "var(--accent)",
+                boxShadow: "0 0 8px var(--accent-glow)",
+              }}
+            />
             Generation AI · DACH-Community
-          </p>
+          </div>
+
+          {/* H1 — Geist Mono 700, tracking tight, accent-span auf "fehlen" */}
           <h1
             id="hero-heading"
-            className="font-mono text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight text-text"
+            className="mt-6 font-mono font-bold leading-[1.02] tracking-[-0.03em] text-text text-balance"
+            style={{
+              fontSize: "clamp(40px, 6.5vw, 76px)",
+              textShadow:
+                "0 0 18px rgba(var(--bg-rgb), 1), 0 0 8px rgba(var(--bg-rgb), 1)",
+            }}
           >
-            {heroClaim}
+            KI-Skills,
+            <br />
+            die im Studium{" "}
+            <span style={{ color: "var(--accent)" }}>fehlen</span>.
           </h1>
-          <p className="mt-6 text-lg sm:text-xl text-text-secondary max-w-2xl mx-auto">
-            {heroSubline}
+
+          {/* Subline */}
+          <p
+            className="mx-auto mt-6 max-w-xl text-lg leading-[1.5] text-text-secondary text-pretty sm:text-xl"
+            style={{
+              textShadow:
+                "0 0 12px rgba(var(--bg-rgb), 1), 0 0 5px rgba(var(--bg-rgb), 1)",
+            }}
+          >
+            Die Community für Studierende, die KI nicht nur benutzen, sondern
+            verstehen wollen. Tools, Kurse, Events — und ein Netzwerk, das
+            verbindet.
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+
+          {/* CTAs */}
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/join"
-              className="inline-flex items-center justify-center rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-mono font-bold tracking-[0.02em] text-[var(--text-on-accent)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.03] hover:shadow-[0_0_20px_var(--accent-glow)] active:scale-[0.98]"
+              className="group inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 font-mono text-[15px] font-bold tracking-[0.02em] text-[var(--text-on-accent)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.03] hover:shadow-[0_0_24px_var(--accent-glow)] active:scale-[0.98]"
+              style={{ background: "var(--accent)" }}
             >
-              Jetzt beitreten
+              Kostenlos beitreten
+              <svg
+                aria-hidden="true"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-[3px]"
+              >
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            </Link>
+            <Link
+              href="#offering-heading"
+              className="inline-flex items-center justify-center rounded-full border px-7 py-4 font-mono text-[15px] font-bold tracking-[0.02em] text-text transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              style={{ borderColor: "var(--border)" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.borderColor = "var(--border-accent)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.borderColor = "var(--border)")
+              }
+            >
+              Mehr erfahren
             </Link>
           </div>
-          <p className="mt-6 text-xs font-mono text-text-muted">
-            Kostenlos · gemeinnützig · für Studierende und Early-Career
-          </p>
+
+          {/* Meta-Row mit 3 Checks */}
+          <div
+            className="mt-7 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted"
+            style={{
+              textShadow:
+                "0 0 10px rgba(var(--bg-rgb), 1), 0 0 4px rgba(var(--bg-rgb), 1)",
+            }}
+          >
+            {["Kostenlos", "Gemeinnützig", "Für Studis & Early-Career"].map(
+              (label) => (
+                <span key={label} className="inline-flex items-center gap-1.5">
+                  <svg
+                    aria-hidden="true"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ color: "var(--accent)" }}
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  {label}
+                </span>
+              ),
+            )}
+          </div>
         </motion.div>
-      </SignalGrid>
+      </LabeledNodes>
+
+      {/* Scroll-Indicator — Kind der Section, damit bottom relativ zur Hero-Höhe ist */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-8 left-1/2 z-20 hidden -translate-x-1/2 flex-col items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-text-muted opacity-70 sm:flex"
+      >
+        <span>scroll</span>
+        <span className="hero-scroll-line block h-8 w-px" />
+      </div>
+
+      <style jsx>{`
+        .hero-scroll-line {
+          background: linear-gradient(
+            to bottom,
+            var(--text-muted),
+            transparent
+          );
+          animation: heroScrollPulse 2s ease-in-out infinite;
+        }
+        @keyframes heroScrollPulse {
+          0%,
+          100% {
+            opacity: 0.3;
+          }
+          50% {
+            opacity: 1;
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .hero-scroll-line {
+            animation: none;
+          }
+        }
+      `}</style>
     </section>
   )
 }

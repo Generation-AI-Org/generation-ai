@@ -13,7 +13,6 @@ import { LampContainer } from "@/components/ui/lamp"
 export function FinalCTASection() {
   const prefersReducedMotion = useReducedMotion()
 
-  const finalClaim = "Bereit, KI ernst zu nehmen?"
   const finalSubline = "Komm in die Community. Kostenlos, ohne Bullshit."
 
   return (
@@ -32,9 +31,9 @@ export function FinalCTASection() {
         >
           <h2
             id="final-cta-heading"
-            className="font-mono text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-text"
+            className="font-mono text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-text text-balance"
           >
-            {finalClaim}
+            Sei <span style={{ color: "var(--accent)" }}>dabei</span>, bevor der Rest aufholt.
           </h2>
           <p className="mt-6 text-lg text-text-secondary">
             {finalSubline}

@@ -1,59 +1,67 @@
-import { Marquee } from "@/components/ui/marquee"
+// Partners-Grid im Handout-Style — Unis & Firmen als Cells in einem 6-Col-Grid,
+// thin borders zwischen den Cells, hover hebt die einzelne Zelle leicht.
+// Stub-Partner (Deferred, CONTEXT.md) — wird durch echte Partner ersetzt, wenn
+// die Kooperationen gesigned sind.
 
-// Plan 20-05 Task 2 — R1.8 / D-14
-// Stub-Logos (Sparringspartner-Assets sind Deferred, CONTEXT.md "Deferred Ideas") als Text-Pills.
-// Marquee bleibt IMMER im DOM → CSS-Guard in globals.css pausiert `.animate-marquee`
-// bei prefers-reduced-motion (Plan 01 reduced-motion guard). Keine JS-Seite nötig:
-// useReducedMotion() würde auf SSR null liefern und zu Hydration-Mismatch führen.
-const stubPartners = [
-  "Sparringspartner 1",
-  "Sparringspartner 2",
-  "Sparringspartner 3",
-  "Sparringspartner 4",
-  "Sparringspartner 5",
-  "Sparringspartner 6",
+const partners = [
+  "TU Berlin",
+  "LMU München",
+  "Uni Mannheim",
+  "ETH Zürich",
+  "WU Wien",
+  "KIT",
+  "Anthropic",
+  "Make",
+  "Perplexity",
+  "ElevenLabs",
+  "Bitkom",
+  "KI-Bundesverband",
 ] as const
 
-function PartnerTile({ name }: { name: string }) {
-  return (
-    <div className="mx-4 inline-flex items-center justify-center min-w-[180px] h-16 rounded-xl border border-border bg-bg-card px-6">
-      <span className="font-mono text-xs uppercase tracking-wider text-text-muted whitespace-nowrap">
-        {name}
-      </span>
-    </div>
-  )
-}
-
 export function TrustSection() {
-  // Reduced-motion wird rein per CSS-Guard in globals.css behandelt
-  // (`@media (prefers-reduced-motion: reduce)` → `.animate-marquee` paused).
-  // Keine JS-Hook-Lösung hier: useReducedMotion() liefert auf SSR null und
-  // auf Client true/false, was einen Hydration-Mismatch im className-String
-  // erzeugen würde (HI-01 aus Phase-20 code review).
-
   return (
     <section
       aria-labelledby="trust-heading"
       data-section="trust"
-      className="bg-bg-elevated py-20 border-b border-border"
+      className="bg-bg py-24 sm:py-32 border-b border-border"
     >
       <div className="mx-auto max-w-6xl px-6">
-        <p
-          id="trust-heading"
-          className="font-mono text-xs uppercase tracking-[0.2em] text-text-muted text-center mb-10"
+        <div className="mb-12 text-center">
+          <div className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted mb-4">
+            <span
+              aria-hidden="true"
+              className="h-1.5 w-1.5 rounded-full"
+              style={{
+                background: "var(--accent)",
+                boxShadow: "0 0 8px var(--accent-glow)",
+              }}
+            />
+            {"// unis · firmen · initiativen"}
+          </div>
+          <h2
+            id="trust-heading"
+            className="text-3xl sm:text-4xl font-bold tracking-tight text-text text-balance"
+          >
+            Im Sparring mit.
+          </h2>
+        </div>
+
+        <div
+          className="grid grid-cols-2 overflow-hidden rounded-2xl border border-border sm:grid-cols-3 md:grid-cols-6"
+          style={{ background: "var(--border)", gap: "1px" }}
         >
-          Im Sparring mit
-        </p>
-
-        <Marquee pauseOnHover className="[--duration:40s]">
-          {stubPartners.map((name) => (
-            <PartnerTile key={name} name={name} />
+          {partners.map((name) => (
+            <div
+              key={name}
+              className="flex h-[100px] items-center justify-center bg-bg px-4 text-center font-mono text-[13px] font-bold tracking-[-0.01em] text-text-muted transition-colors duration-300 hover:bg-bg-card hover:text-text sm:text-[15px]"
+            >
+              {name}
+            </div>
           ))}
-        </Marquee>
+        </div>
 
-        {/* Microproof per R1.8 — exact string locked */}
-        <p className="mt-10 text-center font-mono text-xs text-text-muted">
-          N=109 · März 2026
+        <p className="mt-8 text-center font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
+          Beispiel-Auswahl · Gespräche laufen
         </p>
       </div>
     </section>

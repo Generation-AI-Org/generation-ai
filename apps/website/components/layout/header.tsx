@@ -50,10 +50,10 @@ export function Header() {
       </a>
 
       <nav aria-label="Hauptnavigation" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center" aria-label="Generation AI - Startseite">
-            <Logo context="header" theme={theme} size="md" className="hover:opacity-90 transition-opacity" />
+            <Logo context="header" theme={theme} size="lg" className="hover:opacity-90 transition-opacity" />
           </Link>
 
           {/* Desktop Nav (md+) */}
