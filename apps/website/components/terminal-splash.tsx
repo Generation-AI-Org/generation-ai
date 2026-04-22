@@ -161,8 +161,11 @@ export function TerminalSplash({
   const [cursorVisible, setCursorVisible] = useState(true)
   const [launchProgress, setLaunchProgress] = useState(0)
 
-  // Audio
-  const { playKey } = useKeyboardSound(enableSound && mounted)
+  // Audio — fetch nur wenn Splash tatsächlich rendert (nicht shouldSkip).
+  // Wiederkehrer haben `terminal-splash-seen` im sessionStorage → Splash wird
+  // übersprungen → kein Audio-Fetch. Das nimmt die 287 KB Sound-Datei komplett
+  // aus dem LCP-Pfad für alle, die die Seite schon einmal gesehen haben.
+  const { playKey } = useKeyboardSound(enableSound && mounted && !shouldSkip)
 
   const currentCommand = COMMANDS[currentCommandIndex]
 
