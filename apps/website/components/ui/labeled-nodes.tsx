@@ -51,41 +51,7 @@ export function LabeledNodes({
     const container = containerRef.current
     const canvas = canvasRef.current
     if (!container || !canvas) return
-
-    // Defer heavy canvas setup + rAF-loop bis Browser idle ist — spart TBT
-    // beim initialen Load. Fallback auf setTimeout wo rIC nicht existiert
-    // (Safari <16). 250ms timeout, danach forciert starten damit der Hero
-    // nicht zu leer wirkt.
-    const win = window as Window & {
-      requestIdleCallback?: (
-        cb: IdleRequestCallback,
-        opts?: IdleRequestOptions,
-      ) => number
-      cancelIdleCallback?: (handle: number) => void
-    }
-    let idleHandle: number | null = null
-    let timeoutHandle: number | null = null
-    let cleanup: (() => void) | null = null
-    let cancelled = false
-
-    const start = () => {
-      if (cancelled) return
-      cleanup = startCanvasAnimation(container, canvas)
-    }
-
-    if (typeof win.requestIdleCallback === "function") {
-      idleHandle = win.requestIdleCallback(start, { timeout: 250 })
-    } else {
-      timeoutHandle = window.setTimeout(start, 80)
-    }
-
-    return () => {
-      cancelled = true
-      if (idleHandle !== null && typeof win.cancelIdleCallback === "function")
-        win.cancelIdleCallback(idleHandle)
-      if (timeoutHandle !== null) window.clearTimeout(timeoutHandle)
-      cleanup?.()
-    }
+    return startCanvasAnimation(container, canvas)
   }, [])
 
   return (
