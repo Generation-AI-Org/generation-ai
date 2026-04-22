@@ -1,35 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import dynamic from 'next/dynamic'
 import { MotionConfig } from "motion/react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
+import { TerminalSplash } from "@/components/terminal-splash"
 import { HeroSection } from "@/components/sections/hero-section"
 import { OfferingSection } from "@/components/sections/offering-section"
-
-// Splash nur für Erstbesucher (sessionStorage-Check intern) → client-only, aus
-// dem Initial-Bundle raus. Wiederkehrer laden diesen Chunk nie.
-const TerminalSplash = dynamic(
-  () => import("@/components/terminal-splash").then(m => m.TerminalSplash),
-  { ssr: false },
-)
-
-// Under-the-fold Sections lazy-loaded → kleinerer Critical-Path-Bundle,
-// bessere TBT/LCP. Kein Loading-Skeleton nötig, da die Sections per Scroll
-// erreicht werden; React hydriert sie rechtzeitig.
-const ToolShowcaseSection = dynamic(
-  () => import("@/components/sections/tool-showcase-section").then(m => m.ToolShowcaseSection),
-)
-const CommunityPreviewSection = dynamic(
-  () => import("@/components/sections/community-preview-section").then(m => m.CommunityPreviewSection),
-)
-const TrustSection = dynamic(
-  () => import("@/components/sections/trust-section").then(m => m.TrustSection),
-)
-const FinalCTASection = dynamic(
-  () => import("@/components/sections/final-cta-section").then(m => m.FinalCTASection),
-)
+import { ToolShowcaseSection } from "@/components/sections/tool-showcase-section"
+import { CommunityPreviewSection } from "@/components/sections/community-preview-section"
+import { TrustSection } from "@/components/sections/trust-section"
+import { FinalCTASection } from "@/components/sections/final-cta-section"
 
 type HomeClientProps = {
   nonce: string
@@ -57,8 +38,6 @@ export function HomeClient({ nonce }: HomeClientProps) {
       >
         <Header />
         <main id="main-content" className="min-h-screen pt-20">
-          {/* Above-the-fold (sync): Hero + Offering.
-              Below-the-fold (dynamic): ToolShowcase, CommunityPreview, Trust, FinalCTA. */}
           <HeroSection />
           <OfferingSection />
           <ToolShowcaseSection />
