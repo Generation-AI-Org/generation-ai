@@ -1,12 +1,15 @@
 // 10-Fragen-FAQ für /about#faq (UI-SPEC §FAQ, Zeile 215-228).
 //
-// Sync-Regel (UI-SPEC Zeile 213): Fragen 3, 5, 6, 7 sind 1:1 identisch zur
-// Answer-Copy in `components/sections/kurz-faq-section.tsx`. Copy-Änderungen
-// müssen in BEIDEN Files gemacht werden (Phase 27 Copy-Pass wird dies als
-// Regression-Check aufnehmen).
+// Sync-Regel (UI-SPEC Zeile 213): Fragen 3, 5, 6, 7 teilen ihre Answer-Copy
+// 1:1 mit `components/sections/kurz-faq-section.tsx`. Der Sync-Contract wird
+// jetzt maschinell erzwungen: beide Files importieren die Answer-Strings aus
+// `components/faq/shared-faq-answers.ts` (Review WR-03). Copy-Edit an einer
+// Stelle — beide Seiten ziehen automatisch mit.
 //
 // Inline-Anker-Links in Antworten 8, 9, 10 → realisiert durch segmented
 // `answerNodes`-Array mit { kind: "text" } | { kind: "link" }-Nodes.
+
+import { SHARED_FAQ_ANSWERS } from "../faq/shared-faq-answers"
 
 export type FaqLink = {
   kind: "link"
@@ -48,13 +51,9 @@ export const faqs: FaqItem[] = [
     ],
   },
   {
-    // SYNC with kurz-faq-section.tsx — answer 1:1 identisch.
+    // SYNC with kurz-faq-section.tsx — answer via SHARED_FAQ_ANSWERS.kosten.
     q: "Kostet die Mitgliedschaft etwas?",
-    answerNodes: [
-      t(
-        "Nein. Mitgliedschaft, Community-Zugang, Wissensplattform und Events sind kostenlos. Generation AI ist als gemeinnütziger Verein aufgestellt und finanziert sich über Fördermitglieder und Partner.",
-      ),
-    ],
+    answerNodes: [t(SHARED_FAQ_ANSWERS.kosten)],
   },
   {
     q: "Wie melde ich mich an?",
@@ -65,31 +64,19 @@ export const faqs: FaqItem[] = [
     ],
   },
   {
-    // SYNC with kurz-faq-section.tsx — answer 1:1 identisch.
+    // SYNC with kurz-faq-section.tsx — answer via SHARED_FAQ_ANSWERS.vorwissen.
     q: "Brauche ich technisches Vorwissen?",
-    answerNodes: [
-      t(
-        "Nein. Wir starten beim Alltagsnutzen und führen schrittweise zu Agenten und Automatisierung. Alle Fachrichtungen willkommen — du musst weder programmieren können noch Informatik studieren.",
-      ),
-    ],
+    answerNodes: [t(SHARED_FAQ_ANSWERS.vorwissen)],
   },
   {
-    // SYNC with kurz-faq-section.tsx — answer 1:1 identisch.
+    // SYNC with kurz-faq-section.tsx — answer via SHARED_FAQ_ANSWERS.zeit.
     q: "Wie viel Zeit muss ich investieren?",
-    answerNodes: [
-      t(
-        "So viel oder so wenig du willst. Kein Pflichtprogramm. Die Community läuft asynchron, Events sind optional. Viele schauen monatlich rein, andere bauen aktiv mit — beides passt.",
-      ),
-    ],
+    answerNodes: [t(SHARED_FAQ_ANSWERS.zeit)],
   },
   {
-    // SYNC with kurz-faq-section.tsx "Muss ich an einer bestimmten Uni studieren?" — answer 1:1, q-wording minimal different.
+    // SYNC with kurz-faq-section.tsx — answer via SHARED_FAQ_ANSWERS.uni (q-wording minimal different).
     q: "Muss ich an einer bestimmten Uni sein?",
-    answerNodes: [
-      t(
-        "Nein. Offen für Studierende und Early-Career aus dem gesamten DACH-Raum, unabhängig von Hochschule oder Fachrichtung. Wir arbeiten perspektivisch mit Hochschulen zusammen, aber eine Mitgliedschaft ist daran nicht gebunden.",
-      ),
-    ],
+    answerNodes: [t(SHARED_FAQ_ANSWERS.uni)],
   },
   {
     q: "Wer steckt hinter Generation AI?",

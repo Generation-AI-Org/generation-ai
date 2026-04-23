@@ -5,6 +5,8 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
+import { SHARED_FAQ_ANSWERS } from "../faq/shared-faq-answers"
+
 // Kurz-FAQ Section (Simon §4.10, CONTEXT.md D-10) — 5-Fragen-Accordion
 // direkt nach Final-CTA, vor Footer.
 //
@@ -35,22 +37,24 @@ type FaqItem = {
   a: string
 }
 
+// 4 der 5 Antworten kommen aus SHARED_FAQ_ANSWERS (Review WR-03).
+// Antwort-Copy darf NICHT hier gedriftet werden — Edit in shared-faq-answers.ts.
 const faqs: FaqItem[] = [
   {
     q: "Kostet das was?",
-    a: "Nein. Mitgliedschaft, Community-Zugang, Wissensplattform und Events sind kostenlos. Generation AI ist als gemeinnütziger Verein aufgestellt und finanziert sich über Fördermitglieder und Partner.",
+    a: SHARED_FAQ_ANSWERS.kosten,
   },
   {
     q: "Brauche ich technisches Vorwissen?",
-    a: "Nein. Wir starten beim Alltagsnutzen und führen schrittweise zu Agenten und Automatisierung. Alle Fachrichtungen willkommen — du musst weder programmieren können noch Informatik studieren.",
+    a: SHARED_FAQ_ANSWERS.vorwissen,
   },
   {
     q: "Muss ich an einer bestimmten Uni studieren?",
-    a: "Nein. Offen für Studierende und Early-Career aus dem gesamten DACH-Raum, unabhängig von Hochschule oder Fachrichtung. Wir arbeiten perspektivisch mit Hochschulen zusammen, aber eine Mitgliedschaft ist daran nicht gebunden.",
+    a: SHARED_FAQ_ANSWERS.uni,
   },
   {
     q: "Wie viel Zeit muss ich investieren?",
-    a: "So viel oder so wenig du willst. Kein Pflichtprogramm. Die Community läuft asynchron, Events sind optional. Viele schauen monatlich rein, andere bauen aktiv mit — beides passt.",
+    a: SHARED_FAQ_ANSWERS.zeit,
   },
   {
     q: "Was passiert nach der Anmeldung?",
