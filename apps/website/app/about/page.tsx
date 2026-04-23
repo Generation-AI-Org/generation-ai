@@ -1,30 +1,21 @@
 import type { Metadata } from "next"
+import { headers } from "next/headers"
 
-import { AboutHeroSection } from "@/components/about/about-hero-section"
-import { AboutStorySection } from "@/components/about/about-story-section"
-import { AboutTeamSection } from "@/components/about/about-team-section"
-import { AboutValuesSection } from "@/components/about/about-values-section"
-import { AboutVereinSection } from "@/components/about/about-verein-section"
-import { AboutMitmachCTASection } from "@/components/about/about-mitmach-cta-section"
-import { AboutFaqSection } from "@/components/about/about-faq-section"
-import { AboutFinalCTASection } from "@/components/about/about-final-cta-section"
-import { AboutKontaktSection } from "@/components/about/about-kontakt-section"
+import { AboutClient } from "@/components/about-client"
 
 // Route `/about` — Credibility-Anker-Seite (Phase 21).
 //
-// Single-Page-Layout mit 9 Sections in fester Reihenfolge:
-//   1. Hero (H1 + Display-Claim)
-//   2. Story (Gründungs-Narrative)
-//   3. Team (Founders + Member-Grid)
-//   4. Values (4 Werte-Blöcke)
-//   5. Verein (Gemeinnützigkeit, Transparenz — #verein Anker load-bearing für Phase 22)
-//   6. Mitmach-CTA (Mailto → #mitmach Anker)
-//   7. FAQ (10-Fragen-Accordion — #faq Anker load-bearing für Landing-Kurz-FAQ-Link)
-//   8. Final-CTA (Primary /join + Secondary Partner/Mitmach-Links)
-//   9. Kontakt (3-Zeilen Card)
+// Server Component, liest den Request-Nonce aus dem `x-nonce`-Header (von
+// proxy.ts gesetzt) und reicht ihn an <AboutClient> durch. AboutClient mountet
+// Header + MotionConfig + 9 Sections + Footer — analog zu home-client.tsx.
 //
-// Route ist dynamic via Root-Layout (`export const dynamic = "force-dynamic"`
-// in app/layout.tsx) — CSP-Nonce-Flow bleibt intakt (siehe LEARNINGS.md).
+// `await headers()` erzwingt dynamic rendering (konsistent mit Root-Layout
+// `export const dynamic = "force-dynamic"`) — CSP-Nonce-Flow bleibt intakt
+// (siehe LEARNINGS.md CSP-Incident).
+//
+// Section-Reihenfolge (fix, in AboutClient):
+//   1. Hero  2. Story  3. Team  4. Values  5. Verein
+//   6. Mitmach-CTA  7. FAQ  8. Final-CTA  9. Kontakt
 
 export const metadata: Metadata = {
   title: {
@@ -49,18 +40,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default function AboutPage() {
-  return (
-    <main id="main-content">
-      <AboutHeroSection />
-      <AboutStorySection />
-      <AboutTeamSection />
-      <AboutValuesSection />
-      <AboutVereinSection />
-      <AboutMitmachCTASection />
-      <AboutFaqSection />
-      <AboutFinalCTASection />
-      <AboutKontaktSection />
-    </main>
-  )
+export default async function AboutPage() {
+  const nonce = (await headers()).get("x-nonce") ?? ""
+  return <AboutClient nonce={nonce} />
 }

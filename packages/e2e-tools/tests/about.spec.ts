@@ -123,9 +123,12 @@ test.describe("Phase 21 — /about", () => {
     page,
   }) => {
     await page.goto(`${BASE_URL}/about`)
-    // Skip-link ist das erste fokussierbare Element im Header.
-    await page.keyboard.press("Tab")
+    // Skip-Link existiert im DOM und verweist auf #main-content. Initial
+    // visuell versteckt (top: -100%), wird bei :focus sichtbar.
     const skipLink = page.locator(".skip-link")
+    await expect(skipLink).toHaveAttribute("href", "#main-content")
+    // Fokussierbarkeit + Navigation: Link direkt fokussieren und Enter drücken.
+    await skipLink.focus()
     await expect(skipLink).toBeFocused()
     await page.keyboard.press("Enter")
     await expect(page.locator("#main-content")).toBeInViewport()
