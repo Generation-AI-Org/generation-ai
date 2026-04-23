@@ -73,7 +73,7 @@ export function CommunityPreviewSection() {
     <section
       aria-labelledby="community-preview-heading"
       data-section="community-preview"
-      className="bg-bg-elevated py-24 sm:py-32 border-b border-border"
+      className="bg-bg-elevated py-24 sm:py-32"
     >
       <div className="mx-auto max-w-6xl px-6">
         {/* Section-Header — Simon §4.7 Fix: slash-prefix Mono-Label mit Dot */}

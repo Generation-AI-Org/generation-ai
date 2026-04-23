@@ -85,7 +85,7 @@ export function ProblemBlockSection() {
     <section
       aria-labelledby="problem-block-heading"
       data-section="problem-block"
-      className="relative bg-bg py-24 sm:py-32 border-b border-border"
+      className="relative bg-bg py-24 sm:py-32"
     >
       <div className="mx-auto max-w-6xl px-6">
         {/* Eyebrow */}

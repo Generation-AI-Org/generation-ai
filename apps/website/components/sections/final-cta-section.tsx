@@ -66,7 +66,7 @@ export function FinalCTASection() {
     <section
       aria-labelledby="final-cta-heading"
       data-section="final-cta"
-      className="relative isolate overflow-hidden bg-bg py-32 sm:py-40 border-b border-border"
+      className="relative isolate overflow-hidden bg-bg py-32 sm:py-40"
     >
       {/* Backdrop: subtle radial glow am unteren Rand, DS-Token only */}
       <div

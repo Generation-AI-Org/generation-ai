@@ -79,7 +79,7 @@ export function TrustSection() {
     <section
       aria-labelledby="trust-heading"
       data-section="trust"
-      className="bg-bg py-24 sm:py-32 border-b border-border overflow-hidden"
+      className="bg-bg py-24 sm:py-32 overflow-hidden"
     >
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
