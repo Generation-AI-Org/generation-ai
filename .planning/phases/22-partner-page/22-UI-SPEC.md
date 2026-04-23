@@ -55,18 +55,14 @@ Exceptions:
 
 ## Typography
 
-All type roles use DS tokens from `packages/config/tailwind/base.css`. No inline magic numbers.
+Full DS scale is inherited from `packages/config/tailwind/base.css` (pre-approved system-wide — not re-declared here). This table lists the **4 roles active in this phase only**.
 
-| Role | Size | Weight | Line Height | Font | Usage |
-|------|------|--------|-------------|------|-------|
-| Display (H1) | `var(--fs-display)` = clamp(40px, 6.5vw, 76px) | 700 (bold) | 1.02 | Geist Mono | Hero H1 "Lass uns zusammen was bewegen." |
-| H2 Section | `var(--fs-h2)` = clamp(24px, 3vw, 32px) | 700 (bold) | `var(--lh-headline)` = 1.2 | Geist Sans | Tab-content section headings, trust section H2 |
-| H3 Subsection | `var(--fs-h3)` = 20px | 700 (bold) | `var(--lh-sub)` = 1.3 | Geist Sans | Value-prop titles, form section heading, contact-card heading |
-| Body | `var(--fs-body)` = 16px | 400 (regular) | `var(--lh-body)` = 1.65 | Geist Sans | Form labels, tab content body text |
-| Lede | `var(--fs-lede)` = 18px | 400 (regular) | `var(--lh-lede)` = 1.5 | Geist Sans | Hero sub-line ("Vier Partnertypen. Ein Formular.") |
-| Small | `var(--fs-small)` = 14px | 400 (regular) | 1.55 | Geist Sans | Input help text, secondary form copy |
-| Button | `var(--fs-button)` = 14px | 700 (bold) | 1 | Geist Mono | CTA buttons, tab labels |
-| Micro/Eyebrow | `var(--fs-micro)` = 11px | 700 (bold) | 1.4 | Geist Mono | Eyebrows ("// für partner · unternehmen"), microproof, form field labels (uppercase tracking) |
+| Role | Token | Size | Weight | Line Height | Font | Usage in Phase 22 |
+|------|-------|------|--------|-------------|------|--------------------|
+| Display | `--fs-display` | clamp(40px, 6.5vw, 76px) | 700 | 1.02 | Geist Mono | Hero H1 "Lass uns zusammen was bewegen." only |
+| H2 | `--fs-h2` | clamp(24px, 3vw, 32px) | 700 | `--lh-headline` = 1.2 | Geist Sans | Tab-content section headings, trust section H2. Also used for hero subline and lede at normal weight (400) — collapses `--fs-lede` (18px) and `--fs-h3` (20px) which are not re-declared here |
+| Body | `--fs-body` | 16px | 400 | `--lh-body` = 1.65 | Geist Sans | Paragraphs, form labels, tab content body text. Also covers button text context (CTA label rendered at body scale in mono) and input help text — collapses `--fs-small` (14px) and `--fs-button` (14px) which are not re-declared here |
+| Micro | `--fs-micro` | 11px | 700 | 1.4 | Geist Mono | Eyebrows ("// für partner"), microproof, contact links on person cards — uppercase + `tracking-[0.2em]` |
 
 Tracking rules (DS canonical):
 - H1: `tracking-[-0.03em]`
@@ -200,7 +196,7 @@ Accent is NOT used for: tab hover states (use `--border`), card backgrounds, bod
 
 ### Form Card
 - Container: `rounded-2xl border border-border bg-bg-card px-6 py-8 sm:p-10`
-- Submit button: Primary pill style — `bg-[var(--accent)] text-[var(--text-on-accent)] rounded-full px-6 py-2.5 font-mono font-bold text-[14px] tracking-[0.02em]` + `hover:shadow-[0_0_20px_var(--accent-glow)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-300`
+- Submit button: Primary pill style — `bg-[var(--accent)] text-[var(--text-on-accent)] rounded-full px-6 py-3 font-mono font-bold text-[14px] tracking-[0.02em]` + `hover:shadow-[0_0_20px_var(--accent-glow)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-300`
 
 ---
 
@@ -211,7 +207,7 @@ Reuses `PlaceholderAvatar` from Phase 21. Spec for partner-person context:
 - Size: `md` (80px × 80px)
 - Style: `rounded-full bg-bg-elevated border border-border font-mono font-bold text-text`
 - Background: `--bg-elevated` (NOT `--accent` background — understated, consistent with Phase 21 pattern)
-- Card layout: avatar centered top, name below (font-sans font-bold, `--fs-h3`), role below that (`--fs-small` text-muted), contact links below role (Mail + LinkedIn)
+- Card layout: avatar centered top, name below (font-sans font-bold, `--fs-h2` scale), role below that (`--fs-body` text-muted), contact links below role (Mail + LinkedIn)
 - Contact link style: `font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted hover:text-[var(--accent)]`
 - LinkedIn placeholder: `href="#"` with `data-placeholder="linkedin"` until URLs delivered (D-07)
 - Card container: `rounded-2xl border border-border bg-bg-card p-6 text-center`
