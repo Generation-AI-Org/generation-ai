@@ -212,7 +212,7 @@ export function KurzFaqSection() {
           <Link
             href="/about#faq"
             prefetch={false}
-            className="inline-flex items-center gap-2 font-mono text-[13px] font-bold uppercase tracking-[0.12em] text-text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:text-[var(--accent)]"
+            className="group inline-flex items-center gap-2 font-mono text-[13px] font-bold uppercase tracking-[0.12em] text-text-muted transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:text-[var(--accent)]"
           >
             Mehr Fragen? Über uns
             <ArrowRight
