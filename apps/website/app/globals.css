@@ -17,6 +17,7 @@
   --color-popover-foreground: var(--text);
   --color-primary: var(--accent);
   --color-primary-foreground: var(--text-on-accent);
+  --color-accent-foreground: var(--text-on-accent);
   --color-secondary: var(--bg-elevated);
   --color-secondary-foreground: var(--text);
   --color-muted: var(--bg-elevated);

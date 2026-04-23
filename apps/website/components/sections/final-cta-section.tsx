@@ -68,15 +68,21 @@ export function FinalCTASection() {
       data-section="final-cta"
       className="relative isolate overflow-hidden bg-bg py-32 sm:py-40"
     >
-      {/* Backdrop: subtle radial glow — zentriert statt bottom-anchored,
-          damit der Fade-Out innerhalb der Section liegt (kein Hard-Cut
-          an der Section-Bottom-Grenze, Luca UAT 2026-04-23). */}
+      {/* Backdrop: subtle radial glow um die CTAs (50% 65%) + vertical
+          mask-image damit der Halo GRACEFUL vor der Section-Bottom
+          zu 0 fadet statt hart abzuschneiden. Luca UAT 2026-04-23:
+          Halo-Konzept behalten, aber kein Hard-Cut. Mask fadet von
+          full-opacity bei 10% bis 0 bei 88% der Section-Höhe. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0"
         style={{
-          background: `radial-gradient(ellipse 95% 75% at 50% 70%, var(--accent-glow) 0%, rgba(var(--bg-rgb), 0) 75%)`,
+          background: `radial-gradient(ellipse 80% 60% at 50% 65%, var(--accent-glow) 0%, rgba(var(--bg-rgb), 0) 70%)`,
           opacity: 0.32,
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent 0%, black 10%, black 60%, transparent 88%)",
+          maskImage:
+            "linear-gradient(to bottom, transparent 0%, black 10%, black 60%, transparent 88%)",
         }}
       />
 
