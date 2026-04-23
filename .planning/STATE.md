@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: planning
-last_updated: "2026-04-23T22:01:30.490Z"
+status: executing
+last_updated: "2026-04-23T22:31:09.251Z"
 progress:
   total_phases: 18
   completed_phases: 8
-  total_plans: 46
+  total_plans: 54
   completed_plans: 43
-  percent: 93
+  percent: 80
 ---
 
 # Project State — Generation AI Monorepo
@@ -122,7 +122,7 @@ progress:
 
 ### Phase 20.5 Progress
 
-**Status:** Ready to plan
+**Status:** Ready to execute
 
 - CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
 - 5 PLAN.md angelegt, 3 delivered + 2 deferred:
