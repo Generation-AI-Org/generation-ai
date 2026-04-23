@@ -514,26 +514,46 @@ Plans:
 
 ## Milestone v4.0: Website Conversion-Layer & Onboarding-Funnel (2026-04-19+)
 
-| Phase | Name | Goal | Requirements | Autonom-fähig |
-|-------|------|------|--------------|---------------|
-| 20 | Navigation + Landing-Skeleton | 6/6 | Complete    | 2026-04-21 |
-| 20.5 | Landing Wow-Pass (Signal-Grid) | 3/5 (Hero ✅, 20.5-04 + 20.5-05 deferred → 20.6) | Closed    | 2026-04-22 |
-| 20.6 | Landing Sections Rebuild | 0/8 | Planned | 2026-04-22 |
-| 21 | `/about`-Seite | Mission, Team, Sparringspartner, Verein | R2 | ✅ (statischer Content) |
-| 22 | `/partner`-Seite | 3 Anker-Sections + Kontakt-Formular | R3 | ✅ (statischer Content + Form) |
-| 23 | `/join` Fragebogen-Flow | Linearer 4-Step-Flow mit Validation (Backend-Stub) | R4 | ✅ |
-| 24 | `/test` Assessment | Optionaler Test mit DSGVO-Consent, Score-Migration | R5 | ⚠️ (Test-Fragen als Placeholder, Content-Pass durch Luca) |
-| 25 | Circle-API-Sync (Unified Signup) | Server-Action: Supabase+Circle anlegen, SSO-Link in Welcome-Flow | R6 | ❌ (Live-Credentials + Luca-Approval für Go-Live) |
-| 26 | Subdomain-Integration | Featured-Tools API + Community-Preview via Circle API | R7 | ⚠️ (Content-Schema-Migration, Rate-Limit-Tuning) |
+**Status 2026-04-23:** Roadmap revidiert nach Simons Website-Konzept (April 2026). Phasen 22, 22.5, 22.7, 26, 27 neu bzw. erweitert. Siehe CONTEXT-Dokumente pro Phase für Detail-Scope.
+
+| Phase | Name | Status | Scope-Kern |
+|-------|------|--------|------------|
+| 20 | Navigation + Landing-Skeleton | ✅ complete 2026-04-21 | 6/6 plans, Skeleton + Nav + 8 Sections |
+| 20.5 | Landing Wow-Pass (Signal-Grid) | ✅ closed at Hero 2026-04-22 | Hero signed-off, 20.5-04+05 deferred → 20.6 |
+| 20.6 | Landing Sections Rebuild | 🚧 planned (9 plans) | Discrepancy=Problem-Block + Polish aller Sections + Kurz-FAQ + Transitions |
+| 21 | `/about`-Seite | ⏳ next after 20.6 | Mission, Story, Team, Werte, Verein, FAQ (10), Abschluss-CTA, Kontakt |
+| 22 | `/partner`-Seite | ⏳ 4-Tab-System (REVIDIERT) | Unternehmen/Stiftungen/Hochschulen/Initiativen, URL-Param, Form, Ansprechpartner-Karten |
+| 22.5 | `/events`-Seite | 🆕 neu | MDX-Pipeline, members-only gated, Hero + Kommende + Formate + Archiv + CTA |
+| 22.7 | Tools-Subdomain Polish | 🆕 neu | Logo-Link-Fix, Login-Button-Umbau (Registrieren + Einloggen), Hero, Nav-Sync |
+| 23 | `/join` Fragebogen-Flow | ⏳ | Linearer 4-Step-Flow mit Validation (Backend-503) |
+| 24 | `/test` Assessment | ⏳ | Optionaler Test mit DSGVO-Consent, Score-Migration |
+| 25 | Circle-API-Sync (Unified Signup) | ⏳ | Server-Action: Supabase+Circle, SSO-Link, Welcome-Flow |
+| 26 | `/community` + Subdomain-Integration | ⏳ erweitert | Eigene Seite mit MDX-Artikeln + SEO (/community/artikel/[slug]) + Featured-Tools-API |
+| 27 | Copy-Pass & Launch-Cleanup | 🆕 neu | Finales Wording, Dummy-Data raus, Meta/SEO-Pass, Signup-Go-Entscheidung |
 
 **Dependencies:**
-- Phase 20 blockt visuell nichts anderes, aber alle weiteren Pages beerben die Nav → 20 zuerst.
-- Phase 23 (`/join` UI) **kann** vor 25 (Circle-Sync) gebaut werden — Submit stubbed als 503.
-- Phase 24 (`/test`) optional aus 23 verlinkt — beide können parallel, aber 23 zuerst für State-Contract.
-- Phase 25 (Circle-Sync) aktiviert Live-Signup-Pfad — depends on 23 fertig.
-- Phase 26 (Subdomain-Integration) kann parallel zu allen anderen laufen, liefert echte Daten in Phase 20 (nachträglich).
+- Phase 20 / 20.5 / 20.6 müssen durch — sonst Nav + DS-Baseline nicht stabil
+- Phase 21 (`/about`) blockt Phase 22 + 26 (Transparenz-Link auf `/about#verein`, FAQ-Deep-Link von Landing-Kurz-FAQ)
+- Phase 22.7 (Tools-Polish) depends on Phase 23 (`/join` muss als Redirect-Target existieren für „Kostenlos registrieren")
+- Phase 22.5 (`/events`) depends on Phase 23 (Signup-Gate) für Non-Member-Anmelde-Flow
+- Phase 25 (Circle-Sync) aktiviert Live-Signup-Tech (Gate bleibt zu bis Phase 27)
+- Phase 26 (`/community`) kann parallel zu 23/24/25 starten (MDX-Content ist unabhängig); Block B (API-Integration) wartet auf Phase 25
+- Phase 27 (Copy-Pass) ist die letzte — alles andere muss durch sein
 
-**Empfohlene Reihenfolge:** 20 → 20.5 → 21 → 22 → 23 → 24 → 25 → 26 (linear, klare Review-Checkpoints).
+**Empfohlene Reihenfolge (Pfad A — B2B-Conversion priorisiert):**
+
+```
+20.6 → 21 /about → 22 /partner → 23 /join → 22.7 tools-polish → 22.5 /events → 24 /test → 25 circle-sync → 26 /community → 27 copy-pass → LAUNCH
+```
+
+Rationale:
+- Partner-Seite früh, weil B2B-Leads für Vereinsarbeit wichtig (Spenden, Hochschul-Deals)
+- `/join` muss vor 22.7 und 22.5, weil beide `/join` als Redirect-Target brauchen
+- Tools-Polish vor Events, weil kleiner Scope (schnell done, Sichtbarer UX-Win)
+- `/test` spät, weil Placeholder-Content OK und optional
+- Circle-Sync nach allen UI-Seiten, weil aktiviert echte Live-Pipeline
+- `/community` kann auch früher eingeschoben werden, wenn Content-Pipeline gewünscht
+- Copy-Pass ganz am Ende
 
 **Design-System Source of Truth (ab 2026-04-21):** `brand/Generation AI Design System/` ist canonical für alle UI-Arbeiten ab Phase 20.5. CSS-Variablen aus `colors_and_type.css`, Typografie per DS-Spec (Geist Sans für Body, Geist Mono für Display/H1/Buttons/Labels/Tags), Motion-Easings aus DS (`--ease-out: cubic-bezier(0.16, 1, 0.3, 1)`, `--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1)`, `--dur-fast|normal|slow`). Kein Gradient-Spam, kein Glassmorphism, keine Stock-Fotos, kein dekorativer Blob. Connection-Motif durchgezogen — Signal-Grid im Hero, Linien+Knoten+roter Faden als Leitsignatur.
 
@@ -675,25 +695,93 @@ Plans:
 
 ---
 
-### Phase 22: `/partner`-Seite
+### Phase 22: `/partner`-Seite (REVIDIERT 2026-04-23 auf 4-Tab-System)
 
-**Goal:** B2B-Landing für Unternehmen, Stiftungen, Hochschulen mit Lead-Capture.
-**Requirements:** R3.1-R3.6
-**Depends on:** Phase 20
-**Out-of-Scope:** Sales-CRM, Partner-Portal, Testimonials (sobald welche existieren, nachziehen).
+**Goal:** B2B-Landing für vier Partnertypen mit Tab-System statt Anker-Scroll — jede Zielgruppe bekommt eigenen Pfad ohne irrelevante Inhalte.
+**Requirements:** R3.1-R3.6 (+ Initiativen als 4. Segment)
+**Depends on:** Phase 20.6 (Nav + DS baseline), Phase 21 (Verein-Link-Target)
+**Detailplan:** `.planning/phases/22-partner-page/22-CONTEXT.md`
+**Out-of-Scope:** Sales-CRM, Partner-Portal, Testimonials, eigene partner@-Mail (deferred).
 
 **Scope:**
-- Hero "Kooperation statt Standard"
-- 3 Anker-Sections `#unternehmen`, `#stiftungen`, `#hochschulen` mit jeweiligem Wertversprechen + Kontakt-CTA
-- Reihenfolge: Unternehmen → Stiftungen → Hochschulen
-- Kontakt-Formular (simple Form → Resend-Mail an admin@generation-ai.org, Honeypot gegen Spam)
-- Nav-Dropdown-Links funktionieren als Anker-Navigation (scroll + URL-hash)
+- Hero „Lass uns zusammen was bewegen."
+- Trust-Sektion „Keine zufälligen Bekannten" (Component-Reuse aus Phase 20.6-06)
+- **4-Tab-System** statt 3-Anker: Unternehmen (Default) / Stiftungen / Hochschulen / **Initiativen** (neu)
+- URL-Parameter `?typ=unternehmen|stiftungen|hochschulen|initiativen` für Deep-Linking
+- Kein Scroll-Reset bei Tab-Wechsel, Smooth-Fade-In
+- Dynamischer Bereich pro Tab mit Value-Prop + Vorteile + Formate + CTA
+- Kontaktformular mit Dropdown vorausgefüllt je nach aktivem Tab, Honeypot-Spam-Schutz
+- Submit → Resend → `admin@generation-ai.org` (ImprovMX-Alias)
+- Ansprechpartner-Karten (Alex / Janna / Simon) unter dem Formular
+- Transparenz-Hinweis mit Link auf `/about#verein`
 
 **Success Criteria:**
-- [ ] Anker-Links aus Nav springen korrekt
-- [ ] Submit triggert Mail an admin@, User sieht Confirmation-Screen
-- [ ] Form spamgeschützt (Honeypot-Field)
-- [ ] Lighthouse `/partner` > 90
+- [ ] 4 Tabs switchable, URL-Param synced (pushState), Default Unternehmen
+- [ ] Deep-Link `?typ=stiftungen` setzt Tab beim Mount
+- [ ] Mobile: Tab-Leiste als horizontaler Scroll oder Dropdown
+- [ ] Formular submittet, Mail landet in admin@, Honeypot blockt Bots
+- [ ] Ansprechpartner-Karten mit Placeholder-Avatars bis Fotos vorhanden
+- [ ] Lighthouse `/partner` > 90, A11y Tab-Pattern korrekt
+
+**Release:** patch
+
+---
+
+### Phase 22.5: `/events`-Seite 🆕 (2026-04-23)
+
+**Goal:** Members-Only-Akquisitionshebel — öffentlich sichtbare Events-Liste, Anmeldung gated hinter Signup.
+**Requirements:** Aus Simons Konzept §5 (Website-Konzept-Dokument, April 2026)
+**Depends on:** Phase 20.6 (Nav + DS), Phase 23 (`/join` als Signup-Gate-Target)
+**Detailplan:** `.planning/phases/22.5-events-page/22.5-CONTEXT.md`
+**Out-of-Scope:** Circle-API-Integration, Luma-Embed, ICS-Download V1, Event-Filter (Roadmap).
+
+**Scope:**
+- Hero + 3-Kachel-Grid „Kommende Events"
+- Event-Metadaten: Titel, Datum+Uhrzeit, Format-Tag, Level-Tag, Ort, Partner (bei Masterclasses), Anmelde-Button
+- Event-Modal bei Klick: Beschreibung, Agenda, Speaker, optional ICS
+- Anmelde-Flow: Non-Member → `/join?redirect_after=/events/[slug]`, Member → direkt zu `ctaUrl`
+- Formate-Sektion (Workshops / Speaker Sessions / Masterclasses)
+- Members-Only-Hinweis („Kostenlos, 2 Minuten")
+- Archiv (minimal, Foto + Titel + Datum + Recap, keine Modals)
+- Abschluss-CTA „Jetzt beitreten"
+- **MDX-Pipeline** in `apps/website/content/events/` als Content-Source (kein CMS)
+- Event-Detail als Standalone-Route `/events/[slug]` für SEO + Share-Links
+
+**Success Criteria:**
+- [ ] MDX-Pipeline liest Files, rendert kommende Events chronologisch
+- [ ] Modal mit Details öffnet, schließt via Escape
+- [ ] Anmelde-Flow gegated korrekt (Auth-Check + Redirect)
+- [ ] Archiv rendert minimal ohne Modals
+- [ ] Lighthouse `/events` > 90, Mobile responsive, A11y-korrekt
+
+**Release:** patch
+
+---
+
+### Phase 22.7: Tools-Subdomain Polish 🆕 (2026-04-23)
+
+**Goal:** tools.generation-ai.org visuell und navigatorisch mit Hauptdomain harmonisieren — Logo-Link-Fix, Login-Button-Umbau, Tools-Hero, Sticky-Nav-Sync.
+**Requirements:** Aus Simons Konzept §6
+**Depends on:** Phase 20.6 (DS baseline), Phase 23 (`/join` als Redirect-Target für „Kostenlos registrieren")
+**Detailplan:** `.planning/phases/22.7-tools-subdomain-polish/22.7-CONTEXT.md`
+**Out-of-Scope:** Tool-Kachel-Redesign, Agent-Chat-Änderungen, Lite/Pro-Logik-Änderungen, Tool-Detailseiten, Suchfeld (alles Roadmap).
+
+**Scope:**
+- **Logo-Link-Fix (CRIT):** Header-Logo führt aktuell auf Community-Subdomain → muss auf `generation-ai.org`
+- **Login-Button-Umbau:**
+  - Primary: `Kostenlos registrieren` → `https://generation-ai.org/join`
+  - Secondary: `Bereits Mitglied? → Einloggen` → tools-app `/login`
+- **Tools-Hero** über Filter-Tabs: „// deine ki-tool-bibliothek / # KI-Tools, kuratiert für dich. / Über 100 Tools, sortiert nach Anwendungsfall. Brauchst du Hilfe? Frag unseren Agenten."
+- **Sticky-Nav-Sync:** identisches Scroll-Verhalten wie Hauptdomain
+- **Nav-Struktur-Alignment:** gleiche Items wie Hauptdomain, Tools aktiv markiert, andere Items führen auf Hauptdomain
+
+**Success Criteria:**
+- [ ] Logo-Link korrekt (landet auf Hauptdomain, nicht Community)
+- [ ] Login-Button-Differenzierung sichtbar für ausgeloggte User
+- [ ] Neue Hero-Sektion über Filter-Tabs
+- [ ] Sticky-Nav-Verhalten identisch zur Hauptdomain
+- [ ] Mobile Burger-Menü korrekt mit Primary-CTA
+- [ ] Keine Regression in Lite/Pro-Sichtbarkeit oder Agent-Chat
 
 **Release:** patch
 
@@ -788,33 +876,74 @@ Plans:
 
 ---
 
-### Phase 26: Subdomain-Integration
+### Phase 26: `/community` + Subdomain-Integration (REVIDIERT 2026-04-23, scope massiv erweitert)
 
-**Goal:** Landing bekommt echte Daten — Featured-Tools aus tools-app, Community-Preview (Posts + Events) via Circle API. Graceful-Degrade bei API-Ausfall.
-**Requirements:** R7.1-R7.7
-**Depends on:** Phase 20 (Landing-Shell), Phase 25 abgeschlossen (Circle-API-Setup etabliert)
-**Out-of-Scope:** Content-Management-UI für Featured-Flag (bleibt DB-Admin-Update).
+**Goal:** Zwei Blöcke — (A) Eigene `/community`-Seite auf der Hauptdomain als SEO-Motor + Discovery-Kanal, (B) Featured-Tools-Preview auf Landing via public API.
+**Requirements:** R7.1-R7.7 + Simons Konzept §7 (neue /community-Seite mit Blog-Artikel-Unterseiten)
+**Depends on:** Phase 20.6 (Nav + DS), Phase 22.7 (tools-app nav consistent), Phase 25 (optional für Live-Post-API)
+**Detailplan:** `.planning/phases/26-community-page-and-subdomain-integration/26-CONTEXT.md`
+**Out-of-Scope:** Content-Management-UI, AI-Content-Agent (Roadmap), Live-Circle-Posts-API auf Landing (deferred bis Rate-Limits klar), Artikel-Kategorien/Tags/Suche/Kommentare.
 
-**Scope:**
+**Scope Block A — /community Seite:**
+- Hero + Direktlink zu `community.generation-ai.org` für Members
+- 4-Kachel-Grid „Was dich drinnen erwartet": Austausch / Lernpfade / News & Insights / Exklusive Inhalte
+- Blog-Teaser-Carousel (horizontales Scroll, neueste links)
+- **Artikel-Unterseiten** `/community/artikel/[slug]` — eigene URLs für SEO (keine Modals!)
+- MDX-Pipeline in `apps/website/content/community/` (Frontmatter + 2-3 Absätze Body + Circle-Link)
+- KI-News-Beiträge mit Badge „KI-generiert, vom Team kuratiert"
+- Schema.org Article Markup, OG-Tags, Sitemap-Einträge
+- Abschluss-CTA „Wir sehen uns drinnen. [Kostenlos beitreten]"
+- Start-Content bei Launch: **Placeholder-Artikel** (echter Content wird sukzessive nachgezogen)
+
+**Scope Block B — Subdomain-Integration auf Landing:**
 - Content-Schema-Migration: `featured: boolean` in tools-app Content-Package
 - Backfill: 3-5 initial-featured Tools manuell markieren
-- tools-app `GET /api/public/featured-tools` (Server-Component-cached)
-- Website konsumiert API via Server-Component (ISR `revalidate: 300` oder Edge-Cache)
-- Circle API v2 Calls:
-  - Posts aus Tools-Space (3-4 letzte)
-  - Events (2-3 kommende)
-- Fallback-Placeholder für beide Preview-Blöcke
-- Rate-Limit-bewusst caching (prüfen was Circle-Business-Plan erlaubt)
-- Klären: welche Circle-Content ist public via API vs. member-only
+- tools-app `GET /api/public/featured-tools` (kein Auth)
+- Website konsumiert via Server-Component mit ISR (`revalidate: 300`)
+- Community-Preview-Section auf Landing: MDX-Teaser (3 letzte Artikel) — Option A, Circle-Live-API als Roadmap-Item
+- Fallback-UI bei API-Ausfall
 
 **Success Criteria:**
-- [ ] Featured-Tools erscheinen in Landing, togglebar via DB-Update
-- [ ] Community-Preview zeigt aktuelle Circle-Posts + Events
-- [ ] API-Outage triggert Fallback, kein Error für User
-- [ ] Lighthouse Landing bleibt > 90 (Cache funktioniert)
-- [ ] No-Layout-Shift bei Skeleton → Real-Content
+- [ ] `/community` Route rendert alle 4 Sektionen
+- [ ] Artikel-Unterseiten mit Meta-Tags + Schema.org Markup
+- [ ] Sitemap enthält alle Artikel-URLs
+- [ ] Featured-Tools-API liefert JSON, Landing konsumiert via ISR
+- [ ] Community-Preview auf Landing zeigt MDX-Artikel
+- [ ] Lighthouse `/community` + `/community/artikel/[slug]` > 90
+- [ ] Fallback-UI bei API-Outage
 
 **Release:** minor (v5.0.0 final oder v4.6.0)
+
+---
+
+### Phase 27: Copy-Pass & Launch-Cleanup 🆕 (2026-04-23)
+
+**Goal:** Struktur steht, Copy wird geschärft. Alle Placeholder-Texte auf Simons Konzept + `brand/VOICE.md`. Dummy-Data raus, echte Inhalte rein. Finaler Durchgang vor Launch.
+**Depends on:** Alle prior Phasen (20.6, 21, 22, 22.5, 22.7, 23, 24, 25, 26)
+**Detailplan:** `.planning/phases/27-copy-pass-and-launch-cleanup/27-CONTEXT.md`
+**Out-of-Scope:** Neue Features, Redesigns, neue Seiten.
+
+**Scope:**
+- Copy-Alignment alle Seiten (Hero-Claims, Belege, Value-Props, Formular-Labels, Error/Success-Messages)
+- Dummy-Data-Cleanup (Beispiel-Badges raus, Team-Fotos, Partner-Logos, echte Events + Artikel)
+- VOICE.md-Konsistenz-Check (Microcopy-Library durchgängig)
+- Metadata-Pass (Titles, Descriptions, OG-Images, Twitter-Cards, Canonical URLs)
+- SEO-Final (Sitemap, Robots, Schema.org Organization/Article/Event/FAQPage markup)
+- Launch-Checklist (`~/projects/_shared/WEBSITE-CHECKLIST.md`)
+- 404 + 500 + Error-Boundaries designed
+- Email-Templates alle final
+- **Signup-Reactivation-Entscheidung** (Luca-Approval-Gate)
+
+**Success Criteria:**
+- [ ] Alle Placeholder-Texte durch finales Wording ersetzt
+- [ ] Alle „Beispiel"-Badges raus, echte Inhalte live
+- [ ] Meta-Tags + OG + Schema.org vollständig
+- [ ] Lighthouse > 90 auf allen 7 Hauptseiten
+- [ ] A11y manual pass OK
+- [ ] 404/500/Error-Boundaries designed
+- [ ] Signup-Go-Entscheidung dokumentiert
+
+**Release:** Launch-Minor (v5.0 Final) — Ship-Ready-State
 
 ---
 
