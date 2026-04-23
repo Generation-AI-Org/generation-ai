@@ -192,13 +192,21 @@ function ToolCard({ tool }: { tool: Tool }) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`${tool.name} in der Tools-Bibliothek öffnen`}
-        className="group block h-full rounded-2xl border border-border bg-bg-card p-5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)]"
+        className="group block h-full rounded-2xl border border-border bg-bg-card p-5 transition-all hover:-translate-y-[2px] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+        style={{
+          outlineColor: "var(--text)",
+          transitionDuration: "var(--dur-normal)",
+          transitionTimingFunction: "var(--ease-out)",
+        }}
       >
         <div className="mb-3.5 flex items-center justify-between">
           <div
-            className="flex h-10 w-10 items-center justify-center rounded-[10px] text-text-secondary transition-colors group-hover:text-[var(--accent)]"
+            className="flex h-10 w-10 items-center justify-center rounded-[10px] border text-text-secondary transition-colors group-hover:text-[var(--accent)] motion-reduce:transition-none"
             style={{
-              background: "linear-gradient(135deg, #2a2a2a, #1a1a1a)",
+              background: "var(--bg-elevated)",
+              borderColor: "var(--border)",
+              transitionDuration: "var(--dur-normal)",
+              transitionTimingFunction: "var(--ease-out)",
             }}
             aria-hidden="true"
           >
