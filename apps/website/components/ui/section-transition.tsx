@@ -76,7 +76,7 @@ export function SectionTransition({
     <div
       aria-hidden="true"
       className={`pointer-events-none relative flex w-full items-center justify-center ${
-        variant === "signal-echo" ? "h-12 sm:h-16" : "h-6 sm:h-8"
+        variant === "signal-echo" ? "h-14 sm:h-20" : "h-3 sm:h-4"
       } ${className ?? ""}`}
     >
       {/* Horizontale Hairline — DS-Border, fade-from-transparent */}
