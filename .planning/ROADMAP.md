@@ -521,7 +521,7 @@ Plans:
 | 20 | Navigation + Landing-Skeleton | ✅ complete 2026-04-21 | 6/6 plans, Skeleton + Nav + 8 Sections |
 | 20.5 | Landing Wow-Pass (Signal-Grid) | ✅ closed at Hero 2026-04-22 | Hero signed-off, 20.5-04+05 deferred → 20.6 |
 | 20.6 | 9/9 | Complete    | 2026-04-23 |
-| 21 | 6/8 | In Progress|  |
+| 21 | 7/8 | In Progress|  |
 | 22 | `/partner`-Seite | ⏳ 4-Tab-System (REVIDIERT) | Unternehmen/Stiftungen/Hochschulen/Initiativen, URL-Param, Form, Ansprechpartner-Karten |
 | 22.5 | `/events`-Seite | 🆕 neu | MDX-Pipeline, members-only gated, Hero + Kommende + Formate + Archiv + CTA |
 | 22.7 | Tools-Subdomain Polish | 🆕 neu | Logo-Link-Fix, Login-Button-Umbau (Registrieren + Einloggen), Hero, Nav-Sync |
