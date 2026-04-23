@@ -12,6 +12,7 @@ import { ToolShowcaseSection } from "@/components/sections/tool-showcase-section
 import { CommunityPreviewSection } from "@/components/sections/community-preview-section"
 import { TrustSection } from "@/components/sections/trust-section"
 import { FinalCTASection } from "@/components/sections/final-cta-section"
+import { KurzFaqSection } from "@/components/sections/kurz-faq-section"
 
 type HomeClientProps = {
   nonce: string
@@ -46,6 +47,7 @@ export function HomeClient({ nonce }: HomeClientProps) {
           <CommunityPreviewSection />
           <TrustSection />
           <FinalCTASection />
+          <KurzFaqSection />
         </main>
         <Footer />
       </div>
