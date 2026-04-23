@@ -68,13 +68,15 @@ export function FinalCTASection() {
       data-section="final-cta"
       className="relative isolate overflow-hidden bg-bg py-32 sm:py-40"
     >
-      {/* Backdrop: subtle radial glow am unteren Rand, DS-Token only */}
+      {/* Backdrop: subtle radial glow — zentriert statt bottom-anchored,
+          damit der Fade-Out innerhalb der Section liegt (kein Hard-Cut
+          an der Section-Bottom-Grenze, Luca UAT 2026-04-23). */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0"
         style={{
-          background: `radial-gradient(ellipse 70% 55% at 50% 100%, var(--accent-glow) 0%, rgba(var(--bg-rgb), 0) 60%)`,
-          opacity: 0.35,
+          background: `radial-gradient(ellipse 95% 75% at 50% 70%, var(--accent-glow) 0%, rgba(var(--bg-rgb), 0) 75%)`,
+          opacity: 0.32,
         }}
       />
 

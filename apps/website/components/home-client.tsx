@@ -42,7 +42,12 @@ export function HomeClient({ nonce }: HomeClientProps) {
         <Header />
         <main id="main-content" className="min-h-screen pt-20">
           <HeroSection />
-          <SectionTransition variant="signal-echo" />
+          {/* Hero → Problem-Block: keine SectionTransition. Luca UAT
+              2026-04-23: harte Hairline zerschnitt den narrativen Flow
+              von Hero-LabeledNodes in den Problem-Block. Sections touchen
+              direkt, Problem-Block hat eigenes Top-Padding für Breathing-
+              Room. Signal-Echo-Anchor war als Opener gedacht, aber
+              Luca las es als visuellen Cut statt als Connection. */}
           <ProblemBlockSection />
           <SectionTransition variant="soft-fade" />
           <OfferingSection />
