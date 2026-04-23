@@ -4,7 +4,7 @@ slug: partner-page
 type: context
 status: planning
 created: 2026-04-23
-last-updated: 2026-04-23
+last-updated: 2026-04-24
 depends_on:
   - 20.6 (Landing Sections Rebuild — Nav + DS baseline final)
   - 21 (/about — für Verein-Transparenz-Link aus Partner-Page)
@@ -68,8 +68,10 @@ Vier unterschiedliche B2B-Zielgruppen auf einer Seite bedienen, ohne dass jemand
 - **D-04** — Default-Tab ist „Unternehmen" (laut Konzept §8.6). URL ohne Parameter lädt `?typ=unternehmen` visuell aber setzt den URL-State nicht (kein History-Spam bei Landing).
 - **D-05** — Formular-Dropdown „Ich interessiere mich als …" ist vom aktiven Tab pre-selected, bleibt aber änderbar.
 - **D-06** — Form-Submit geht via Server-Action + Resend an `admin@generation-ai.org`. Kein 3rd-Party-Form-Service. Honeypot-Field als simpler Spam-Schutz (Hidden-Input, Bots füllen es, Humans nicht → Submit mit Wert = silent-reject).
-- **D-07** — Ansprechpartner-Karten: 3 Karten (Alex/Janna/Simon) mit Placeholder-Avatars bis echte Fotos geliefert werden. Avatars entweder Initialen (DS-Pattern) oder Gravatar-Fallback.
-- **D-08** — Trust-Sektion wird Component-wise wiederverwendet aus Phase 20.6-06 (Marquee). Ein Marquee-Component in `apps/website/components/sections/` oder `packages/ui/`, zweimal gemountet mit gleicher Partner-Liste.
+- **D-07** — Ansprechpartner-Karten: 3 Karten (Alex/Janna/Simon) mit **Initialen-Avatars** auf Brand-Background (DS-Pattern, kein Gravatar). **Mail-Links + LinkedIn-URLs** — LinkedIn-URLs werden nachgeliefert, Plan blockt nicht darauf (Placeholder-Hrefs akzeptabel bis Lieferung).
+- **D-08** — Trust-Sektion bleibt in `apps/website/components/sections/`, wird zweimal gemountet (Landing + Partner). Kein Umzug nach `packages/ui` — Tools-App braucht es aktuell nicht, YAGNI.
+- **D-09** — Resend-Mail an admin@ als **React Email Template in `@genai/emails` Package**. Konsistent mit zukünftigen Transaktionsmails, saubere Template-Basis. Template-Name: `PartnerInquiryEmail`.
+- **D-10** — **Confirmation-Mail an den Partner-Lead** wird versendet („Wir haben deine Anfrage erhalten, wir melden uns innerhalb 48h"). Absender `noreply@generation-ai.org` (Domain-Verify via Resend muss vorhanden sein — falls nicht, Plan erkennt und markiert als Blocker). Zweites React-Email-Template `PartnerInquiryConfirmationEmail`.
 
 ---
 
@@ -92,13 +94,13 @@ Vier unterschiedliche B2B-Zielgruppen auf einer Seite bedienen, ohne dass jemand
 
 ---
 
-## Offene Fragen (zu klären vor Planning)
+## Geklärt (2026-04-24, /gsd-autonomous --interactive)
 
-1. **Ansprechpartner-Fotos:** Wer liefert die 3 Bilder? Bis dahin Placeholder-Avatars (Initialen auf Brand-Background)?
-2. **LinkedIn-Links:** URLs von Alex/Janna/Simon für Kontakt-Karten?
-3. **Resend-Template:** Soll die Mail an admin@ formatiert sein (React Email Template im `@genai/emails` Package) oder reicht Plain-Text?
-4. **Confirmation-Mail an Absender:** Soll der Partner-Lead auch eine Bestätigungs-Mail bekommen „Wir haben deine Anfrage erhalten"? (UX-Win, minimaler Aufwand)
-5. **Trust-Component-Heimat:** In `packages/ui` ausziehen oder in `apps/website/components/sections/` lassen und einmal rein-importieren?
+1. **Ansprechpartner-Fotos:** Initialen-Avatars auf Brand-BG, keine Fotos nötig für Launch → siehe D-07.
+2. **LinkedIn-Links:** Werden nachgeliefert, Placeholder-Hrefs (`#` oder TODO-Kommentar) bis Lieferung → siehe D-07.
+3. **Resend-Template:** React Email Template im `@genai/emails` Package → siehe D-09.
+4. **Confirmation-Mail an Absender:** Ja, via `noreply@generation-ai.org` → siehe D-10.
+5. **Trust-Component-Heimat:** Bleibt in `apps/website/components/sections/` → siehe D-08.
 
 ---
 
