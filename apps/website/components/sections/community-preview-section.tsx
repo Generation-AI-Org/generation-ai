@@ -3,6 +3,23 @@
 import { ArrowUpRight, Calendar, FileText } from "lucide-react"
 import { BeispielBadge } from "@/components/sections/tool-showcase-section"
 
+// Community-Preview (Simon §4.7 "Aus der Community") — DS-polished.
+//
+// Struktur:
+//   1. Section-Header mit Eyebrow "// aus der community" + Hero-level H2 + Lede
+//      (Simon §4.7 Fix: slash-prefix Mono-Label mit Dot analog Offering / Tool-Showcase)
+//   2. 2-col Grid: Letzte Artikel | Kommende Events, je 3/2 Karten mit BeispielBadge
+//   3. Footer: zwei Links (Community-Subdomain + /events) — Simon §4.7 Spec
+//
+// DS-Alignment:
+//   - Section bleibt STATIC (D-24 aus Phase 20): keine motion/react entry, kein Skeleton
+//   - Easings + Durations via CSS-Tokens (--ease-out, --dur-normal) über inline styles
+//   - Keyboard-Fokus: Card-Links mit focus-visible:outline, Neutral-Ring (DS §C)
+//   - Hover: card border-accent + subtle accent-glow shadow (DS §C Interaction-States)
+//   - Tokens only: --accent, --text*, --border*, --bg-card, --bg-elevated, --accent-glow.
+//     Keine stray Hex-Werte.
+//   - BeispielBadge reused aus tool-showcase (theme-aware, konsistent zur Tool-Bibliothek)
+
 type StubArticle = {
   title: string
   readingTime: string
@@ -59,50 +76,47 @@ export function CommunityPreviewSection() {
       className="bg-bg-elevated py-24 sm:py-32 border-b border-border"
     >
       <div className="mx-auto max-w-6xl px-6">
-        <div className="text-center mb-16">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-text-muted mb-3">
-            Aus der Community
-          </p>
+        {/* Section-Header — Simon §4.7 Fix: slash-prefix Mono-Label mit Dot */}
+        <div className="mx-auto mb-14 max-w-2xl text-center">
+          <div className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
+            <span
+              aria-hidden="true"
+              className="h-1.5 w-1.5 rounded-full"
+              style={{
+                background: "var(--accent)",
+                boxShadow: "0 0 8px var(--accent-glow)",
+              }}
+            />
+            {"// aus der community"}
+          </div>
           <h2
             id="community-preview-heading"
-            className="text-3xl sm:text-4xl font-bold tracking-tight text-text"
+            className="mt-4 font-mono font-bold leading-[1.1] tracking-[-0.025em] text-text text-balance"
+            style={{ fontSize: "clamp(32px, 5vw, 52px)" }}
           >
             Was gerade läuft.
           </h2>
-          <p className="mt-3 text-sm text-text-muted max-w-2xl mx-auto">
-            Ein Einblick in Diskussionen und Termine. Sobald die Community-API live ist,
-            erscheinen hier echte Artikel und Events.
+          <p className="mt-5 text-lg leading-[1.5] text-text-secondary text-pretty sm:text-xl">
+            Ein Einblick in Diskussionen und Termine. Sobald die Community-API
+            live ist, erscheinen hier echte Artikel und Events.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Spalte 1: Artikel */}
           <div>
-            <h3 className="font-mono text-sm uppercase tracking-wider text-text-muted mb-6 inline-flex items-center gap-2">
-              <FileText className="w-4 h-4" aria-hidden="true" />
-              Letzte Artikel
+            <h3 className="mb-6 inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
+              <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+              {"// letzte artikel"}
             </h3>
             <ul className="space-y-4">
               {stubArticles.map((article) => (
                 <li key={article.title}>
-                  <a
+                  <PreviewCard
                     href={article.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group block bg-bg-card border border-border rounded-2xl p-5 hover:border-brand-neon-6 transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <BeispielBadge />
-                      <ArrowUpRight
-                        className="w-4 h-4 text-text-muted group-hover:text-[var(--accent)] transition-colors"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <p className="font-mono text-base font-bold text-text leading-snug">
-                      {article.title}
-                    </p>
-                    <p className="mt-2 text-xs text-text-muted">{article.readingTime}</p>
-                  </a>
+                    title={article.title}
+                    meta={article.readingTime}
+                  />
                 </li>
               ))}
             </ul>
@@ -110,51 +124,111 @@ export function CommunityPreviewSection() {
 
           {/* Spalte 2: Events */}
           <div>
-            <h3 className="font-mono text-sm uppercase tracking-wider text-text-muted mb-6 inline-flex items-center gap-2">
-              <Calendar className="w-4 h-4" aria-hidden="true" />
-              Kommende Events
+            <h3 className="mb-6 inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
+              <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+              {"// kommende events"}
             </h3>
             <ul className="space-y-4">
               {stubEvents.map((event) => (
                 <li key={event.title}>
-                  <a
+                  <PreviewCard
                     href={event.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group block bg-bg-card border border-border rounded-2xl p-5 hover:border-brand-neon-6 transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <BeispielBadge />
-                      <ArrowUpRight
-                        className="w-4 h-4 text-text-muted group-hover:text-[var(--accent)] transition-colors"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <p className="font-mono text-base font-bold text-text leading-snug">
-                      {event.title}
-                    </p>
-                    <p className="mt-2 text-xs text-text-muted">
-                      {event.date} · {event.location}
-                    </p>
-                  </a>
+                    title={event.title}
+                    meta={`${event.date} · ${event.location}`}
+                  />
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 text-center">
-          <a
+        {/* Footer-Links — Simon §4.7: zwei Links (Community + Events) */}
+        <div className="mt-14 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-8">
+          <FooterLink
             href="https://community.generation-ai.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-sm font-mono text-[var(--accent)] hover:text-[var(--accent-hover,var(--accent))] transition-colors"
-          >
-            Zur Community
-            <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-          </a>
+            external
+            label="Zur Community"
+          />
+          <FooterLink href="/events" label="Alle Events" />
         </div>
       </div>
     </section>
+  )
+}
+
+function PreviewCard({
+  href,
+  title,
+  meta,
+}: {
+  href: string
+  title: string
+  meta: string
+}) {
+  const isExternal = href.startsWith("http")
+  const linkProps = isExternal
+    ? ({ target: "_blank", rel: "noopener noreferrer" } as const)
+    : {}
+
+  return (
+    <a
+      href={href}
+      {...linkProps}
+      className="group block rounded-2xl border border-border bg-bg-card p-5 transition-all hover:-translate-y-[2px] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+      style={{
+        outlineColor: "var(--text)",
+        transitionDuration: "var(--dur-normal)",
+        transitionTimingFunction: "var(--ease-out)",
+      }}
+    >
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <BeispielBadge />
+        <ArrowUpRight
+          className="h-4 w-4 text-text-muted transition-colors group-hover:text-[var(--accent)] motion-reduce:transition-none"
+          style={{
+            transitionDuration: "var(--dur-normal)",
+            transitionTimingFunction: "var(--ease-out)",
+          }}
+          aria-hidden="true"
+        />
+      </div>
+      <p className="font-mono text-[15px] font-bold leading-[1.35] text-text">
+        {title}
+      </p>
+      <p className="mt-2 text-[13px] leading-[1.5] text-text-secondary">
+        {meta}
+      </p>
+    </a>
+  )
+}
+
+function FooterLink({
+  href,
+  label,
+  external = false,
+}: {
+  href: string
+  label: string
+  external?: boolean
+}) {
+  const linkProps = external
+    ? ({ target: "_blank", rel: "noopener noreferrer" } as const)
+    : {}
+
+  return (
+    <a
+      href={href}
+      {...linkProps}
+      className="inline-flex items-center gap-1 font-mono text-[12px] font-bold uppercase tracking-[0.08em] text-[var(--accent)] hover:text-[var(--accent-hover,var(--accent))] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
+      style={{
+        outlineColor: "var(--text)",
+        transitionDuration: "var(--dur-normal)",
+        transitionTimingFunction: "var(--ease-out)",
+        transitionProperty: "color",
+      }}
+    >
+      {label}
+      <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+    </a>
   )
 }
