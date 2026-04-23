@@ -520,7 +520,7 @@ Plans:
 |-------|------|--------|------------|
 | 20 | Navigation + Landing-Skeleton | ✅ complete 2026-04-21 | 6/6 plans, Skeleton + Nav + 8 Sections |
 | 20.5 | Landing Wow-Pass (Signal-Grid) | ✅ closed at Hero 2026-04-22 | Hero signed-off, 20.5-04+05 deferred → 20.6 |
-| 20.6 | Landing Sections Rebuild | 🚧 planned (9 plans) | Discrepancy=Problem-Block + Polish aller Sections + Kurz-FAQ + Transitions |
+| 20.6 | 9/9 | Complete    | 2026-04-23 |
 | 21 | `/about`-Seite | ⏳ next after 20.6 | Mission, Story, Team, Werte, Verein, FAQ (10), Abschluss-CTA, Kontakt |
 | 22 | `/partner`-Seite | ⏳ 4-Tab-System (REVIDIERT) | Unternehmen/Stiftungen/Hochschulen/Initiativen, URL-Param, Form, Ansprechpartner-Karten |
 | 22.5 | `/events`-Seite | 🆕 neu | MDX-Pipeline, members-only gated, Hero + Kommende + Formate + Archiv + CTA |
@@ -638,17 +638,17 @@ Plans:
 **Depends on:** Phase 20.5
 **Branch:** `feature/phase-20-landing-skeleton` (stays open, builds on top)
 **Out-of-Scope:** New sections, new pages, final copywriting (deferred to marketing pass), Hero changes (locked from Phase 20.5), sign-up reactivation (bleibt 503).
-**Plans:** 8
+**Plans:** 9/9 plans complete
 
 Plans:
-- [ ] 20.6-01-PLAN.md — New Discrepancy section (re-designed from scratch)
-- [ ] 20.6-02-PLAN.md — Offering polish
-- [ ] 20.6-03-PLAN.md — Tool-Showcase polish
-- [ ] 20.6-04-PLAN.md — Community-Preview polish
-- [ ] 20.6-05-PLAN.md — Audience-Split polish
-- [ ] 20.6-06-PLAN.md — Trust polish
-- [ ] 20.6-07-PLAN.md — Final-CTA polish
-- [ ] 20.6-08-PLAN.md — Inter-section transitions
+- [x] 20.6-01-PLAN.md — New Discrepancy section (re-designed from scratch)
+- [x] 20.6-02-PLAN.md — Offering polish
+- [x] 20.6-03-PLAN.md — Tool-Showcase polish
+- [x] 20.6-04-PLAN.md — Community-Preview polish
+- [x] 20.6-05-PLAN.md — Audience-Split polish
+- [x] 20.6-06-PLAN.md — Trust polish
+- [x] 20.6-07-PLAN.md — Final-CTA polish
+- [x] 20.6-08-PLAN.md — Inter-section transitions
 
 **Scope:**
 - Section-by-section co-build mit Luca in localhost:3000

@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: executing
-last_updated: "2026-04-23T20:38:06.574Z"
+status: planning
+last_updated: "2026-04-23T22:01:30.490Z"
 progress:
   total_phases: 18
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 46
-  completed_plans: 34
-  percent: 74
+  completed_plans: 43
+  percent: 93
 ---
 
 # Project State — Generation AI Monorepo
@@ -21,7 +21,7 @@ progress:
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 20.6 Landing Sections Rebuild — PLANNED (9 skeleton plans: 8 existing + neu 20.6-09 Kurz-FAQ). Problem-Block (Simon §4.4) ist neuer Scope für Plan 20.6-01. Bereit zur Execution.
+**Phase:** 21
 **Branch:** `main` (Phase 20 Skeleton + 20.5 Hero gemerged + gepusht 2026-04-22, Vercel auto-deployed) — neue Phasen starten auf frischem Feature-Branch
 **Last Updated:** 2026-04-23 (Roadmap-Revision + 5 neue/erweiterte Phase-CONTEXTs)
 **Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, andere Sections (Offering, Tool-Showcase, Community, Audience-Split, Trust, Final-CTA) auf Phase-20-Skeleton-Level bis 20.6 drüber polished, Discrepancy-Section unmounted.
@@ -122,7 +122,7 @@ progress:
 
 ### Phase 20.5 Progress
 
-**Status:** Executing Phase 20.6
+**Status:** Ready to plan
 
 - CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
 - 5 PLAN.md angelegt, 3 delivered + 2 deferred:
