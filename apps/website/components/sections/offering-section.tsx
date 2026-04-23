@@ -232,9 +232,9 @@ function CommunityPreview() {
   ]
   return (
     <div className="absolute inset-3 flex flex-col gap-1.5">
-      {msgs.map((m, i) => (
+      {msgs.map((m) => (
         <div
-          key={i}
+          key={m.text}
           className="flex items-start gap-1.5 rounded-lg bg-bg-elevated px-2 py-1.5 text-[10px] leading-snug text-text-secondary"
         >
           <span
@@ -260,9 +260,9 @@ function ToolsPreview() {
   ]
   return (
     <div className="absolute inset-3 grid grid-cols-3 gap-2">
-      {tools.map((t, i) => (
+      {tools.map((t) => (
         <div
-          key={i}
+          key={t.letter}
           className="flex items-center justify-center rounded-lg border font-mono text-sm font-bold"
           style={
             t.hl
@@ -294,9 +294,9 @@ function EventsPreview() {
   ]
   return (
     <div className="absolute inset-3 flex flex-col gap-1.5">
-      {events.map((e, i) => (
+      {events.map((e) => (
         <div
-          key={i}
+          key={`${e.day}-${e.month}`}
           className="flex items-center gap-2 rounded-lg bg-bg-elevated px-2 py-1.5"
         >
           <div

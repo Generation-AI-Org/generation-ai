@@ -128,7 +128,7 @@ export function KurzFaqSection() {
 
             return (
               <li
-                key={i}
+                key={item.q}
                 className="overflow-hidden rounded-[16px] border border-border bg-bg-card transition-colors duration-[var(--dur-normal)] ease-[var(--ease-out)] hover:border-[var(--border-accent)]"
               >
                 <h3 className="m-0">
