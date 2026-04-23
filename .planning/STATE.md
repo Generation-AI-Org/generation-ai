@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: executing
-last_updated: "2026-04-22T00:00:00.000Z"
+last_updated: "2026-04-23T20:38:06.574Z"
 progress:
-  total_phases: 15
+  total_phases: 18
   completed_phases: 7
-  total_plans: 45
+  total_plans: 46
   completed_plans: 34
-  percent: 76
+  percent: 74
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,25 +18,56 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 20 skeleton ✅, Phase 20.5 Hero ✅ merged+deployed, Phase 20.6 Landing Sections Rebuild next, dann Phase 21 /about)
-**Phase:** 20.6 Landing Sections Rebuild — PLANNED (8 skeleton plans scaffolded 2026-04-22, bereit zur Execution)
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS
+**Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
+
+**Phase:** 20.6 Landing Sections Rebuild — PLANNED (9 skeleton plans: 8 existing + neu 20.6-09 Kurz-FAQ). Problem-Block (Simon §4.4) ist neuer Scope für Plan 20.6-01. Bereit zur Execution.
 **Branch:** `main` (Phase 20 Skeleton + 20.5 Hero gemerged + gepusht 2026-04-22, Vercel auto-deployed) — neue Phasen starten auf frischem Feature-Branch
-**Last Updated:** 2026-04-22 (Phase 20.5 closed, merged to main, Discrepancy-Section unmounted pending 20.6 redesign, Phase 24 route renamed /level-test → /test)
+**Last Updated:** 2026-04-23 (Roadmap-Revision + 5 neue/erweiterte Phase-CONTEXTs)
 **Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, andere Sections (Offering, Tool-Showcase, Community, Audience-Split, Trust, Final-CTA) auf Phase-20-Skeleton-Level bis 20.6 drüber polished, Discrepancy-Section unmounted.
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** 20.6 Landing Sections Rebuild
-**First command:** `/gsd-discuss-phase 20.6` (oder direkt `/gsd-plan-phase 20.6-01` für den ersten Plan: neue Discrepancy-Section)
+**Next phase:** 20.6 Landing Sections Rebuild (9 Plans: 8 existing + 20.6-09 Kurz-FAQ neu 2026-04-23)
+**First command:** `/gsd-discuss-phase 20.6` (oder direkt `/gsd-plan-phase 20.6-01` für Problem-Block — ehemals Discrepancy)
+
 **Context für neue Session:**
-- `.planning/phases/20.6-landing-sections-rebuild/20.6-CONTEXT.md` — Phase-Scope + Decisions
-- `.planning/phases/20.6-landing-sections-rebuild/20.6-0{1..8}-PLAN.md` — 8 Skeleton-Plans
+
+- `.planning/phases/20.6-landing-sections-rebuild/20.6-CONTEXT.md` — aktualisiert mit D-09 (Problem-Block) + D-10 (Kurz-FAQ)
+- `.planning/phases/20.6-landing-sections-rebuild/20.6-0{1..9}-PLAN.md` — 9 Skeleton-Plans
 - `brand/Generation AI Design System/` — Design-System Nordstern (canonical)
-- `.planning/phases/20.5-landing-wow-pass-signal-grid/20.5-SUMMARY.md` — was Hero delivered
 - `apps/website/components/ui/signal-grid.tsx` — der Qualitäts-Maßstab für alle Sections
+- `~/Downloads/Generation_AI_Website_Konzept.md` — Simons Konzept (April 2026) — strategische Quelle für alle Scope-Entscheidungen
 - Dev-Server: `pnpm --filter @genai/website dev` (auf localhost:3000 oder :3001)
 
-**Roadmap nach 20.6:** Phase 21 `/about` → 22 `/partner` → 23 `/join` → 24 `/test` → 25 Circle-API-Sync → 26 Subdomain-Integration
+**Revidierte Roadmap-Reihenfolge (Pfad A):**
+
+```
+20.6 → 21 /about → 22 /partner (4-Tab) → 23 /join → 22.7 tools-polish → 22.5 /events → 24 /test → 25 circle-sync → 26 /community → 27 copy-pass → LAUNCH
+```
+
+**Phase-CONTEXTs (alle 2026-04-23 auf Simons Konzept + Handout-Reality aligned):**
+
+- Phase 20.6 `.planning/phases/20.6-landing-sections-rebuild/20.6-CONTEXT.md` — Landing-Sections-Rebuild (Problem-Block §4.4 + Kurz-FAQ §4.10 + Trust-Marquee + Polish), AudienceSplit removed, Hero LabeledNodes gelocked
+- Phase 21 `.planning/phases/21-about-page/21-CONTEXT.md` 🆕 — /about mit Mission/Team/Werte/Verein/10-FAQ/Mitmach (Simon §9)
+- Phase 22 `.planning/phases/22-partner-page/22-CONTEXT.md` — 4-Tab-System mit Initiativen + URL-Param + Ansprechpartner-Karten (Simon §8)
+- Phase 22.5 `.planning/phases/22.5-events-page/22.5-CONTEXT.md` — MDX-Pipeline, members-only gated, Anmelde-Flow mit Signup-Gate (Simon §5)
+- Phase 22.7 `.planning/phases/22.7-tools-subdomain-polish/22.7-CONTEXT.md` — Logo-Link-Fix + Login-Button-Umbau + Hero + Nav-Sync (Simon §6)
+- Phase 23 `.planning/phases/23-join-flow/23-CONTEXT.md` 🆕 — /join Signup-Flow mit Waitlist-V1-Pattern, Redirect-URL-Handling (Simon §10)
+- Phase 24 `.planning/phases/24-test-assessment/24-CONTEXT.md` 🆕 — /test KI-Kompetenz-Assessment, client-side Score-Logic, SEO-Entry
+- Phase 25 `.planning/phases/25-circle-api-sync/25-CONTEXT.md` 🆕 — Kern-UX-Win: Unified Signup via Circle Business-API, Single-Mail-Flow
+- Phase 26 `.planning/phases/26-community-page-and-subdomain-integration/26-CONTEXT.md` — eigene `/community`-Seite mit MDX-Artikeln + Block B Featured-Tools-API (Simon §7)
+- Phase 27 `.planning/phases/27-copy-pass-and-launch-cleanup/27-CONTEXT.md` — Copy-Pass + Dummy-Cleanup + SEO-Final + Signup-Go
+
+**Entschiedene Decisions (2026-04-23 mit Luca):**
+
+- Partner: 4-Tab-System mit Initiativen (Simons Konzept canonical)
+- Events: NICHT public — members-only per Strategie (Akquisitionshebel). MDX-Pipeline im Repo, kein Circle-API-Pull. Anmelde-Flow gated durch Signup
+- Community-Artikel: MDX-Files im Repo (parallel zu Events-Pipeline). Placeholder-Content bei Launch
+- Reihenfolge: Pfad A (B2B-Conversion priorisiert: Partner vor Events)
+- 20.6 erweitert (statt 20.7) um Problem-Block + Kurz-FAQ
+- Tools-Polish-Wording: „Kostenlos registrieren" bestätigt
+- Partner-Mail: erstmal `admin@` (ImprovMX), `partner@` später
 
 **Phase 20 Skeleton — Status 2026-04-21:** formal approved auf Skeleton-Scope. Automated Gates alle grün (Build `ƒ /`, CSP nonce, Playwright 8/8, Lighthouse A11y 1.00 / BP 0.96 / SEO 1.00 / CLS 0.00, Perf 0.88 flaky-tolerated). Hero + Discrepancy Wow-Peaks explicit deferred auf Phase 20.5. Changeset `phase-20-navigation-landing-skeleton.md` liegt committed, Merge + `pnpm version` erst nach 20.5. Branch `feature/phase-20-landing-skeleton` bleibt offen für 20.5. Details: `.planning/phases/20-navigation-landing-skeleton/20-VALIDATION.md` (Skeleton-Scope-Sign-Off-Section).
 
@@ -91,7 +122,7 @@ progress:
 
 ### Phase 20.5 Progress
 
-**Status:** ✅ CLOSED at Hero-level 2026-04-22. Hero approved by Luca („wirklich nice"). Discrepancy + Transition bewusst deferred auf Phase 20.6.
+**Status:** Executing Phase 20.6
 
 - CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
 - 5 PLAN.md angelegt, 3 delivered + 2 deferred:
@@ -131,23 +162,26 @@ progress:
 
 ---
 
-## Milestone v4.0 — Setup abgeschlossen 2026-04-19
+## Milestone v4.0 — Revidiert 2026-04-23 nach Simons Website-Konzept
 
-**Scope-Dokument:** `.planning/research/v4-scoping/SCOPE.md` (Sparring-Session)
+**Scope-Dokument:** `.planning/research/v4-scoping/SCOPE.md` + `~/Downloads/Generation_AI_Website_Konzept.md` (Simon, April 2026)
 **Requirements:** R1-R7 in `.planning/REQUIREMENTS.md`
-**Roadmap:** Phasen 20-26 in `.planning/ROADMAP.md`
+**Roadmap:** Phasen 20-27 in `.planning/ROADMAP.md`
 
-**Phasen (empfohlene Reihenfolge):**
+**Phasen (revidierte Reihenfolge, Pfad A — B2B-Conversion priorisiert):**
 
-1. **Phase 20** — Navigation + Landing-Skeleton (Stub-Daten) ✅
-2. **Phase 20.5** — Landing Wow-Pass (Signal-Grid) — Hero ✅ delivered 2026-04-22, Discrepancy + Transition deferred auf 20.6
-3. **Phase 20.6** — Landing Sections Rebuild (new Discrepancy + polish aller übrigen Sections + transitions) ← NEXT
-4. **Phase 21** — `/about`-Seite
-5. **Phase 22** — `/partner`-Seite (3 Anker-Sections + Kontakt-Formular)
+1. **Phase 20** — Navigation + Landing-Skeleton ✅ (2026-04-21)
+2. **Phase 20.5** — Landing Wow-Pass (Signal-Grid / Hero) ✅ (2026-04-22)
+3. **Phase 20.6** — Landing Sections Rebuild (9 Plans: Problem-Block + 6 Polish + Kurz-FAQ + Transitions) ← **NEXT**
+4. **Phase 21** — `/about`-Seite (Mission, Team, Werte, Verein, FAQ 10)
+5. **Phase 22** — `/partner`-Seite **REVIDIERT** (4-Tab-System statt 3-Anker, + Initiativen als 4. Segment, URL-Param Deep-Linking, Ansprechpartner-Karten)
 6. **Phase 23** — `/join` Fragebogen-Flow (Backend-Stub 503)
-7. **Phase 24** — `/test` Assessment (optional, DSGVO-konform) — Route umbenannt 2026-04-22
-8. **Phase 25** — Circle-API-Sync (Unified Signup: eine Mail via SSO-Link)
-9. **Phase 26** — Subdomain-Integration (Featured-Tools + Community-Preview)
+7. **Phase 22.7** — Tools-Subdomain Polish 🆕 (Logo-Fix + Login-Button-Umbau + Hero + Nav-Sync)
+8. **Phase 22.5** — `/events`-Seite 🆕 (MDX-Pipeline, members-only gated, Anmelde-Flow mit Signup-Gate)
+9. **Phase 24** — `/test` Assessment
+10. **Phase 25** — Circle-API-Sync (Unified Signup)
+11. **Phase 26** — `/community` + Subdomain-Integration **ERWEITERT** (eigene /community-Seite mit MDX-Artikeln + Blog-SEO, plus Featured-Tools-API)
+12. **Phase 27** — Copy-Pass & Launch-Cleanup 🆕 (finales Wording + Dummy-Cleanup + SEO + Signup-Go)
 
 **Kern-UX-Win:** Phase 25 Circle-API-Sync — User bekommt **eine** Mail statt zwei, landet nach Confirm via embedded SSO-Link direkt eingeloggt in Circle (Circle-Business-Plan API).
 
