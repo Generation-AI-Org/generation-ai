@@ -22,12 +22,14 @@ type PlaceholderAvatarProps = {
 function getInitials(name: string): string {
   const trimmed = name.trim()
   if (!trimmed) return "?"
-  const tokens = trimmed.split(/\s+/)
-  if (tokens.length >= 2) {
+  const tokens = trimmed.split(/\s+/).filter(Boolean)
+  if (tokens.length === 0) return "?"
+  if (tokens.length >= 2 && tokens[0][0] && tokens[1][0]) {
     return (tokens[0][0] + tokens[1][0]).toUpperCase()
   }
   // Single-token fallback: first 1-2 chars
-  return tokens[0].slice(0, 2).toUpperCase()
+  const first = tokens[0] ?? ""
+  return first.slice(0, 2).toUpperCase() || "?"
 }
 
 const sizeClasses: Record<NonNullable<PlaceholderAvatarProps["size"]>, string> = {
