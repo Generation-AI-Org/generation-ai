@@ -36,7 +36,7 @@ export function AboutStorySection() {
       id="story"
       aria-labelledby="about-story-heading"
       data-section="about-story"
-      className="relative bg-bg py-24 sm:py-32 border-b border-border"
+      className="relative bg-bg py-24 sm:py-32"
     >
       <div className="mx-auto max-w-3xl px-6">
         {/* Eyebrow: // unsere story */}

@@ -32,7 +32,7 @@ export function AboutVereinSection() {
       id="verein"
       aria-labelledby="about-verein-heading"
       data-section="about-verein"
-      className="relative bg-bg py-24 sm:py-32 border-b border-border"
+      className="relative bg-bg py-24 sm:py-32"
     >
       <div className="mx-auto max-w-3xl px-6">
         {/* Eyebrow */}

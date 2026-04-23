@@ -14,6 +14,7 @@
 import { MotionConfig } from "motion/react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
+import { SectionTransition } from "@/components/ui/section-transition"
 import { AboutHeroSection } from "@/components/about/about-hero-section"
 import { AboutStorySection } from "@/components/about/about-story-section"
 import { AboutTeamSection } from "@/components/about/about-team-section"
@@ -34,13 +35,21 @@ export function AboutClient({ nonce }: AboutClientProps) {
       <Header />
       <main id="main-content" className="min-h-screen pt-20">
         <AboutHeroSection />
+        {/* Hero → Story: keine SectionTransition (analog Landing Hero → Problem-Block) */}
         <AboutStorySection />
+        <SectionTransition variant="soft-fade" />
         <AboutTeamSection />
+        <SectionTransition variant="soft-fade" />
         <AboutValuesSection />
+        <SectionTransition variant="soft-fade" />
         <AboutVereinSection />
+        <SectionTransition variant="soft-fade" />
         <AboutMitmachCTASection />
+        <SectionTransition variant="soft-fade" />
         <AboutFaqSection />
+        <SectionTransition variant="signal-echo" />
         <AboutFinalCTASection />
+        {/* Final-CTA → Kontakt: keine SectionTransition (abschließende CTA-Cluster) */}
         <AboutKontaktSection />
       </main>
       <Footer />

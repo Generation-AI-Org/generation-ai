@@ -40,7 +40,7 @@ export function AboutMitmachCTASection() {
       id="mitmach"
       aria-labelledby="about-mitmach-heading"
       data-section="about-mitmach"
-      className="relative bg-bg py-24 sm:py-32 border-b border-border"
+      className="relative bg-bg py-24 sm:py-32"
     >
       <div className="mx-auto max-w-3xl px-6 text-center">
         {/* H2 — visuell groesser als Story/Team/Werte/Verein (--fs-h2 clamp 24-32) */}

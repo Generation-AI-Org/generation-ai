@@ -32,7 +32,7 @@ export function AboutFinalCTASection() {
     <section
       aria-labelledby="about-final-cta-heading"
       data-section="about-final-cta"
-      className="relative bg-bg py-24 sm:py-32 border-b border-border"
+      className="relative bg-bg py-24 sm:py-32"
     >
       <div className="mx-auto max-w-3xl px-6 text-center">
         {/* H2 — visueller Peak */}
