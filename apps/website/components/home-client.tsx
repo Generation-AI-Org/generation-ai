@@ -13,6 +13,7 @@ import { CommunityPreviewSection } from "@/components/sections/community-preview
 import { TrustSection } from "@/components/sections/trust-section"
 import { FinalCTASection } from "@/components/sections/final-cta-section"
 import { KurzFaqSection } from "@/components/sections/kurz-faq-section"
+import { SectionTransition } from "@/components/ui/section-transition"
 
 type HomeClientProps = {
   nonce: string
@@ -41,12 +42,19 @@ export function HomeClient({ nonce }: HomeClientProps) {
         <Header />
         <main id="main-content" className="min-h-screen pt-20">
           <HeroSection />
+          <SectionTransition variant="signal-echo" />
           <ProblemBlockSection />
+          <SectionTransition variant="soft-fade" />
           <OfferingSection />
+          <SectionTransition variant="soft-fade" />
           <ToolShowcaseSection />
+          <SectionTransition variant="soft-fade" />
           <CommunityPreviewSection />
+          <SectionTransition variant="soft-fade" />
           <TrustSection />
+          <SectionTransition variant="signal-echo" />
           <FinalCTASection />
+          <SectionTransition variant="soft-fade" />
           <KurzFaqSection />
         </main>
         <Footer />
