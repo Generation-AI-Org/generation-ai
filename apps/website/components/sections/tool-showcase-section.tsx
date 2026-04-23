@@ -2,8 +2,27 @@
 
 import { useEffect, useRef, useState } from "react"
 import { ArrowUpRight } from "lucide-react"
+import { motion, useReducedMotion } from "motion/react"
 import { useTheme } from "@/components/ThemeProvider"
 import { ToolIcon } from "@/components/ui/tool-icon"
+
+// Tool-Showcase (Simon §4.6 "Über 100 KI-Tools, kuratiert.") — DS-polished.
+//
+// Struktur:
+//   1. Section-Header mit Eyebrow "// tool-bibliothek" + Hero-level H2 + Lede
+//      (linksbündig, BeispielBadge + "Alle Tools"-Link rechtsbündig)
+//   2. Infinite-Marquee mit 12 Tool-Cards (Theme-aware Icon-BG, BeispielBadge)
+//
+// DS-Alignment:
+//   - Entry-Motion via motion/react (fadeIn, viewport once), reduced-motion Fallback
+//   - Easings + Durations via CSS-Tokens (--ease-out, --dur-normal) über inline styles
+//   - Keyboard-Fokus: Card-Links mit focus-visible:outline, Neutral-Ring (DS §C)
+//   - Hover: card border-accent + accent-glow shadow (DS §C Interaction-States)
+//   - Tokens only: --accent, --text*, --border*, --bg-card, --bg-elevated, --accent-glow.
+//     Keine stray Hex-Werte (Icon-BG jetzt theme-aware über DS-Tokens).
+//   - Marquee pausiert bei prefers-reduced-motion (globals.css @media-Rule auf
+//     .animate-scroll, D-06 PFLICHT).
+//   - Theme-aware: BeispielBadge (.light → brand-red, dark → brand-neon) bleibt erhalten.
 
 /**
  * BeispielBadge — Stub-Markierung für Demo/Dummy-Content.
@@ -51,6 +70,17 @@ const tools: Tool[] = [
 const TOOLS_BASE = "https://tools.generation-ai.org"
 
 export function ToolShowcaseSection() {
+  const prefersReducedMotion = useReducedMotion()
+
+  const fadeIn = prefersReducedMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 16 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: "-10% 0px" },
+        transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
+      }
+
   return (
     <section
       aria-labelledby="tool-showcase-heading"
@@ -58,9 +88,12 @@ export function ToolShowcaseSection() {
       className="bg-bg py-24 sm:py-32 border-b border-border overflow-hidden"
     >
       <div className="mx-auto max-w-6xl px-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 mb-12">
-          <div>
-            <div className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted mb-3">
+        <motion.div
+          {...fadeIn}
+          className="flex flex-col gap-6 mb-14 sm:flex-row sm:items-end sm:justify-between"
+        >
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
               <span
                 aria-hidden="true"
                 className="h-1.5 w-1.5 rounded-full"
@@ -73,30 +106,40 @@ export function ToolShowcaseSection() {
             </div>
             <h2
               id="tool-showcase-heading"
-              className="text-3xl sm:text-4xl font-bold tracking-tight text-text text-balance"
+              className="mt-4 font-mono font-bold leading-[1.1] tracking-[-0.025em] text-text text-balance"
+              style={{ fontSize: "clamp(32px, 5vw, 52px)" }}
             >
               Über 100 KI-Tools, kuratiert.
             </h2>
-            <p className="mt-3 text-base text-text-secondary max-w-xl text-pretty">
-              Eine wachsende Bibliothek mit Anleitungen — sortiert nach Anwendungsfall. Diese Auswahl ist exemplarisch.
+            <p className="mt-5 text-lg leading-[1.5] text-text-secondary text-pretty sm:text-xl">
+              Eine wachsende Bibliothek mit Anleitungen — sortiert nach
+              Anwendungsfall. Diese Auswahl ist exemplarisch.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-shrink-0 items-center gap-3 sm:pb-2">
             <BeispielBadge />
             <a
               href={TOOLS_BASE}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm font-mono text-[var(--accent)] hover:text-[var(--accent-hover,var(--accent))] transition-colors"
+              className="inline-flex items-center gap-1 rounded-full font-mono text-[12px] font-bold uppercase tracking-[0.08em] text-[var(--accent)] hover:text-[var(--accent-hover,var(--accent))] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
+              style={{
+                outlineColor: "var(--text)",
+                transitionDuration: "var(--dur-normal)",
+                transitionTimingFunction: "var(--ease-out)",
+                transitionProperty: "color",
+              }}
             >
               Alle Tools ansehen
-              <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      <ToolMarquee />
+      <motion.div {...fadeIn}>
+        <ToolMarquee />
+      </motion.div>
     </section>
   )
 }
