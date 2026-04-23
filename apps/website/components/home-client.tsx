@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { TerminalSplash } from "@/components/terminal-splash"
 import { HeroSection } from "@/components/sections/hero-section"
+import { ProblemBlockSection } from "@/components/sections/problem-block-section"
 import { OfferingSection } from "@/components/sections/offering-section"
 import { ToolShowcaseSection } from "@/components/sections/tool-showcase-section"
 import { CommunityPreviewSection } from "@/components/sections/community-preview-section"
@@ -39,6 +40,7 @@ export function HomeClient({ nonce }: HomeClientProps) {
         <Header />
         <main id="main-content" className="min-h-screen pt-20">
           <HeroSection />
+          <ProblemBlockSection />
           <OfferingSection />
           <ToolShowcaseSection />
           <CommunityPreviewSection />
