@@ -141,3 +141,9 @@ Die folgenden Items erfordern eine manuelle Prüfung durch Luca:
 6. **Placeholder-Namen-Bestätigung:** Sind "Janna Meister" + "Simon Becker" als Platzhalter-Nachnamen OK bis zur Phase-27-Copy-Pass, oder direkt korrigieren?
 7. **Copy-Pass-Feel:** Ist die Story-Copy (3 Absätze), Werte-Blöcke (4) und FAQ-Antworten (10) im Voice konsistent mit `brand/VOICE.md`?
 8. **Partner-Link-404-Awareness:** "→ Partner werden" im Abschluss-CTA und "Zur Partner-Seite →" im Kontakt führen aktuell zu 404 (Phase 22 fehlt noch). Acceptable oder kurzfristig Fallback?
+
+## Known Limitations (Follow-ups)
+
+Diese Punkte sind für Phase 21 bewusst nicht gefixt, sollten aber bei späteren Phasen berücksichtigt werden:
+
+- **Statische Section-Heading-IDs (Review WR-02):** Alle `about-*-section.tsx`-Components setzen feste DOM-IDs auf ihre H2-Elements (z. B. `id="about-hero-heading"`, `id="about-story-heading"`). Aktuell unkritisch, weil `/about` Single-Mount ist. Sobald About-Inhalte in Phase 22 (Partner-Page) oder Phase 27 teil-eingebettet werden, produzieren die statischen IDs Duplikate → ungültiges HTML + `aria-labelledby` zeigt auf das erste Element. Follow-up für Phase 27: Section-Heading-IDs via `useId()` oder Consumer-Prop. FAQ-Panels nutzen `useId()` bereits als Best-Practice-Referenz.
