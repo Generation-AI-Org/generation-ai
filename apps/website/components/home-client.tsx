@@ -59,7 +59,10 @@ export function HomeClient({ nonce }: HomeClientProps) {
           <TrustSection />
           <SectionTransition variant="signal-echo" />
           <FinalCTASection />
-          <SectionTransition variant="soft-fade" />
+          {/* Final-CTA → Kurz-FAQ: keine SectionTransition. Der Connection-
+              Beam aus Final-CTA uebernimmt die Bridging-Funktion (Luca UAT
+              2026-04-23). Beam ragt 120px in Kurz-FAQ, Hairline wuerde
+              dort nur mit dem Beam kollidieren. */}
           <KurzFaqSection />
         </main>
         <Footer />

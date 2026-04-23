@@ -66,25 +66,14 @@ export function FinalCTASection() {
     <section
       aria-labelledby="final-cta-heading"
       data-section="final-cta"
-      className="relative isolate overflow-hidden bg-bg py-32 sm:py-40"
+      className="relative isolate bg-bg py-32 sm:py-40"
     >
-      {/* Backdrop: subtle radial glow um die CTAs (50% 65%) + vertical
-          mask-image damit der Halo GRACEFUL vor der Section-Bottom
-          zu 0 fadet statt hart abzuschneiden. Luca UAT 2026-04-23:
-          Halo-Konzept behalten, aber kein Hard-Cut. Mask fadet von
-          full-opacity bei 10% bis 0 bei 88% der Section-Höhe. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{
-          background: `radial-gradient(ellipse 80% 60% at 50% 65%, var(--accent-glow) 0%, rgba(var(--bg-rgb), 0) 70%)`,
-          opacity: 0.32,
-          WebkitMaskImage:
-            "linear-gradient(to bottom, transparent 0%, black 10%, black 60%, transparent 88%)",
-          maskImage:
-            "linear-gradient(to bottom, transparent 0%, black 10%, black 60%, transparent 88%)",
-        }}
-      />
+      {/* Halo entfernt (Luca UAT 2026-04-23): Hard-Cut an Section-Bottom
+          ist konzeptionell unlösbar. Stattdessen: Connection-Item —
+          vertikaler Beam überquert die Section-Grenze als "roter Faden"
+          in die Kurz-FAQ rein. Section hat kein overflow-hidden mehr,
+          damit der Beam über die Grenze ragen darf. Kurz-FAQ hat
+          gleichen bg, also kein visueller Bruch durch den Übergang. */}
 
       {/* Horizontaler Accent-Hairline oben — echo zum Signal-Grid "roter Faden" */}
       <motion.div
@@ -100,16 +89,20 @@ export function FinalCTASection() {
         }}
       />
 
-      {/* Vertikaler Beam — "roter Faden" vertikal, wächst vom Boden */}
+      {/* Connection-Beam — vertikaler "roter Faden" der die Section-Grenze
+          überquert. Symmetrischer Fade (transparent → accent → transparent),
+          zentriert auf der Section-Bottom-Linie (120px oberhalb bis 120px
+          unterhalb). Verbindet Final-CTA visuell mit Kurz-FAQ. */}
       <motion.div
         aria-hidden="true"
         {...beamIn}
-        className="absolute bottom-0 left-1/2 z-0 w-px origin-bottom -translate-x-1/2"
+        className="absolute left-1/2 z-0 w-px origin-center -translate-x-1/2"
         style={{
-          height: "min(240px, 28vh)",
-          background: `linear-gradient(to top, var(--accent), transparent)`,
-          boxShadow: "0 0 12px var(--accent-glow)",
-          opacity: 0.7,
+          bottom: "-120px",
+          height: "240px",
+          background: `linear-gradient(to top, transparent 0%, var(--accent) 30%, var(--accent) 70%, transparent 100%)`,
+          boxShadow: "0 0 16px var(--accent-glow)",
+          opacity: 0.75,
         }}
       />
 
