@@ -15,7 +15,7 @@
 //   [SectionTransition signal-echo]
 //   5. VereinHint (Transparenz-Hinweis)
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { MotionConfig, motion, useReducedMotion } from "motion/react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
@@ -102,6 +102,14 @@ export function PartnerClient({ nonce, initialTyp }: PartnerClientProps) {
     setActiveTyp(slug)
     window.history.pushState(null, '', `?typ=${slug}`)
   }, [])
+
+  // Deep-link initial scroll: if URL arrived with ?typ=, pin tab-rail to top on mount.
+  // Landing without param keeps hero at top (no auto-scroll).
+  useEffect(() => {
+    if (!initialTyp || !VALID_SLUGS.has(initialTyp)) return
+    const section = document.querySelector('[data-section="partner-tab-system"]') as HTMLElement | null
+    section?.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior })
+  }, [initialTyp])
 
   return (
     <MotionConfig nonce={nonce}>

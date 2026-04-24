@@ -22,6 +22,9 @@ export function PartnerTabSystem({ activeTyp, onTypChange }: PartnerTabSystemPro
   const setActiveTyp = useCallback(
     (slug: PartnerTyp) => {
       onTypChange(slug)
+      // Pin tab-rail to viewport top (sticky-header offset handled by scroll-mt-20 on section)
+      const section = document.querySelector('[data-section="partner-tab-system"]') as HTMLElement | null
+      section?.scrollIntoView({ block: 'start', behavior: 'smooth' })
     },
     [onTypChange],
   )
@@ -73,7 +76,7 @@ export function PartnerTabSystem({ activeTyp, onTypChange }: PartnerTabSystemPro
     <section
       aria-label="Partnertypen auswählen"
       data-section="partner-tab-system"
-      className="relative bg-bg"
+      className="relative bg-bg scroll-mt-20"
     >
       {/* Tab rail */}
       <div
