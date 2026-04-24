@@ -4,7 +4,7 @@ slug: test-assessment
 type: context
 status: planning
 created: 2026-04-23
-last-updated: 2026-04-23
+last-updated: 2026-04-24
 depends_on:
   - 20.6 (Landing Sections Rebuild — Nav + DS baseline)
   - 23 (/join — Assessment optional angeboten nach Signup oder eigenständig vorher)
@@ -138,15 +138,15 @@ Beispiel-Dimensionen (Luca finalisiert Inhalte):
 
 ---
 
-## Offene Fragen (zu klären vor Planning)
+## Offene Fragen — Resolved 2026-04-24 (via /gsd-autonomous --interactive)
 
-1. **Frage-Content:** Wer schreibt die 10-12 Fragen und die 3 Empfehlungs-Profile? Luca allein, oder mit Simon/Team? Empfehlung: Luca liefert Draft, Claude formatiert + schärft.
-2. **SEO-Keyword-Fokus:** Welche Suchbegriffe sind Ziel? „KI Test", „KI Skills einschätzen", „AI Literacy Test"? Beeinflusst H1 + Meta-Description.
-3. **Ergebnis-Visualisierung:** Level-Badge als Pill, Sticker, oder Diagramm mit Radarplot (Dimensionen Tools/Prompting/Agents/Anwendung)? Radar wäre visual engaging aber Scope-Creep.
-4. **Assessment vs. Join-Flow-Integration:** Bietet /test nach Test eine Direct-Signup-Inline-Option (Email-only-Field auf Result-Page) oder Redirect zu /join? Empfehlung: Redirect mit pre-fill Query-Params für Konsistenz.
-5. **Persistent für eingeloggte User:** V1 ohne Auth-Integration okay? Oder schon lauffähig vorbereiten (`user_metadata.ki_level` Schema in Supabase vordefinieren)?
-6. **Fragen-Mix:** Multi-Select vs. Single-Select — darf eine Frage mehrere Antworten erlauben (z.B. „Welche Tools kennst du?")? Empfehlung: ja, 2-3 Fragen als Multi-Select, Scoring passt sich an.
-7. **Level-Kategorien:** 3 (Einsteiger/Fortgeschritten/Expert) oder 5 (+ Neugieriger/Pro)? Empfehlung: 3 — konsistent mit Simons Event-Level-Tags in §5.4.
+1. **Frage-Content:** Claude drafted alle 10-12 Fragen + 5 Level-Empfehlungs-Profile als Erstentwurf. Luca reviewt + schärft. Inhalte landen in JSON (`questions.json`) + MDX (`results.mdx`), editierbar ohne Code-Änderung.
+2. **SEO-Keyword-Fokus:** „AI Literacy Test" als primärer Keyword-Ziel (Meta-Description, Meta-Keywords, OG-Tags). H1 bleibt deutsch („Wo stehst du mit KI?"). Zweite Keyword-Welle: „KI Kompetenz Test", „KI Skills".
+3. **Ergebnis-Visualisierung:** **Radar-Chart** über 5 Dimensionen (Tool-Kenntnis / Prompting-Erfahrung / Agents-Advanced / Anwendungs-Tiefe / Selfeinschätzung). Ergänzt durch Level-Badge oben. Chart-Library: leichtgewichtig (Recharts oder custom SVG) — Plan-Phase entscheidet final. **Scope-Hinweis:** dies ist Scope-Up gegenüber ursprünglicher Pill-Empfehlung — akzeptiert.
+4. **Signup-Flow:** Result-Page hat „Jetzt beitreten"-CTA → **Redirect zu `/join?pre={level}&source=test`**. Kein Inline-Email-Field (Konsistenz mit /join als einzigem Signup-Surface).
+5. **Auth-Integration:** **V1 ohne Auth-Integration**. Reine Client-Side-Logic, kein Supabase-Write. `user_metadata.ki_level` kommt in Phase 25 (Unified Signup).
+6. **Fragen-Typ:** **Mix** — 2-3 Fragen als Multi-Select (Tool-Kenntnis, Bedarf), Rest Single-Select. Scoring: Multi mit Cap (z.B. max 3 Tools zählen für Score).
+7. **Level-Kategorien:** **5 Stufen** — Neugieriger / Einsteiger / Fortgeschritten / Pro / Expert. Jedes Level bekommt eigenes Empfehlungs-Profil mit 3-5 Cards. Score-Schwellen von Plan-Phase definiert.
 
 ---
 
