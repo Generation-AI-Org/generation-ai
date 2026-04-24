@@ -18,9 +18,12 @@ export function CheckpointCelebration(_props?: CheckpointProps) {
 
   return (
     <motion.div
-      className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      // Header-strip scope: covers only the h-14 (56px) header area, not the full page.
+      // Positioned relative to the root layout div (which now has `relative`).
+      // UI-SPEC: "header strip background transitions from var(--bg) to var(--accent-soft)"
+      className="pointer-events-none absolute top-0 right-0 left-0 z-20 flex h-14 items-center justify-center"
+      initial={{ opacity: 0, backgroundColor: 'var(--bg)' }}
+      animate={{ opacity: 1, backgroundColor: 'var(--accent-soft)' }}
       exit={{ opacity: 0 }}
       transition={{ duration: reducedMotion ? 0.1 : 0.3 }}
       role="status"

@@ -16,6 +16,8 @@ export interface AufgabeLayoutProps {
   onNext: () => void
   nextDisabled: boolean
   children: ReactNode
+  /** Optional slot rendered as an absolute overlay scoped to the header strip (h-14). */
+  checkpointSlot?: ReactNode
 }
 
 export function AufgabeLayout({
@@ -24,12 +26,15 @@ export function AufgabeLayout({
   onNext,
   nextDisabled,
   children,
+  checkpointSlot,
 }: AufgabeLayoutProps) {
   const percent = ((questionIndex + 1) / totalQuestions) * 100
   const humanLabel = `Aufgabe ${questionIndex + 1}/${totalQuestions}`
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--bg)]">
+    <div className="relative flex min-h-screen flex-col bg-[var(--bg)]">
+      {/* Checkpoint slot — absolutely positioned over the header strip (h-14 scope). */}
+      {checkpointSlot}
       {/* Header strip — compact, no main-site <Header/> per UI-SPEC */}
       <header
         className="flex h-14 items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--bg)] px-4 sm:px-8"

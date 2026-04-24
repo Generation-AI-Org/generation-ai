@@ -97,6 +97,11 @@ function AufgabeInner({ questions, currentIndex, highlightedCode }: AufgabeClien
       totalQuestions={questions.length}
       onNext={handleNext}
       nextDisabled={!ready}
+      checkpointSlot={
+        showCheckpoint ? (
+          <CheckpointCelebration onDismiss={() => setShowCheckpoint(false)} />
+        ) : undefined
+      }
     >
       <AnimatePresence mode="wait">
         <motion.div
@@ -126,9 +131,6 @@ function AufgabeInner({ questions, currentIndex, highlightedCode }: AufgabeClien
           />
         </motion.div>
       </AnimatePresence>
-      {showCheckpoint && (
-        <CheckpointCelebration onDismiss={() => setShowCheckpoint(false)} />
-      )}
     </AufgabeLayout>
   )
 }
