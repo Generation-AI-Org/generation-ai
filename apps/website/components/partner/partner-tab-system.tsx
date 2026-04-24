@@ -76,7 +76,7 @@ export function PartnerTabSystem({ activeTyp, onTypChange }: PartnerTabSystemPro
     <section
       aria-label="Partnertypen auswählen"
       data-section="partner-tab-system"
-      className="relative bg-bg scroll-mt-20"
+      className="relative bg-bg scroll-mt-32"
     >
       {/* Tab rail */}
       <div
