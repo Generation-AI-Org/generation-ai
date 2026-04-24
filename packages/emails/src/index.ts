@@ -16,3 +16,6 @@ export type { PartnerInquiryConfirmationEmailProps } from './templates/partner-i
 
 export { default as WaitlistConfirmationEmail } from './templates/waitlist-confirmation'
 export type { WaitlistConfirmationEmailProps } from './templates/waitlist-confirmation'
+
+export { default as WaitlistReinviteEmail } from './templates/waitlist-reinvite'
+export type { WaitlistReinviteEmailProps } from './templates/waitlist-reinvite'
