@@ -19,17 +19,6 @@ export interface PromptBestPickWidgetProps
   highlightedCode: Record<string, string>
 }
 
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-}
-
-function fallbackPre(code: string): string {
-  return `<pre><code>${escapeHtml(code)}</code></pre>`
-}
-
 export function PromptBestPickWidget({
   question,
   answer,
@@ -55,7 +44,12 @@ export function PromptBestPickWidget({
     >
       {question.options.map((opt, index) => {
         const isSelected = selected === opt.id
-        const html = highlightedCode[opt.id] ?? fallbackPre(opt.code)
+        // WR-07: only render shiki HTML when we have it. If the server-side
+        // highlighter didn't produce output for this option id, fall back to
+        // React-escaped plain text — do NOT wrap a string in
+        // dangerouslySetInnerHTML, since any future untrusted code content
+        // would then cross the trust boundary silently.
+        const html = highlightedCode[opt.id]
         return (
           <button
             key={opt.id}
@@ -99,12 +93,21 @@ export function PromptBestPickWidget({
                 aria-hidden
               />
             )}
-            <div
-              className="shiki-wrapper max-h-48 overflow-x-auto rounded-lg bg-[var(--slate-2)] p-3 font-mono text-sm"
-              style={{ fontFamily: 'var(--font-geist-mono)' }}
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={{ __html: html }}
-            />
+            {html ? (
+              <div
+                className="shiki-wrapper max-h-48 overflow-x-auto rounded-lg bg-[var(--slate-2)] p-3 font-mono text-sm"
+                style={{ fontFamily: 'var(--font-geist-mono)' }}
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: html }}
+              />
+            ) : (
+              <pre
+                className="shiki-wrapper max-h-48 overflow-x-auto rounded-lg bg-[var(--slate-2)] p-3 font-mono text-sm"
+                style={{ fontFamily: 'var(--font-geist-mono)' }}
+              >
+                <code>{opt.code}</code>
+              </pre>
+            )}
           </button>
         )
       })}
