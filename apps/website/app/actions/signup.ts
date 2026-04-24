@@ -215,7 +215,7 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
     const spaceId = process.env.CIRCLE_DEFAULT_SPACE_ID
     if (spaceId) {
       try {
-        await addMemberToSpace(circleMemberId, spaceId)
+        await addMemberToSpace(email, spaceId)
       } catch (spaceErr) {
         // Sub-non-blocking: member exists, just not in welcome space
         if (spaceErr instanceof CircleApiError) {

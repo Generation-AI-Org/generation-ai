@@ -202,19 +202,24 @@ export async function createMember(
 }
 
 /**
- * Add a Circle member to a space. Idempotent — 409 CONFLICT
+ * Add a Circle member to a space by email. Idempotent — 409 CONFLICT
  * (already in space) is swallowed as success.
+ *
+ * Circle's `POST /space_members` resolves the member by email, not by
+ * community_member_id (verified live against Circle MCP schema 2026-04-24:
+ * required params are `{email, space_id}`). `space_id` must be an integer;
+ * we coerce so callers can pass the env-var string directly.
  */
 export async function addMemberToSpace(
-  memberId: string,
+  email: string,
   spaceId: string,
 ): Promise<void> {
   try {
     await circleFetch<unknown>('/space_members', {
       method: 'POST',
       body: JSON.stringify({
-        space_id: spaceId,
-        community_member_id: memberId,
+        space_id: Number(spaceId),
+        email,
       }),
     })
   } catch (err) {

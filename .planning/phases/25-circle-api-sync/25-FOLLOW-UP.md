@@ -57,40 +57,26 @@ Der Unified-Signup-Flow ist **zu 95% durch**. End-to-End auf `feature/phase-25-c
 
 ---
 
-## Offene Bugs (Must-Fix vor Launch) ❌
+### Bug #1 — Circle `addMemberToSpace` (FIXED 2026-04-25)
 
-### Bug #1 — Circle `addMemberToSpace` 404
+**Commit:** `<filled-in-on-commit>` (branch `feature/phase-25-circle-api-sync`)
 
-**Evidenz:** Sentry-Event am 2026-04-24 21:02:34 UTC, Preview-Env:
-```
-CircleApiError: Circle API POST /space_members failed with status 404
-op: addMemberToSpace
-```
+**Root-Cause (verified live via Circle MCP):** Plan-B's Payload-Annahme war doppelt falsch:
+1. Falscher Key: `community_member_id` — Circle's `POST /space_members` resolved den Member über `email`, nicht über Member-ID
+2. Falscher Type: `space_id` muss `integer` sein (per MCP-Schema), nicht der String aus `process.env.CIRCLE_DEFAULT_SPACE_ID`
 
-**Root-Cause:** Plan-B (`packages/circle/src/client.ts:190-209`) setzt den Request:
-```ts
-circleFetch('/space_members', {
-  method: 'POST',
-  body: { space_id: spaceId, community_member_id: memberId }
-})
-```
+**Fix:**
+- `packages/circle/src/client.ts` — `addMemberToSpace(email, spaceId)` (Signatur), Body `{space_id: Number(spaceId), email}`
+- `apps/website/app/actions/signup.ts:218` — Call-Site auf `addMemberToSpace(email, spaceId)` umgestellt
+- `packages/circle/src/__tests__/client.test.ts` — alle Tests auf Email-Argument umgestellt + neuer Test asserted exakte Wire-Payload-Shape
 
-Der Pfad `/space_members` und/oder der Payload-Key `community_member_id` ist falsch. Plan-B hatte den Pfad explizit als "best guess" markiert (siehe 25-B-circle-client-package-PLAN.md).
+**Live-Verify (vor Commit):** `mcp__circle__create_space_member({email:"info@movo.fitness", space_id:2574363})` → `{success:true, message:"User added to space"}`. Schema bestätigt `{email, space_id:int}` als required.
 
-**Live-Verification (via Circle-MCP, nächste Session):**
-- MCP `create_space_member` Schema zeigt Payload `{email, space_id}` — **nicht** `community_member_id`
-- Also: API erwartet `email` im Body, nicht Member-ID-Referenz
-
-**Fix-Plan:**
-1. `packages/circle/src/client.ts` — `addMemberToSpace(email: string, spaceId: string)` (Signatur ändern)
-2. Body: `{ space_id: spaceId, email }`
-3. Call-Site `apps/website/app/actions/signup.ts:204` — `await addMemberToSpace(email, spaceId)` statt `circleMemberId`
-4. Tests `packages/circle/src/__tests__/client.test.ts` — Expectations auf neuen Payload anpassen
-5. Circle-MCP Test vor Commit: `create_space_member({email:"…", space_id:2574363})` muss 200 liefern
-
-**Nicht-Impact:** Plan bewusst non-blocking (D-03). Signup geht trotzdem durch, Member existiert in Circle (nur nicht im Welcome-Space). Priority: high (UX-Win: User landet im #how-to-space nach Confirm-Click), aber kein Launch-Blocker.
+**Vitest:** 19/19 grün (+1 Payload-Shape-Test). **Typecheck:** `@genai/circle` clean, website unverändert clean.
 
 ---
+
+## Offene Bugs (Must-Fix vor Launch) ❌
 
 ### Bug #2 — Circle `generateSsoUrl` (RESOLVED — siehe Section "Resolved this session" oben)
 

@@ -117,18 +117,36 @@ describe('createMember', () => {
 
 describe('addMemberToSpace', () => {
   it('resolves on 200', async () => {
-    mockFetch([{ status: 200, body: {} }])
-    await expect(addMemberToSpace('42', '2574363')).resolves.toBeUndefined()
+    mockFetch([{ status: 200, body: { success: true, message: 'User added to space' } }])
+    await expect(addMemberToSpace('a@b.de', '2574363')).resolves.toBeUndefined()
   })
 
   it('swallows 409 (already in space) as success', async () => {
     mockFetch([{ status: 409 }])
-    await expect(addMemberToSpace('42', '2574363')).resolves.toBeUndefined()
+    await expect(addMemberToSpace('a@b.de', '2574363')).resolves.toBeUndefined()
   })
 
   it('propagates 500 as SERVER_ERROR after retries', async () => {
     mockFetch([{ status: 500 }, { status: 500 }, { status: 500 }])
-    await expect(addMemberToSpace('42', '2574363')).rejects.toMatchObject({ code: 'SERVER_ERROR' })
+    await expect(addMemberToSpace('a@b.de', '2574363')).rejects.toMatchObject({ code: 'SERVER_ERROR' })
+  })
+
+  it('sends {email, space_id:int} payload to /space_members', async () => {
+    const fetchSpy = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      headers: new Headers(),
+      json: async () => ({ success: true, message: 'User added to space' }),
+    }))
+    global.fetch = fetchSpy as unknown as typeof fetch
+    await addMemberToSpace('a@b.de', '2574363')
+
+    const call = fetchSpy.mock.calls[0]
+    const url = call?.[0] as string
+    const init = call?.[1] as RequestInit
+    expect(url).toBe('https://app.circle.so/api/admin/v2/space_members')
+    expect(init.method).toBe('POST')
+    expect(init.body).toBe('{"space_id":2574363,"email":"a@b.de"}')
   })
 })
 
