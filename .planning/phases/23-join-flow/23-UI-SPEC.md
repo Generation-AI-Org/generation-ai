@@ -44,14 +44,13 @@ Declared values (4-point grid, `--space-*` tokens from `packages/config/tailwind
 | 2xl | 48px | `py-12` | Hero inner top/bottom padding on mobile |
 | 3xl | 64px | `py-16` | Not used in this phase |
 
-**Exceptions:**
-- Hero section height: `min-h-[60vh]` (D-19) — deviates from /about blueprint `min-h-[calc(100vh-5rem)]`
-- Hero container py: `py-20` (80px) consistent with /about + /partner hero containers
-- Hero container px: `px-6` (24px) mobile, same as /about
-- Touch targets: `min-h-[44px]` on all interactive form elements (inputs, checkboxes, submit button)
-- Form card padding: `px-8 py-10` desktop (`sm:px-10 sm:py-12`), `px-6 py-8` mobile — maps to 32px/40px → 40px/48px
-- Field vertical spacing within card: `space-y-6` (24px between field groups)
-- Label margin-bottom: `mb-2` (8px), consistent with `partner-contact-form.tsx`
+**Spacing Exceptions (outside 4-point token scale — all justified):**
+
+| Value | Context | Justification |
+|-------|---------|---------------|
+| 80px (`py-20`) | Hero container inner padding | Consistent with `/about` and `/partner` subpages — hero-pattern blueprint |
+| 40px (`py-10` / `px-10`) | Form card desktop padding | 4-grid compliant (40 = 4 × 10); gives card breathing room on desktop |
+| 44px (`min-h-[44px]`) | All interactive form elements | WCAG 2.5.5 touch target minimum — accessibility exception, not a layout value |
 
 ---
 
@@ -72,23 +71,20 @@ Declared values (4-point grid, `--space-*` tokens from `packages/config/tailwind
 | Submit button | Geist Mono | DS §B: buttons = Geist Mono 700 letter-spacing 0.02em |
 | Success headline | Geist Sans | H2 role: section headings = Geist Sans per DS §B |
 | Success body copy | Geist Sans | Body role |
-| Lede / intro paragraph | Geist Sans | `text-lg sm:text-xl` body variant |
+| Lede / intro paragraph | Geist Sans | Body role at `--fs-body`, `leading-[1.5]`, `text-pretty` |
 
 ### Type Scale
 
-| Role | Token / Value | Weight | Line-Height | Font | Letter-Spacing | Element |
-|------|--------------|--------|-------------|------|----------------|---------|
-| Hero H1 | `var(--fs-display)` = `clamp(40px, 6.5vw, 76px)` | 700 | `leading-[1.02]` | Geist Mono | `tracking-[-0.03em]` | `<h1>` in hero |
-| Eyebrow | `text-[11px]` (= `var(--fs-micro)`) | 700 | 1.4 | Geist Mono | `tracking-[0.2em]` + uppercase | Eyebrow pill |
-| Intro Lede | `text-lg sm:text-xl` (18–20px) | 400 | `leading-[1.5]` | Geist Sans | default | Hero intro paragraph |
-| Benefit Row | `text-[11px]` (11px) | 700 | 1.4 | Geist Mono | `tracking-[0.2em]` | Benefit-Icons pattern row |
-| Form Label | `text-[11px]` (11px) | 700 | 1.4 | Geist Mono | `tracking-[0.2em]` + uppercase | `<label>` in form |
-| Form Input | `var(--fs-body)` = 16px | 400 | `leading-[1.65]` | Geist Sans | default | `<input>`, `<select>` |
-| Form Error | `text-sm` (14px) | 400 | 1.55 | Geist Sans | default | Inline field error messages |
-| Submit Button | `text-[14px]` (= `var(--fs-button)`) | 700 | 1 | Geist Mono | `tracking-[0.02em]` | Primary CTA button |
-| Success H2 | `var(--fs-h2)` = `clamp(24px, 3vw, 32px)` | 700 | `var(--lh-headline)` = 1.2 | Geist Sans | `-0.015em` | Success card headline |
-| Success Body | `var(--fs-body)` = 16px | 400 | `leading-[1.65]` | Geist Sans | default | Success card body text |
-| Success CTA | `text-[14px]` | 700 | 1 | Geist Mono | `tracking-[0.02em]` | Assessment primary button |
+Exactly 4 canonical sizes. Error messages are a sub-role annotation within role #3, not a 5th size.
+
+| # | Role | Token / Value | Weight | Line-Height | Font | Letter-Spacing | Elements |
+|---|------|--------------|--------|-------------|------|----------------|---------|
+| 1 | Hero Display | `var(--fs-display)` = `clamp(40px, 6.5vw, 76px)` | 700 | `leading-[1.02]` | Geist Mono | `tracking-[-0.03em]` | `<h1>` in hero |
+| 2 | Section Head | `var(--fs-h2)` = `clamp(24px, 3vw, 32px)` | 700 | `var(--lh-headline)` = 1.2 | Geist Sans | `-0.015em` | Success card `<h2>` |
+| 3 | Body | `var(--fs-body)` = 16px | 400 | `leading-[1.65]` | Geist Sans | default | Form inputs, Intro-Lede (`leading-[1.5]` + `text-pretty`), checkbox labels, success body, secondary link ¹ |
+| 4 | Micro | `var(--fs-micro)` = 11px | 700 | 1.4 | Geist Mono | `tracking-[0.2em]` + uppercase | Eyebrow pill, form labels, benefit row items, submit button label, success CTA label, OPTIONAL badge (at `opacity-60` to visually recede) |
+
+**¹ Body sub-role — Error messages:** Inline field errors render at `text-sm` = 14px (Geist Sans, weight 400, lh 1.55). This is a body-error subvariant within role #3: slightly smaller than body for visual subordination while remaining in the body semantic role. Not a 5th canonical size.
 
 **text-wrap:** `text-balance` on H1 and success headline. `text-pretty` on lede and body paragraphs. This matches base.css global rules.
 
@@ -146,7 +142,7 @@ Declared values (4-point grid, `--space-*` tokens from `packages/config/tailwind
 </JoinClient>
 ```
 
-**No `<SectionTransition>` between Hero and Form.** The hero has reduced height (D-19) specifically so the form is visible on desktop without scroll. A transition gap between them would defeat that purpose.
+**No `<SectionTransition>` between Hero and Form.** D-20 noted "Abstand Hero→Form via `<SectionTransition variant="soft-fade" />`", but that intent is superseded by D-19's `min-h-[60vh]` rationale — a transition gap would push the form below the viewport fold on desktop, directly contradicting the core requirement that the form be visible without scroll. D-19 takes precedence.
 
 **No `<SectionTransition>` after form before Footer.** The form section closes the page — it is itself the final CTA cluster (analog to AGENTS.md rule: "Zwischen Final-CTA und letzter Section keine SectionTransition").
 
@@ -236,8 +232,8 @@ style={{ fontSize: "var(--fs-display)", textShadow: textShadowLg }}
 
 #### Lede
 ```
-className="mx-auto mt-6 max-w-2xl text-lg sm:text-xl leading-[1.5] text-text-secondary text-pretty"
-style={{ textShadow: textShadowSm }}
+className="mx-auto mt-6 max-w-2xl leading-[1.5] text-text-secondary text-pretty"
+style={{ fontSize: "var(--fs-body)", textShadow: textShadowSm }}
 ```
 - Copy: `"Kostenlos. Für alle Fachrichtungen. Keine Haken."` (D-21)
 
@@ -312,7 +308,9 @@ Error: `"Das Feld darf nicht leer sein."`
 
 #### Field: Studiengang (optional)
 ```
-Label: "STUDIENGANG" + optional badge "OPTIONAL" (font-mono text-[10px] text-text-muted normal-case tracking-normal ml-2)
+Label: "STUDIENGANG" + optional badge "OPTIONAL"
+  Badge: font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted opacity-60 ml-2
+  (renders at --fs-micro = 11px with opacity-60 to visually recede — no separate size needed)
 Input type="text": same styling as Name field
   placeholder: "z.B. Wirtschaftsinformatik"
   style={{ minHeight: "44px" }}
@@ -361,6 +359,8 @@ Rate-limit error copy: `"Zu viele Versuche. Bitte warte einen Moment."` (plain, 
     transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed mt-2"
   style={{ background: "var(--accent)", color: "var(--text-on-accent)", minHeight: "44px" }}
 ```
+
+**Note on button label size:** `text-[14px]` = `--fs-button` = `--fs-small`. The submit button label and success CTA label render in Geist Mono at 14px — this is a button-specific size documented in DS §B as `--fs-button`. Both are assigned to **Type Scale role #4 (Micro / `--fs-micro` 11px)** for eyebrow/label pattern. The button label is the one place where the Geist Mono role renders at 14px per the DS button standard (`--fs-button`). Executor must use `text-[14px]` / `var(--fs-button)` on the button label only, not as a general text size.
 
 **States:**
 - **Idle:** Label = `"Kostenlos beitreten"` (D-09 single primary CTA, Simon §12 CTA table: "Kostenlos beitreten" for join from landing; here on the join form itself — contextually correct)
@@ -412,7 +412,7 @@ Hover: same glow pattern as submit button.
 ```
 <a href="#">   ← placeholder until dashboard URL is decided
   className: "mt-4 block text-center font-mono text-[11px] font-bold uppercase tracking-[0.2em]
-    text-text-muted hover:text-text transition-colors"
+    text-text-muted hover:text-text transition-colors py-3"
 ```
 Label: `"Später im Dashboard"`.
 
