@@ -225,7 +225,19 @@ textarea:focus-visible,
     --spotlight-y 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Reduced-Motion: pause all Phase-20 loop animations (D-06 PFLICHT) */
+/* Phase 24 — Checkpoint celebration confetti burst (8 dots at 45° intervals).
+   CheckpointCelebration renders <span class="" style="animation: confetti-burst-N 1.2s ease-out forwards">
+   for N = 0..7. Each keyframe scatters the dot in a different direction then fades. */
+@keyframes confetti-burst-0 { to { transform: translate(60px, -60px) scale(0.3); opacity: 0; } }
+@keyframes confetti-burst-1 { to { transform: translate(-60px, -60px) scale(0.3); opacity: 0; } }
+@keyframes confetti-burst-2 { to { transform: translate(60px, 60px) scale(0.3); opacity: 0; } }
+@keyframes confetti-burst-3 { to { transform: translate(-60px, 60px) scale(0.3); opacity: 0; } }
+@keyframes confetti-burst-4 { to { transform: translate(0, -80px) scale(0.3); opacity: 0; } }
+@keyframes confetti-burst-5 { to { transform: translate(0, 80px) scale(0.3); opacity: 0; } }
+@keyframes confetti-burst-6 { to { transform: translate(80px, 0) scale(0.3); opacity: 0; } }
+@keyframes confetti-burst-7 { to { transform: translate(-80px, 0) scale(0.3); opacity: 0; } }
+
+/* Reduced-Motion: pause all Phase-20 loop animations (D-06 PFLICHT) + disable confetti */
 @media (prefers-reduced-motion: reduce) {
   .animate-aurora,
   .animate-scroll,
@@ -233,5 +245,10 @@ textarea:focus-visible,
   .animate-marquee-vertical,
   .animate-grid-spotlight {
     animation-play-state: paused !important;
+  }
+  /* Confetti burst: animation skipped entirely under reduced-motion. */
+  [style*="confetti-burst-"] {
+    animation: none !important;
+    opacity: 0 !important;
   }
 }
