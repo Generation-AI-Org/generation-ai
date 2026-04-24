@@ -1,37 +1,166 @@
-'use client'
-
-import { useEffect, useRef, useState } from "react"
 import { ArrowUpRight } from "lucide-react"
-import { ToolIcon } from "@/components/ui/tool-icon"
-import { BeispielBadge } from "@/components/ui/beispiel-badge"
+import {
+  ToolShowcaseMarqueeClient,
+  type MarqueeTool,
+} from "./tool-showcase-marquee.client"
 
-type Tool = {
-  name: string
-  slug: string
-  cat: string
-  desc: string
+// Phase 26 Plan 26-05 — Server-Component-Refactor (D-15).
+//
+// Diese Section fetched `/api/public/featured-tools` von der tools-app
+// server-seitig (ISR `revalidate: 300`, AbortController-Timeout) und
+// reicht das Ergebnis an `ToolShowcaseMarqueeClient` weiter. Die Marquee-
+// Animation lebt in der `.client.tsx` daneben (useEffect/useRef braucht
+// Client-Boundary; die Section selbst muss aber Server bleiben, sonst kann
+// sie nicht direkt fetchen).
+//
+// Bei Fetch-Fehler (Timeout, 5xx, Netz aus, leere Response) fällt die
+// Section auf `FALLBACK_TOOLS` zurück — die identische 12-Tool-Liste, die
+// vor Phase 26 hardcoded inline lebte. Visuell darf der Fallback nicht
+// vom alten State abweichen (daher 12 Entries, nicht 5).
+
+const TOOLS_BASE =
+  process.env.NEXT_PUBLIC_TOOLS_APP_URL ?? "https://tools.generation-ai.org"
+const TOOLS_API = `${TOOLS_BASE}/api/public/featured-tools`
+
+interface FeaturedToolsAPI {
+  tools: Array<{
+    slug: string
+    title: string
+    summary: string | null
+    category: string
+    logo_domain: string | null
+    quick_win: string | null
+  }>
+  generated_at: string
 }
 
-// Quelle: apps/tools-app/supabase/seed-v2.sql — slugs stimmen 1:1 mit der Tools-
-// App überein, Links gehen auf tools.generation-ai.org/${slug} (Detail-Page).
-const tools: Tool[] = [
-  { name: "Claude", slug: "claude", cat: "KI-Assistenten", desc: "Longform-Schreiben, Coding, nuancierte Analysen." },
-  { name: "ChatGPT", slug: "chatgpt", cat: "KI-Assistenten", desc: "Allround-Chatbot für Texte, Code und Recherche." },
-  { name: "Gemini", slug: "gemini", cat: "KI-Assistenten", desc: "Googles Assistent mit Deep Research und Workspace-Integration." },
-  { name: "Perplexity", slug: "perplexity", cat: "Recherche", desc: "KI-Suchmaschine mit belegbaren Quellen." },
-  { name: "NotebookLM", slug: "notebooklm", cat: "Recherche", desc: "Quellengebundener KI-Assistent mit Audio-Overviews." },
-  { name: "Midjourney", slug: "midjourney", cat: "Bildgenerierung", desc: "Photorealistische Bilder aus Text." },
-  { name: "ElevenLabs", slug: "elevenlabs", cat: "Audio", desc: "Realistische Sprachsynthese und Voice Cloning." },
-  { name: "Gamma", slug: "gamma", cat: "Slides", desc: "KI-generierte Decks in Minuten." },
-  { name: "Runway", slug: "runway", cat: "Video", desc: "Video-Generierung und Editing mit KI." },
-  { name: "GitHub Copilot", slug: "github-copilot", cat: "Coding", desc: "Code-Completion im Editor, unterstützt 100+ Sprachen." },
-  { name: "Notion AI", slug: "notion-ai", cat: "Produktivität", desc: "KI-Schreibassistent direkt im Notion-Workspace." },
-  { name: "Make", slug: "make", cat: "Automatisierung", desc: "Visueller Workflow-Builder für 1500+ Apps." },
-]
+// D-15 Fallback — exakt die 12 Tools aus dem Pre-Phase-26 hardcoded Array.
+// Mapping vom alten Shape `{name, slug, cat, desc}` auf das API-Shape:
+//   name → title, cat → category, desc → summary,
+//   logo_domain → null, quick_win → null
+// `as const` damit der Typcheck `MarqueeTool` matched ohne mutable casts.
+const FALLBACK_TOOLS: ReadonlyArray<MarqueeTool> = [
+  {
+    slug: "claude",
+    title: "Claude",
+    summary: "Longform-Schreiben, Coding, nuancierte Analysen.",
+    category: "KI-Assistenten",
+    logo_domain: null,
+    quick_win: null,
+  },
+  {
+    slug: "chatgpt",
+    title: "ChatGPT",
+    summary: "Allround-Chatbot für Texte, Code und Recherche.",
+    category: "KI-Assistenten",
+    logo_domain: null,
+    quick_win: null,
+  },
+  {
+    slug: "gemini",
+    title: "Gemini",
+    summary: "Googles Assistent mit Deep Research und Workspace-Integration.",
+    category: "KI-Assistenten",
+    logo_domain: null,
+    quick_win: null,
+  },
+  {
+    slug: "perplexity",
+    title: "Perplexity",
+    summary: "KI-Suchmaschine mit belegbaren Quellen.",
+    category: "Recherche",
+    logo_domain: null,
+    quick_win: null,
+  },
+  {
+    slug: "notebooklm",
+    title: "NotebookLM",
+    summary: "Quellengebundener KI-Assistent mit Audio-Overviews.",
+    category: "Recherche",
+    logo_domain: null,
+    quick_win: null,
+  },
+  {
+    slug: "midjourney",
+    title: "Midjourney",
+    summary: "Photorealistische Bilder aus Text.",
+    category: "Bildgenerierung",
+    logo_domain: null,
+    quick_win: null,
+  },
+  {
+    slug: "elevenlabs",
+    title: "ElevenLabs",
+    summary: "Realistische Sprachsynthese und Voice Cloning.",
+    category: "Audio",
+    logo_domain: null,
+    quick_win: null,
+  },
+  {
+    slug: "gamma",
+    title: "Gamma",
+    summary: "KI-generierte Decks in Minuten.",
+    category: "Slides",
+    logo_domain: null,
+    quick_win: null,
+  },
+  {
+    slug: "runway",
+    title: "Runway",
+    summary: "Video-Generierung und Editing mit KI.",
+    category: "Video",
+    logo_domain: null,
+    quick_win: null,
+  },
+  {
+    slug: "github-copilot",
+    title: "GitHub Copilot",
+    summary: "Code-Completion im Editor, unterstützt 100+ Sprachen.",
+    category: "Coding",
+    logo_domain: null,
+    quick_win: null,
+  },
+  {
+    slug: "notion-ai",
+    title: "Notion AI",
+    summary: "KI-Schreibassistent direkt im Notion-Workspace.",
+    category: "Produktivität",
+    logo_domain: null,
+    quick_win: null,
+  },
+  {
+    slug: "make",
+    title: "Make",
+    summary: "Visueller Workflow-Builder für 1500+ Apps.",
+    category: "Automatisierung",
+    logo_domain: null,
+    quick_win: null,
+  },
+] as const
 
-const TOOLS_BASE = "https://tools.generation-ai.org"
+async function fetchFeaturedTools(): Promise<ReadonlyArray<MarqueeTool>> {
+  // Defensive Timeout (Pitfall 8): API down → Build/SSR darf nicht hängen.
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
+  try {
+    const res = await fetch(TOOLS_API, {
+      next: { revalidate: 300 }, // D-15 ISR — 5min cache
+      signal: controller.signal,
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const data = (await res.json()) as FeaturedToolsAPI
+    return data.tools.length > 0 ? data.tools : FALLBACK_TOOLS
+  } catch (err) {
+    console.warn("[tool-showcase] API fetch failed, using fallback:", err)
+    return FALLBACK_TOOLS
+  } finally {
+    clearTimeout(timeout)
+  }
+}
 
-export function ToolShowcaseSection() {
+export async function ToolShowcaseSection() {
+  const tools = await fetchFeaturedTools()
+
   return (
     <section
       aria-labelledby="tool-showcase-heading"
@@ -59,11 +188,10 @@ export function ToolShowcaseSection() {
               Über 100 KI-Tools, kuratiert.
             </h2>
             <p className="mt-3 text-base text-text-secondary max-w-xl text-pretty">
-              Eine wachsende Bibliothek mit Anleitungen — sortiert nach Anwendungsfall. Diese Auswahl ist exemplarisch.
+              Eine wachsende Bibliothek mit Anleitungen — sortiert nach Anwendungsfall.
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <BeispielBadge />
             <a
               href={TOOLS_BASE}
               target="_blank"
@@ -77,86 +205,7 @@ export function ToolShowcaseSection() {
         </div>
       </div>
 
-      <ToolMarquee />
+      <ToolShowcaseMarqueeClient tools={tools} toolsBase={TOOLS_BASE} />
     </section>
-  )
-}
-
-function ToolMarquee() {
-  const trackRef = useRef<HTMLUListElement>(null)
-  const [start, setStart] = useState(false)
-
-  // Duplicate cards for seamless loop (client-side, aria-hide clones)
-  useEffect(() => {
-    const track = trackRef.current
-    if (!track) return
-    const originals = Array.from(track.children)
-    const clones = originals.map((el) => {
-      const c = el.cloneNode(true) as HTMLElement
-      c.setAttribute("aria-hidden", "true")
-      c.setAttribute("tabindex", "-1")
-      track.appendChild(c)
-      return c
-    })
-    setStart(true)
-    return () => {
-      clones.forEach((c) => c.remove())
-      setStart(false)
-    }
-  }, [])
-
-  return (
-    <div
-      className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)]"
-      style={{ ["--scroll-duration" as string]: "80s" }}
-    >
-      <ul
-        ref={trackRef}
-        className={`flex w-max shrink-0 flex-nowrap gap-4 py-4 hover:[animation-play-state:paused] ${start ? "animate-scroll" : ""}`}
-      >
-        {tools.map((t, i) => (
-          <ToolCard key={`${t.slug}-${i}`} tool={t} />
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-function ToolCard({ tool }: { tool: Tool }) {
-  return (
-    <li className="w-[280px] shrink-0">
-      <a
-        href={`${TOOLS_BASE}/${tool.slug}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`${tool.name} in der Tools-Bibliothek öffnen`}
-        className="group block h-full rounded-2xl border border-border bg-bg-card p-5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)]"
-      >
-        <div className="mb-3.5 flex items-center justify-between">
-          <div
-            className="flex h-10 w-10 items-center justify-center rounded-[10px] text-text-secondary transition-colors group-hover:text-[var(--accent)]"
-            style={{
-              background: "linear-gradient(135deg, #2a2a2a, #1a1a1a)",
-            }}
-            aria-hidden="true"
-          >
-            <ToolIcon slug={tool.slug} size={20} />
-          </div>
-          <BeispielBadge />
-        </div>
-        <div className="font-mono text-[15px] font-bold text-text">
-          {tool.name}
-        </div>
-        <div
-          className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em]"
-          style={{ color: "color-mix(in srgb, var(--accent) 70%, transparent)" }}
-        >
-          {tool.cat}
-        </div>
-        <p className="mt-2 text-[13px] leading-[1.5] text-text-secondary">
-          {tool.desc}
-        </p>
-      </a>
-    </li>
   )
 }
