@@ -8,6 +8,7 @@ interface TabContentData {
   slug: PartnerTyp
   heading: string
   valueProp: string
+  vorteile: string[]
   formateLabel: string
   formate: string[]
   ctaLabel: string
@@ -18,34 +19,49 @@ const TAB_CONTENT: Record<PartnerTyp, TabContentData> = {
     slug: 'unternehmen',
     heading: 'Employer Branding trifft echte Zielgruppe.',
     valueProp:
-      'Erreicht KI-affine Studierende im DACH-Raum, die aktiv an ihrer Karriere arbeiten. Mit uns präsentiert ihr euch dort, wo die nächste Generation von KI-Talenten bereits aktiv ist.',
+      'KI-kompetente Talente aus allen Fachrichtungen werden zur wertvollsten Zielgruppe im Recruiting der nächsten Jahre. Wir bringen euch zusammen.',
+    vorteile: [
+      'Early Access zu KI-affinen Talenten über alle Studiengänge hinweg',
+      'Brand Association als zukunftsorientierter Arbeitgeber',
+      'DACH-Reichweite über eine einzige Partnerschaft',
+    ],
     formateLabel: 'Kooperationsformate',
-    formate: ['Masterclasses', 'Speaker Sessions', 'Sponsoring'],
-    ctaLabel: 'Jetzt Anfrage stellen',
+    formate: ['Masterclasses', 'Speaker Sessions', 'Sponsoring & Sachleistungen'],
+    ctaLabel: 'Gespräch vereinbaren',
   },
   stiftungen: {
     slug: 'stiftungen',
     heading: 'Impact mit Substanz.',
     valueProp:
-      'Fördert Bildungsgerechtigkeit im KI-Bereich — gemeinnützig, transparent und mit messbarem Wirkung. Generation AI schafft Zugangsmöglichkeiten für Studierende, die sich KI-Weiterbildung sonst nicht leisten könnten.',
+      'Wir schließen eine Bildungslücke, die kein Lehrplan bisher adressiert. Fachrichtungsoffen, kostenlos, DACH-weit.',
+    vorteile: [
+      'Messbarer Impact in einer schnell wachsenden Zielgruppe',
+      'Gemeinnütziger Verein (e.V. i.G.) mit transparenten Strukturen',
+      'Hochschulübergreifende Reichweite ohne Mehraufwand',
+    ],
     formateLabel: 'Förderformate',
     formate: [
-      'Projekt- und Programm-Förderung',
-      'Stipendien',
+      'Projekt- & Programm-Förderung',
+      'Stipendienkooperationen',
       'Institutionelle Förderung',
     ],
-    ctaLabel: 'Kooperation anfragen',
+    ctaLabel: 'Förderanfrage senden',
   },
   hochschulen: {
     slug: 'hochschulen',
     heading: 'Praxis direkt an die Uni.',
     valueProp:
-      'Bringt aktuelle KI-Expertise in den Lehrplan. Unsere Speaker und Formate ergänzen euer Studienangebot mit praxisnahen Einblicken aus Industrie und Forschung.',
+      'Wir ergänzen den Lehrplan dort, wo KI-Kompetenz praxisnah erlernt werden muss. Kostenfrei für eure Studierenden, unaufwendig für euch.',
+    vorteile: [
+      'Praxisnahe KI-Skills, die der Lehrplan nicht abdecken kann',
+      'Entlastung für Career Services und Lehrstühle',
+      'Kostenloses Angebot für alle Studierenden',
+    ],
     formateLabel: 'Kooperationsformate',
     formate: [
-      'Gastvorträge',
+      'Vorlesungs- & Gastvorträge',
       'Career-Service-Integration',
-      'Lehrstuhl-Kooperationen',
+      'Lehrstuhl- & Fachbereichskooperationen',
     ],
     ctaLabel: 'Kooperation anfragen',
   },
@@ -53,10 +69,15 @@ const TAB_CONTENT: Record<PartnerTyp, TabContentData> = {
     slug: 'initiativen',
     heading: 'Gemeinsam mehr erreichen.',
     valueProp:
-      'Ihr arbeitet an ähnlichen Zielen? Dann lasst uns Kräfte bündeln. Co-Hosting, Reichweiten-Sharing und gemeinsame Speaker-Pools — für mehr Impact auf beiden Seiten.',
+      'Wir glauben an Kollaboration statt Konkurrenz. Wenn ihr eine komplementäre Community habt, lasst uns gemeinsam etwas bauen.',
+    vorteile: [
+      'Geteilte Reichweite, geteilte Sichtbarkeit',
+      'Fachrichtungsoffene Community als Multiplikator',
+      'Gemeinsame Formate statt Einzelkämpfertum',
+    ],
     formateLabel: 'Zusammenarbeitsformate',
-    formate: ['Co-hosted Events', 'Cross-Promotion', 'Geteilte Speaker'],
-    ctaLabel: 'Kontakt aufnehmen',
+    formate: ['Co-hosted Events & Workshops', 'Inhaltliche Cross-Promotion', 'Geteilte Speaker & Masterclasses'],
+    ctaLabel: 'Unverbindlich kennenlernen',
   },
 }
 
@@ -90,7 +111,7 @@ export function PartnerTabContent({ activeTyp }: PartnerTabContentProps) {
                 initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
                 animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="mx-auto max-w-4xl px-6"
+                className="mx-auto max-w-4xl px-6 text-center"
               >
                 {/* H2 */}
                 <h2
@@ -106,18 +127,46 @@ export function PartnerTabContent({ activeTyp }: PartnerTabContentProps) {
 
                 {/* Value prop */}
                 <p
-                  className="mt-4 text-text-secondary leading-[1.65]"
+                  className="mx-auto mt-4 max-w-2xl text-text-secondary leading-[1.65] text-balance"
                   style={{ fontSize: "var(--fs-body)" }}
                 >
                   {data.valueProp}
                 </p>
 
+                {/* Vorteile-Grid */}
+                <ul
+                  className="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6"
+                  role="list"
+                >
+                  {data.vorteile.map((vorteil) => (
+                    <li
+                      key={vorteil}
+                      className="rounded-2xl border border-border bg-bg-card p-5 text-left"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="mb-3 inline-block h-1.5 w-1.5 rounded-full"
+                        style={{
+                          background: "var(--accent)",
+                          boxShadow: "0 0 8px var(--accent-glow)",
+                        }}
+                      />
+                      <p
+                        className="text-text-secondary leading-[1.5] text-pretty"
+                        style={{ fontSize: "var(--fs-body)" }}
+                      >
+                        {vorteil}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+
                 {/* Formate */}
-                <div className="mt-8">
+                <div className="mt-10">
                   <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted mb-3">
                     {data.formateLabel}
                   </p>
-                  <ul className="flex flex-wrap gap-3" role="list">
+                  <ul className="flex flex-wrap justify-center gap-3" role="list">
                     {data.formate.map((format) => (
                       <li
                         key={format}
@@ -130,7 +179,7 @@ export function PartnerTabContent({ activeTyp }: PartnerTabContentProps) {
                 </div>
 
                 {/* CTA — scroll to contact form */}
-                <div className="mt-10">
+                <div className="mt-10 flex justify-center">
                   <a
                     href="#kooperation-anfragen"
                     className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-mono font-bold text-[14px] tracking-[0.02em] transition-all duration-300"

@@ -3,6 +3,24 @@
 import { motion, useReducedMotion } from "motion/react"
 import { LabeledNodes } from "@/components/ui/labeled-nodes"
 
+const PARTNER_LABELS = [
+  "PARTNER",
+  "KOOPERATION",
+  "SPONSOR",
+  "STIPENDIUM",
+  "MASTERCLASS",
+  "SPEAKER",
+  "GASTVORTRAG",
+  "CO-HOST",
+  "VEREIN",
+  "DACH",
+  "TALENTE",
+  "IMPACT",
+  "REICHWEITE",
+  "COMMUNITY",
+  "BRAND",
+]
+
 export function PartnerHeroSection() {
   const prefersReducedMotion = useReducedMotion()
 
@@ -17,7 +35,10 @@ export function PartnerHeroSection() {
       data-section="partner-hero"
       className="relative isolate"
     >
-      <LabeledNodes className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center">
+      <LabeledNodes
+        labels={PARTNER_LABELS}
+        className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center"
+      >
         <motion.div
           initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
           animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
