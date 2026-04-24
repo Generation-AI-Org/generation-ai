@@ -54,33 +54,35 @@ describe('config validation', () => {
 })
 
 describe('getMemberByEmail', () => {
-  it('returns member when found (single object response)', async () => {
+  it('returns member when found (200 single-object response)', async () => {
     mockFetch([{ status: 200, body: { id: 42, email: 'a@b.de', name: 'A', community_id: 511295 } }])
     const result = await getMemberByEmail('a@b.de')
     expect(result).toEqual({ circleMemberId: '42' })
   })
 
-  it('returns member when found (records array response)', async () => {
-    mockFetch([
-      {
-        status: 200,
-        body: { records: [{ id: 99, email: 'a@b.de', name: 'A', community_id: 511295 }] },
-      },
-    ])
-    const result = await getMemberByEmail('a@b.de')
-    expect(result).toEqual({ circleMemberId: '99' })
-  })
-
-  it('returns null on 404', async () => {
-    mockFetch([{ status: 404 }])
+  it('returns null on 404 (not-found)', async () => {
+    mockFetch([{ status: 404, body: { success: false, message: 'Oops! Missing record.' } }])
     const result = await getMemberByEmail('missing@b.de')
     expect(result).toBeNull()
   })
 
-  it('returns null when records array empty', async () => {
-    mockFetch([{ status: 200, body: { records: [] } }])
-    const result = await getMemberByEmail('missing@b.de')
-    expect(result).toBeNull()
+  it('hits /community_members/search?email= (NOT plain /community_members which ignores the filter)', async () => {
+    const fetchSpy = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      headers: new Headers(),
+      json: async () => ({ id: 42, email: 'a@b.de', name: 'A', community_id: 511295 }),
+    }))
+    global.fetch = fetchSpy as unknown as typeof fetch
+    await getMemberByEmail('a+plus@b.de')
+    const url = fetchSpy.mock.calls[0]?.[0] as string
+    expect(url).toBe(
+      'https://app.circle.so/api/admin/v2/community_members/search?email=a%2Bplus%40b.de',
+    )
+    // Regression guard: must NOT use the unfiltered /community_members path
+    // (Phase-25 incident — that endpoint silently ignores ?email= and
+    // returned the first member of the community for every signup).
+    expect(url).not.toMatch(/\/community_members\?/)
   })
 
   it('throws UNAUTHORIZED on 401 without retry', async () => {

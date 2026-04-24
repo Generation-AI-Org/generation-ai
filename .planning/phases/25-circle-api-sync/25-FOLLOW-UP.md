@@ -76,6 +76,27 @@ Der Unified-Signup-Flow ist **zu 95% durch**. End-to-End auf `feature/phase-25-c
 
 ---
 
+### Bug #5 — `getMemberByEmail` returnte FALSCHEN User (DSGVO-CRITICAL, FIXED 2026-04-25)
+
+**Commit:** `<filled-in-on-commit>` (branch `feature/phase-25-circle-api-sync`)
+
+**Symptom (E2E-Test, 2026-04-24 22:19):** Frischer Signup mit `+p25-test3@gmail.com` landete via Confirm-Link als **Bastian Gedon** in Circle. Supabase-DB zeigte: alle 3 Phase-25-Test-User (test1/2/3) hatten `circle_member_id = "80552151"` (Bastians ID) im `user_metadata`.
+
+**Root-Cause (live-verified 2026-04-25):** Plan-B-Endpoint `GET /community_members?email=X&community_id=Y` ignoriert den `email`-Filter und returned die volle Liste. Code nahm `.records[0]` (= Bastian, der erste in der Member-Liste). `createMember`'s Idempotenz-Check (`if (existing) return alreadyExists:true`) verhinderte dann den echten POST → falsche ID landete in Supabase, später im SSO-Token.
+
+**Fix:**
+- `packages/circle/src/client.ts` — `getMemberByEmail` umgestellt auf korrektes Endpoint `GET /community_members/search?email=<X>` (single-object 200 / 404). Records-Array-Handling entfernt.
+- `packages/circle/src/__tests__/client.test.ts` — Test asserted explizit den korrekten URL-Pfad UND guardet gegen Regression auf das unfilterte `/community_members?` (sonst kommt der Bug zurück).
+- 3 broken Test-User in Supabase via SQL gelöscht (`auth.users` + `public.user_circle_links` für `email LIKE 'movo.fitness+p25%'`).
+
+**Live-Verify (vor Commit):** 4 curl-Probes parallel — `/community_members/search?email=` ist der einzige Endpoint der korrekt nach Email filtert (200+single bei Match, 404 bei Miss). `?filter[email]=` ignoriert genauso wie der Original-Plan-B-Pfad.
+
+**LEARNINGS.md** — Vollständiger Post-Mortem dort (2026-04-25 Eintrag), inkl. Regeln für zukünftige Circle-API-Funktionen (live-probe vor Commit, Negativ-Test bei Lookup-Operations, Idempotenz-Checks-sind-gefährlich-wenn-Lookup-broken).
+
+**Vitest:** 18/18 grün. **Typecheck:** clean.
+
+---
+
 ## Offene Bugs (Must-Fix vor Launch) ❌
 
 ### Bug #2 — Circle `generateSsoUrl` (RESOLVED — siehe Section "Resolved this session" oben)

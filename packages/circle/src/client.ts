@@ -140,29 +140,30 @@ async function circleFetch<T>(
 // ---------------------------------------------------------------------------
 
 /**
- * Look up a Circle member by email. Returns null if not found (404).
- * Any other error bubbles up as CircleApiError.
+ * Look up a Circle member by email. Returns null if not found.
  *
- * NOTE: Exact search path may vary across Circle Admin API versions.
- * Current best-guess: `GET /community_members?email=<email>&community_id=<id>`.
- * Adjust path/query if live API rejects it.
+ * SECURITY-CRITICAL — uses `/community_members/search?email=` which is the
+ * ONLY Circle Admin v2 endpoint that actually filters by email. The plain
+ * `/community_members?email=` (without `/search`) silently ignores the query
+ * and returns the unfiltered list, which led to a Phase-25 incident where
+ * `getMemberByEmail` would return the first member of the community for
+ * EVERY new signup (verified live 2026-04-25 — see debug log).
+ *
+ * Live-verified contract:
+ *   match     → HTTP 200, single CircleMember object `{id, email, ...}`
+ *   no-match  → HTTP 404, `{success:false, message:"Oops!..."}`
  */
 export async function getMemberByEmail(
   email: string,
 ): Promise<{ circleMemberId: string } | null> {
-  const { communityId } = getConfig()
+  // Touch communityId to keep the CONFIG_MISSING signal here too — callers
+  // expect this function to fail fast when env is incomplete.
+  getConfig()
   try {
-    const result = await circleFetch<CircleMember | { records?: CircleMember[] }>(
-      `/community_members?email=${encodeURIComponent(email)}&community_id=${encodeURIComponent(communityId)}`,
+    const member = await circleFetch<CircleMember>(
+      `/community_members/search?email=${encodeURIComponent(email)}`,
       { method: 'GET' },
     )
-    // Circle sometimes returns an array wrapper, sometimes a single object.
-    const member: CircleMember | undefined =
-      'records' in result && Array.isArray(result.records)
-        ? result.records[0]
-        : 'id' in (result as CircleMember)
-          ? (result as CircleMember)
-          : undefined
     if (!member?.id) return null
     return { circleMemberId: String(member.id) }
   } catch (err) {
