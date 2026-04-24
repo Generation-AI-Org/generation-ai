@@ -302,7 +302,9 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
     // `Origin` header (attacker-controlled via CSRF / custom client).
     // Anchor to a server-side env constant so the magic-link URL in the
     // outgoing email is always under our control.
-    const origin = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://generation-ai.org'
+    const origin =
+      process.env.NEXT_PUBLIC_SITE_URL ??
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://generation-ai.org')
     const { error: linkErr } = await supabase.auth.admin.generateLink({
       type: 'magiclink',
       email,
