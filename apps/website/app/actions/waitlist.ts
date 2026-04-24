@@ -55,13 +55,21 @@ const schema = z.object({
   marketing_opt_in: z.boolean().default(false),
   // consent must be literal true — checkbox either 'on' (HTML default) or 'true'
   consent: z.literal(true, { message: ERR_CONSENT }),
+  // CR-01 fix: block protocol-relative URLs (`//evil.com`) and backslash tricks
+  // (`/\evil.com`). Only accept same-origin absolute paths starting with a
+  // safe character class. Persisted to DB and consumed by Phase 25 — see D-03
+  // and WR-06. Must NOT land in an `href` without an additional
+  // `new URL(value, expectedOrigin)` origin check on the consumer side.
   redirect_after: z
     .string()
     .trim()
     .max(500)
     .optional()
     .or(z.literal('').transform(() => undefined))
-    .refine((v) => !v || v.startsWith('/'), 'redirect_after must be a relative path'),
+    .refine(
+      (v) => !v || /^\/[A-Za-z0-9_\-][A-Za-z0-9_\-/?=&.%#]*$/.test(v),
+      'redirect_after must be a same-origin absolute path',
+    ),
 })
 
 // ---------------------------------------------------------------------------
@@ -128,6 +136,17 @@ export async function submitJoinWaitlist(formData: FormData): Promise<WaitlistRe
   const data = parsed.data
 
   // -- 4. Insert into waitlist (D-05) ---------------------------------------
+  // CR-01 defense-in-depth: even after Zod validation, strip backslashes and
+  // collapse leading-slash runs (e.g. `///foo`) so that downstream consumers
+  // in Phase 25 cannot be tricked by any validation gap. redirect_after is
+  // persisted for Phase 25 Circle-Auth-Sync to use as post-signup redirect
+  // target (WR-06). V1 Waitlist does not consume it — Phase 25 reads it from
+  // the waitlist row during user activation and MUST re-validate origin before
+  // navigating (see `new URL(value, 'https://generation-ai.org')`).
+  const sanitizedRedirect = data.redirect_after
+    ? data.redirect_after.replace(/\\/g, '').replace(/^\/+/, '/')
+    : null
+
   const supabase = createAdminClient()
   const payload: WaitlistInsert = {
     email: data.email.toLowerCase(),
@@ -135,7 +154,7 @@ export async function submitJoinWaitlist(formData: FormData): Promise<WaitlistRe
     university: data.university,
     study_program: data.study_program ?? null,
     marketing_opt_in: data.marketing_opt_in,
-    redirect_after: data.redirect_after ?? null,
+    redirect_after: sanitizedRedirect,
     source: 'join-page',
   }
 
