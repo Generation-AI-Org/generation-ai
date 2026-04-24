@@ -96,16 +96,6 @@ const schema = z.object({
  * Returns { ok: true } for duplicate emails as well (no-leak).
  */
 export async function submitJoinSignup(formData: FormData): Promise<SignupResult> {
-  try {
-    return await _submitJoinSignupInner(formData)
-  } catch (err) {
-    const msg = err instanceof Error ? `${err.name}: ${err.message}` : String(err)
-    console.error('[signup][DEBUG] uncaught:', msg, err instanceof Error ? err.stack : '')
-    return { ok: false, error: `[DEBUG] UNCAUGHT: ${msg}` }
-  }
-}
-
-async function _submitJoinSignupInner(formData: FormData): Promise<SignupResult> {
   // -- 0. Feature-flag defense-in-depth (REVIEW MD-02) ----------------------
   // `/api/auth/signup` checks this too, but the server action is a
   // separate public surface (server-form-actions). A stale flag check
@@ -156,20 +146,11 @@ async function _submitJoinSignupInner(formData: FormData): Promise<SignupResult>
         fieldErrors[key as keyof SignupFieldErrors] = issue.message
       }
     }
-    const dbg = `ZOD_FAIL: ${parsed.error.issues.map(i => `${i.path.join('.')}=${i.message}`).join(' | ')}`
-    console.error('[signup][DEBUG]', dbg)
-    return { ok: false, error: `[DEBUG] ${dbg}`, fieldErrors }
+    return { ok: false, error: ERR_GENERIC, fieldErrors }
   }
   const data = parsed.data
 
   // -- 4. Create Supabase user ---------------------------------------------
-  console.error('[signup][DEBUG] env check:', JSON.stringify({
-    SUPABASE_URL_set: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-    SERVICE_KEY_set: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    SIGNUP_ENABLED: process.env.SIGNUP_ENABLED,
-    CIRCLE_TOKEN_set: !!process.env.CIRCLE_API_TOKEN,
-    CIRCLE_COMMUNITY: process.env.CIRCLE_COMMUNITY_ID,
-  }))
   const supabase = createAdminClient()
   const email = data.email.toLowerCase()
 
@@ -201,9 +182,6 @@ async function _submitJoinSignupInner(formData: FormData): Promise<SignupResult>
 
   if (createErr) {
     const code = (createErr as unknown as { code?: string }).code
-    const status = (createErr as unknown as { status?: number }).status
-    const dbg = `CREATE_USER_ERR: code=${code} status=${status} msg=${createErr.message}`
-    console.error('[signup][DEBUG]', dbg)
     const msg = createErr.message?.toLowerCase() ?? ''
     if (
       code === 'email_exists' ||
@@ -212,21 +190,18 @@ async function _submitJoinSignupInner(formData: FormData): Promise<SignupResult>
       msg.includes('user already registered')
     ) {
       // No-leak: do not reveal enumeration, do not re-send confirmation.
-      console.log('[signup] duplicate email — returning ok without action')
       return { ok: true }
     }
     Sentry.captureException(createErr, {
       tags: { op: 'supabase.admin.createUser' },
     })
-    return { ok: false, error: `[DEBUG] ${dbg}` }
+    return { ok: false, error: ERR_GENERIC }
   }
 
   const user = createData?.user
   if (!user) {
-    const dbg = `NO_USER_RETURNED: createData=${JSON.stringify(createData)}`
-    console.error('[signup][DEBUG]', dbg)
     Sentry.captureMessage('createUser returned no user', 'error')
-    return { ok: false, error: `[DEBUG] ${dbg}` }
+    return { ok: false, error: ERR_GENERIC }
   }
 
   // -- 5. Circle-Provisioning (non-blocking per D-03) -----------------------
@@ -341,12 +316,11 @@ async function _submitJoinSignupInner(formData: FormData): Promise<SignupResult>
     })
 
     if (linkErr || !linkData?.properties?.hashed_token) {
-      const dbg = `GENERATE_LINK_ERR: ${linkErr?.message ?? 'no hashed_token'}`
-      console.error('[signup][DEBUG]', dbg)
       Sentry.captureException(linkErr ?? new Error('generateLink: no hashed_token'), {
         tags: { op: 'generateLink' },
       })
       // Don't return ok:false — user is created, just mail is missing.
+      // Admin can re-trigger via a future resend-confirmation endpoint.
       return { ok: true }
     }
 
@@ -370,11 +344,10 @@ async function _submitJoinSignupInner(formData: FormData): Promise<SignupResult>
     })
 
     if (sendErr) {
-      console.error('[signup][DEBUG] resend send failed:', JSON.stringify(sendErr))
       Sentry.captureException(sendErr, { tags: { op: 'resend.emails.send' } })
     }
   } catch (mailErr) {
-    console.error('[signup][DEBUG] confirm-mail send threw (non-blocking):', mailErr)
+    console.error('[signup] confirm-mail send threw (non-blocking):', mailErr)
     Sentry.captureException(mailErr, { tags: { op: 'confirm-mail-send' } })
   }
 
