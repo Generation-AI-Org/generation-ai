@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { DragRankWidget } from '@/components/test/widgets/drag-rank-widget'
+import { isAnswerReady } from '@/components/test/widget-router'
 import type { RankQuestion } from '@/lib/assessment/types'
 
 // Force desktop branch (pointer: fine) for deterministic tests.
@@ -41,7 +42,7 @@ describe('DragRankWidget', () => {
     render(
       <DragRankWidget
         question={mockQuestion}
-        answer={{ questionId: 'qR', type: 'rank', order: ['c', 'a', 'd', 'b'] }}
+        answer={{ questionId: 'qR', type: 'rank', order: ['c', 'a', 'd', 'b'], confirmed: false }}
         onAnswer={vi.fn()}
       />,
     )
@@ -50,5 +51,33 @@ describe('DragRankWidget', () => {
     expect(options[1]).toHaveTextContent('Item A')
     expect(options[2]).toHaveTextContent('Item D')
     expect(options[3]).toHaveTextContent('Item B')
+  })
+
+  it('does not show confirm button before any interaction', () => {
+    render(<DragRankWidget question={mockQuestion} answer={undefined} onAnswer={vi.fn()} />)
+    expect(screen.queryByRole('button', { name: /Reihenfolge bestätigen/i })).not.toBeInTheDocument()
+  })
+
+  // isAnswerReady: confirm step required for rank type
+  it('isAnswerReady returns false for rank answer without confirmed flag', () => {
+    expect(
+      isAnswerReady(mockQuestion, {
+        questionId: 'qR',
+        type: 'rank',
+        order: ['a', 'b', 'c', 'd'],
+        confirmed: false,
+      }),
+    ).toBe(false)
+  })
+
+  it('isAnswerReady returns true for rank answer with confirmed=true', () => {
+    expect(
+      isAnswerReady(mockQuestion, {
+        questionId: 'qR',
+        type: 'rank',
+        order: ['a', 'b', 'c', 'd'],
+        confirmed: true,
+      }),
+    ).toBe(true)
   })
 })

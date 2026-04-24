@@ -120,6 +120,10 @@ export interface RankAnswer {
   questionId: string
   type: 'rank'
   order: string[]
+  /** True once the user explicitly clicks "Reihenfolge bestätigen". Gates Nächste Aufgabe.
+   *  Optional so existing RankAnswer literals (scoring tests, etc.) don't need updating.
+   *  isAnswerReady checks `=== true`, so absent/false both block the next button. */
+  confirmed?: boolean
 }
 
 export interface BestPromptAnswer {

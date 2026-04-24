@@ -153,6 +153,8 @@ export function DragRankWidget({
     answer?.order ?? question.items.map((i) => i.id),
   )
   const [tapSelection, setTapSelection] = useState<string | null>(null)
+  const [hasInteracted, setHasInteracted] = useState<boolean>(false)
+  const [confirmed, setConfirmed] = useState<boolean>(answer?.confirmed ?? false)
 
   const labelFor = useCallback(
     (id: string) => question.items.find((i) => i.id === id)?.label ?? id,
@@ -162,10 +164,18 @@ export function DragRankWidget({
   const commit = useCallback(
     (next: string[]) => {
       setOrder(next)
-      onAnswer({ questionId: question.id, type: 'rank', order: next })
+      setHasInteracted(true)
+      // Reset confirmed when order changes — user must re-confirm after each reorder.
+      setConfirmed(false)
+      onAnswer({ questionId: question.id, type: 'rank', order: next, confirmed: false })
     },
     [onAnswer, question.id],
   )
+
+  const handleConfirm = useCallback(() => {
+    setConfirmed(true)
+    onAnswer({ questionId: question.id, type: 'rank', order, confirmed: true })
+  }, [onAnswer, question.id, order])
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -279,6 +289,27 @@ export function DragRankWidget({
             </ol>
           </SortableContext>
         </DndContext>
+      )}
+      {/* Confirm step — required by UI-SPEC W2: explicit "Reihenfolge bestätigen" gates Nächste Aufgabe */}
+      {hasInteracted && !confirmed && !disabled && (
+        <button
+          type="button"
+          onClick={handleConfirm}
+          className={cn(
+            'mt-2 w-full rounded-xl border border-[var(--border-accent)] bg-[var(--accent-soft)]',
+            'px-4 py-3 text-sm font-mono font-bold tracking-[0.02em] text-[var(--text)]',
+            'hover:bg-[var(--bg-elevated)]',
+            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]',
+            'min-h-[48px]',
+          )}
+        >
+          Reihenfolge bestätigen
+        </button>
+      )}
+      {confirmed && !disabled && (
+        <p className="text-center text-sm text-[var(--text-muted)]" aria-live="polite">
+          Reihenfolge bestätigt ✓
+        </p>
       )}
       <details className="text-xs text-[var(--text-muted)]">
         <summary className="cursor-pointer">Tastatur-Bedienung</summary>

@@ -154,7 +154,7 @@ export function isAnswerReady(question: Question, answer: Answer | undefined): b
       return (answer as BestPromptAnswer).optionId != null
     case 'rank': {
       const a = answer as RankAnswer
-      return Array.isArray(a.order) && a.order.length === question.items.length
+      return Array.isArray(a.order) && a.order.length === question.items.length && a.confirmed === true
     }
     case 'side-by-side':
       return (answer as SideBySideAnswer).choice != null
