@@ -180,10 +180,13 @@ export async function getMemberByEmail(
  * Generate a Circle-policy-compliant random password.
  * Circle requires: ≥6 chars, 1 uppercase, 1 number, 1 symbol.
  *
- * Used for headless-only members who never type a password — login happens
- * via Headless SSO. The password exists only because Circle requires one
- * on member-create when `skip_invitation:true` (otherwise their own
- * invitation flow would set it).
+ * Only used when `skipInvitation:true` (headless-only flow) — Circle requires
+ * a password on create in that case because the user has no other way to
+ * authenticate. When `skipInvitation:false` we DON'T set a password: Circle
+ * SUPPRESSES the invitation email if a password is set on create (live-
+ * verified 2026-04-25 — Test A without password got the invitation, Test B
+ * with password got nothing). Circle generates its own temporary password
+ * server-side and the user sets their real one via the invitation flow.
  */
 function generateCirclePassword(): string {
   // 32 random base64url chars + fixed suffix that guarantees the four
@@ -200,16 +203,17 @@ function generateCirclePassword(): string {
  * accepts all of: space assignment (space_ids), email-suppression
  * (skip_invitation), and password in a single call. Verified live 2026-04-25.
  *
- * Defaults (verified live 2026-04-25 — Headless SSO does NOT work for
- * `active:false` invited members in real browsers, so we MUST run users
- * through Circle's set-password flow to activate them):
+ * Defaults (verified live 2026-04-25):
  *   skipInvitation = false  (Circle sends its Set-Password email — required
  *                            to activate the member; without it our SSO
  *                            redirect lands on login.circle.so instead of
  *                            into the community)
  *   spaceIds       = []     (caller passes CIRCLE_DEFAULT_SPACE_ID)
- *   password       = random (Circle requires one on create; the user will
- *                            override it via Set-Password)
+ *   password       = NOT SENT when skipInvitation:false. Circle suppresses
+ *                    the invitation email if a password is set on create —
+ *                    live-verified: Test A (no password) → invitation arrived;
+ *                    Test B (with password) → no email at all. We only set a
+ *                    random password when skipInvitation:true (headless flow).
  */
 export async function createMember(
   input: CreateMemberInput,
@@ -229,7 +233,9 @@ export async function createMember(
       name: input.name,
       community_id: communityId,
       skip_invitation: skipInvitation,
-      password: generateCirclePassword(),
+      // Only attach password when explicitly skipping the invitation flow —
+      // otherwise Circle silently suppresses the invitation email.
+      ...(skipInvitation ? { password: generateCirclePassword() } : {}),
       ...(input.spaceIds && input.spaceIds.length > 0 ? { space_ids: input.spaceIds } : {}),
       // Q9: keine Uni/Motivation an Circle — bleibt in Supabase-Metadata
       ...(input.metadata ? { metadata: input.metadata } : {}),
