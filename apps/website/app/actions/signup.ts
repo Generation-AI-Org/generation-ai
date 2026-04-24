@@ -141,11 +141,19 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
         fieldErrors[key as keyof SignupFieldErrors] = issue.message
       }
     }
+    console.error('[signup][DEBUG] zod validation failed:', JSON.stringify(parsed.error.issues), 'raw:', JSON.stringify({...raw, email: '<redacted>'}))
     return { ok: false, error: ERR_GENERIC, fieldErrors }
   }
   const data = parsed.data
 
   // -- 4. Create Supabase user ---------------------------------------------
+  console.error('[signup][DEBUG] env check:', JSON.stringify({
+    SUPABASE_URL_set: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    SERVICE_KEY_set: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    SIGNUP_ENABLED: process.env.SIGNUP_ENABLED,
+    CIRCLE_TOKEN_set: !!process.env.CIRCLE_API_TOKEN,
+    CIRCLE_COMMUNITY: process.env.CIRCLE_COMMUNITY_ID,
+  }))
   const supabase = createAdminClient()
   const email = data.email.toLowerCase()
 
@@ -176,6 +184,11 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
   })
 
   if (createErr) {
+    console.error('[signup][DEBUG] createUser error:', JSON.stringify({
+      code: (createErr as unknown as { code?: string }).code,
+      status: (createErr as unknown as { status?: number }).status,
+      message: createErr.message,
+    }))
     const code = (createErr as unknown as { code?: string }).code
     const msg = createErr.message?.toLowerCase() ?? ''
     if (
@@ -196,6 +209,7 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
 
   const user = createData?.user
   if (!user) {
+    console.error('[signup][DEBUG] createUser returned no user, createData:', JSON.stringify(createData))
     Sentry.captureMessage('createUser returned no user', 'error')
     return { ok: false, error: ERR_GENERIC }
   }
