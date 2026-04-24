@@ -249,6 +249,10 @@ Reuses `PlaceholderAvatar` from Phase 21. Spec for partner-person context:
 | Tab content H2 (Stiftungen) | "Impact mit Substanz." |
 | Tab content H2 (Hochschulen) | "Praxis direkt an die Uni." |
 | Tab content H2 (Initiativen) | "Gemeinsam mehr erreichen." |
+| Tab CTA (Unternehmen) | "Jetzt Anfrage stellen" |
+| Tab CTA (Stiftungen) | "Kooperation anfragen" |
+| Tab CTA (Hochschulen) | "Kooperation anfragen" |
+| Tab CTA (Initiativen) | "Kontakt aufnehmen" |
 | Form section heading | "Jetzt Kontakt aufnehmen" |
 | Form eyebrow | "// kooperation anfragen" |
 | Primary CTA (form submit) | "Anfrage senden" |

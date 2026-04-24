@@ -80,7 +80,7 @@ export function PartnerTabContent({ activeTyp }: PartnerTabContentProps) {
             role="tabpanel"
             id={`${slug}-panel`}
             aria-labelledby={`${slug}-tab`}
-            tabIndex={0}
+            tabIndex={isActive ? 0 : -1}
             hidden={!isActive}
             className="py-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text rounded-lg"
           >

@@ -110,7 +110,7 @@ export function PartnerTabSystem({ initialTyp }: PartnerTabSystemProps) {
                 ].join(' ')}
                 style={
                   isActive
-                    ? { borderBottomColor: 'var(--accent)', color: 'var(--accent)' }
+                    ? { borderBottomColor: 'var(--accent)' }
                     : {}
                 }
               >
