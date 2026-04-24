@@ -28,6 +28,18 @@ describe('ConfidenceSliderWidget', () => {
     expect(container.querySelector('[data-slot="slider"]')).toBeInTheDocument()
   })
 
+  it('renders exactly one thumb for scalar value (CR-01 regression guard)', () => {
+    const { container } = render(
+      <ConfidenceSliderWidget
+        question={mockQuestion}
+        answer={undefined}
+        onAnswer={vi.fn()}
+      />,
+    )
+    // CR-01: scalar `value` must produce a single-thumb slider, not [min,max] two-thumb range.
+    expect(container.querySelectorAll('[data-slot="slider-thumb"]')).toHaveLength(1)
+  })
+
   it('aria-live region announces semantic label at default step=2', () => {
     render(
       <ConfidenceSliderWidget
