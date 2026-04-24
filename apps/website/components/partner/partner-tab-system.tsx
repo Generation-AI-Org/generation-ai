@@ -26,13 +26,18 @@ export function PartnerTabSystem({ activeTyp, onTypChange }: PartnerTabSystemPro
     [onTypChange],
   )
 
-  // Scroll active tab into view (for deep-linked ?typ= mounts)
+  // Horizontal scroll active tab into view within the rail — no vertical page-scroll.
+  // scrollIntoView would trigger block:'start' by default and scroll the hero out of view.
   useEffect(() => {
     const rail = tabRailRef.current
     if (!rail) return
     const activeTab = rail.querySelector('[aria-selected="true"]') as HTMLElement | null
-    if (activeTab) {
-      activeTab.scrollIntoView({ inline: 'center', behavior: 'smooth' })
+    if (!activeTab) return
+    const railRect = rail.getBoundingClientRect()
+    const tabRect = activeTab.getBoundingClientRect()
+    const delta = (tabRect.left + tabRect.width / 2) - (railRect.left + railRect.width / 2)
+    if (Math.abs(delta) > 1) {
+      rail.scrollBy({ left: delta, behavior: 'smooth' })
     }
   }, [activeTyp])
 

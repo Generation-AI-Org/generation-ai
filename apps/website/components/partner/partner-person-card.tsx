@@ -26,7 +26,7 @@ interface PartnerPersonCardProps {
 
 export function PartnerPersonCard({ person }: PartnerPersonCardProps) {
   return (
-    <div className="rounded-2xl border border-border bg-bg-card p-6 text-center">
+    <div className="rounded-2xl border border-border bg-bg-card p-6 text-center transition-all duration-[var(--dur-normal)] ease-[var(--ease-out)] hover:border-[var(--border-accent)] hover:-translate-y-0.5">
       {/* Avatar */}
       <div
         className="mx-auto mb-4 w-fit"
