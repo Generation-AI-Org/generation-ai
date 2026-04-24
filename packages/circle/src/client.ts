@@ -10,7 +10,13 @@ const BASE_URL = 'https://app.circle.so/api/admin/v2'
 const DEFAULT_TIMEOUT_MS = 10_000
 const DEFAULT_SSO_TTL_SECONDS = 7 * 24 * 60 * 60 // Q4: 7 days
 const MAX_RETRIES = 3
-const RETRY_DELAYS_MS = [500, 1500, 4500]
+// REVIEW NT-01/NT-02 — two attempts are retried (between attempts 0→1 and
+// 1→2), so we only need two wait entries. `DEFAULT_RETRY_DELAY_MS` remains
+// defensive — typed `?? DEFAULT_RETRY_DELAY_MS` fallback is unreachable
+// today but keeps the code safe if `MAX_RETRIES` is bumped without updating
+// the delays array.
+const DEFAULT_RETRY_DELAY_MS = 1000
+const RETRY_DELAYS_MS: readonly number[] = [500, 1500]
 
 interface CircleConfig {
   token: string
@@ -84,7 +90,7 @@ async function circleFetch<T>(
           { statusCode: res.status, correlationId },
         )
         if (shouldRetry(code) && attempt < MAX_RETRIES - 1) {
-          await sleep(RETRY_DELAYS_MS[attempt] ?? 1000)
+          await sleep(RETRY_DELAYS_MS[attempt] ?? DEFAULT_RETRY_DELAY_MS)
           continue
         }
         throw lastError
@@ -100,7 +106,7 @@ async function circleFetch<T>(
         { cause: err },
       )
       if (attempt < MAX_RETRIES - 1) {
-        await sleep(RETRY_DELAYS_MS[attempt] ?? 1000)
+        await sleep(RETRY_DELAYS_MS[attempt] ?? DEFAULT_RETRY_DELAY_MS)
         continue
       }
       throw lastError
