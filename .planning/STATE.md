@@ -21,15 +21,15 @@ progress:
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 24
+**Phase:** 24 ✅ DONE (2026-04-24)
 **Branch:** `main` (Phase 20 Skeleton + 20.5 Hero gemerged + gepusht 2026-04-22, Vercel auto-deployed) — neue Phasen starten auf frischem Feature-Branch
-**Last Updated:** 2026-04-24 (Phase 23 /join Fragebogen-Flow (Waitlist V1) ✅ DONE — 6/6 Plans)
-**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, /about + /partner + /join fertig (nicht deployed). Phase 21 + 22 + 23 bereit für Feature-Branch + PR.
+**Last Updated:** 2026-04-24 (Phase 24 `/test` AI-Literacy-Assessment ✅ DONE — 9/9 Plans, 45 Commits + Code-Review-Fix + UI-Review-Fix applied)
+**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, /about + /partner + /join fertig (nicht deployed). Phase 21 + 22 + 23 + 24 bereit für Feature-Branch + PR. 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** 22.5 /events-page (MDX-Pipeline, members-only gated, Anmelde-Flow)
-**First command:** `/gsd-discuss-phase 22.5` (oder direkt `/gsd-plan-phase 22.5`)
+**Next phase:** 22.5 /events-page (MDX-Pipeline, members-only gated, Anmelde-Flow) oder 22.7 Tools-Subdomain-Polish — Luca entscheidet Reihenfolge.
+**First command:** `/gsd-plan-phase 22.5` oder `/gsd-plan-phase 22.7` (beide haben CONTEXT.md bereits)
 
 **Context für neue Session:**
 
