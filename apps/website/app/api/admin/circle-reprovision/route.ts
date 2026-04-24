@@ -77,6 +77,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     })
     return NextResponse.json({ error: 'Failed to lookup user' }, { status: 500 })
   }
+  // REVIEW LO-03 — fail loud once user count hits the unpaginated ceiling.
+  // Without this guard, a user past position 1000 would silently 404 and the
+  // admin would assume the account doesn't exist. The alert forces us to
+  // either upgrade to pagination or widen perPage before shipping signup.
+  if (listData.users.length >= 1000) {
+    Sentry.captureMessage(
+      'admin.reprovision.listUsers_ceiling_hit',
+      'error',
+    )
+    return NextResponse.json(
+      {
+        error:
+          'User lookup exceeded 1000-row ceiling; upgrade the reprovision route to paginate before retrying.',
+      },
+      { status: 500 },
+    )
+  }
   const targetUser = listData.users.find(
     (u) => (u.email ?? '').toLowerCase() === targetEmail,
   )
