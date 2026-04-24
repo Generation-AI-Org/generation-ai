@@ -30,8 +30,29 @@ export interface CircleSsoToken {
 export interface CreateMemberInput {
   email: string
   name: string
+  /**
+   * Atomic space-add: Circle's POST /community_members accepts `space_ids`
+   * and adds the member to all listed spaces in the same transaction —
+   * no separate addMemberToSpace call needed.
+   */
+  spaceIds?: number[]
+  /**
+   * If true (default), suppresses Circle's own invitation email. Required
+   * when the consuming app (us) handles confirmation email + onboarding.
+   */
+  skipInvitation?: boolean
   /** Optional metadata stored on Circle-side. Use sparingly (Q9). */
   metadata?: Record<string, string>
+}
+
+/**
+ * Response wrapper for POST /community_members.
+ * Verified live 2026-04-25: Circle wraps the new member in a `community_member`
+ * key, NOT returned at top level. Reading `.id` directly was Phase-25 Bug #6.
+ */
+export interface CreateMemberResponse {
+  message: string
+  community_member: CircleMember
 }
 
 /**

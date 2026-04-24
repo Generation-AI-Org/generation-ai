@@ -1,8 +1,10 @@
+import { randomBytes } from 'node:crypto'
 import { CircleApiError, type CircleErrorCode } from './errors'
 import type {
   CircleMember,
   CircleSsoToken,
   CreateMemberInput,
+  CreateMemberResponse,
   GenerateSsoInput,
 } from './types'
 
@@ -175,9 +177,34 @@ export async function getMemberByEmail(
 }
 
 /**
+ * Generate a Circle-policy-compliant random password.
+ * Circle requires: ≥6 chars, 1 uppercase, 1 number, 1 symbol.
+ *
+ * Used for headless-only members who never type a password — login happens
+ * via Headless SSO. The password exists only because Circle requires one
+ * on member-create when `skip_invitation:true` (otherwise their own
+ * invitation flow would set it).
+ */
+function generateCirclePassword(): string {
+  // 32 random base64url chars + fixed suffix that guarantees the four
+  // class requirements (uppercase 'A', digit '1', symbol '!').
+  return `${randomBytes(24).toString('base64url')}A1!`
+}
+
+/**
  * Create a Circle community member. Idempotent: if a member with the same
- * email already exists, returns `{ alreadyExists: true }` with the existing ID.
- * (We do a GET-first to avoid Circle's 409 cost.)
+ * email already exists, returns `{ alreadyExists: true }` with the existing ID
+ * (no space-re-add — existing members keep their current space membership).
+ *
+ * For new members the request is atomic — Circle's POST /community_members
+ * accepts all of: space assignment (space_ids), email-suppression
+ * (skip_invitation), and password in a single call. Verified live 2026-04-25.
+ *
+ * Defaults:
+ *   skipInvitation = true   (we send the confirmation email ourselves)
+ *   spaceIds       = []     (caller passes CIRCLE_DEFAULT_SPACE_ID)
+ *   password       = random (Circle requires one but it's never used —
+ *                            members log in via Headless SSO)
  */
 export async function createMember(
   input: CreateMemberInput,
@@ -188,16 +215,32 @@ export async function createMember(
   }
 
   const { communityId } = getConfig()
-  const member = await circleFetch<CircleMember>('/community_members', {
+  const skipInvitation = input.skipInvitation ?? true
+
+  const response = await circleFetch<CreateMemberResponse>('/community_members', {
     method: 'POST',
     body: JSON.stringify({
       email: input.email,
       name: input.name,
       community_id: communityId,
+      skip_invitation: skipInvitation,
+      password: generateCirclePassword(),
+      ...(input.spaceIds && input.spaceIds.length > 0 ? { space_ids: input.spaceIds } : {}),
       // Q9: keine Uni/Motivation an Circle — bleibt in Supabase-Metadata
       ...(input.metadata ? { metadata: input.metadata } : {}),
     }),
   })
+
+  // BUG #6 fix: Circle wraps the new member in `community_member`, not at top
+  // level. Reading `response.id` directly returned undefined → "undefined"
+  // string ended up in Supabase user_metadata.circle_member_id.
+  const member = response.community_member
+  if (!member?.id) {
+    throw new CircleApiError(
+      'UNKNOWN',
+      'Circle POST /community_members response missing community_member.id',
+    )
+  }
 
   return { circleMemberId: String(member.id), alreadyExists: false }
 }

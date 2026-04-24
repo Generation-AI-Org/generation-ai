@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/nextjs'
 import { Resend } from 'resend'
 import { render } from '@react-email/render'
 import { createAdminClient } from '@genai/auth'
-import { addMemberToSpace, CircleApiError, createMember } from '@genai/circle'
+import { CircleApiError, createMember } from '@genai/circle'
 import { ConfirmSignupEmail } from '@genai/emails'
 import { checkSignupRateLimit, getClientIp } from '@/lib/rate-limit'
 
@@ -205,38 +205,27 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
   }
 
   // -- 5. Circle-Provisioning (non-blocking per D-03) -----------------------
+  // Single atomic call: createMember handles space-add and email-suppression
+  // server-side via Circle's `space_ids` + `skip_invitation` params (live-
+  // verified 2026-04-25). No separate addMemberToSpace call needed.
   let circleMemberId: string | null = null
   let circleError: string | null = null
-  try {
-    const result = await createMember({ email, name: data.name })
-    circleMemberId = result.circleMemberId
+  const spaceIdEnv = process.env.CIRCLE_DEFAULT_SPACE_ID
+  const spaceIds = spaceIdEnv ? [Number(spaceIdEnv)] : undefined
+  if (!spaceIdEnv) {
+    console.warn(
+      '[signup] CIRCLE_DEFAULT_SPACE_ID not set — member will be community-only, no welcome space',
+    )
+  }
 
-    // Auto-join welcome space (D-06)
-    const spaceId = process.env.CIRCLE_DEFAULT_SPACE_ID
-    if (spaceId) {
-      try {
-        await addMemberToSpace(email, spaceId)
-      } catch (spaceErr) {
-        // Sub-non-blocking: member exists, just not in welcome space
-        if (spaceErr instanceof CircleApiError) {
-          Sentry.captureException(spaceErr, {
-            tags: { 'circle-api': 'true', op: 'addMemberToSpace' },
-            extra: {
-              code: spaceErr.code,
-              correlationId: spaceErr.correlationId,
-            },
-          })
-        } else {
-          Sentry.captureException(spaceErr, {
-            tags: { 'circle-api': 'true', op: 'addMemberToSpace' },
-          })
-        }
-      }
-    } else {
-      console.warn(
-        '[signup] CIRCLE_DEFAULT_SPACE_ID not set — skipping welcome space join',
-      )
-    }
+  try {
+    const result = await createMember({
+      email,
+      name: data.name,
+      spaceIds,
+      skipInvitation: true, // we send our own confirmation email
+    })
+    circleMemberId = result.circleMemberId
   } catch (err) {
     if (err instanceof CircleApiError) {
       circleError = `${err.code}: ${err.message}`

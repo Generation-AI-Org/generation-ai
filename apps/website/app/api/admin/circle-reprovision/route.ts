@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
 import { createAdminClient } from '@genai/auth'
-import { addMemberToSpace, CircleApiError, createMember } from '@genai/circle'
+import { CircleApiError, createMember } from '@genai/circle'
 import { checkAdminAuth } from '@/lib/admin-auth'
 import { checkAdminReprovisionRateLimit } from '@/lib/rate-limit'
 
@@ -107,32 +107,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       ? (meta.full_name as string)
       : targetEmail.split('@')[0]
 
-  // -- 5. Circle provisioning (idempotent) ----------------------------------
+  // -- 5. Circle provisioning (idempotent, atomic with space-add) -----------
   try {
+    const spaceIdEnv = process.env.CIRCLE_DEFAULT_SPACE_ID
+    const spaceIds = spaceIdEnv ? [Number(spaceIdEnv)] : undefined
     const { circleMemberId, alreadyExists } = await createMember({
       email: targetEmail,
       name: targetName,
+      spaceIds,
+      skipInvitation: true,
     })
-
-    const spaceId = process.env.CIRCLE_DEFAULT_SPACE_ID
-    if (spaceId) {
-      try {
-        await addMemberToSpace(circleMemberId, spaceId)
-      } catch (spaceErr) {
-        if (spaceErr instanceof CircleApiError) {
-          const se: CircleApiError = spaceErr
-          Sentry.captureException(se, {
-            tags: { 'circle-api': 'true', op: 'adminReprovision.addMemberToSpace' },
-            extra: {
-              target_user_id: targetUser.id,
-              admin_user_id: auth.userId,
-              code: se.code,
-              correlationId: se.correlationId,
-            },
-          })
-        }
-      }
-    }
 
     // -- 6. Persist link + metadata ----------------------------------------
     const now = new Date().toISOString()

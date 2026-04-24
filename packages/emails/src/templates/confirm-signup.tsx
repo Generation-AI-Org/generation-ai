@@ -55,11 +55,11 @@ export default function ConfirmSignupEmail({
           margin: '0 0 32px 0',
         }}
       >
-        Kurz deine Mail bestätigen — dann geht's los.
+        Ein Klick — und du bist in der Community.
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
-        <EmailButton slug="confirm-signup" href={confirmationUrl}>Loslegen →</EmailButton>
+        <EmailButton slug="confirm-signup" href={confirmationUrl}>In die Community →</EmailButton>
       </Section>
 
       <Text
@@ -71,7 +71,7 @@ export default function ConfirmSignupEmail({
           margin: '24px 0 0 0',
         }}
       >
-        Der Link bringt dich direkt in die Community. Gültig 7 Tage.
+        Der Link loggt dich automatisch ein und bringt dich direkt in die Community. Gültig 7 Tage.
       </Text>
 
       <Text

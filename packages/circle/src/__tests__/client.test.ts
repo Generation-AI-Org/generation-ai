@@ -107,13 +107,68 @@ describe('createMember', () => {
     expect(result).toEqual({ circleMemberId: '42', alreadyExists: true })
   })
 
-  it('creates when not found', async () => {
+  it('creates when not found, parsing community_member-wrapped response', async () => {
     mockFetch([
       { status: 404 }, // getMemberByEmail miss
-      { status: 201, body: { id: 99, email: 'new@b.de', name: 'N', community_id: 511295 } },
+      {
+        status: 201,
+        body: {
+          message: 'This user has been invited to the community.',
+          community_member: { id: 99, email: 'new@b.de', name: 'N', community_id: 511295 },
+        },
+      },
     ])
     const result = await createMember({ email: 'new@b.de', name: 'N' })
     expect(result).toEqual({ circleMemberId: '99', alreadyExists: false })
+  })
+
+  it('throws clear error when response missing community_member.id (Bug #6 regression guard)', async () => {
+    mockFetch([
+      { status: 404 },
+      // Mimics the pre-Bug-#6 mistake: top-level shape, no wrapper
+      { status: 201, body: { id: 99, email: 'new@b.de' } },
+    ])
+    await expect(createMember({ email: 'new@b.de', name: 'N' })).rejects.toMatchObject({
+      code: 'UNKNOWN',
+      message: expect.stringContaining('community_member.id'),
+    })
+  })
+
+  it('sends skip_invitation:true + space_ids + password by default', async () => {
+    const fetchSpy = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      // First call: getMemberByEmail miss (404)
+      if ((init?.method ?? 'GET') === 'GET') {
+        return {
+          ok: false,
+          status: 404,
+          headers: new Headers(),
+          json: async () => ({}),
+        } as unknown as Response
+      }
+      // Second call: createMember POST
+      return {
+        ok: true,
+        status: 201,
+        headers: new Headers(),
+        json: async () => ({
+          message: 'invited',
+          community_member: { id: 99, email: 'new@b.de', name: 'N', community_id: 511295 },
+        }),
+      } as unknown as Response
+    })
+    global.fetch = fetchSpy as unknown as typeof fetch
+    await createMember({ email: 'new@b.de', name: 'N', spaceIds: [2574363] })
+
+    const postCall = fetchSpy.mock.calls[1]
+    const body = JSON.parse((postCall?.[1] as RequestInit).body as string)
+    expect(body.skip_invitation).toBe(true)
+    expect(body.space_ids).toEqual([2574363])
+    expect(typeof body.password).toBe('string')
+    // Circle policy: ≥6 chars, 1 upper, 1 num, 1 sym
+    expect(body.password.length).toBeGreaterThanOrEqual(6)
+    expect(body.password).toMatch(/[A-Z]/)
+    expect(body.password).toMatch(/[0-9]/)
+    expect(body.password).toMatch(/[!@#$%^&*]/)
   })
 })
 
