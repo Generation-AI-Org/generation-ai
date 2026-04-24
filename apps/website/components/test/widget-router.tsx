@@ -127,8 +127,9 @@ export function WidgetRouter(props: WidgetRouterProps) {
       )
     default: {
       // Exhaustiveness check — if a new question type is added without a case,
-      // TypeScript will flag this line.
+      // TypeScript will flag the right-hand side as non-never at compile time.
       const _exhaustive: never = question
+      void _exhaustive
       return null
     }
   }
@@ -171,6 +172,7 @@ export function isAnswerReady(question: Question, answer: Answer | undefined): b
     }
     default: {
       const _exhaustive: never = question
+      void _exhaustive
       return false
     }
   }

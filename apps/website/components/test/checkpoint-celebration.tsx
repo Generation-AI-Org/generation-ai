@@ -11,7 +11,9 @@ export interface CheckpointProps {
   onDismiss?: () => void
 }
 
-export function CheckpointCelebration(_props: CheckpointProps) {
+export function CheckpointCelebration(_props?: CheckpointProps) {
+  // _props kept for API compatibility — parent currently owns dismiss lifecycle.
+  void _props
   const reducedMotion = useReducedMotion()
 
   return (

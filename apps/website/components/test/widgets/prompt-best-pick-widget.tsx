@@ -97,7 +97,6 @@ export function PromptBestPickWidget({
               <div
                 className="shiki-wrapper max-h-48 overflow-x-auto rounded-lg bg-[var(--slate-2)] p-3 font-mono text-sm"
                 style={{ fontFamily: 'var(--font-geist-mono)' }}
-                // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{ __html: html }}
               />
             ) : (
