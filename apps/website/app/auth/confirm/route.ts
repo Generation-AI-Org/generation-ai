@@ -154,9 +154,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   // -- 5. Generate Circle SSO URL -------------------------------------------
   try {
+    // Circle's Headless auth_token endpoint accepts only `community_member_id`
+    // — TTL is server-fixed (~1h) and the redirect always lands at the
+    // community root (`/` or `/home`), per Circle docs.
     const { ssoUrl } = await generateSsoUrl({
       memberId: circleMemberId,
-      redirectPath: '/',
     })
     // HI-01: If we fail to attach session cookies before the external
     // redirect, users cannot re-use the magic-link (it's consumed). Log an

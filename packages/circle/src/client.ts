@@ -6,9 +6,14 @@ import type {
   GenerateSsoInput,
 } from './types'
 
-const BASE_URL = 'https://app.circle.so/api/admin/v2'
+// Circle exposes two distinct API surfaces with different auth-token types:
+// - Admin API v2: members, spaces, etc. — auth via CIRCLE_API_TOKEN (Admin token)
+// - Headless API v1: auth_token (SSO), used to mint per-member JWTs for
+//   seamless community login — auth via CIRCLE_HEADLESS_TOKEN (Headless-Auth token)
+// The two tokens are minted separately in Circle Dashboard → Developers → Tokens.
+const ADMIN_BASE_URL = 'https://app.circle.so/api/admin/v2'
+const HEADLESS_BASE_URL = 'https://app.circle.so/api/v1/headless'
 const DEFAULT_TIMEOUT_MS = 10_000
-const DEFAULT_SSO_TTL_SECONDS = 7 * 24 * 60 * 60 // Q4: 7 days
 const MAX_RETRIES = 3
 // REVIEW NT-01/NT-02 — two attempts are retried (between attempts 0→1 and
 // 1→2), so we only need two wait entries. `DEFAULT_RETRY_DELAY_MS` remains
@@ -23,12 +28,20 @@ interface CircleConfig {
   communityId: string
 }
 
-/** Lazy-read env vars so tests can mock. Throws CONFIG_MISSING if unset. */
-function getConfig(): CircleConfig {
-  const token = process.env.CIRCLE_API_TOKEN
+type CircleTokenType = 'admin' | 'headless'
+
+/**
+ * Lazy-read env vars so tests can mock. Throws CONFIG_MISSING if unset.
+ * `tokenType` decides which env var holds the API token:
+ * - 'admin'    → CIRCLE_API_TOKEN (Admin API v2 surface)
+ * - 'headless' → CIRCLE_HEADLESS_TOKEN (Headless API v1 surface, e.g. SSO)
+ */
+function getConfig(tokenType: CircleTokenType = 'admin'): CircleConfig {
+  const tokenEnvVar = tokenType === 'headless' ? 'CIRCLE_HEADLESS_TOKEN' : 'CIRCLE_API_TOKEN'
+  const token = process.env[tokenEnvVar]
   const communityId = process.env.CIRCLE_COMMUNITY_ID
   if (!token || !communityId) {
-    const missing = [!token && 'CIRCLE_API_TOKEN', !communityId && 'CIRCLE_COMMUNITY_ID']
+    const missing = [!token && tokenEnvVar, !communityId && 'CIRCLE_COMMUNITY_ID']
       .filter(Boolean)
       .join(', ')
     throw new CircleApiError('CONFIG_MISSING', `Circle config missing: ${missing}`)
@@ -56,13 +69,18 @@ async function sleep(ms: number): Promise<void> {
 /**
  * Core fetch wrapper with timeout + retry + typed errors.
  * Returns parsed JSON on success, throws CircleApiError on failure.
+ *
+ * `tokenType` selects both the auth token (CIRCLE_API_TOKEN vs
+ * CIRCLE_HEADLESS_TOKEN) and the base URL (admin v2 vs headless v1).
  */
 async function circleFetch<T>(
   path: string,
   init: RequestInit & { method: 'GET' | 'POST' | 'PUT' | 'DELETE' },
+  tokenType: CircleTokenType = 'admin',
 ): Promise<T> {
-  const { token } = getConfig()
-  const url = `${BASE_URL}${path}`
+  const { token } = getConfig(tokenType)
+  const baseUrl = tokenType === 'headless' ? HEADLESS_BASE_URL : ADMIN_BASE_URL
+  const url = `${baseUrl}${path}`
   let lastError: CircleApiError | null = null
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -209,38 +227,44 @@ export async function addMemberToSpace(
 }
 
 /**
- * Generate a passwordless SSO login URL for a Circle member.
- * TTL defaults to 7 days (Q4) to match Supabase confirm-link lifetime.
+ * Generate a seamless-login URL for a Circle community member via the
+ * Circle Headless Auth API.
  *
- * NOTE: Exact endpoint may be `/headless_auth_tokens` or
- * `/community_members/:id/sso_token` depending on Circle plan. Plan H E2E
- * will catch a path mismatch. The response shape accepts both `sso_url`
- * (preferred) and `access_token` + composed URL fallback.
+ * Two-step flow (per https://api.circle.so/apis/headless/quick-start +
+ * https://api.circle.so/apis/headless/member-api/cookies):
+ *   1. POST /api/v1/headless/auth_token → returns RS256 JWT (~1h TTL)
+ *   2. Compose redirect: `${CIRCLE_COMMUNITY_URL}/session/cookies?access_token=<jwt>`
+ *      Circle drops a session cookie on the community domain and lands the
+ *      user at the community root.
+ *
+ * Requires CIRCLE_HEADLESS_TOKEN env var (mint in Circle Dashboard →
+ * Developers → Tokens → type "Headless Auth"). The Admin token used by
+ * other operations cannot authenticate against this endpoint.
  */
 export async function generateSsoUrl(
   input: GenerateSsoInput,
 ): Promise<{ ssoUrl: string; expiresAt: string }> {
-  const token = await circleFetch<CircleSsoToken>('/headless_auth_tokens', {
-    method: 'POST',
-    body: JSON.stringify({
-      community_member_id: input.memberId,
-      redirect_path: input.redirectPath ?? '/',
-      ttl_seconds: input.ttlSeconds ?? DEFAULT_SSO_TTL_SECONDS,
-    }),
-  })
+  const token = await circleFetch<CircleSsoToken>(
+    '/auth_token',
+    {
+      method: 'POST',
+      // Circle accepts the member ID as a number; we coerce so callers can
+      // pass either string (from Supabase metadata) or number.
+      body: JSON.stringify({ community_member_id: Number(input.memberId) }),
+    },
+    'headless',
+  )
 
-  // Prefer `sso_url`; fall back to composing from `access_token` + CIRCLE_COMMUNITY_URL.
-  let ssoUrl = token.sso_url
-  if (!ssoUrl && token.access_token) {
-    const base = process.env.CIRCLE_COMMUNITY_URL ?? 'https://community.generation-ai.org'
-    const redirect = encodeURIComponent(input.redirectPath ?? '/')
-    ssoUrl = `${base.replace(/\/$/, '')}/sso?token=${encodeURIComponent(token.access_token)}&redirect=${redirect}`
-  }
-  if (!ssoUrl) {
+  if (!token.access_token) {
     throw new CircleApiError(
       'UNKNOWN',
-      'Circle SSO response missing both sso_url and access_token',
+      'Circle Headless auth_token response missing access_token',
     )
   }
-  return { ssoUrl, expiresAt: token.expires_at }
+
+  const base = (process.env.CIRCLE_COMMUNITY_URL ?? 'https://community.generation-ai.org')
+    .replace(/\/$/, '')
+  const ssoUrl = `${base}/session/cookies?access_token=${encodeURIComponent(token.access_token)}`
+
+  return { ssoUrl, expiresAt: token.access_token_expires_at }
 }

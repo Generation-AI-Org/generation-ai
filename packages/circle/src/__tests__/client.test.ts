@@ -25,6 +25,7 @@ function mockFetch(responses: Array<{ status?: number; body?: unknown; headers?:
 
 beforeEach(() => {
   process.env.CIRCLE_API_TOKEN = 'test-token'
+  process.env.CIRCLE_HEADLESS_TOKEN = 'test-headless-token'
   process.env.CIRCLE_COMMUNITY_ID = '511295'
   process.env.CIRCLE_COMMUNITY_URL = 'https://community.generation-ai.org'
 })
@@ -132,50 +133,70 @@ describe('addMemberToSpace', () => {
 })
 
 describe('generateSsoUrl', () => {
-  it('returns sso_url + expires_at when response has sso_url', async () => {
-    mockFetch([
-      {
-        status: 200,
-        body: {
-          sso_url: 'https://community.generation-ai.org/sso?token=xyz',
-          expires_at: '2026-05-01T00:00:00Z',
-        },
-      },
-    ])
-    const result = await generateSsoUrl({ memberId: '42' })
-    expect(result).toEqual({
-      ssoUrl: 'https://community.generation-ai.org/sso?token=xyz',
-      expiresAt: '2026-05-01T00:00:00Z',
-    })
+  // Sample response shape from Circle Headless API (verified live 2026-04-24).
+  const sampleHeadlessResponse = {
+    access_token: 'eyJhbGc.payload.signature',
+    access_token_expires_at: '2026-04-24T22:59:48.857Z',
+    refresh_token: 'refresh-xyz',
+    refresh_token_expires_at: '2026-05-24T21:59:48.000Z',
+    community_member_id: 80552151,
+    community_id: 511295,
+  }
+
+  it('composes seamless-login URL from access_token', async () => {
+    mockFetch([{ status: 200, body: sampleHeadlessResponse }])
+    const result = await generateSsoUrl({ memberId: '80552151' })
+    expect(result.ssoUrl).toBe(
+      'https://community.generation-ai.org/session/cookies?access_token=eyJhbGc.payload.signature',
+    )
+    expect(result.expiresAt).toBe('2026-04-24T22:59:48.857Z')
   })
 
-  it('composes URL from access_token fallback', async () => {
-    mockFetch([
-      {
-        status: 200,
-        body: {
-          access_token: 'abc123',
-          expires_at: '2026-05-01T00:00:00Z',
-        },
-      },
-    ])
-    const result = await generateSsoUrl({ memberId: '42', redirectPath: '/c/vorstellungsrunde' })
-    expect(result.ssoUrl).toContain('/sso?token=abc123')
-    expect(result.ssoUrl).toContain('redirect=')
-    expect(result.expiresAt).toBe('2026-05-01T00:00:00Z')
-  })
-
-  it('passes custom TTL to Circle', async () => {
+  it('hits the Headless API path with Headless token + numeric member ID', async () => {
     const fetchSpy = vi.fn(async () => ({
       ok: true,
       status: 200,
       headers: new Headers(),
-      json: async () => ({ sso_url: 'x', expires_at: 'y' }),
+      json: async () => sampleHeadlessResponse,
     }))
     global.fetch = fetchSpy as unknown as typeof fetch
-    await generateSsoUrl({ memberId: '42', ttlSeconds: 3600 })
-    const call = fetchSpy.mock.calls[0]?.[1] as RequestInit
-    expect(call.body).toContain('"ttl_seconds":3600')
+    await generateSsoUrl({ memberId: '80552151' })
+
+    const call = fetchSpy.mock.calls[0]
+    const url = call?.[0] as string
+    const init = call?.[1] as RequestInit
+    expect(url).toBe('https://app.circle.so/api/v1/headless/auth_token')
+    expect(init.method).toBe('POST')
+    // Member ID coerced to number per Circle API contract.
+    expect(init.body).toBe('{"community_member_id":80552151}')
+    // Headless token used, not Admin token.
+    const headers = init.headers as Record<string, string>
+    expect(headers.Authorization).toBe('Bearer test-headless-token')
+  })
+
+  it('throws CONFIG_MISSING when CIRCLE_HEADLESS_TOKEN unset', async () => {
+    delete process.env.CIRCLE_HEADLESS_TOKEN
+    await expect(generateSsoUrl({ memberId: '80552151' })).rejects.toMatchObject({
+      name: 'CircleApiError',
+      code: 'CONFIG_MISSING',
+    })
+  })
+
+  it('throws UNKNOWN when access_token missing from response', async () => {
+    mockFetch([{ status: 200, body: { ...sampleHeadlessResponse, access_token: '' } }])
+    await expect(generateSsoUrl({ memberId: '80552151' })).rejects.toMatchObject({
+      name: 'CircleApiError',
+      code: 'UNKNOWN',
+    })
+  })
+
+  it('strips trailing slash from CIRCLE_COMMUNITY_URL', async () => {
+    process.env.CIRCLE_COMMUNITY_URL = 'https://community.generation-ai.org/'
+    mockFetch([{ status: 200, body: sampleHeadlessResponse }])
+    const result = await generateSsoUrl({ memberId: '80552151' })
+    expect(result.ssoUrl).toBe(
+      'https://community.generation-ai.org/session/cookies?access_token=eyJhbGc.payload.signature',
+    )
   })
 })
 

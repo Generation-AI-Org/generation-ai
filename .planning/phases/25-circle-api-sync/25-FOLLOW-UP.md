@@ -31,6 +31,32 @@ Der Unified-Signup-Flow ist **zu 95% durch**. End-to-End auf `feature/phase-25-c
 
 ---
 
+## Resolved this session ✅
+
+### Bug #2 — Circle `generateSsoUrl` (FIXED 2026-04-25)
+
+**Commit:** `<filled-in-on-commit>` (branch `feature/phase-25-circle-api-sync`)
+
+**Root-Cause (verified live):** `generateSsoUrl` zielte auf eine erfundene API:
+1. Falscher Endpoint: `/api/admin/v2/headless_auth_tokens` existiert nicht — korrekt ist `/api/v1/headless/auth_token` (eigene API-Surface, nicht Admin v2)
+2. Falscher Token-Type: Admin-Token kann Headless-Endpoints nicht authentifizieren — Circle braucht separat geminten "Headless Auth" Token
+3. Falsches Response-Model: Circle liefert kein `sso_url`-Feld — es kommt ein JWT `access_token`, der seamless-Login-URL wird client-side komponiert: `${CIRCLE_COMMUNITY_URL}/session/cookies?access_token=<jwt>`
+
+**Fix:**
+- `packages/circle/src/client.ts` — `circleFetch` akzeptiert jetzt `tokenType: 'admin' | 'headless'`, neuer `HEADLESS_BASE_URL`, `generateSsoUrl` rewritten
+- `packages/circle/src/types.ts` — `CircleSsoToken` + `GenerateSsoInput` an reale API angepasst (drop `redirect_path` + `ttl_seconds`, beide werden vom Endpoint nicht akzeptiert)
+- `packages/circle/src/__tests__/client.test.ts` — Tests gegen neue Endpoint-URL + Response-Shape, plus CONFIG_MISSING-Test für Headless-Token
+- `apps/website/app/auth/confirm/route.ts` — Call-Site auf neue Signatur reduziert
+- `apps/website/.env.example` — `CIRCLE_HEADLESS_TOKEN=` Placeholder
+
+**Live-Verify (vor Commit):** `curl -X POST https://app.circle.so/api/v1/headless/auth_token` mit echtem Headless-Token + `community_member_id: 80552151` → HTTP 200 mit erwartetem JWT-Response. Volles Detail-Log in `.planning/debug/resolved/phase-25-circle-sso-endpoint.md`.
+
+**Vitest:** 18/18 grün. **Typecheck:** `@genai/circle` clean.
+
+**Restliche Verifikation (offen, nach Push):** Preview-Deploy E2E mit frischer Test-Alias — bestätigen dass `/auth/confirm` direkt nach Circle redirected statt `/welcome?circle=pending`.
+
+---
+
 ## Offene Bugs (Must-Fix vor Launch) ❌
 
 ### Bug #1 — Circle `addMemberToSpace` 404
@@ -66,32 +92,7 @@ Der Pfad `/space_members` und/oder der Payload-Key `community_member_id` ist fal
 
 ---
 
-### Bug #2 — Circle `generateSsoUrl` vermutlich gleicher API-Path-Mismatch
-
-**Evidenz:** Runtime-Logs zeigen:
-```
-21:34:35 GET /auth/confirm → 303   (verifyOtp success)
-21:34:36 GET /welcome → 307        (fallback hit → means generateSsoUrl threw)
-21:34:36 GET / → 200
-```
-
-Der `/welcome`-Redirect deutet darauf hin, dass in [apps/website/app/auth/confirm/route.ts:156](apps/website/app/auth/confirm/route.ts:156) der try/catch um `generateSsoUrl` getriggert hat → `redirectWithCookies(fallbackUrl(origin))`.
-
-**Root-Cause (vermutet):** `packages/circle/src/client.ts:220-232` nutzt Endpoint `/headless_auth_tokens`:
-```ts
-const token = await circleFetch<CircleSsoToken>('/headless_auth_tokens', ...)
-```
-
-Plan-B-Kommentar: *"Exact endpoint may be `/headless_auth_tokens` or `/community_members/:id/sso_token` depending on Circle plan"*. Auch "best guess", genauso wie `addMemberToSpace`.
-
-**Verification nötig:**
-- Sentry-Event inspizieren (Tag `op: generateSsoUrl`) — Status-Code und Correlation-ID
-- Circle-Dashboard → Settings → API → SSO-Endpoint-Doku abgreifen
-- Oder: Circle-Support/Docs nach dem korrekten "Get SSO-Token for Member"-Endpoint fragen
-
-**Fix-Plan:** nach Verification analog zu Bug #1 — Pfad + Payload korrigieren, tests, live-test.
-
-**Impact:** Das ist der Kern-UX-Win-Blocker. Solange das failed, landet User nach Confirm-Click auf `/welcome?circle=pending` (aktuell wegen Routing-Bug #3 auf `/`), nicht direkt in Circle.
+### Bug #2 — Circle `generateSsoUrl` (RESOLVED — siehe Section "Resolved this session" oben)
 
 ---
 

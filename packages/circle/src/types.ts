@@ -12,10 +12,18 @@ export interface CircleMember {
   community_id: string | number
 }
 
+/**
+ * Response from POST /api/v1/headless/auth_token (Headless Auth API).
+ * Verified against live API 2026-04-24 — see debug/phase-25-circle-sso-endpoint.md.
+ * Note: numeric IDs are returned as JSON numbers, not strings.
+ */
 export interface CircleSsoToken {
-  sso_url?: string         // one-time-use magic link (primary shape)
-  access_token?: string    // alternate response shape — client composes URL
-  expires_at: string       // ISO-8601
+  access_token: string                 // RS256 JWT, ~1h TTL (server-fixed)
+  access_token_expires_at: string      // ISO-8601
+  refresh_token: string                // 30d TTL
+  refresh_token_expires_at: string     // ISO-8601
+  community_member_id: number
+  community_id: number
 }
 
 /** Input for createMember. Q9: nur Email + Name an Circle, keine Uni/Status/Motivation. */
@@ -26,11 +34,11 @@ export interface CreateMemberInput {
   metadata?: Record<string, string>
 }
 
-/** Input for generateSsoUrl. TTL defaults to 7 days per Q4. */
+/**
+ * Input for generateSsoUrl. Circle's Headless `auth_token` endpoint accepts
+ * only `community_member_id` — `redirect_path` and `ttl_seconds` are not
+ * supported (TTL is server-fixed at ~1h, redirect always lands at community root).
+ */
 export interface GenerateSsoInput {
   memberId: string
-  /** Post-login redirect inside Circle (relative path, e.g. `/spaces/welcome`). */
-  redirectPath?: string
-  /** TTL in seconds. Default = 604800 (7 days, matches Supabase confirm link). */
-  ttlSeconds?: number
 }
