@@ -72,26 +72,50 @@ export default function WaitlistConfirmationEmail({
         style={{
           fontSize: '16px',
           color: tokens.light.text,
+          margin: '0 0 8px 0',
+          fontFamily: fontStack.sans,
+          lineHeight: '1.6',
+        }}
+      >
+        Bis dahin, wenn du magst:
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          color: tokens.light.text,
+          margin: '0 0 8px 0',
+          fontFamily: fontStack.sans,
+          lineHeight: '1.6',
+        }}
+      >
+        →{' '}
+        <a
+          href="https://generation-ai.org"
+          style={{ color: tokens.light.text, textDecoration: 'underline' }}
+        >
+          Stöber auf generation-ai.org
+        </a>
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          color: tokens.light.text,
           margin: '0 0 24px 0',
           fontFamily: fontStack.sans,
           lineHeight: '1.6',
         }}
       >
-        Bis dahin — wenn du magst, schau dich auf{' '}
-        <a
-          href="https://generation-ai.org"
-          style={{ color: tokens.light.text, textDecoration: 'underline' }}
-        >
-          generation-ai.org
-        </a>{' '}
-        um oder probier unsere kostenlosen KI-Tools auf{' '}
+        →{' '}
         <a
           href="https://tools.generation-ai.org"
           style={{ color: tokens.light.text, textDecoration: 'underline' }}
         >
-          tools.generation-ai.org
+          Probier unsere kostenlosen KI-Tools
         </a>
-        .
       </Text>
 
       <Text
