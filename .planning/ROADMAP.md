@@ -826,27 +826,33 @@ Plans:
 
 ---
 
-### Phase 24: `/test` Assessment
+### Phase 24: `/test` AI-Literacy-Assessment ✅ (REVIDIERT 2026-04-24)
 
-**Goal:** Optionaler Kompetenz-Test mit Level-Score-Output, DSGVO-konform, Standalone-fähig.
+**Goal:** Echter, deterministischer AI-Literacy-Test mit interaktiven closed-choice-Widgets (kein Selbsteinschätzungs-Quiz, kein stures MC). 5-Level-Output + Skill-Radar + Sparring-Placeholder für spätere PRISMA-Integration.
 **Requirements:** R5.1-R5.7
-**Depends on:** Phase 23 (State-Contract für Score-Migration)
-**Out-of-Scope:** Adaptive Test-Logik (nur gewichtete statische Fragen in v4.0).
+**Depends on:** Phase 23 (State-Contract für Score-Migration, Nav/Layout-Shell)
 
-**Scope:**
-- 5-8 gewichtete Fragen mit Multiple-Choice-Antworten → Level 1-5
-- DSGVO-Consent-Gate vor Test-Start
-- Ergebnis-Screen mit Level + Erklärung + CTA zurück zu `/join` (oder Standalone-CTA bei direktem Einstieg)
-- Score in SessionStorage + Migration ins Profile-Record bei späterem Signup
-- Lösch-Flow dokumentiert (Link zu `/datenschutz` mit Passage)
+**Delivered Scope (v4.0):**
+- 9 Widget-Typen: CardPick, DragRank (@dnd-kit), PromptBestPick (shiki), SideBySide+Reasons, Fehlerspot, Matching, ConfidenceSlider, FillIn, MC
+- Deterministisches Scoring (pure math in JS, 0 LLM-calls) — `lib/assessment/scoring.ts` mit 69+ Unit-Tests
+- 5 Level: Neugieriger / Einsteiger / Fortgeschritten / Pro / Expert
+- Recharts Skill-Radar über 5 Dimensionen (Tools / Prompting / Agents / Anwendung / Critical Literacy)
+- 3 Routes: `/test`, `/test/aufgabe/[n]`, `/test/ergebnis`
+- Framer Motion Transitions + reduced-motion-Fallbacks
+- A11y: Keyboard-Nav pro Widget, aria-live, Focus-Management
+- Content in JSON + MDX (editierbar ohne Code)
+- Sparring-Slot: V1-Placeholder, Props-Interface für späteren Live-Swap
+- Signup-CTA: `/join?pre={level}&source=test&skills={...}`
 
-**Success Criteria:**
-- [ ] Test ohne Login durchführbar
-- [ ] Consent blockt Submit wenn nicht aktiv
-- [ ] Score landet korrekt in `/join` Step-State bei Rückkehr
-- [ ] DSGVO-Passage in Datenschutzerklärung ergänzt
+**Out-of-Scope (spätere Phase):**
+- PRISMA-Backend-Integration (Anthropic Agent SDK Harness, Streaming, Rate-Limit) — Luca baut PRISMA parallel
+- Persistent User-Profile-Speicherung (`user_metadata.ki_level`) — kommt Phase 25 Unified Signup
+- LLM-basierte Ergebnis-Interpretation — V2-Option (Scoring bleibt NIE LLM)
+- Adaptive Fragen, Share-Cards, EN-Version — Roadmap
 
-**Release:** patch
+**Verification:** passed/human_needed (4 UAT-Items offen: E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke — siehe `24-HUMAN-UAT.md`)
+
+**Release:** patch (within v4.0)
 
 ---
 
