@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: executing
-last_updated: "2026-04-24T07:59:46.436Z"
+last_updated: "2026-04-24T12:00:00.000Z"
 progress:
   total_phases: 20
-  completed_phases: 10
-  total_plans: 68
-  completed_plans: 64
-  percent: 94
+  completed_phases: 11
+  total_plans: 74
+  completed_plans: 70
+  percent: 95
 ---
 
 # Project State — Generation AI Monorepo
@@ -23,8 +23,8 @@ progress:
 
 **Phase:** 22.5
 **Branch:** `main` (Phase 20 Skeleton + 20.5 Hero gemerged + gepusht 2026-04-22, Vercel auto-deployed) — neue Phasen starten auf frischem Feature-Branch
-**Last Updated:** 2026-04-24 (Phase 22 /partner-page abgeschlossen — 8/8 Plans, VERIFICATION passed)
-**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, /about + /partner fertig (nicht deployed). Phase 21 + 22 bereit für Feature-Branch + PR.
+**Last Updated:** 2026-04-24 (Phase 23 /join Fragebogen-Flow (Waitlist V1) ✅ DONE — 6/6 Plans)
+**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, /about + /partner + /join fertig (nicht deployed). Phase 21 + 22 + 23 bereit für Feature-Branch + PR.
 
 ## 🚀 Next Session Start Here
 
@@ -159,6 +159,25 @@ progress:
 - Next: Plan 20.6-01 New Discrepancy section — Planning-Session mit Luca (Form TBD).
 
 ---
+
+### Phase 23 Progress
+
+**Status:** DONE 2026-04-24. Waitlist V1 live-fähig (Backend bleibt 503 bis Phase 25, Waitlist-Insert + Confirmation-Mail laufen).
+
+- Plan 23-01 DONE — Supabase `waitlist`-Table + RLS (service_role only) + TypeScript types in @genai/auth. Migration `supabase/migrations/20260424000001_waitlist.sql` via MCP applied.
+- Plan 23-02 DONE — React-Email-Template `WaitlistConfirmationEmail` in @genai/emails (Blueprint: partner-inquiry-confirmation).
+- Plan 23-03 DONE — Server-Action `submitJoinWaitlist` mit Zod-Validation + Upstash-Rate-Limit (5/15min/IP) + Supabase-Insert + Resend-Mail. Interface stabil für Phase 25 Swap (D-10).
+- Plan 23-04 DONE — UniCombobox-Komponente + Universities-Liste (40 DE-Hochschulen + 4 Fallback-Options). ARIA-combobox-Pattern, Keyboard-Nav, Freitext-Accept.
+- Plan 23-05 DONE — /join Route komplett: Server-Component + Client-Wrapper + Hero (`min-h-[60vh]`) + Form-Card + Success-Card mit Inline-Swap. Unterseiten-Blueprint-konform. CSP/Nonce intakt.
+- Plan 23-06 DONE — Sitemap-Eintrag `/join` (priority 0.8, changeFrequency monthly), Playwright-Smoke `join.spec.ts` mit 10 Testcases (loads, hero, form fields, email error, consent error, uni free-text, uni keyboard nav, redirect_after, valid submit swap, sessionStorage reload R4.7, CSP). Lighthouse /join: Perf 87⚠️ / A11y 95 / BP 100 / SEO 100. STATE.md updated.
+
+**Requirements completed:** R4.1, R4.2, R4.3, R4.4, R4.5, R4.6, R4.7, R4.8 (alle R4.*) — R4.1–R4.4 als-revidiert umgesetzt (Single-Page Waitlist statt Multi-Step-Wizard, per D-17/D-18/D-15/D-01).
+
+**Offen (bewusst, Phase 25):**
+- Live-Signup bleibt 503 (D-01, Luca-Go abhängig)
+- Assessment-CTA verlinkt auf `/test` (404 bis Phase 24 die Seite baut)
+- Phase 25 swapped Waitlist-Insert gegen echten Supabase-Signup + Circle-API-Sync
+- Lighthouse Performance 87 (LCP 3.6s lokal) — erwartet höher auf Vercel CDN; kein Blocking-Issue
 
 ---
 
