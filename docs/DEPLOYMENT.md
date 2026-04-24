@@ -80,6 +80,40 @@ cd apps/tools-app && vercel --prod
 | `CIRCLE_COMMUNITY_ID` | Circle Community ID | Vercel |
 | `CIRCLE_COMMUNITY_URL` | Circle URL | Vercel |
 
+### Circle-API-Sync (Phase 25)
+
+Fünf Env-Vars steuern Circle-Provisioning + Signup-Gate:
+
+| Variable | Wert | Scope | Wo setzen |
+|----------|------|-------|-----------|
+| `CIRCLE_API_TOKEN` | Circle Admin-API-Bearer-Token | prod + preview + dev | Circle → Settings → Developer → Generate Token |
+| `CIRCLE_COMMUNITY_ID` | `511295` (GenerationAI) | prod + preview + dev | Circle-MCP `get_community` oder Admin-UI |
+| `CIRCLE_DEFAULT_SPACE_ID` | `2574363` (How to — Circle's `default_new_member_space_id`) | prod + preview + dev | Circle-MCP `list_spaces` |
+| `CIRCLE_COMMUNITY_URL` | `https://community.generation-ai.org` | prod + preview + dev | Bekannt |
+| `SIGNUP_ENABLED` | `true` oder `false` (Default `false`) | **prod nur** (preview + dev = `true` für Tests) | Vercel-Dashboard, Phase 27 flip |
+
+**Setup-Kommandos** (via Vercel-CLI oder `mcp__vercel__*`):
+
+```bash
+# Prod (alle 4 ausser SIGNUP_ENABLED kriegen echte Werte)
+vercel env add CIRCLE_API_TOKEN production
+vercel env add CIRCLE_COMMUNITY_ID production       # 511295
+vercel env add CIRCLE_DEFAULT_SPACE_ID production   # 2574363
+vercel env add CIRCLE_COMMUNITY_URL production      # https://community.generation-ai.org
+# SIGNUP_ENABLED bleibt bei false bis Phase 27
+
+# Preview + Development mit SIGNUP_ENABLED=true für E2E-Tests
+vercel env add SIGNUP_ENABLED preview       # true
+vercel env add SIGNUP_ENABLED development   # true
+```
+
+**Rotation:**
+- `CIRCLE_API_TOKEN`: Circle-Admin → alten Token revoken → neuen generieren → in Vercel + lokal `.env.local` updaten → Deploy triggern.
+- `CIRCLE_DEFAULT_SPACE_ID`: Wenn Welcome-Space umgezogen wird, Var updaten + Redeploy. Nicht breaking — nur neue Members landen anderswo.
+
+**Signup-Reactivation-Gate (Q11):**
+Die `SIGNUP_ENABLED=false`-Default stellt sicher, dass `/api/auth/signup` nach Phase 25 weiterhin 503 returnt. In Phase 27 wird die Var in Prod auf `true` gesetzt — dann läuft der unified signup live. Keine Code-Änderung nötig zum Live-Schalten.
+
 ---
 
 ## Lokale Entwicklung
