@@ -947,6 +947,30 @@ Plans:
 
 ---
 
+## Backlog
+
+Ideen & Follow-ups ohne feste Phase-Zuordnung. Mit `/gsd-review-backlog` in aktive Phase promoten, wenn reif.
+
+### Phase 999.1: Phase 22 /partner — echte LinkedIn-URLs einsetzen (BACKLOG)
+
+**Goal:** Placeholder `href="#"` mit `data-placeholder="linkedin"` Markern in `apps/website/components/partner/partner-person-card.tsx` durch echte LinkedIn-URLs für Alex, Janna und Simon ersetzen.
+**Requirements:** TBD — URLs von den 3 Personen einholen.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.2: Phase 22 /partner — sitemap.ts Eintrag (BACKLOG)
+
+**Goal:** `/partner` Route in `apps/website/app/sitemap.ts` aufnehmen, analog zum bestehenden `/about`-Eintrag (priority 0.8, changeFrequency monthly). Relevant für SEO-Crawling nach Launch.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+---
+
 *v2.0 Roadmap erstellt: 2026-04-13*
 *Phase 4 geplant: 2026-04-14*
 *Phase 5 geplant: 2026-04-14*
