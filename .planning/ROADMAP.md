@@ -884,6 +884,16 @@ Plans:
 **Detailplan:** `.planning/phases/26-community-page-and-subdomain-integration/26-CONTEXT.md`
 **Out-of-Scope:** Content-Management-UI, AI-Content-Agent (Roadmap), Live-Circle-Posts-API auf Landing (deferred bis Rate-Limits klar), Artikel-Kategorien/Tags/Suche/Kommentare.
 
+**Plans:** 6 plans
+
+Plans:
+- [ ] 26-01-PLAN.md — MDX Stack + Test Infra + 4 Placeholder Articles (Wave 1, foundation)
+- [ ] 26-02-PLAN.md — `/community` Landing Page (Hero, 4 Pillars, Carousel, Final-CTA) (Wave 2)
+- [ ] 26-03-PLAN.md — Article Detail Page + Schema.org + Sitemap Update (Wave 3)
+- [ ] 26-04-PLAN.md — Block B Part 1: `/api/public/featured-tools` API + BeispielBadge Extract (Wave 2, parallel)
+- [ ] 26-05-PLAN.md — Block B Part 2: Tool-Showcase + Community-Preview Server-Component Refactor (Wave 3)
+- [ ] 26-06-PLAN.md — Header-Nav Update + Lighthouse + Phase UAT (Wave 4)
+
 **Scope Block A — /community Seite:**
 - Hero + Direktlink zu `community.generation-ai.org` für Members
 - 4-Kachel-Grid „Was dich drinnen erwartet": Austausch / Lernpfade / News & Insights / Exklusive Inhalte
