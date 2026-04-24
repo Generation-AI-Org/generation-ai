@@ -2,26 +2,17 @@
 
 // apps/website/components/test/checkpoint-celebration.tsx
 // Phase 24 — Brief mid-test "Halbzeit" celebration shown after Aufgabe 5.
+// Lifecycle (timeout + dismissal) is owned by the parent (aufgabe-client.tsx).
 
 import { motion, useReducedMotion } from 'motion/react'
-import { useEffect } from 'react'
 
 export interface CheckpointProps {
-  onDismiss: () => void
-  /** ms; default 1500 */
-  duration?: number
+  /** Kept for API compatibility — parent may still invoke this on manual dismiss. */
+  onDismiss?: () => void
 }
 
-export function CheckpointCelebration({
-  onDismiss,
-  duration = 1500,
-}: CheckpointProps) {
+export function CheckpointCelebration(_props: CheckpointProps) {
   const reducedMotion = useReducedMotion()
-
-  useEffect(() => {
-    const t = setTimeout(onDismiss, duration)
-    return () => clearTimeout(t)
-  }, [onDismiss, duration])
 
   return (
     <motion.div

@@ -6,7 +6,7 @@
 // survive navigations inside the layout segment. This file only handles
 // MotionConfig nonce + transition UI + routing.
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'motion/react'
 import { useAssessment } from '@/lib/assessment/use-assessment'
@@ -36,10 +36,22 @@ function AufgabeInner({ questions, currentIndex, highlightedCode }: AufgabeClien
   const reducedMotion = useReducedMotion()
   const { answers, answerQuestion } = useAssessment()
   const [showCheckpoint, setShowCheckpoint] = useState(false)
+  const checkpointTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const question = questions[currentIndex]
   const answer = answers[question.id]
   const ready = isAnswerReady(question, answer)
+
+  // Clear any pending checkpoint timer on unmount — prevents router.push firing
+  // after the user navigated away (Back, logo Link, etc.).
+  useEffect(() => {
+    return () => {
+      if (checkpointTimerRef.current !== null) {
+        clearTimeout(checkpointTimerRef.current)
+        checkpointTimerRef.current = null
+      }
+    }
+  }, [])
 
   // URL-state guard (CONTEXT D-11): if user deep-links into aufgabe/3 without
   // having answered 1-2, redirect to /test. Run once on mount / index change.
@@ -60,10 +72,16 @@ function AufgabeInner({ questions, currentIndex, highlightedCode }: AufgabeClien
     const willCrossCheckpoint = currentIndex === 4 && !isLast
     if (willCrossCheckpoint) {
       setShowCheckpoint(true)
-      setTimeout(() => {
+      // Halve the delay under reducedMotion — celebration should not gate navigation.
+      const delayMs = reducedMotion ? 300 : 1500
+      if (checkpointTimerRef.current !== null) {
+        clearTimeout(checkpointTimerRef.current)
+      }
+      checkpointTimerRef.current = setTimeout(() => {
+        checkpointTimerRef.current = null
         setShowCheckpoint(false)
         router.push(`/test/aufgabe/${currentIndex + 2}`)
-      }, 1500)
+      }, delayMs)
       return
     }
     if (isLast) {
@@ -71,7 +89,7 @@ function AufgabeInner({ questions, currentIndex, highlightedCode }: AufgabeClien
       return
     }
     router.push(`/test/aufgabe/${currentIndex + 2}`)
-  }, [currentIndex, questions.length, router])
+  }, [currentIndex, questions.length, reducedMotion, router])
 
   return (
     <AufgabeLayout
