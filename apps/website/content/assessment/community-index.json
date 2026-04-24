@@ -27,7 +27,7 @@
     "id": "rec-004",
     "type": "workshop",
     "title": "Eigene Mini-Tools bauen",
-    "description": "Von Idee zu deployed: wie du ein kleines KI-Tool für deine Kommiliton\\:innen in ein paar Stunden baust.",
+    "description": "Von Idee zu deployed: wie du ein kleines KI-Tool für deine Kommiliton:innen in ein paar Stunden baust.",
     "href": "/events?level=pro",
     "levels": ["pro", "expert"]
   },
@@ -115,7 +115,7 @@
     "id": "rec-015",
     "type": "community",
     "title": "Partner- und Speaker-Programm",
-    "description": "Für Expert\\:innen, die Workshops geben oder Partnerprojekte anstoßen wollen.",
+    "description": "Für Expert:innen, die Workshops geben oder Partnerprojekte anstoßen wollen.",
     "href": "https://community.generation-ai.org/c/partner",
     "levels": ["pro", "expert"]
   }
