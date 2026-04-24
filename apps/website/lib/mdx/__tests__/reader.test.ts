@@ -15,7 +15,9 @@ describe("readAllFrontmatter", () => {
   });
 
   it("invokes validate callback for each item with (raw, fileSlug)", async () => {
-    const validate = vi.fn((raw: Record<string, unknown>) => raw);
+    const validate = vi.fn(
+      (raw: Record<string, unknown>, _slug: string) => raw,
+    );
 
     await readAllFrontmatter({
       contentDir: FIXTURES_DIR,
