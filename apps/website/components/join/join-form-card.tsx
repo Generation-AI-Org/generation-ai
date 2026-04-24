@@ -418,7 +418,19 @@ export function JoinFormCard({ onSuccess }: JoinFormCardProps) {
         autoComplete="off"
       />
 
-      {/* === redirect_after passthrough (D-03) === */}
+      {/*
+        === redirect_after passthrough (D-03) ===
+        WR-06: `redirect_after` is captured from the URL query param and
+        persisted to the `waitlist` row by the Server Action (see
+        app/actions/waitlist.ts). V1 does NOT consume it in the success UX
+        (JoinSuccessCard hardcodes `/test` per D-15). Phase 25 Circle-Auth-
+        Sync is the intended consumer: it reads the stored value during user
+        activation to route the user back to the page they originally came
+        from (e.g. `/events/[slug]` from the Phase 22.5 events gate).
+        Validation against open-redirect is done server-side in CR-01; the
+        consumer in Phase 25 MUST still re-validate the origin before
+        navigating (`new URL(v, 'https://generation-ai.org').origin`).
+      */}
       {redirectAfter && (
         <input type="hidden" name="redirect_after" value={redirectAfter} />
       )}
