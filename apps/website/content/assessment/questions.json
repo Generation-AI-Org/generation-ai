@@ -1,0 +1,167 @@
+[
+  {
+    "id": "q-01",
+    "dimension": "tools",
+    "prompt": "Du willst 80 Seiten PDF-Studienmaterial zusammenfassen. Welches Tool ist am besten dafür geeignet?",
+    "helpText": "Denk an Kontextlänge, PDF-Parsing-Qualität und Zitierfähigkeit.",
+    "maxPoints": 3,
+    "type": "pick",
+    "options": [
+      { "id": "a", "label": "NotebookLM — lädt PDFs, zitiert mit Quellenangabe auf Absatzebene.", "points": 3 },
+      { "id": "b", "label": "ChatGPT Free — PDF-Upload funktioniert, aber ohne Zitatfunktion.", "points": 1 },
+      { "id": "c", "label": "Gemini 2.5 Flash — 1M-Kontext, gute PDF-Unterstützung.", "points": 2 },
+      { "id": "d", "label": "Perplexity — eher für Websuche als Langform-Dokumente gebaut.", "points": 0 }
+    ]
+  },
+  {
+    "id": "q-02",
+    "dimension": "tools",
+    "prompt": "Welches Modell eignet sich am besten für komplexe Code-Refactorings über mehrere Dateien?",
+    "maxPoints": 3,
+    "type": "mc",
+    "options": [
+      { "id": "a", "label": "Gemini 2.5 Flash — schnell, aber Code-Qualität schwankt.", "points": 1 },
+      { "id": "b", "label": "Claude Sonnet 4.6 — starke Multi-File-Diffs, Coding-SOTA.", "points": 3 },
+      { "id": "c", "label": "GPT-4o — solide, aber schwächer bei langen Diffs.", "points": 2 },
+      { "id": "d", "label": "LLaMA 3 8B lokal — reicht für Refactorings locker aus.", "points": 0 }
+    ]
+  },
+  {
+    "id": "q-03",
+    "dimension": "prompting",
+    "prompt": "Sortiere diese Prompt-Bausteine von wichtigstem (oben) zu unwichtigstem (unten).",
+    "maxPoints": 3,
+    "type": "rank",
+    "scoring": "levenshtein",
+    "items": [
+      { "id": "context", "label": "Klarer Kontext (wer bist du, was ist die Aufgabe)" },
+      { "id": "goal", "label": "Konkretes Ziel / gewünschtes Output-Format" },
+      { "id": "constraints", "label": "Einschränkungen (Länge, Stil, zu vermeidende Dinge)" },
+      { "id": "examples", "label": "Ein oder zwei Beispiele (Few-Shot)" }
+    ],
+    "correctOrder": ["context", "goal", "constraints", "examples"]
+  },
+  {
+    "id": "q-04",
+    "dimension": "prompting",
+    "prompt": "Du willst eine kurze Projekt-Zusammenfassung für LinkedIn schreiben lassen. Welcher Prompt ist am besten?",
+    "maxPoints": 3,
+    "type": "best-prompt",
+    "options": [
+      {
+        "id": "p1",
+        "language": "plaintext",
+        "code": "Schreib eine Zusammenfassung für LinkedIn.",
+        "points": 0
+      },
+      {
+        "id": "p2",
+        "language": "plaintext",
+        "code": "Du bist ein erfahrener Tech-Ghostwriter.\n\nAufgabe: Schreib eine LinkedIn-Post-Zusammenfassung (max. 1200 Zeichen) für dieses Projekt.\n\nProjekt: [PROJEKTDETAILS]\n\nTon: direkt, keine Buzzwords, eine konkrete Zahl als Hook.\nStruktur: 1 Hook, 2-3 Absätze, 1 CTA am Ende.",
+        "points": 3
+      },
+      {
+        "id": "p3",
+        "language": "plaintext",
+        "code": "Fasse das Projekt zusammen. Mach es gut.",
+        "points": 0
+      },
+      {
+        "id": "p4",
+        "language": "plaintext",
+        "code": "LinkedIn-Post für ein KI-Projekt, 300 Wörter, mit Hashtags und emojis.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "q-05",
+    "dimension": "agents",
+    "prompt": "Du fragst ein Modell nach aktuellen Zinssätzen. Welcher Output ist besser und warum?",
+    "helpText": "Achte darauf, welches Modell Tool-Use (Websuche) nutzt.",
+    "maxPoints": 3,
+    "type": "side-by-side",
+    "outputs": {
+      "a": "Laut meinem Trainingsstand (Januar 2025) liegt der EZB-Leitzins bei 3,0%. Aktuelle Werte können abweichen — bitte prüfe die EZB-Website.",
+      "b": "Der aktuelle EZB-Leitzins liegt bei 2,65% (Stand: heute, Quelle: ecb.europa.eu). Die letzte Senkung war am 12. März 2026."
+    },
+    "correctChoice": "b",
+    "reasons": [
+      { "id": "rn1", "label": "B nutzt Tool-Use / Websuche und liefert eine tagesaktuelle Zahl mit Quelle.", "isCorrect": true },
+      { "id": "rn2", "label": "B nennt eine konkrete Quelle und ein Datum, das Verifikation ermöglicht.", "isCorrect": true },
+      { "id": "rn3", "label": "A ist besser, weil es ehrlicher ist über den Trainingsstand.", "isCorrect": false },
+      { "id": "rn4", "label": "B ist kürzer und darum vertrauenswürdiger.", "isCorrect": false }
+    ],
+    "choicePoints": 1,
+    "reasonPointPerCorrect": 1
+  },
+  {
+    "id": "q-06",
+    "dimension": "agents",
+    "prompt": "Welches Tool passt am besten zu welcher Aufgabe?",
+    "maxPoints": 3,
+    "type": "match",
+    "tasks": [
+      { "id": "t1", "label": "Deep Research mit Zitaten für eine Hausarbeit" },
+      { "id": "t2", "label": "Spontane Brainstorming-Session zu einer Projektidee" },
+      { "id": "t3", "label": "PDF-Vorlesungsskript zusammenfassen" }
+    ],
+    "tools": [
+      { "id": "u1", "label": "Perplexity" },
+      { "id": "u2", "label": "ChatGPT (ohne Tools)" },
+      { "id": "u3", "label": "NotebookLM" }
+    ],
+    "correctPairs": { "t1": "u1", "t2": "u2", "t3": "u3" },
+    "pointPerCorrect": 1
+  },
+  {
+    "id": "q-07",
+    "dimension": "application",
+    "prompt": "Du schreibst eine Seminararbeit und willst KI verantwortungsvoll einsetzen. Welcher Ansatz ist am besten?",
+    "maxPoints": 3,
+    "type": "pick",
+    "options": [
+      { "id": "a", "label": "Komplett selbst schreiben, KI nur als Rechtschreibprüfer.", "points": 1 },
+      { "id": "b", "label": "Argumente + Struktur selbst, KI fürs Formulieren und Gegen-Check der Argumente.", "points": 3 },
+      { "id": "c", "label": "Rohversion von der KI generieren lassen, dann umschreiben.", "points": 0 },
+      { "id": "d", "label": "Zitieren was die KI liefert, dann Quellen drunter setzen.", "points": 0 }
+    ]
+  },
+  {
+    "id": "q-08",
+    "dimension": "application",
+    "prompt": "Du brauchst kreative Slogan-Vorschläge. Was ist die beste Antwort?",
+    "maxPoints": 3,
+    "type": "mc",
+    "options": [
+      { "id": "a", "label": "Temperature hoch setzen (0.9+), Anzahl Varianten erhöhen, klare Zielgruppe im Prompt.", "points": 3 },
+      { "id": "b", "label": "Temperature auf 0 setzen — dann ist die Antwort deterministisch.", "points": 0 },
+      { "id": "c", "label": "Einfach 'sei kreativ' in den Prompt schreiben.", "points": 1 },
+      { "id": "d", "label": "Top-p auf 0.1 für präzise Antworten.", "points": 0 }
+    ]
+  },
+  {
+    "id": "q-09",
+    "dimension": "literacy",
+    "prompt": "Finde die Stelle in diesem Output, die wahrscheinlich halluziniert ist.",
+    "maxPoints": 3,
+    "type": "spot",
+    "passageSegments": [
+      { "id": "s1", "text": "Die Transformer-Architektur wurde 2017 im Paper 'Attention is All You Need' vorgestellt. ", "isCorrect": false },
+      { "id": "s2", "text": "Sie basiert auf dem Self-Attention-Mechanismus. ", "isCorrect": false },
+      { "id": "s3", "text": "Das Original-Paper hatte 8 Autoren und wurde von Ilya Sutskever verfasst. ", "isCorrect": true },
+      { "id": "s4", "text": "Seitdem ist die Architektur Grundlage für fast alle modernen Sprachmodelle.", "isCorrect": false }
+    ]
+  },
+  {
+    "id": "q-10",
+    "dimension": "literacy",
+    "prompt": "Ein Modell erklärt dir ein Statistik-Konzept mit sicherem Ton. Wie wahrscheinlich ist die Erklärung korrekt? Wähle deinen Confidence-Level.",
+    "helpText": "0% = völlig unzuverlässig, 100% = voll vertrauenswürdig. Ziel: ~50% (Modelle klingen immer sicher, auch wenn sie falsch liegen).",
+    "maxPoints": 3,
+    "type": "confidence",
+    "outputText": "Der Zentrale Grenzwertsatz gilt, sobald du mindestens 30 unabhängige Stichproben hast. Ab dann ist die Stichprobenverteilung exakt normalverteilt.",
+    "groundTruthStep": 2,
+    "pointByDistance": [3, 2, 1, 0, 0]
+  }
+]
