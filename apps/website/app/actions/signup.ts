@@ -288,13 +288,39 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
     })
   }
 
-  // -- 7. Send our branded Welcome mail -------------------------------------
-  // We send a welcome mail (brand + tools-link) but NO confirmation link —
-  // Circle's Set-Password mail (triggered automatically by createMember above)
-  // is the action-mail. Our welcome explains what's coming and links to tools.
+  // -- 7. Send branded Welcome mail with auto-login Magic-Link to tools-app --
+  // Welcome mail explains what's coming + the "Zu den KI-Tools"-CTA is a
+  // Supabase magic-link that auto-logs the user into tools.generation-ai.org
+  // via the shared Supabase session cookie (cross-subdomain on .generation-
+  // ai.org). User clicks → tools-app /auth/confirm → verifyOtp → cookie set
+  // → user lands logged-in. No separate login step.
   try {
+    // Generate a magic-link hashed_token. We bypass Supabase's /verify
+    // endpoint (which has the Site-URL implicit-flow bug we hit in Bug #2)
+    // by constructing our own URL pointing directly at tools-app's PKCE-
+    // style /auth/confirm route — same pattern as website/auth/confirm.
+    const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+      type: 'magiclink',
+      email,
+    })
+
+    let toolsLoginUrl: string | undefined
+    if (linkErr || !linkData?.properties?.hashed_token) {
+      Sentry.captureException(linkErr ?? new Error('generateLink: no hashed_token for tools'), {
+        tags: { op: 'generateLink.magiclink' },
+      })
+      // Fall back to bare tools URL — user lands on /login instead of being
+      // auto-logged-in, but mail still ships and is functional.
+    } else {
+      const url = new URL('https://tools.generation-ai.org/auth/confirm')
+      url.searchParams.set('token_hash', linkData.properties.hashed_token)
+      url.searchParams.set('type', 'magiclink')
+      url.searchParams.set('next', '/')
+      toolsLoginUrl = url.toString()
+    }
+
     const html = await render(
-      ConfirmSignupEmail({ name: data.name }),
+      ConfirmSignupEmail({ name: data.name, toolsLoginUrl }),
     )
 
     const { error: sendErr } = await resend.emails.send({

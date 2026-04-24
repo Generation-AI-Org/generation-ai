@@ -6,6 +6,13 @@ import { fontStack } from '../tokens'
 export interface ConfirmSignupEmailProps {
   name?: string
   /**
+   * Per-user Supabase magic-link URL pointing at tools-app's /auth/confirm.
+   * When supplied, the "Zu den KI-Tools" CTA auto-logs the user into
+   * tools.generation-ai.org via verifyOtp + cross-subdomain Supabase cookie.
+   * Falls back to the bare tools URL (login required) if generation failed.
+   */
+  toolsLoginUrl?: string
+  /**
    * @deprecated Phase 25 — wir senden keinen eigenen Confirm-Link mehr.
    * Email wird via Circle's Set-Password-Mail validiert; unsere Welcome-Mail
    * hat nur Brand-Inhalt und einen Link zu tools. Prop bleibt nur für
@@ -23,7 +30,11 @@ export interface ConfirmSignupEmailProps {
  */
 export default function ConfirmSignupEmail({
   name = 'da',
+  toolsLoginUrl,
 }: ConfirmSignupEmailProps): React.ReactElement {
+  // Auto-login fallback: if magic-link generation failed in signup-action,
+  // ship the bare URL so the mail still works (user just has to log in).
+  const toolsHref = toolsLoginUrl ?? 'https://tools.generation-ai.org'
   return (
     <Layout preview="Willkommen bei Generation AI — die Community-Mail kommt gleich.">
       <Heading
@@ -91,7 +102,7 @@ export default function ConfirmSignupEmail({
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
-        <EmailButton slug="tools-link" href="https://tools.generation-ai.org">Zu den KI-Tools</EmailButton>
+        <EmailButton slug="tools-link" href={toolsHref}>Zu den KI-Tools</EmailButton>
       </Section>
 
       <Text
