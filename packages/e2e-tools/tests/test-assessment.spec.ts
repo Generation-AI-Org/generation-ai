@@ -34,10 +34,14 @@ async function answerCurrentWidget(page: Page): Promise<string | null> {
       }
       break
     }
-    case 'confidence':
-      // Slider defaults to step=2 (50%) — isAnswerReady returns true without
-      // any explicit interaction. No-op.
+    case 'confidence': {
+      // WR-06: user must explicitly interact before the answer counts as ready.
+      // Focus the widget and press a number key to set the step.
+      const confWidget = page.locator('[data-widget-type="confidence"]')
+      await confWidget.focus().catch(() => {})
+      await confWidget.press('3')
       break
+    }
     case 'rank':
       // Rank widget initializes order from items (length === correctOrder.length).
       // isAnswerReady therefore returns true on mount — no-op.

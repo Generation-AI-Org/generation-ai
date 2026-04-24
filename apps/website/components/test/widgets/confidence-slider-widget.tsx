@@ -31,6 +31,10 @@ export function ConfidenceSliderWidget({
   onAnswer,
   disabled,
 }: WidgetProps<ConfidenceQuestion, ConfidenceAnswer>) {
+  // WR-06: do NOT default to step=2 — user must interact before the answer is
+  // considered "ready". The visual thumb still sits at the middle (mid position)
+  // as an affordance, but scoring/readiness is gated by a non-null answer.step.
+  const hasInteracted = answer?.step != null
   const step: Step = (answer?.step ?? 2) as Step
   const liveRegionId = useId()
 
@@ -85,7 +89,7 @@ export function ConfidenceSliderWidget({
         ))}
       </div>
 
-      {/* The slider */}
+      {/* The slider — visually dimmed until user first interacts (WR-06). */}
       <Slider
         min={0}
         max={4}
@@ -93,6 +97,9 @@ export function ConfidenceSliderWidget({
         value={step}
         disabled={disabled}
         aria-label={`Confidence: ${question.prompt}`}
+        aria-describedby={liveRegionId}
+        data-unset={hasInteracted ? undefined : 'true'}
+        className={hasInteracted ? undefined : 'opacity-60'}
         onValueChange={handleValueChange}
       />
 
@@ -107,7 +114,9 @@ export function ConfidenceSliderWidget({
 
       {/* Screen-reader live region */}
       <span id={liveRegionId} className="sr-only" aria-live="polite">
-        Confidence: {SEMANTIC_LABELS[step]} ({step * 25}%)
+        {hasInteracted
+          ? `Confidence: ${SEMANTIC_LABELS[step]} (${step * 25}%)`
+          : 'Confidence: noch nicht gesetzt'}
       </span>
     </div>
   )

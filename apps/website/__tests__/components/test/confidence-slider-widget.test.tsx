@@ -40,7 +40,7 @@ describe('ConfidenceSliderWidget', () => {
     expect(container.querySelectorAll('[data-slot="slider-thumb"]')).toHaveLength(1)
   })
 
-  it('aria-live region announces semantic label at default step=2', () => {
+  it('aria-live region announces "noch nicht gesetzt" before user interaction (WR-06)', () => {
     render(
       <ConfidenceSliderWidget
         question={mockQuestion}
@@ -48,9 +48,23 @@ describe('ConfidenceSliderWidget', () => {
         onAnswer={vi.fn()}
       />,
     )
-    // default step = 2 -> "Unsicher" (50%)
+    // WR-06: without an explicit answer, confidence is NOT considered set.
+    // The visual thumb sits at mid position, but scoring treats it as unset.
     const live = document.querySelector('[aria-live="polite"]')
     expect(live).not.toBeNull()
+    expect(live?.textContent).toContain('noch nicht gesetzt')
+  })
+
+  it('aria-live region announces semantic label once user sets step', () => {
+    render(
+      <ConfidenceSliderWidget
+        question={mockQuestion}
+        answer={{ questionId: 'qC', type: 'confidence', step: 2 }}
+        onAnswer={vi.fn()}
+      />,
+    )
+    // step = 2 -> "Unsicher" (50%)
+    const live = document.querySelector('[aria-live="polite"]')
     expect(live?.textContent).toContain('Unsicher')
     expect(live?.textContent).toContain('50%')
   })

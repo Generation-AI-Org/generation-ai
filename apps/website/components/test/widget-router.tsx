@@ -61,11 +61,9 @@ export function WidgetRouter(props: WidgetRouterProps) {
  * Gates the Nächste-Aufgabe button.
  */
 export function isAnswerReady(question: Question, answer: Answer | undefined): boolean {
-  if (!answer) {
-    // Confidence widget defaults to step=2 (50%) — auto-enabled even without an
-    // explicit answer in state.
-    return question.type === 'confidence'
-  }
+  // WR-06: confidence no longer gets a free pass. User must interact for the
+  // answer to be considered ready.
+  if (!answer) return false
   switch (question.type) {
     case 'pick':
     case 'mc':
@@ -83,7 +81,7 @@ export function isAnswerReady(question: Question, answer: Answer | undefined): b
     case 'match':
       return Object.keys((answer as any).pairs ?? {}).length === question.tasks.length
     case 'confidence':
-      return true
+      return (answer as any).step != null
     case 'fill':
       return question.blanks.every(
         (b) => (answer as any).selections?.[b.id] != null,
