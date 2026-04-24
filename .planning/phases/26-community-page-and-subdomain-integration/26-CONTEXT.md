@@ -137,6 +137,13 @@ Landing bekommt echte Daten statt Stubs — Featured-Tools aus tools-app via pub
 - **D-07** — Featured-Tools-API: tools-app bekommt Public-Endpoint ohne Auth. Rate-Limit via Vercel-Edge-Cache, kein eigenes Rate-Limiting nötig für Publikums-Traffic.
 - **D-08** — Community-Preview-Section auf Landing nutzt **Option A (MDX-Teaser)** für V1. Circle-Live-API bleibt Roadmap.
 - **D-09** — Schema.org Article Markup auf Artikel-Unterseiten → strukturierte Daten für Google (Rich Snippets möglich).
+- **D-10** — MDX-Stack: `@next/mdx` + `gray-matter` für Frontmatter. File-glob auf `content/community/*.mdx`, dynamische Route via `generateStaticParams`. Kein Contentlayer (Maintenance-Mode), kein `next-mdx-remote` (RSC-Friction). Wiederverwendbar für `/events` (Phase 22.5).
+- **D-11** — Start-Artikel bei Launch: **3 + 1** = drei `kind: artikel` Placeholder + ein `kind: ki-news` Placeholder, damit Carousel nicht leer wirkt und beide Render-Pfade (artikel + ki-news Badge) live verifizierbar sind.
+- **D-12** — Pillar-Visualisierungen: **Lucide-Icons + Bento-Grid-Pattern** wiederverwendet aus `offering-section.tsx`. Icons: `Users` / `BookOpen` / `Newspaper` / `Lock`. Konsistenz zur Landing, kein Custom-SVG-Aufwand. Custom-Visuals = Roadmap.
+- **D-13** — OG-Image pro Artikel: **Statisches Default-OG-Image** (existing brand-OG). Dynamisches `opengraph-image.tsx` deferred — pro Phase 26 zu viel Aufwand bei kurzen Artikeln. Roadmap-Item.
+- **D-14** — `circleUrl`-Validation: **Trust-the-author**. Kein Build-Time-Fetch. Network-dependent builds sind fragile, `circleUrl` ist bei Launch sowieso Placeholder. Soft-Note im Content-README.
+- **D-15** — Tool-Showcase-Migration: **Upgrade in-place** der existing `apps/website/components/sections/tool-showcase-section.tsx`. Component-Shape bleibt, Datenquelle wechselt von hardcoded `tools[]` array → Server-Component fetch von tools-app `/api/public/featured-tools` mit ISR `revalidate: 300`. Fallback auf bestehende Stub-Daten falls Fetch fehlschlägt.
+- **D-16** — Re-Deploy-Strategie für neue MDX-Artikel: **Auto-Deploy via main-Push**. MDX = build-time, `git push main` triggert Vercel-Auto-Deploy. Reicht für Artikel-Pace. Featured-Tools nutzen separate ISR-Revalidate (`300s`). Kein `revalidatePath`/Webhook-Setup.
 
 ---
 
