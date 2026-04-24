@@ -11,3 +11,10 @@ export { needsFirstLoginPrompt } from './password'
 
 // Phase 23 — /join Waitlist types
 export type { WaitlistRow, WaitlistInsert } from './waitlist'
+
+// Phase 25 — Circle-API-Sync types
+export type {
+  UserCircleLink,
+  UserCircleLinkInsert,
+  CircleUserMetadata,
+} from './circle'
