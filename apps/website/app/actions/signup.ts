@@ -91,6 +91,16 @@ const schema = z.object({
  * Returns { ok: true } for duplicate emails as well (no-leak).
  */
 export async function submitJoinSignup(formData: FormData): Promise<SignupResult> {
+  try {
+    return await _submitJoinSignupInner(formData)
+  } catch (err) {
+    const msg = err instanceof Error ? `${err.name}: ${err.message}` : String(err)
+    console.error('[signup][DEBUG] uncaught:', msg, err instanceof Error ? err.stack : '')
+    return { ok: false, error: `[DEBUG] UNCAUGHT: ${msg}` }
+  }
+}
+
+async function _submitJoinSignupInner(formData: FormData): Promise<SignupResult> {
   // -- 0. Feature-flag defense-in-depth (REVIEW MD-02) ----------------------
   // `/api/auth/signup` checks this too, but the server action is a
   // separate public surface (server-form-actions). A stale flag check
@@ -141,8 +151,9 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
         fieldErrors[key as keyof SignupFieldErrors] = issue.message
       }
     }
-    console.error('[signup][DEBUG] zod validation failed:', JSON.stringify(parsed.error.issues), 'raw:', JSON.stringify({...raw, email: '<redacted>'}))
-    return { ok: false, error: ERR_GENERIC, fieldErrors }
+    const dbg = `ZOD_FAIL: ${parsed.error.issues.map(i => `${i.path.join('.')}=${i.message}`).join(' | ')}`
+    console.error('[signup][DEBUG]', dbg)
+    return { ok: false, error: `[DEBUG] ${dbg}`, fieldErrors }
   }
   const data = parsed.data
 
@@ -184,12 +195,10 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
   })
 
   if (createErr) {
-    console.error('[signup][DEBUG] createUser error:', JSON.stringify({
-      code: (createErr as unknown as { code?: string }).code,
-      status: (createErr as unknown as { status?: number }).status,
-      message: createErr.message,
-    }))
     const code = (createErr as unknown as { code?: string }).code
+    const status = (createErr as unknown as { status?: number }).status
+    const dbg = `CREATE_USER_ERR: code=${code} status=${status} msg=${createErr.message}`
+    console.error('[signup][DEBUG]', dbg)
     const msg = createErr.message?.toLowerCase() ?? ''
     if (
       code === 'email_exists' ||
@@ -204,14 +213,15 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
     Sentry.captureException(createErr, {
       tags: { op: 'supabase.admin.createUser' },
     })
-    return { ok: false, error: ERR_GENERIC }
+    return { ok: false, error: `[DEBUG] ${dbg}` }
   }
 
   const user = createData?.user
   if (!user) {
-    console.error('[signup][DEBUG] createUser returned no user, createData:', JSON.stringify(createData))
+    const dbg = `NO_USER_RETURNED: createData=${JSON.stringify(createData)}`
+    console.error('[signup][DEBUG]', dbg)
     Sentry.captureMessage('createUser returned no user', 'error')
-    return { ok: false, error: ERR_GENERIC }
+    return { ok: false, error: `[DEBUG] ${dbg}` }
   }
 
   // -- 5. Circle-Provisioning (non-blocking per D-03) -----------------------
