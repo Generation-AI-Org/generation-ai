@@ -1,0 +1,122 @@
+[
+  {
+    "id": "rec-001",
+    "type": "workshop",
+    "title": "Einstieg in KI-Tools für Studis",
+    "description": "Live-Session mit ChatGPT, Claude, NotebookLM — was kann welches Tool und wann.",
+    "href": "/events?level=neugieriger",
+    "levels": ["neugieriger", "einsteiger"]
+  },
+  {
+    "id": "rec-002",
+    "type": "workshop",
+    "title": "Prompting systematisch lernen",
+    "description": "90 Minuten, 3 Prompt-Patterns die du ab Tag 1 nutzt. Inkl. Hausarbeits-Beispiele.",
+    "href": "/events?level=einsteiger",
+    "levels": ["einsteiger", "fortgeschritten"]
+  },
+  {
+    "id": "rec-003",
+    "type": "workshop",
+    "title": "Agents & Tool-Use im Studienalltag",
+    "description": "Wie baust du Workflows, die mehr machen als chatten. Perplexity, Claude Projects, Retrieval.",
+    "href": "/events?level=fortgeschritten",
+    "levels": ["fortgeschritten", "pro"]
+  },
+  {
+    "id": "rec-004",
+    "type": "workshop",
+    "title": "Eigene Mini-Tools bauen",
+    "description": "Von Idee zu deployed: wie du ein kleines KI-Tool für deine Kommiliton\\:innen in ein paar Stunden baust.",
+    "href": "/events?level=pro",
+    "levels": ["pro", "expert"]
+  },
+  {
+    "id": "rec-005",
+    "type": "tool",
+    "title": "AI-Tool-Bibliothek",
+    "description": "Kuratiert, nach Use-Case sortiert. Mit Notizen wofür welches Tool taugt — und wofür nicht.",
+    "href": "https://tools.generation-ai.org/",
+    "levels": ["neugieriger", "einsteiger", "fortgeschritten", "pro", "expert"]
+  },
+  {
+    "id": "rec-006",
+    "type": "tool",
+    "title": "Public Chat mit Generation AI",
+    "description": "Quick-Chat zum Ausprobieren. Kein Login, kein Setup — direkt loslegen.",
+    "href": "https://tools.generation-ai.org/chat",
+    "levels": ["neugieriger", "einsteiger"]
+  },
+  {
+    "id": "rec-007",
+    "type": "tool",
+    "title": "Prompt-Library",
+    "description": "Battletested Prompts für Studis: Lit-Research, Zusammenfassungen, Reflexionsfragen, Fremdsprachen.",
+    "href": "https://tools.generation-ai.org/prompts",
+    "levels": ["einsteiger", "fortgeschritten", "pro"]
+  },
+  {
+    "id": "rec-008",
+    "type": "artikel",
+    "title": "KI im Studium — was Unis dürfen und was nicht",
+    "description": "Einordnung der aktuellen Richtlinien deutscher Unis zu KI-Nutzung in Seminar- und Abschlussarbeiten.",
+    "href": "/community/artikel/ki-im-studium-regeln",
+    "levels": ["neugieriger", "einsteiger", "fortgeschritten"]
+  },
+  {
+    "id": "rec-009",
+    "type": "artikel",
+    "title": "Halluzinationen erkennen",
+    "description": "Ein Feldleitfaden: 5 Signale, an denen du merkst, wenn ein Modell gerade Dinge erfindet.",
+    "href": "/community/artikel/halluzinationen-erkennen",
+    "levels": ["einsteiger", "fortgeschritten", "pro"]
+  },
+  {
+    "id": "rec-010",
+    "type": "artikel",
+    "title": "Von Prompts zu Agents",
+    "description": "Der konzeptuelle Sprung: warum Tool-Use mehr ist als bessere Prompts.",
+    "href": "/community/artikel/prompts-vs-agents",
+    "levels": ["fortgeschritten", "pro", "expert"]
+  },
+  {
+    "id": "rec-011",
+    "type": "artikel",
+    "title": "KI-Literacy als Skill der nächsten 10 Jahre",
+    "description": "Essay darüber, warum KI-Verständnis bald so basal ist wie Schreiben und Rechnen.",
+    "href": "/community/artikel/ki-literacy-skill",
+    "levels": ["pro", "expert"]
+  },
+  {
+    "id": "rec-012",
+    "type": "community",
+    "title": "Generation AI Circle — Einstieg",
+    "description": "Space für Erstkontakt und Basis-Fragen. Niedrige Hürde, hilfsbereit, DACH-weit.",
+    "href": "https://community.generation-ai.org/c/einstieg",
+    "levels": ["neugieriger", "einsteiger"]
+  },
+  {
+    "id": "rec-013",
+    "type": "community",
+    "title": "Prompt-Sparring",
+    "description": "Wöchentlicher Thread für Prompt-Feedback. Post dein Prompt, hol dir Verbesserungen.",
+    "href": "https://community.generation-ai.org/c/prompt-sparring",
+    "levels": ["einsteiger", "fortgeschritten", "pro"]
+  },
+  {
+    "id": "rec-014",
+    "type": "community",
+    "title": "Projekte & Side-Builds",
+    "description": "Space für Leute, die etwas bauen. Code-Reviews, Feedback auf Prototypen, Co-Learning.",
+    "href": "https://community.generation-ai.org/c/projekte",
+    "levels": ["fortgeschritten", "pro", "expert"]
+  },
+  {
+    "id": "rec-015",
+    "type": "community",
+    "title": "Partner- und Speaker-Programm",
+    "description": "Für Expert\\:innen, die Workshops geben oder Partnerprojekte anstoßen wollen.",
+    "href": "https://community.generation-ai.org/c/partner",
+    "levels": ["pro", "expert"]
+  }
+]
