@@ -23,8 +23,20 @@ type EmailOtpType =
   | 'email_change'
   | 'email'
 
-const FALLBACK_PATH = '/welcome?circle=pending'
 const ERROR_PATH_BASE = '/auth/error'
+
+/**
+ * REVIEW MD-03 — Centralise the `/welcome` fallback URL so the `circle` query
+ * reason stays consistent across all call-sites. Prevents drift if we ever add
+ * new fallback reasons (e.g. `blocked`, `outage`).
+ */
+type CircleFallbackReason = 'pending'
+function fallbackUrl(
+  origin: string,
+  reason: CircleFallbackReason = 'pending',
+): URL {
+  return new URL(`/welcome?circle=${reason}`, origin)
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -137,7 +149,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       level: 'info',
       data: { hasMetadata: !!meta },
     })
-    return redirectWithCookies(new URL(FALLBACK_PATH, origin))
+    return redirectWithCookies(fallbackUrl(origin))
   }
 
   // -- 5. Generate Circle SSO URL -------------------------------------------
@@ -174,6 +186,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         tags: { 'circle-api': 'true', op: 'generateSsoUrl' },
       })
     }
-    return redirectWithCookies(new URL(FALLBACK_PATH, origin))
+    return redirectWithCookies(fallbackUrl(origin))
   }
 }
