@@ -1,10 +1,11 @@
 ---
 phase: 24
 slug: test-assessment
-status: draft
+status: approved
 shadcn_initialized: true
 preset: base-nova
 created: 2026-04-24
+reviewed_at: 2026-04-24
 ---
 
 # Phase 24 — UI Design Contract: /test AI Literacy Assessment
@@ -52,7 +53,7 @@ Source: `base.css` `--space-*` tokens. 4-base grid.
 | 3xl | 64px (`--space-16`) | Page-level vertical rhythm |
 
 **Exceptions for Phase 24:**
-- Touch targets (all interactive widget elements): `min-w-[44px] min-h-[44px]` — enforced on all card-pick cards, drag handles, slider thumb, matching targets, spot-click zones
+- Touch targets (all interactive widget elements): `min-w-[48px] min-h-[48px]` — enforced on all card-pick cards, drag handles, slider thumb, matching targets, spot-click zones. 48px exceeds WCAG 2.5.5 minimum of 44px.
 - Progress-bar height: 4px (visual accent bar, not spacing)
 - Widget full-screen padding on mobile: `px-4 py-6` (16px / 24px) — intentionally tighter to maximize content area on small screens
 
@@ -64,19 +65,17 @@ Source: `base.css` `--fs-*` + `--lh-*` tokens, Phase 16 UI-SPEC.
 
 | Role | Size | Weight | Line Height | Font | Letter Spacing | Usage |
 |------|------|--------|-------------|------|----------------|-------|
-| Display / Hero H1 | `var(--fs-display)` = `clamp(40px, 6.5vw, 76px)` | 700 | 1.02 | Geist Mono | -0.03em | /test Hero H1 only |
-| Heading / Section | `var(--fs-h2)` = `clamp(24px, 3vw, 32px)` | 700 | 1.2 | Geist Sans | -0.015em | Aufgaben-Text H2, Results section headings |
-| Body | `var(--fs-body)` = 16px | 400 | 1.65 | Geist Sans | 0 | Widget body text, answer options, level description |
-| Small / Label | `var(--fs-small)` = 14px | 400 | 1.55 | Geist Sans | 0 | Progress label "Aufgabe 3/10", badge text, meta |
-| Code | `var(--fs-caption)` = 13px | 400 | 1.5 | Geist Mono | 0 | Code blocks (Fill-in-Parameter, Prompt-Best-Pick) |
-| Micro / Tag | 11px | 700 | 1.4 | Geist Mono | +0.08em | Widget type badges, level tier labels |
-| Button | `var(--fs-button)` = 14px | 700 | 1 | Geist Mono | +0.02em | All CTAs and action buttons |
+| Display | `var(--fs-display)` = `clamp(40px, 6.5vw, 76px)` | 700 | 1.02 | Geist Mono | -0.03em | /test Hero H1, Results Level-Name |
+| Heading | `var(--fs-h2)` = `clamp(24px, 3vw, 32px)` | 700 | 1.2 | Geist Sans | -0.015em | All section headings, Aufgaben-Text H2, Empfehlungs-Card titles, Results section headings |
+| Body | `var(--fs-body)` = 16px | 400 | 1.65 | Geist Sans | 0 | Widget body text, answer options, level description, all prose |
+| Small | `var(--fs-small)` = 14px | 400 | 1.55 | Geist Sans | 0 | Progress label "Aufgabe 3/10", badge text, meta, buttons (weight 700 + Geist Mono for buttons), code blocks (Geist Mono), micro/tag labels (weight 700 + Geist Mono + tracking +0.08em) |
 
 **Rules:**
 - H1 on /test Hero: Geist Mono (matches all subpage hero pattern from AGENTS.md)
 - Aufgaben body text (question stem): Geist Sans 16px weight 400, max 2 sentences
-- Buttons: Geist Mono throughout (site-wide rule from base.css `button { font-family: var(--font-mono) }`)
-- Code/prompt blocks: Geist Mono 13px with shiki syntax highlighting
+- Buttons: Geist Mono 14px weight 700 tracking +0.02em (site-wide rule from base.css `button { font-family: var(--font-mono) }`)
+- Code/prompt blocks: Geist Mono 14px with shiki syntax highlighting
+- Widget type badges and level tier labels: Geist Mono 14px weight 700 tracking +0.08em
 - No italics in body/heading (base.css rule: italic only in blockquotes)
 - No ligatures: `font-feature-settings: "liga" 0, "calt" 0` (inherited from body)
 
@@ -99,7 +98,7 @@ Source: `base.css` — dark default, light via `.light`.
 ### Accent Reserved For (Phase 24 specific)
 
 The accent (`--accent`) is reserved ONLY for:
-1. Primary CTA button ("Test starten", "Weiter", "Jetzt beitreten")
+1. Primary CTA button ("Test starten", "Nächste Aufgabe", "Jetzt beitreten")
 2. Progress-bar fill (active portion)
 3. Selected/confirmed answer card border (`border-[var(--border-accent)]`)
 4. Level badge background for the user's earned level
@@ -150,6 +149,8 @@ In light mode: Level 3 uses `--brand-blue` (`#3A3AFF`) as neon is the light-mode
 
 ### /test Hero Layout
 
+**Primary visual anchor: H1 headline — all other elements recede to support it.**
+
 - Inherits subpage hero pattern from AGENTS.md: `<LabeledNodes>` background, `relative isolate` wrapper, `min-h-[calc(100vh-5rem)]` inner height
 - Container: `relative z-10 mx-auto max-w-4xl px-6 py-20 text-center`
 - H1: `fontSize: var(--fs-display)` + `leading-[1.02]` + `tracking-[-0.03em]` + Geist Mono
@@ -158,7 +159,7 @@ In light mode: Level 3 uses `--brand-blue` (`#3A3AFF`) as neon is the light-mode
 - Intro-Lede (trust/meta line): `text-lg sm:text-xl leading-[1.5] max-w-2xl`
 - Badge row ("Kostenlos · Keine Anmeldung · Anonym · Max 15 Min"): flex-wrap gap-2, pill badges, `var(--fs-small)` Geist Mono, `var(--bg-elevated)` bg, `var(--text-muted)` text
 - Start button: Primary CTA style (`bg-[var(--accent)] text-[var(--text-on-accent)] rounded-full`), centered, `px-8 py-3`, full-width on mobile max-w-xs
-- Trust line below CTA: 13px caption, `var(--text-muted)`, italic-free
+- Trust line below CTA: 14px Small, `var(--text-muted)`, italic-free
 
 ### /test/aufgabe/[n] Full-Screen Layout
 
@@ -169,7 +170,7 @@ In light mode: Level 3 uses `--brand-blue` (`#3A3AFF`) as neon is the light-mode
 - Main content area: `min-h-[calc(100vh-56px)]`, flex-col, justify-between
   - Top zone: Aufgaben-Text (question stem), `max-w-2xl mx-auto px-4 pt-8 pb-4`
   - Widget zone: `flex-1 w-full max-w-3xl mx-auto px-4 pb-4` — widget fills available height
-  - Bottom zone: Weiter-Button row, `h-20 flex items-center justify-end px-4 sm:px-8 border-t border-[var(--border)]`
+  - Bottom zone: Nächste-Aufgabe-Button row, `h-20 flex items-center justify-end px-4 sm:px-8 border-t border-[var(--border)]`
 - No back button (D-06 — enforced by router config, no visible back UI)
 - Transition between aufgaben: Framer Motion `AnimatePresence` with `mode="wait"` — slide-from-right on enter, fade-out on exit
 - Reduced-motion: `useReducedMotion()` gate — cross-fade only (`opacity` transition 200ms, no translate)
@@ -199,7 +200,7 @@ In light mode: Level 3 uses `--brand-blue` (`#3A3AFF`) as neon is the light-mode
 - Default: `border-[var(--border)]`
 - Hover: `border-[var(--slate-7)] bg-[var(--bg-elevated)]` + scale(1.01), transition 150ms
 - Selected: `border-[var(--border-accent)] bg-[var(--bg-elevated)]` + checkmark icon (lucide `Check`, 16px, accent color) in top-right corner
-- Confirmed (after Weiter): visual lock, no re-select
+- Confirmed (after Nächste Aufgabe): visual lock, no re-select
 
 **Interaction:**
 - Click/tap: single-select (clicking another deselects previous)
@@ -212,7 +213,7 @@ In light mode: Level 3 uses `--brand-blue` (`#3A3AFF`) as neon is the light-mode
 - `aria-label="Option: [card text truncated]"` on each card
 - Screen reader announces: "Option 1 of 4 selected" on selection
 
-**Weiter-Button enable condition:** at least 1 card selected
+**Nächste-Aufgabe-Button enable condition:** at least 1 card selected
 
 **Mobile:** 1-col stack, cards full-width, min-height 72px
 
@@ -239,26 +240,26 @@ In light mode: Level 3 uses `--brand-blue` (`#3A3AFF`) as neon is the light-mode
 - `aria-live="polite"` region announcing: "Prompt [N] moved to position [M]"
 - Keyboard instructions shown as collapsed `<details>` summary below widget on first render
 
-**Weiter-Button enable condition:** all 4 cards have been interacted with (any reorder, or explicit "I'm done" — widget shows "Reihenfolge bestätigen" button that enables Weiter)
+**Nächste-Aufgabe-Button enable condition:** all 4 cards have been interacted with (any reorder, or explicit "I'm done" — widget shows "Reihenfolge bestätigen" button that enables Nächste Aufgabe)
 
-**Mobile fallback:** Tap-to-select + tap-to-place (no drag needed). Show "Tippe zum Auswählen, dann Zielposition" helper text, 13px, `var(--text-muted)`.
+**Mobile fallback:** Tap-to-select + tap-to-place (no drag needed). Show "Tippe zum Auswählen, dann Zielposition" helper text, 14px, `var(--text-muted)`.
 
 ### W3: Prompt-Best-Pick (Card Select with Syntax Highlighting)
 
 **Layout:** 2×2 grid on desktop, 1-col scroll on mobile. Each card contains a code/prompt block.
 
-**Card design:** Same as W1 but with code block inside — `bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-4`. Code block: `bg-[var(--slate-2)] rounded-lg p-3 font-mono text-xs leading-relaxed overflow-x-auto max-h-40`. Shiki syntax highlighting theme: `github-dark` in dark mode, `github-light` in light mode.
+**Card design:** Same as W1 but with code block inside — `bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-4`. Code block: `bg-[var(--slate-2)] rounded-lg p-3 font-mono text-sm leading-relaxed overflow-x-auto max-h-40`. Shiki syntax highlighting theme: `github-dark` in dark mode, `github-light` in light mode.
 
 **States:** Identical to W1 (hover border shift, selected border-accent + checkmark). No hover-expand in this widget (code blocks need stable height for readability).
 
 **Interaction + A11y:** Identical to W1 (radiogroup pattern).
 
-**Weiter-Button enable condition:** 1 card selected.
+**Nächste-Aufgabe-Button enable condition:** 1 card selected.
 
 ### W4: Output-Side-by-Side + Grund-Multi-Select
 
 **Layout:** Two-phase widget.
-- Phase A: Side-by-side cards, `grid grid-cols-2 gap-4` on desktop, stacked on mobile. Each card: `bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-4`. Label "Output A" / "Output B" in micro badge (11px Geist Mono). Content scrollable, `max-h-48 overflow-y-auto`.
+- Phase A: Side-by-side cards, `grid grid-cols-2 gap-4` on desktop, stacked on mobile. Each card: `bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-4`. Label "Output A" / "Output B" in micro badge (14px Geist Mono weight 700 tracking +0.08em). Content scrollable, `max-h-48 overflow-y-auto`.
 - Phase B (revealed after A/B pick): Multi-select row of reason chips. Slides in with Framer Motion (`height: 0 → auto`, spring). 4 chips: "Halluzination", "Format", "Verbosität", "Bias". Chip style: `rounded-full px-3 py-1.5 text-sm border border-[var(--border)]`. Selected: `bg-[var(--accent-soft)] border-[var(--border-accent)] text-[var(--text)]`.
 
 **States for A/B cards:**
@@ -271,7 +272,7 @@ In light mode: Level 3 uses `--brand-blue` (`#3A3AFF`) as neon is the light-mode
 - Phase B: `role="group" aria-label="Warum ist dieser Output besser?"`, chips as `role="checkbox"`
 - `aria-live="polite"` announces "Phase B geöffnet: Wähle Gründe aus" when revealed
 
-**Weiter-Button enable condition:** A or B selected (Phase A). Phase B chips are optional (omitting = 0 reason points, still valid).
+**Nächste-Aufgabe-Button enable condition:** A or B selected (Phase A). Phase B chips are optional (omitting = 0 reason points, still valid).
 
 ### W5: Output-Fehler-Spot (Click-to-Mark auf Text-Abschnitten)
 
@@ -283,10 +284,10 @@ In light mode: Level 3 uses `--brand-blue` (`#3A3AFF`) as neon is the light-mode
 - Default: plain text, no visual distinction between segments
 - Hover: `bg-[var(--slate-4)] rounded-md` highlight on hovered segment
 - Selected: `bg-[var(--accent-soft)] rounded-md text-[var(--text)]` + underline dotted accent
-- Wrong selection (only shown after Weiter): `bg-[var(--red-3)] text-[var(--red-11)]`
-- Correct segment (shown after Weiter): `bg-[var(--neon-3)] text-[var(--neon-11)]`
+- Wrong selection (only shown after Nächste Aufgabe): `bg-[var(--red-3)] text-[var(--red-11)]`
+- Correct segment (shown after Nächste Aufgabe): `bg-[var(--neon-3)] text-[var(--neon-11)]`
 
-(After-Weiter feedback: briefly shown 1.5s before transition — enough to confirm, not enough to game next question.)
+(After-Nächste-Aufgabe feedback: briefly shown 1.5s before transition — enough to confirm, not enough to game next question.)
 
 **Instruction banner:** 16px body text above the passage: "Klicke auf den problematischen Textabschnitt." Persistent until selection made.
 
@@ -299,7 +300,7 @@ In light mode: Level 3 uses `--brand-blue` (`#3A3AFF`) as neon is the light-mode
 - Each span: `role="option" tabIndex={0}` + `aria-selected`
 - `aria-live="polite"` announces: "Abschnitt [N] ausgewählt"
 
-**Weiter-Button enable condition:** 1 span selected.
+**Nächste-Aufgabe-Button enable condition:** 1 span selected.
 
 ### W6: Tool-zu-Task-Matching (Drag-Drop or Dropdown Pairing)
 
@@ -321,7 +322,7 @@ In light mode: Level 3 uses `--brand-blue` (`#3A3AFF`) as neon is the light-mode
 - Mobile: native `<select>` — full screen-reader support out-of-box
 - Progress count: "N von 4 Zuordnungen gemacht" as `aria-live="polite"` update
 
-**Weiter-Button enable condition:** all 4 tasks have an assigned tool.
+**Nächste-Aufgabe-Button enable condition:** all 4 tasks have an assigned tool.
 
 ### W7: Confidence-Slider (Diskret, 5 Stufen)
 
@@ -329,9 +330,9 @@ In light mode: Level 3 uses `--brand-blue` (`#3A3AFF`) as neon is the light-mode
 
 **Visual design:** shadcn Slider component. Track: 4px height, `var(--border)` background. Thumb: 24px circle, `var(--accent)` fill. Active fill: `var(--accent)`. Step tick marks: 4px × 8px rectangles at each 25% increment, `var(--slate-6)`.
 
-Labels below each tick: "0%" to "100%", 11px Geist Mono, `var(--text-muted)`.
+Labels below each tick: "0%" to "100%", 14px Geist Mono weight 700 tracking +0.08em, `var(--text-muted)`.
 
-Semantic labels above each tick (visible on desktop, tooltip on mobile): "Sicher kein Halluzinat" / "Eher nicht" / "Unsicher" / "Eher ja" / "Sicher ja". 11px, `var(--text-muted)`.
+Semantic labels above each tick (visible on desktop, tooltip on mobile): "Sicher kein Halluzinat" / "Eher nicht" / "Unsicher" / "Eher ja" / "Sicher ja". 14px Small, `var(--text-muted)`.
 
 **States:**
 - Unset: thumb starts at 50% (neutral), track fill to midpoint
@@ -347,28 +348,28 @@ Semantic labels above each tick (visible on desktop, tooltip on mobile): "Sicher
 - `role="slider"` + `aria-valuemin="0"` + `aria-valuemax="100"` + `aria-valuenow` + `aria-valuetext` (semantic label, e.g. "Eher ja — 75%")
 - Live region: "Confidence: Eher ja (75%)" on change
 
-**Weiter-Button enable condition:** user has moved slider from center (any move counts) OR waited 3 seconds (auto-enable — slider has a default answer, no blocking on this widget).
+**Nächste-Aufgabe-Button enable condition:** user has moved slider from center (any move counts) OR waited 3 seconds (auto-enable — slider has a default answer, no blocking on this widget).
 
 ### W8: Fill-in-Parameter (Inline-Dropdown im Code-Block)
 
 **Layout:** Single code block, max-w-xl, with one or two inline dropdown widgets replacing a `[BLANK]` placeholder.
 
-**Code block:** `bg-[var(--slate-2)] rounded-xl p-4 font-mono text-xs leading-relaxed`. Shiki highlighting for surrounding code.
+**Code block:** `bg-[var(--slate-2)] rounded-xl p-4 font-mono text-sm leading-relaxed`. Shiki highlighting for surrounding code.
 
-**Inline dropdown:** Native `<select>` styled to match code context — `bg-[var(--slate-3)] border border-[var(--slate-6)] rounded px-2 py-0.5 text-xs font-mono text-[var(--text)]`. Width: auto, min-width 80px. Focus: `border-[var(--border-accent)]`. Appears inline in the code text flow.
+**Inline dropdown:** Native `<select>` styled to match code context — `bg-[var(--slate-3)] border border-[var(--slate-6)] rounded px-2 py-0.5 text-sm font-mono text-[var(--text)]`. Width: auto, min-width 80px. Focus: `border-[var(--border-accent)]`. Appears inline in the code text flow.
 
 **States:**
 - Unset: `bg-[var(--slate-3)]` placeholder text "— wählen —" in `var(--text-muted)`
 - Set: shows selected value in `var(--text)`, `border-[var(--slate-7)]`
-- Confirmed-correct (post-Weiter): `bg-[var(--neon-3)] border-[var(--neon-7)] text-[var(--neon-11)]`
-- Confirmed-wrong (post-Weiter): `bg-[var(--red-3)] border-[var(--red-7)] text-[var(--red-11)]`
+- Confirmed-correct (post-Nächste Aufgabe): `bg-[var(--neon-3)] border-[var(--neon-7)] text-[var(--neon-11)]`
+- Confirmed-wrong (post-Nächste Aufgabe): `bg-[var(--red-3)] border-[var(--red-7)] text-[var(--red-11)]`
 
 **A11y:**
 - Native `<select>` — full keyboard + screen-reader support
 - `aria-label="Parameter auswählen für [context description]"`
 - Result announcement via `aria-live`
 
-**Weiter-Button enable condition:** all inline dropdowns have a selection (not "— wählen —").
+**Nächste-Aufgabe-Button enable condition:** all inline dropdowns have a selection (not "— wählen —").
 
 ### W9: Fakten-Check-MC (Classic Radio)
 
@@ -380,7 +381,7 @@ Semantic labels above each tick (visible on desktop, tooltip on mobile): "Sicher
 
 **A11y:** Identical to W1 (radiogroup/radio pattern).
 
-**Weiter-Button enable condition:** 1 option selected.
+**Nächste-Aufgabe-Button enable condition:** 1 option selected.
 
 ---
 
@@ -412,7 +413,7 @@ Semantic labels above each tick (visible on desktop, tooltip on mobile): "Sicher
 
 ### Aufgabe 5 Checkpoint Micro-Celebration
 
-**Trigger:** After Weiter from Aufgabe 5 confirms (before Aufgabe 6 renders).
+**Trigger:** After Nächste Aufgabe from Aufgabe 5 confirms (before Aufgabe 6 renders).
 **Timing:** Shown for 1.5 seconds in the header strip area, then auto-proceeds.
 
 **Visual:**
@@ -433,7 +434,7 @@ Semantic labels above each tick (visible on desktop, tooltip on mobile): "Sicher
 - Large badge pill: `rounded-2xl px-6 py-3 inline-flex items-center gap-3`
 - Background: Level color (e.g. `#CEFF32` for Level 3 in dark) at 15% opacity as bg, full color as border at 60% opacity
 - Level number: 48px Geist Mono weight 700, level color
-- Level name: 20px Geist Sans weight 400, `var(--text)`
+- Level name: `var(--fs-h2)` Geist Sans weight 400, `var(--text)`
 - Icon: lucide icon per level below:
 
 | Level | Icon |
@@ -446,7 +447,7 @@ Semantic labels above each tick (visible on desktop, tooltip on mobile): "Sicher
 
 - Icon size: 28px, level color
 
-**Below badge:** Level name large — `var(--fs-h1)` (`clamp(32px, 5vw, 48px)`), Geist Mono, weight 700, level color. Example: "Level 3: Fortgeschritten"
+**Below badge:** Level name large — `var(--fs-display)`, Geist Mono, weight 700, level color. Example: "Level 3: Fortgeschritten"
 
 **Entry animation:** Badge scales in from 0.8→1 + fade, duration 600ms, delay 100ms. Level name fades in at delay 300ms. Reduced-motion: fade only.
 
@@ -460,7 +461,7 @@ Semantic labels above each tick (visible on desktop, tooltip on mobile): "Sicher
 - Chart container: `max-w-lg mx-auto` (512px max), aspect-ratio `1/1`
 - Background: transparent (inherits page bg)
 - Grid lines: `var(--border)` (rgba(255,255,255,0.08)), `strokeWidth: 1`
-- Axis labels: 12px Geist Sans, `var(--text-muted)`
+- Axis labels: 14px Geist Sans, `var(--text-muted)`
 - User's radar fill: level color at 20% opacity, stroke level color, `strokeWidth: 2`
 - Animated: `recharts` built-in animation, `animationDuration: 800`, `animationEasing: ease-out`. Reduced-motion: `isAnimationActive={false}`
 
@@ -473,10 +474,10 @@ Semantic labels above each tick (visible on desktop, tooltip on mobile): "Sicher
 **Card anatomy:** `bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-5 flex flex-col gap-3`
 
 **Card content:**
-- Type badge (top): micro pill — "Workshop", "Tool", "Artikel", "Community" — `bg-[var(--bg-elevated)] text-[var(--text-muted)] rounded-full px-2.5 py-1 font-mono text-xs`
-- Title: `var(--fs-h3)` = 20px, Geist Sans, weight 700
-- Description: 14px, Geist Sans, weight 400, `var(--text-muted)`, max 2 lines
-- CTA link: 14px Geist Mono, `var(--accent)`, `hover:text-[var(--accent-hover)]`, arrow icon `ArrowRight` 14px
+- Type badge (top): micro pill — "Workshop", "Tool", "Artikel", "Community" — `bg-[var(--bg-elevated)] text-[var(--text-muted)] rounded-full px-2.5 py-1 font-mono text-sm font-bold tracking-[0.08em]`
+- Title: `var(--fs-h2)`, Geist Sans, weight 700
+- Description: 14px Small, Geist Sans, weight 400, `var(--text-muted)`, max 2 lines
+- CTA link: 14px Small Geist Mono, `var(--accent)`, `hover:text-[var(--accent-hover)]`, arrow icon `ArrowRight` 14px
 
 **Hover state:** `border-[var(--slate-7)] bg-[var(--bg-elevated)]`, transition 150ms
 
@@ -499,14 +500,14 @@ interface SparringSlotProps {
 - `bg-[var(--bg-elevated)] px-4 py-3 flex items-center gap-2 border-b border-[var(--border)]`
 - PRISMA avatar: 28px circle, gradient `from-[var(--brand-blue)] to-[var(--brand-pink)]`
 - Name: "PRISMA" — 14px Geist Mono weight 700, `var(--text)`
-- Status badge: "Kommt bald" — pill, `var(--bg-elevated)]` bg, `var(--text-muted)` text, 11px
+- Status badge: "Kommt bald" — pill, `var(--bg-elevated)]` bg, `var(--text-muted)` text, 14px Geist Mono weight 700 tracking +0.08em
 
 **Message area:**
 - `p-4 flex flex-col gap-3 min-h-[160px] max-h-[240px]`
 - Single "bot" message bubble: `bg-[var(--bg-elevated)] rounded-xl rounded-tl-none px-4 py-3 max-w-[85%] self-start`
-- Message text: 14px Geist Sans, `var(--text)]`, line-height 1.65
+- Message text: 14px Small Geist Sans, `var(--text)]`, line-height 1.65
 - Static opening message copy: "PRISMA ist deine KI-Sparring-Partner:in auf deinem Lernweg — sie kommt bald. Schau dir bis dahin die Empfehlungen an, oder tritt bei und sei dabei, wenn sie live geht."
-- Small CTA below bubble (not a button, a text link): "Jetzt beitreten →" — 13px Geist Mono, `var(--accent)`
+- Small CTA below bubble (not a button, a text link): "Jetzt beitreten →" — 14px Small Geist Mono, `var(--accent)`
 
 **Input area (disabled in V1):**
 - `border-t border-[var(--border)] px-4 py-3 flex items-center gap-2`
@@ -539,15 +540,15 @@ interface SparringSlotProps {
 | Meta description | "Take the AI Literacy Test — 10 interactive tasks, 15 minutes, honest results. Free, anonymous, no signup required." | EN for SEO keyword match |
 | Hero H1 | "Wo stehst du wirklich mit KI?" | Geist Mono, `--fs-display` |
 | Hero Subline | "15 Minuten. 10 Aufgaben. Ehrliches Ergebnis." | `--fs-h2` |
-| Hero Lede | "Kein Selbsteinschätzungs-Quiz — wir fragen ab, was du kannst." | 18px body |
+| Hero Lede | "Kein Selbsteinschätzungs-Quiz — wir fragen ab, was du kannst." | 16px body |
 | Badge row | "Kostenlos · Keine Anmeldung · Anonym · Max 15 Min" | Pill badges, see layout spec |
 | Primary CTA (Hero) | "Test starten" | Geist Mono button |
 | Progress label | "Aufgabe [N] von 10" | Live-updated, aria-live |
-| Weiter button (active) | "Weiter" | Enabled when widget interaction complete |
-| Weiter button (disabled) | "Weiter" | Visually disabled, `aria-disabled="true"`, tooltip "Beantworte zuerst diese Aufgabe" on hover |
+| Nächste-Aufgabe button (active) | "Nächste Aufgabe" | Enabled when widget interaction complete |
+| Nächste-Aufgabe button (disabled) | "Nächste Aufgabe" | Visually disabled, `aria-disabled="true"`, tooltip "Beantworte zuerst diese Aufgabe" on hover |
 | No-back tooltip (if user tries browser back) | — | Handled by router — no custom copy needed, native browser behavior |
 | Checkpoint (Aufgabe 5) | "Halbzeit! Weiter so." | Micro-celebration header text, 1.5s display |
-| Results H1 | "Dein Ergebnis" | Subpage H1, `--fs-h1` |
+| Results H1 | "Dein Ergebnis" | Subpage H1, `--fs-display` |
 | Level badge aria-label | "Level [N]: [Name]" | e.g. "Level 3: Fortgeschritten" |
 | Radar chart figcaption | "Deine Stärken: [top 2 dims]. Ausbaufähig: [bottom dim]." | Programmatically generated from scores |
 | Empfehlungs-Cards heading | "Das empfehlen wir für Level [N]" | H2, `--fs-h2` |
@@ -561,7 +562,7 @@ interface SparringSlotProps {
 
 | Scenario | Copy |
 |----------|------|
-| Drag-Drop widget: item not placed after 30s | Helper text appears: "Ziehe die Karten in die gewünschte Reihenfolge." (13px, `var(--text-muted)`) |
+| Drag-Drop widget: item not placed after 30s | Helper text appears: "Ziehe die Karten in die gewünschte Reihenfolge." (14px, `var(--text-muted)`) |
 | Questions.json load failure | "Test konnte nicht geladen werden. Bitte Seite neu laden." + Reload-Button |
 | Result page: state missing (direct URL access to /test/ergebnis without completing test) | "Kein Ergebnis vorhanden. Starte den Test, um dein Ergebnis zu sehen." + "Test starten" CTA → `/test` |
 
@@ -587,13 +588,13 @@ interface SparringSlotProps {
 | Results: CTA cluster | Stacked (primary full-width, secondary below) | Row |
 | Sparring-Slot | `max-h-[200px]` message area | `max-h-[240px]` |
 
-**All touch targets:** minimum `44px × 44px` enforced via `min-w-[44px] min-h-[44px]` on:
+**All touch targets:** minimum `48px × 48px` enforced via `min-w-[48px] min-h-[48px]` on:
 - All card-pick cards (via min-height: 72px)
 - Drag handles (explicit min-w/h)
 - Slider thumb (via CSS `--slider-thumb-size: 24px` + `touch-action: none`)
 - Matching drop targets
-- Weiter button (`py-3 px-8` → approximately 48px height)
-- Spot-click spans (min-height 44px via line-height + padding)
+- Nächste-Aufgabe button (`py-3 px-8` → approximately 48px height)
+- Spot-click spans (min-height 48px via line-height + padding)
 
 ---
 
@@ -613,7 +614,7 @@ interface SparringSlotProps {
 | W7 Confidence-Slider | Slider thumb | Left/Right arrows = move 1 step, 1-5 keys = jump | No-op |
 | W8 Fill-in-Param | Each select | Arrow keys (native) | No-op |
 | W9 MC | Each option | Space/Enter = select | No-op |
-| Weiter button | Tab from widget | Enter = submit | No-op |
+| Nächste-Aufgabe button | Tab from widget | Enter = submit | No-op |
 
 ### Focus Management Between Aufgaben
 
