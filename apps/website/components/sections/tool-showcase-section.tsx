@@ -2,27 +2,8 @@
 
 import { useEffect, useRef, useState } from "react"
 import { ArrowUpRight } from "lucide-react"
-import { useTheme } from "@/components/ThemeProvider"
 import { ToolIcon } from "@/components/ui/tool-icon"
-
-/**
- * BeispielBadge — Stub-Markierung für Demo/Dummy-Content.
- * Theme-aware: .light → brand-red, dark → brand-neon.
- */
-export function BeispielBadge({ className = "" }: { className?: string }) {
-  const { theme } = useTheme()
-  const tone =
-    theme === "light"
-      ? "bg-brand-red-3 text-brand-red-12"
-      : "bg-brand-neon-3 text-brand-neon-12"
-  return (
-    <span
-      className={`inline-block rounded-full px-2 py-0.5 font-mono text-[11px] font-bold ${tone} ${className}`}
-    >
-      Beispiel
-    </span>
-  )
-}
+import { BeispielBadge } from "@/components/ui/beispiel-badge"
 
 type Tool = {
   name: string

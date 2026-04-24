@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowUpRight, Calendar, FileText } from "lucide-react"
-import { BeispielBadge } from "@/components/sections/tool-showcase-section"
+import { BeispielBadge } from "@/components/ui/beispiel-badge"
 
 type StubArticle = {
   title: string
