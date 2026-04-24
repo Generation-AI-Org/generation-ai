@@ -1,13 +1,19 @@
-'use client'
-
+import Link from "next/link"
 import { ArrowUpRight, Calendar, FileText } from "lucide-react"
 import { BeispielBadge } from "@/components/ui/beispiel-badge"
+import { getAllArticles } from "@/lib/mdx/community"
 
-type StubArticle = {
-  title: string
-  readingTime: string
-  href: string
-}
+// Phase 26 Plan 26-05 — Server-Component (D-08 Option A, D-21).
+//
+// Article-Spalte (D-08): liest die 3 neuesten MDX-Artikel via getAllArticles()
+// (newest-first sortiert in lib/mdx/community.ts) und rendert eine 3-up Grid
+// mit internen `<Link>`-Cards auf `/community/artikel/[slug]`. KI-News-Artikel
+// (kind === "ki-news") bekommen ein zusätzliches Pill-Badge.
+//
+// Events-Spalte (D-21): bleibt Stub mit BeispielBadge — Live-Daten kommen
+// in Phase 22.5. Die Beispiel-Daten sind 1:1 die alte stubEvents-Liste.
+//
+// Diese Datei hat KEIN `'use client'` mehr (alte Version war Client-Stub).
 
 type StubEvent = {
   title: string
@@ -16,26 +22,7 @@ type StubEvent = {
   href: string
 }
 
-/** Stub-Artikel — RESEARCH § D-12 locked data. */
-const stubArticles: StubArticle[] = [
-  {
-    title: "Wie ich ChatGPT für meine Bachelorarbeit genutzt habe",
-    readingTime: "6 min Lesezeit",
-    href: "https://community.generation-ai.org",
-  },
-  {
-    title: "5 KI-Tools die jeder BWL-Student kennen sollte",
-    readingTime: "4 min Lesezeit",
-    href: "https://community.generation-ai.org",
-  },
-  {
-    title: "Prompt Engineering für Anfänger: Der komplette Guide",
-    readingTime: "9 min Lesezeit",
-    href: "https://community.generation-ai.org",
-  },
-]
-
-/** Stub-Events — RESEARCH § D-12 locked data. */
+/** Stub-Events — bleiben Stub bis Phase 22.5 (D-21). */
 const stubEvents: StubEvent[] = [
   {
     title: "KI-Basics Workshop",
@@ -51,7 +38,9 @@ const stubEvents: StubEvent[] = [
   },
 ]
 
-export function CommunityPreviewSection() {
+export async function CommunityPreviewSection() {
+  const articles = (await getAllArticles()).slice(0, 3)
+
   return (
     <section
       aria-labelledby="community-preview-heading"
@@ -70,45 +59,46 @@ export function CommunityPreviewSection() {
             Was gerade läuft.
           </h2>
           <p className="mt-3 text-sm text-text-muted max-w-2xl mx-auto">
-            Ein Einblick in Diskussionen und Termine. Sobald die Community-API live ist,
-            erscheinen hier echte Artikel und Events.
+            Drei aktuelle Artikel aus der Community — und kommende Termine.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Spalte 1: Artikel */}
+          {/* Spalte 1: Artikel — echte MDX-Daten (D-08 Option A) */}
           <div>
             <h3 className="font-mono text-sm uppercase tracking-wider text-text-muted mb-6 inline-flex items-center gap-2">
               <FileText className="w-4 h-4" aria-hidden="true" />
               Letzte Artikel
             </h3>
-            <ul className="space-y-4">
-              {stubArticles.map((article) => (
-                <li key={article.title}>
-                  <a
-                    href={article.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group block bg-bg-card border border-border rounded-2xl p-5 hover:border-brand-neon-6 transition-colors"
+            <ul className="grid gap-5 sm:grid-cols-3">
+              {articles.map((article) => (
+                <li key={article.slug}>
+                  <Link
+                    href={`/community/artikel/${article.slug}`}
+                    className="group block bg-bg-card border border-border rounded-2xl p-5 hover:border-brand-neon-6 transition-colors h-full"
                   >
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <BeispielBadge />
-                      <ArrowUpRight
-                        className="w-4 h-4 text-text-muted group-hover:text-[var(--accent)] transition-colors"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <p className="font-mono text-base font-bold text-text leading-snug">
-                      {article.title}
+                    {article.frontmatter.kind === "ki-news" && (
+                      <span className="inline-flex items-center gap-1 mb-2 rounded-full bg-bg-elevated px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
+                        KI-News
+                      </span>
+                    )}
+                    <h4 className="font-mono text-base font-bold text-text leading-snug">
+                      {article.frontmatter.title}
+                    </h4>
+                    <p className="mt-3 text-sm text-text-secondary line-clamp-2">
+                      {article.frontmatter.excerpt}
                     </p>
-                    <p className="mt-2 text-xs text-text-muted">{article.readingTime}</p>
-                  </a>
+                    <p className="mt-3 font-mono text-xs text-text-muted inline-flex items-center gap-1">
+                      {article.frontmatter.readingTime} min Lesezeit
+                      <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+                    </p>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Spalte 2: Events */}
+          {/* Spalte 2: Events — bleibt Stub bis Phase 22.5 (D-21) */}
           <div>
             <h3 className="font-mono text-sm uppercase tracking-wider text-text-muted mb-6 inline-flex items-center gap-2">
               <Calendar className="w-4 h-4" aria-hidden="true" />
@@ -144,15 +134,13 @@ export function CommunityPreviewSection() {
         </div>
 
         <div className="mt-12 text-center">
-          <a
-            href="https://community.generation-ai.org"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/community"
             className="inline-flex items-center gap-1 text-sm font-mono text-[var(--accent)] hover:text-[var(--accent-hover,var(--accent))] transition-colors"
           >
-            Zur Community
+            Alle Artikel ansehen
             <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-          </a>
+          </Link>
         </div>
       </div>
     </section>
