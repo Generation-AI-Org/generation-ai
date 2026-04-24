@@ -148,6 +148,29 @@ export function MatchingWidget({
   // Hooks must run unconditionally — sensors are only used in the desktop branch.
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor))
 
+  // ---- Neutral pre-resolve shell (WR-02) -----------------------------------
+  // Render a minimal static shell while `isTouch` is still `null` so SSR +
+  // first client paint match on touch devices.
+  if (isTouch === null) {
+    return (
+      <div data-widget-type="match" className="mx-auto w-full max-w-2xl space-y-3">
+        <p className="text-sm text-[var(--text-muted)]" aria-live="polite">
+          0 von {question.tasks.length} Zuordnungen gemacht
+        </p>
+        <div className="flex flex-col gap-3" aria-hidden>
+          {question.tasks.map((task) => (
+            <div
+              key={task.id}
+              className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3 opacity-60"
+            >
+              <span className="flex-1 text-sm text-[var(--text)]">{task.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   // ---- Touch branch ---------------------------------------------------------
   if (isTouch) {
     return (

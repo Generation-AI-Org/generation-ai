@@ -220,6 +220,28 @@ export function DragRankWidget({
     },
   }
 
+  // WR-02: while `isTouch` is still `null` (not yet resolved on the client),
+  // render a neutral skeleton list so SSR + first paint match on touch devices.
+  if (isTouch === null) {
+    return (
+      <div data-widget-type="rank" className="mx-auto w-full max-w-2xl space-y-3">
+        <ol className="flex flex-col gap-2" aria-hidden>
+          {order.map((id, index) => (
+            <li
+              key={id}
+              className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3 opacity-60"
+            >
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--bg-elevated)] font-mono text-sm">
+                {index + 1}
+              </span>
+              <span className="flex-1 text-sm text-[var(--text)]">{labelFor(id)}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    )
+  }
+
   return (
     <div data-widget-type="rank" className="mx-auto w-full max-w-2xl space-y-3">
       {isTouch ? (
