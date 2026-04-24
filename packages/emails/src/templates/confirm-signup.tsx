@@ -20,7 +20,7 @@ export default function ConfirmSignupEmail({
   confirmationUrl = '{{ .ConfirmationURL }}',
 }: ConfirmSignupEmailProps): React.ReactElement {
   return (
-    <Layout preview="Schön dass du da bist. Hier geht's weiter.">
+    <Layout preview="Bestätige kurz deine Mail — dann bist du drin.">
       <Heading
         className="email-heading"
         style={{
@@ -55,11 +55,11 @@ export default function ConfirmSignupEmail({
           margin: '0 0 32px 0',
         }}
       >
-        Bestätige kurz deine Mail-Adresse, dann geht's los.
+        Kurz deine Mail bestätigen — dann geht's los.
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
-        <EmailButton slug="confirm-signup" href={confirmationUrl}>E-Mail bestätigen</EmailButton>
+        <EmailButton slug="confirm-signup" href={confirmationUrl}>Loslegen →</EmailButton>
       </Section>
 
       <Text
@@ -69,6 +69,18 @@ export default function ConfirmSignupEmail({
           lineHeight: 1.55,
           color: tokens.light.textMuted,
           margin: '24px 0 0 0',
+        }}
+      >
+        Der Link bringt dich direkt in die Community. Gültig 7 Tage.
+      </Text>
+
+      <Text
+        className="email-muted"
+        style={{
+          fontSize: '13px',
+          lineHeight: 1.55,
+          color: tokens.light.textMuted,
+          margin: '16px 0 0 0',
         }}
       >
         Falls du dich nicht angemeldet hast, ignorier die Mail einfach.
