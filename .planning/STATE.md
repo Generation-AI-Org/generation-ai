@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: executing
-last_updated: "2026-04-24T12:00:00.000Z"
+last_updated: "2026-04-24T08:05:57.701Z"
 progress:
   total_phases: 20
   completed_phases: 11
-  total_plans: 74
-  completed_plans: 70
-  percent: 95
+  total_plans: 68
+  completed_plans: 65
+  percent: 96
 ---
 
 # Project State — Generation AI Monorepo
@@ -174,6 +174,7 @@ progress:
 **Requirements completed:** R4.1, R4.2, R4.3, R4.4, R4.5, R4.6, R4.7, R4.8 (alle R4.*) — R4.1–R4.4 als-revidiert umgesetzt (Single-Page Waitlist statt Multi-Step-Wizard, per D-17/D-18/D-15/D-01).
 
 **Offen (bewusst, Phase 25):**
+
 - Live-Signup bleibt 503 (D-01, Luca-Go abhängig)
 - Assessment-CTA verlinkt auf `/test` (404 bis Phase 24 die Seite baut)
 - Phase 25 swapped Waitlist-Insert gegen echten Supabase-Signup + Circle-API-Sync

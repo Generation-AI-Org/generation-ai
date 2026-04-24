@@ -525,7 +525,7 @@ Plans:
 | 22 | 8/8 | Complete    | 2026-04-24 |
 | 22.5 | `/events`-Seite | 🆕 neu | MDX-Pipeline, members-only gated, Hero + Kommende + Formate + Archiv + CTA |
 | 22.7 | Tools-Subdomain Polish | 🆕 neu | Logo-Link-Fix, Login-Button-Umbau (Registrieren + Einloggen), Hero, Nav-Sync |
-| 23 | 5/6 | In Progress|  |
+| 23 | 6/6 | Complete   | 2026-04-24 |
 | 24 | `/test` Assessment | ⏳ | Optionaler Test mit DSGVO-Consent, Score-Migration |
 | 25 | Circle-API-Sync (Unified Signup) | ⏳ | Server-Action: Supabase+Circle, SSO-Link, Welcome-Flow |
 | 26 | `/community` + Subdomain-Integration | ⏳ erweitert | Eigene Seite mit MDX-Artikeln + SEO (/community/artikel/[slug]) + Featured-Tools-API |
@@ -794,7 +794,7 @@ Plans:
 **Depends on:** Phase 20 (Nav + Layout-Shell), Phase 17 (Resend + React-Email Setup)
 **Out-of-Scope:** Live-Backend (Circle-Sync in Phase 25), KI-Kompetenz-Assessment (Phase 24), Live-Signup-Reaktivierung (bleibt 503 bis Phase 27-Go).
 
-**Plans:** 5/6 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 - [ ] 23-01-PLAN.md — Supabase `waitlist`-Table + RLS + TypeScript-Types in @genai/auth
@@ -802,7 +802,7 @@ Plans:
 - [x] 23-03-PLAN.md — Server-Action `submitJoinWaitlist` mit Zod + Upstash-Rate-Limit + Supabase-Insert + Resend-Mail
 - [x] 23-04-PLAN.md — UniCombobox-Komponente + Universities-Liste (40 DE-Hochschulen + Fallback-Options)
 - [x] 23-05-PLAN.md — /join Route: Server-Component + Client-Wrapper + Hero + Form-Card + Success-Card (Inline-Swap)
-- [ ] 23-06-PLAN.md — Sitemap + Playwright-Smoke-Tests + STATE.md-Update
+- [x] 23-06-PLAN.md — Sitemap + Playwright-Smoke-Tests + STATE.md-Update
 
 **Scope (revidiert 2026-04-24 per CONTEXT.md D-17 bis D-22):**
 - Single-Page-Flow mit Inline-Success-Swap (NICHT Multi-Step-Wizard, D-17)
