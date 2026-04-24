@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: executing
-last_updated: "2026-04-24T00:08:35.741Z"
+status: planning
+last_updated: "2026-04-24T00:26:17.809Z"
 progress:
   total_phases: 18
-  completed_phases: 9
+  completed_phases: 10
   total_plans: 62
-  completed_plans: 51
-  percent: 82
+  completed_plans: 59
+  percent: 95
 ---
 
 # Project State — Generation AI Monorepo
@@ -21,15 +21,15 @@ progress:
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 21
+**Phase:** 22.5
 **Branch:** `main` (Phase 20 Skeleton + 20.5 Hero gemerged + gepusht 2026-04-22, Vercel auto-deployed) — neue Phasen starten auf frischem Feature-Branch
-**Last Updated:** 2026-04-23 (Roadmap-Revision + 5 neue/erweiterte Phase-CONTEXTs)
-**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, andere Sections (Offering, Tool-Showcase, Community, Audience-Split, Trust, Final-CTA) auf Phase-20-Skeleton-Level bis 20.6 drüber polished, Discrepancy-Section unmounted.
+**Last Updated:** 2026-04-24 (Phase 22 /partner-page abgeschlossen — 8/8 Plans, VERIFICATION passed)
+**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, /about + /partner fertig (nicht deployed). Phase 21 + 22 bereit für Feature-Branch + PR.
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** 20.6 Landing Sections Rebuild (9 Plans: 8 existing + 20.6-09 Kurz-FAQ neu 2026-04-23)
-**First command:** `/gsd-discuss-phase 20.6` (oder direkt `/gsd-plan-phase 20.6-01` für Problem-Block — ehemals Discrepancy)
+**Next phase:** 22.5 /events-page (MDX-Pipeline, members-only gated, Anmelde-Flow)
+**First command:** `/gsd-discuss-phase 22.5` (oder direkt `/gsd-plan-phase 22.5`)
 
 **Context für neue Session:**
 
@@ -122,7 +122,7 @@ progress:
 
 ### Phase 20.5 Progress
 
-**Status:** Ready to execute
+**Status:** Ready to plan
 
 - CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
 - 5 PLAN.md angelegt, 3 delivered + 2 deferred:
