@@ -340,19 +340,27 @@ async function _submitJoinSignupInner(formData: FormData): Promise<SignupResult>
       },
     })
 
-    if (linkErr || !linkData?.properties?.action_link) {
-      const dbg = `GENERATE_LINK_ERR: ${linkErr?.message ?? 'no action_link'}`
+    if (linkErr || !linkData?.properties?.hashed_token) {
+      const dbg = `GENERATE_LINK_ERR: ${linkErr?.message ?? 'no hashed_token'}`
       console.error('[signup][DEBUG]', dbg)
-      Sentry.captureException(linkErr ?? new Error('generateLink: no action_link'), {
+      Sentry.captureException(linkErr ?? new Error('generateLink: no hashed_token'), {
         tags: { op: 'generateLink' },
       })
       // Don't return ok:false — user is created, just mail is missing.
-      // Admin can re-trigger via a future resend-confirmation endpoint.
       return { ok: true }
     }
 
-    const actionLink = linkData.properties.action_link
-    const html = await render(ConfirmSignupEmail({ name: data.name, confirmationUrl: actionLink }))
+    // Build our own confirm URL that points directly to our PKCE-style
+    // verifyOtp route. We bypass Supabase's /auth/v1/verify endpoint (which
+    // uses the implicit flow and is subject to the Site-URL-fallback bug).
+    // The hashed_token from generateLink IS the token_hash verifyOtp expects.
+    const confirmUrl = new URL(`${origin}/auth/confirm`)
+    confirmUrl.searchParams.set('token_hash', linkData.properties.hashed_token)
+    confirmUrl.searchParams.set('type', 'signup')
+
+    const html = await render(
+      ConfirmSignupEmail({ name: data.name, confirmationUrl: confirmUrl.toString() }),
+    )
 
     const { error: sendErr } = await resend.emails.send({
       from: 'Generation AI <noreply@generation-ai.org>',
