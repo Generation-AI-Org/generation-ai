@@ -37,6 +37,9 @@ function AufgabeInner({ questions, currentIndex, highlightedCode }: AufgabeClien
   const { answers, answerQuestion } = useAssessment()
   const [showCheckpoint, setShowCheckpoint] = useState(false)
   const checkpointTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // A11y: ref for the question H2 so we can focus it after the enter transition
+  // completes, ensuring screen readers announce the new question heading.
+  const h2Ref = useRef<HTMLHeadingElement>(null)
 
   const question = questions[currentIndex]
   const answer = answers[question.id]
@@ -111,8 +114,17 @@ function AufgabeInner({ questions, currentIndex, highlightedCode }: AufgabeClien
           exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -20 }}
           transition={{ duration: reducedMotion ? 0.15 : 0.3, ease: 'easeOut' }}
           className="flex w-full flex-col gap-6"
+          onAnimationComplete={() => {
+            // Focus the H2 after the enter animation finishes so screen readers
+            // announce the new question heading. UI-SPEC: "On Aufgabe transition
+            // complete: focus moves to the question stem <h2> via ref.focus()".
+            // AnimatePresence mode="wait" ensures the exiting element unmounts
+            // before the entering element animates in, so this only fires on enter.
+            h2Ref.current?.focus()
+          }}
         >
           <h2
+            ref={h2Ref}
             tabIndex={-1}
             className="mx-auto max-w-2xl px-4 text-xl font-semibold text-[var(--text)] sm:text-2xl"
           >
