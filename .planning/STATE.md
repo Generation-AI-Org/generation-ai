@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: executing
-last_updated: "2026-04-24T09:31:25.406Z"
+status: planning
+last_updated: "2026-04-24T13:49:43.096Z"
 progress:
   total_phases: 20
-  completed_phases: 11
-  total_plans: 77
-  completed_plans: 65
-  percent: 84
+  completed_phases: 13
+  total_plans: 86
+  completed_plans: 83
+  percent: 97
 ---
 
 # Project State — Generation AI Monorepo
@@ -21,7 +21,7 @@ progress:
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 24 ✅ DONE (2026-04-24)
+**Phase:** 26
 **Branch:** `main` (Phase 20 Skeleton + 20.5 Hero gemerged + gepusht 2026-04-22, Vercel auto-deployed) — neue Phasen starten auf frischem Feature-Branch
 **Last Updated:** 2026-04-24 (Phase 24 `/test` AI-Literacy-Assessment ✅ DONE — 9/9 Plans, 45 Commits + Code-Review-Fix + UI-Review-Fix applied)
 **Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, /about + /partner + /join fertig (nicht deployed). Phase 21 + 22 + 23 + 24 bereit für Feature-Branch + PR. 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
@@ -122,7 +122,7 @@ progress:
 
 ### Phase 20.5 Progress
 
-**Status:** Executing Phase 24
+**Status:** Ready to plan
 
 - CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
 - 5 PLAN.md angelegt, 3 delivered + 2 deferred:
