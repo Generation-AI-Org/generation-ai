@@ -15,6 +15,7 @@
 //   [SectionTransition signal-echo]
 //   5. VereinHint (Transparenz-Hinweis)
 
+import { useState, useCallback } from "react"
 import { MotionConfig, motion, useReducedMotion } from "motion/react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
@@ -32,7 +33,7 @@ type PartnerClientProps = {
   initialTyp?: string
 }
 
-function ContactSection({ initialTyp }: { initialTyp?: PartnerTyp }) {
+function ContactSection({ activeTyp }: { activeTyp: PartnerTyp }) {
   const prefersReducedMotion = useReducedMotion()
 
   const fadeIn = prefersReducedMotion
@@ -76,7 +77,7 @@ function ContactSection({ initialTyp }: { initialTyp?: PartnerTyp }) {
         </motion.h2>
 
         {/* Contact form */}
-        <PartnerContactForm initialTyp={initialTyp} />
+        <PartnerContactForm activeTyp={activeTyp} />
 
         {/* Person cards — same section, no transition */}
         <div className="mt-20">
@@ -95,17 +96,24 @@ export function PartnerClient({ nonce, initialTyp }: PartnerClientProps) {
       ? (initialTyp as PartnerTyp)
       : 'unternehmen'
 
+  const [activeTyp, setActiveTyp] = useState<PartnerTyp>(resolvedTyp)
+
+  const handleTypChange = useCallback((slug: PartnerTyp) => {
+    setActiveTyp(slug)
+    window.history.pushState(null, '', `?typ=${slug}`)
+  }, [])
+
   return (
     <MotionConfig nonce={nonce}>
       <Header />
       <main id="main-content" className="min-h-screen pt-20">
         <PartnerHeroSection />
         {/* Hero → TabSystem: keine SectionTransition (immediate continuity) */}
-        <PartnerTabSystem initialTyp={resolvedTyp} />
+        <PartnerTabSystem activeTyp={activeTyp} onTypChange={handleTypChange} />
         <SectionTransition variant="soft-fade" />
         <TrustSection />
         <SectionTransition variant="soft-fade" />
-        <ContactSection initialTyp={resolvedTyp} />
+        <ContactSection activeTyp={activeTyp} />
         <SectionTransition variant="signal-echo" />
         <PartnerVereinHint />
       </main>

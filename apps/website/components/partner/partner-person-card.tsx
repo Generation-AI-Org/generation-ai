@@ -80,19 +80,19 @@ const PARTNER_PERSONS: PartnerPersonData[] = [
   {
     name: 'Alex',
     role: 'Head of Partnerships',
-    mail: 'admin@generation-ai.org', // TODO: replace with alex@ when confirmed
+    mail: 'alex@generation-ai.org',
     linkedIn: '#',
   },
   {
     name: 'Janna',
     role: 'Co-Founder',
-    mail: 'admin@generation-ai.org', // TODO: replace with janna@ when confirmed
+    mail: 'janna@generation-ai.org',
     linkedIn: '#',
   },
   {
     name: 'Simon',
     role: 'Co-Founder',
-    mail: 'admin@generation-ai.org', // TODO: replace with simon@ when confirmed
+    mail: 'simon@generation-ai.org',
     linkedIn: '#',
   },
 ]

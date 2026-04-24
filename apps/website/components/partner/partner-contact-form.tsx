@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useRef, useId } from "react"
+import { useState, useRef, useId, useEffect } from "react"
 import { submitPartnerInquiry } from "@/app/actions/partner-inquiry"
 import type { PartnerTyp } from "./partner-tab-content"
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error'
 
 interface PartnerContactFormProps {
-  initialTyp?: PartnerTyp
+  activeTyp?: PartnerTyp
 }
 
 // Dropdown options: value must match PartnerInquiryEmailProps.typ
@@ -26,14 +26,19 @@ const SLUG_TO_TYP: Record<PartnerTyp, string> = {
   initiativen: 'Initiative',
 }
 
-export function PartnerContactForm({ initialTyp }: PartnerContactFormProps) {
+export function PartnerContactForm({ activeTyp }: PartnerContactFormProps) {
   const formId = useId()
   const formRef = useRef<HTMLFormElement>(null)
 
-  const defaultTyp = initialTyp ? SLUG_TO_TYP[initialTyp] : 'Unternehmen'
+  const defaultTyp = activeTyp ? SLUG_TO_TYP[activeTyp] : 'Unternehmen'
   const [selectedTyp, setSelectedTyp] = useState(defaultTyp)
   const [formState, setFormState] = useState<FormState>('idle')
   const [serverError, setServerError] = useState<string | null>(null)
+
+  // Sync dropdown with active tab (D-05: Tab-Wechsel → Dropdown folgt)
+  useEffect(() => {
+    if (activeTyp) setSelectedTyp(SLUG_TO_TYP[activeTyp])
+  }, [activeTyp])
 
   // Client-side field errors
   const [errors, setErrors] = useState<Record<string, string>>({})

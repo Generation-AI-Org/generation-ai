@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import { PartnerTabContent } from "./partner-tab-content"
 import type { PartnerTyp } from "./partner-tab-content"
 
@@ -11,30 +11,19 @@ const TABS: Array<{ slug: PartnerTyp; label: string }> = [
   { slug: 'initiativen', label: 'Initiativen' },
 ]
 
-const VALID_SLUGS = new Set<string>(TABS.map((t) => t.slug))
-
 interface PartnerTabSystemProps {
-  initialTyp?: PartnerTyp
+  activeTyp: PartnerTyp
+  onTypChange: (slug: PartnerTyp) => void
 }
 
-export function PartnerTabSystem({ initialTyp }: PartnerTabSystemProps) {
-  // Resolve initial active tab from SSR prop (D-04: no pushState on default)
-  const resolvedInitial: PartnerTyp =
-    initialTyp && VALID_SLUGS.has(initialTyp)
-      ? (initialTyp as PartnerTyp)
-      : 'unternehmen'
-
-  const [activeTyp, setActiveTypRaw] = useState<PartnerTyp>(resolvedInitial)
-
+export function PartnerTabSystem({ activeTyp, onTypChange }: PartnerTabSystemProps) {
   const tabRailRef = useRef<HTMLDivElement>(null)
 
-  // D-02: push URL param without full navigation (no scroll reset D-03)
   const setActiveTyp = useCallback(
     (slug: PartnerTyp) => {
-      setActiveTypRaw(slug)
-      window.history.pushState(null, '', `?typ=${slug}`)
+      onTypChange(slug)
     },
-    [],
+    [onTypChange],
   )
 
   // Scroll active tab into view (for deep-linked ?typ= mounts)
@@ -88,7 +77,7 @@ export function PartnerTabSystem({ initialTyp }: PartnerTabSystemProps) {
         aria-label="Partnertypen"
         className="overflow-x-auto scrollbar-hide border-b border-border"
       >
-        <div className="flex flex-nowrap gap-1 px-6 mx-auto max-w-4xl">
+        <div className="flex flex-nowrap gap-1 px-6 mx-auto max-w-4xl sm:justify-center">
           {TABS.map((tab, index) => {
             const isActive = tab.slug === activeTyp
             return (
