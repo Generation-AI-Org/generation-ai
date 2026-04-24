@@ -789,27 +789,40 @@ Plans:
 
 ### Phase 23: `/join` Fragebogen-Flow
 
-**Goal:** Linearer 3-Step-Flow (+ Confirmation) mit Validation, State-Persistenz, 503-Backend.
+**Goal:** Waitlist-V1-Landing (Single-Page + Inline-Success-Swap) mit Form-Validation, Rate-Limit, Supabase-Insert, Resend-Confirmation-Mail. Live-Signup-Reaktivierung bleibt auf Phase 25 verschoben — bis dahin sammelt `/join` Waitlist-Einträge.
 **Requirements:** R4.1-R4.8
-**Depends on:** Phase 20
-**Out-of-Scope:** Live-Backend (Circle-Sync in Phase 25), Live-Signup-Reaktivierung (bleibt 503).
+**Depends on:** Phase 20 (Nav + Layout-Shell), Phase 17 (Resend + React-Email Setup)
+**Out-of-Scope:** Live-Backend (Circle-Sync in Phase 25), KI-Kompetenz-Assessment (Phase 24), Live-Signup-Reaktivierung (bleibt 503 bis Phase 27-Go).
 
-**Scope:**
-- Step 1: Fragebogen (Name, Email, Status, Uni, Motivation, Self-Select Level 1-5)
-- Step 2: Assessment-Weiche (Link zu `/test` oder Skip)
-- Step 3: Account + Circle-Flow-Stub (Submit-Button, aktuell mit 503-Response)
-- Step 4: Confirmation-Screen
-- Progress-Indicator, SessionStorage-State, Validation inline + aria-live
-- 503-Banner statt Success solange Luca nicht freigibt
+**Plans:** 6 plans
+
+Plans:
+- [ ] 23-01-PLAN.md — Supabase `waitlist`-Table + RLS + TypeScript-Types in @genai/auth
+- [ ] 23-02-PLAN.md — React-Email-Template `WaitlistConfirmationEmail` in @genai/emails
+- [ ] 23-03-PLAN.md — Server-Action `submitJoinWaitlist` mit Zod + Upstash-Rate-Limit + Supabase-Insert + Resend-Mail
+- [ ] 23-04-PLAN.md — UniCombobox-Komponente + Universities-Liste (40 DE-Hochschulen + Fallback-Options)
+- [ ] 23-05-PLAN.md — /join Route: Server-Component + Client-Wrapper + Hero + Form-Card + Success-Card (Inline-Swap)
+- [ ] 23-06-PLAN.md — Sitemap + Playwright-Smoke-Tests + STATE.md-Update
+
+**Scope (revidiert 2026-04-24 per CONTEXT.md D-17 bis D-22):**
+- Single-Page-Flow mit Inline-Success-Swap (NICHT Multi-Step-Wizard, D-17)
+- Reduziertes Hero (`min-h-[60vh]`, D-19) + Form direkt sichtbar auf Desktop
+- 6 Form-Felder: Email, Name (Vor+Nachname), Uni-Combobox (Autocomplete + Freitext), Studiengang (optional), DSGVO-Checkbox (required), Marketing-Opt-in (optional default off)
+- Submit → Waitlist-Insert + Confirmation-Mail (V1) — Interface stabil für Phase 25 Swap (D-10)
+- Assessment-CTA post-submit (→ `/test`, D-15, Phase 24 baut die Seite)
+- `?redirect_after=...` Query-Param round-trip für Phase 22.5 Events-Gate
 
 **Success Criteria:**
-- [ ] Alle Steps keyboard-navigierbar + screen-reader-korrekt
-- [ ] Uni-Autocomplete funktioniert
-- [ ] State übersteht Reload innerhalb Session
-- [ ] Submit zeigt 503-Banner mit Erklärung "Anmeldung geschlossen, bald wieder"
-- [ ] Lighthouse `/join` > 90
+- [ ] /join lädt mit HTTP 200, Lighthouse > 90 (alle 4 Kategorien)
+- [ ] Hero + Form-Card + Success-Card DS-konform (UI-SPEC verbatim)
+- [ ] Form Client-side + Server-side validated (Zod), deutsche Fehlermeldungen VOICE.md-konform
+- [ ] Submit → Supabase `waitlist`-Row + Confirmation-Mail via Resend
+- [ ] Rate-Limit 5/15min/IP via Upstash (graceful-degrade)
+- [ ] Duplicate-Email → Silent-Success (no-leak Privacy)
+- [ ] Build-Output zeigt `ƒ /join` (dynamic, CSP-safe per LEARNINGS.md)
+- [ ] Playwright-Smoke-Test mit ≥9 Testcases grün
 
-**Release:** patch (UI ohne Live-Signup, bleibt sichtbar aber nicht wirksam)
+**Release:** patch (V1 Waitlist live-fähig; Live-Signup bleibt 503 bis Phase 25 Circle-Sync + Phase 27 Go-Decision)
 
 ---
 
