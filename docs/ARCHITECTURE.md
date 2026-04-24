@@ -97,14 +97,22 @@ Keine echte Single Sign-On, aber gleiche Email verknuepft Identitaeten.
 └──────────────────┘  └──────────────────┘  └──────────────────┘
 ```
 
-### Sign-up Flow (aktuell DEAKTIVIERT)
+### Sign-up Flow (Phase 25 — Feature-flagged via `SIGNUP_ENABLED`)
 
-1. User auf generation-ai.org
-2. Fragebogen ausfuellen
-3. Email eingeben
-4. Backend: Supabase User + Profil + Circle Member erstellen
-5. Resend sendet branded Magic Link
-6. User klickt → eingeloggt
+Default `SIGNUP_ENABLED=false` → `/api/auth/signup` returnt 503 und der Join-Router delegiert an die V1-Waitlist. Bei `SIGNUP_ENABLED=true` (Phase 27 Go-Live):
+
+1. User auf `/join`, Form ausfüllen (Email, Name, Uni, Consent)
+2. Server-Action `submitJoinSignup`:
+   a. Honeypot + Rate-Limit
+   b. `admin.createUser({ email_confirm:false, user_metadata:{...flow-data, has_password:false} })` mit random placeholder password
+   c. `createMember` + `addMemberToSpace` via `@genai/circle` (non-blocking, D-03)
+   d. Upsert `user_circle_links` + Stamp `circle_member_id` in user_metadata
+   e. `admin.generateLink({ type:'magiclink' })` triggert die Confirm-Mail via Supabase-SMTP
+3. User öffnet Mail, klickt "Loslegen →"
+4. Route `/auth/confirm`: verifyOtp → liest `circle_member_id` → `generateSsoUrl` → 303-Redirect zur Circle-Community
+5. Circle-SSO aktiv, User ist eingeloggt
+
+**Fallback** wenn Circle zur Signup-Zeit down war: User landet nach Confirm auf `/welcome?circle=pending` mit manuellem Community-Link. Admin kann via `POST /api/admin/circle-reprovision` nachträglich provisionieren.
 
 ### Session-Sharing
 
@@ -177,6 +185,24 @@ Keine echte Single Sign-On, aber gleiche Email verknuepft Identitaeten.
 │  - created_at                                                       │
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+### Phase 25 Additions: user_circle_links
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  user_circle_links                                                 │
+│  - user_id (uuid, PK, FK → auth.users ON DELETE CASCADE)           │
+│  - circle_member_id (text, unique)                                 │
+│  - circle_provisioned_at (timestamptz, null)                       │
+│  - last_error, last_error_at                                       │
+│  - created_at                                                       │
+│  RLS: service_role only. anon/authenticated grants revoked.        │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+`raw_user_meta_data.circle_member_id` on `auth.users` mirrors the
+provisioned ID for fast session-read paths. Full error history + retry
+state lives in `user_circle_links`.
 
 ### RLS Policies (Hybrid V1/V2)
 

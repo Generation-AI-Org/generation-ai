@@ -99,27 +99,81 @@ Loescht den eingeloggten User und alle zugehoerigen Daten.
 
 ## website Endpoints
 
-### POST /api/auth/signup
+### POST /api/auth/signup (Phase 25, feature-flagged)
 
-**AKTUELL DEAKTIVIERT** — Gibt immer 503 zurueck.
+Unified signup endpoint. Feature-flagged via `SIGNUP_ENABLED` env var (default `false` → 503).
+
+**Auth:** None (public, rate-limited 5/15min per IP).
+
+**Content-Type:** `multipart/form-data` oder `application/x-www-form-urlencoded`
+
+**Fields:**
+
+```
+email=user@example.com            (required)
+name=Jane Doe                     (required)
+university=TU Berlin              (required)
+study_program=Informatik          (optional)
+marketing_opt_in=on               (optional)
+consent=on                        (required)
+redirect_after=/join/welcome      (optional, same-origin absolute path)
+status=student                    (optional: student | pre-studium | early-career)
+motivation=Karriere                (optional)
+level=3                            (optional: 1-5)
+website=                           (honeypot — must be empty)
+```
+
+**Response:**
+
+- `200 { ok: true }` — success (user created, mail sent)
+- `400 { ok: false, error, fieldErrors? }` — validation failed
+- `429 { ok: false, error }` — rate limit reached
+- `503 { error }` — `SIGNUP_ENABLED=false` (default, until Phase 27)
+
+**Idempotency:** Duplicate email returns `{ ok: true }` silently (no-leak, no re-send).
+
+**Flow (when SIGNUP_ENABLED=true):**
+
+1. Honeypot + rate-limit + Zod validate
+2. `admin.createUser({ email_confirm:false, user_metadata:{...} })`
+3. Circle `createMember` + `addMemberToSpace` (non-blocking, D-03)
+4. Upsert `user_circle_links` + stamp `circle_member_id` in user_metadata
+5. `admin.generateLink({ type:'magiclink' })` triggert Confirm-Mail
+
+**Rate Limit:** 5 Requests / 15 min pro IP (Upstash).
+
+---
+
+### POST /api/admin/circle-reprovision (Phase 25)
+
+Admin-only: Retry Circle provisioning für einen User, dessen Signup-Circle-Call fehlgeschlagen ist.
+
+**Auth:**
+- Session required (`Cookie: sb-...`)
+- UND (`user_metadata.role === 'admin'` ODER `user.email` in `ADMIN_EMAIL_ALLOWLIST`)
+
+**Content-Type:** `application/json`
+
+**Rate Limit:** 20 Requests / 15 min pro Admin-User-ID.
+
+**Request:**
 
 ```json
-{
-  "error": "Anmeldung ist momentan geschlossen. Wir oeffnen bald wieder!"
-}
+{ "email": "user@example.com" }
 ```
 
-**Reaktivieren:**
-```bash
-git show HEAD~50:apps/website/app/api/auth/signup/route.ts > apps/website/app/api/auth/signup/route.ts
-```
+**Response:**
 
-**Urspruenglicher Flow:**
-1. User-Daten validieren
-2. Supabase User erstellen
-3. Profil anlegen
-4. Circle Member erstellen
-5. Magic Link via Resend senden
+- `200 { ok: true, circleMemberId, alreadyExists }` — success
+- `400 { error }` — invalid body / content-type
+- `401 { error: "Not authenticated" }` — no session
+- `403 { error: "Not authorized (admin only)" }` — session aber kein admin
+- `404 { error: "User not found" }` — target email existiert nicht in Supabase
+- `429 { error: "Rate limit exceeded" }` — zu viele Reprovisions
+- `502 { error: "Circle API failed", code, correlationId }` — Circle-API-Fehler
+- `500 { error: "Internal error" }` — unbekannter Fehler
+
+Alle Errors werden in Sentry mit Tag `circle-api:true` + `op:adminReprovision.*` geloggt inkl. `target_user_id` + `admin_user_id` (UUIDs, kein PII).
 
 ---
 
