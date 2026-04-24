@@ -33,6 +33,9 @@ export function UniCombobox(props: UniComboboxProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const listboxRef = useRef<HTMLUListElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  // WR-01: track pending blur timer so we can clear it on unmount + before
+  // selectOption runs (prevents state-update-after-unmount + stale onBlur).
+  const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const listboxId = useId()
 
   // Filter universities based on typed input
@@ -71,8 +74,23 @@ export function UniCombobox(props: UniComboboxProps) {
     return () => document.removeEventListener('mousedown', handleMouseDown)
   }, [])
 
+  // WR-01: clear pending blur timer on unmount to avoid state-update-after-
+  // unmount warnings when the component is swapped out mid-blur (e.g. form
+  // submit → success card swap in JoinFormSection).
+  useEffect(() => {
+    return () => {
+      if (blurTimerRef.current) clearTimeout(blurTimerRef.current)
+    }
+  }, [])
+
   const selectOption = useCallback(
     (option: string) => {
+      // WR-01: cancel any pending blur-close so it cannot clobber state
+      // mid-selection (race between option onMouseDown and input blur).
+      if (blurTimerRef.current) {
+        clearTimeout(blurTimerRef.current)
+        blurTimerRef.current = null
+      }
       // Strip the "Andere: ... übernehmen" wrapper if present — keep raw typed text
       const free = option.match(/^Andere: (.+) übernehmen$/)
       const value = free ? free[1] : option
@@ -119,7 +137,9 @@ export function UniCombobox(props: UniComboboxProps) {
     // Only close dropdown if focus leaves the whole combobox (input + listbox).
     // setTimeout so that option onMouseDown can register before blur closes dropdown.
     void e // suppress unused-variable lint warning
-    setTimeout(() => {
+    // WR-01: store timer ID so we can clear it on unmount (see cleanup
+    // useEffect above) and cancel it in selectOption (race condition).
+    blurTimerRef.current = setTimeout(() => {
       setOpen(false)
       setActiveIndex(-1)
       props.onBlur?.()
