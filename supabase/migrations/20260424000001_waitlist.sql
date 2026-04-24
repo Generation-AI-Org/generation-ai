@@ -44,3 +44,8 @@ create policy "service_role_insert_waitlist"
 
 comment on table public.waitlist is
   'Phase 23 /join waitlist (V1). Inserted by server action waitlist.submitJoinWaitlist via service_role admin client. Phase 25 will migrate accepted entries into auth.users via Circle-API-Sync.';
+
+-- Revoke default public-schema grants from anon/authenticated.
+-- With RLS enabled and no anon/authenticated policies, PostgREST should return 401/403
+-- without these grants (rather than 200 empty set, which is the default behavior).
+revoke all on public.waitlist from anon, authenticated;
