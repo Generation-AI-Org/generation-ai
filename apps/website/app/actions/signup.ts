@@ -36,6 +36,7 @@ const ERR_GENERIC =
   "Ups, da ist was schiefgelaufen. Probier's nochmal oder schreib uns: admin@generation-ai.org"
 const ERR_RATE_LIMIT = 'Zu viele Versuche. Bitte warte einen Moment.'
 const ERR_INVALID = 'Ungültige Anfrage.'
+const ERR_SIGNUP_CLOSED = 'Anmeldung ist momentan geschlossen.'
 
 // ---------------------------------------------------------------------------
 // Validation schema
@@ -90,6 +91,14 @@ const schema = z.object({
  * Returns { ok: true } for duplicate emails as well (no-leak).
  */
 export async function submitJoinSignup(formData: FormData): Promise<SignupResult> {
+  // -- 0. Feature-flag defense-in-depth (REVIEW MD-02) ----------------------
+  // `/api/auth/signup` checks this too, but the server action is a
+  // separate public surface (server-form-actions). A stale flag check
+  // there is cheap; a flag bypass here is expensive.
+  if (process.env.SIGNUP_ENABLED !== 'true') {
+    return { ok: false, error: ERR_SIGNUP_CLOSED }
+  }
+
   // -- 1. Honeypot ----------------------------------------------------------
   const honeypot = formData.get('website')
   if (honeypot !== null && honeypot !== '') {
