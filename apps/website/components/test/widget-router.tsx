@@ -4,7 +4,6 @@
 // Phase 24 — Dispatches Question to the correct widget component by type.
 // Also exports isAnswerReady for "Nächste Aufgabe" gating.
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CardPickWidget } from './widgets/card-pick-widget'
 import { MCWidget } from './widgets/mc-widget'
 import { DragRankWidget } from './widgets/drag-rank-widget'
@@ -14,7 +13,18 @@ import { FehlerspotWidget } from './widgets/fehlerspot-widget'
 import { MatchingWidget } from './widgets/matching-widget'
 import { ConfidenceSliderWidget } from './widgets/confidence-slider-widget'
 import { FillInWidget } from './widgets/fill-in-widget'
-import type { Answer, Question } from '@/lib/assessment/types'
+import type {
+  Answer,
+  BestPromptAnswer,
+  ConfidenceAnswer,
+  FillAnswer,
+  MatchAnswer,
+  PickAnswer,
+  Question,
+  RankAnswer,
+  SideBySideAnswer,
+  SpotAnswer,
+} from '@/lib/assessment/types'
 
 export interface WidgetRouterProps {
   question: Question
@@ -27,64 +37,141 @@ export interface WidgetRouterProps {
 
 export function WidgetRouter(props: WidgetRouterProps) {
   const { question, answer, onAnswer, disabled } = props
-  const shared = { answer: answer as any, onAnswer: onAnswer as any, disabled }
+  // Discriminated-union narrowing via `question.type`. Each branch asserts the
+  // matching Answer variant by construction — Answer is keyed by the same
+  // `type` discriminator, so the answer can only be the matching variant when
+  // it exists for a given question. onAnswer is widened to the full Answer
+  // union on the outside but each widget emits its variant, which satisfies it.
   switch (question.type) {
     case 'pick':
-      return <CardPickWidget question={question} {...(shared as any)} />
+      return (
+        <CardPickWidget
+          question={question}
+          answer={answer as PickAnswer | undefined}
+          onAnswer={onAnswer}
+          disabled={disabled}
+        />
+      )
     case 'mc':
-      return <MCWidget question={question} {...(shared as any)} />
+      return (
+        <MCWidget
+          question={question}
+          answer={answer as PickAnswer | undefined}
+          onAnswer={onAnswer}
+          disabled={disabled}
+        />
+      )
     case 'rank':
-      return <DragRankWidget question={question} {...(shared as any)} />
+      return (
+        <DragRankWidget
+          question={question}
+          answer={answer as RankAnswer | undefined}
+          onAnswer={onAnswer}
+          disabled={disabled}
+        />
+      )
     case 'best-prompt':
       return (
         <PromptBestPickWidget
           question={question}
+          answer={answer as BestPromptAnswer | undefined}
+          onAnswer={onAnswer}
+          disabled={disabled}
           highlightedCode={props.highlightedCode ?? {}}
-          {...(shared as any)}
         />
       )
     case 'side-by-side':
-      return <SideBySideWidget question={question} {...(shared as any)} />
+      return (
+        <SideBySideWidget
+          question={question}
+          answer={answer as SideBySideAnswer | undefined}
+          onAnswer={onAnswer}
+          disabled={disabled}
+        />
+      )
     case 'spot':
-      return <FehlerspotWidget question={question} {...(shared as any)} />
+      return (
+        <FehlerspotWidget
+          question={question}
+          answer={answer as SpotAnswer | undefined}
+          onAnswer={onAnswer}
+          disabled={disabled}
+        />
+      )
     case 'match':
-      return <MatchingWidget question={question} {...(shared as any)} />
+      return (
+        <MatchingWidget
+          question={question}
+          answer={answer as MatchAnswer | undefined}
+          onAnswer={onAnswer}
+          disabled={disabled}
+        />
+      )
     case 'confidence':
-      return <ConfidenceSliderWidget question={question} {...(shared as any)} />
+      return (
+        <ConfidenceSliderWidget
+          question={question}
+          answer={answer as ConfidenceAnswer | undefined}
+          onAnswer={onAnswer}
+          disabled={disabled}
+        />
+      )
     case 'fill':
-      return <FillInWidget question={question} {...(shared as any)} />
+      return (
+        <FillInWidget
+          question={question}
+          answer={answer as FillAnswer | undefined}
+          onAnswer={onAnswer}
+          disabled={disabled}
+        />
+      )
+    default: {
+      // Exhaustiveness check — if a new question type is added without a case,
+      // TypeScript will flag this line.
+      const _exhaustive: never = question
+      return null
+    }
   }
 }
 
 /**
  * Does the current answer satisfy the widget's "ready to advance" contract?
  * Gates the Nächste-Aufgabe button.
+ *
+ * WR-06: confidence no longer gets a free pass — user must interact first.
  */
 export function isAnswerReady(question: Question, answer: Answer | undefined): boolean {
-  // WR-06: confidence no longer gets a free pass. User must interact for the
-  // answer to be considered ready.
   if (!answer) return false
+  // Both discriminants must match — guards against stale answers from a prior
+  // question type leaking into readiness checks.
+  if (answer.type !== question.type) return false
   switch (question.type) {
     case 'pick':
     case 'mc':
+      return (answer as PickAnswer).optionId != null
     case 'best-prompt':
-      return (answer as any).optionId != null
-    case 'rank':
-      return (
-        Array.isArray((answer as any).order) &&
-        (answer as any).order.length === question.items.length
-      )
+      return (answer as BestPromptAnswer).optionId != null
+    case 'rank': {
+      const a = answer as RankAnswer
+      return Array.isArray(a.order) && a.order.length === question.items.length
+    }
     case 'side-by-side':
-      return (answer as any).choice != null
+      return (answer as SideBySideAnswer).choice != null
     case 'spot':
-      return (answer as any).segmentId != null
-    case 'match':
-      return Object.keys((answer as any).pairs ?? {}).length === question.tasks.length
+      return (answer as SpotAnswer).segmentId != null
+    case 'match': {
+      const a = answer as MatchAnswer
+      return Object.keys(a.pairs ?? {}).length === question.tasks.length
+    }
     case 'confidence':
-      return (answer as any).step != null
-    case 'fill':
-      return question.blanks.every(
-        (b) => (answer as any).selections?.[b.id] != null,
-      )
+      return (answer as ConfidenceAnswer).step != null
+    case 'fill': {
+      const a = answer as FillAnswer
+      return question.blanks.every((b) => a.selections?.[b.id] != null)
+    }
+    default: {
+      const _exhaustive: never = question
+      return false
+    }
   }
 }
