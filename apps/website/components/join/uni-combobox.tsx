@@ -83,6 +83,10 @@ export function UniCombobox(props: UniComboboxProps) {
     }
   }, [])
 
+  // WR-03: depend only on onChange (destructured), not the whole `props`
+  // object — `props` gets a new reference on every parent render, which
+  // defeats useCallback memoization entirely.
+  const { onChange } = props
   const selectOption = useCallback(
     (option: string) => {
       // WR-01: cancel any pending blur-close so it cannot clobber state
@@ -94,12 +98,12 @@ export function UniCombobox(props: UniComboboxProps) {
       // Strip the "Andere: ... übernehmen" wrapper if present — keep raw typed text
       const free = option.match(/^Andere: (.+) übernehmen$/)
       const value = free ? free[1] : option
-      props.onChange(value)
+      onChange(value)
       setOpen(false)
       setActiveIndex(-1)
       inputRef.current?.focus()
     },
-    [props],
+    [onChange],
   )
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
