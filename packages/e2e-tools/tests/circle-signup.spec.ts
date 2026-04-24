@@ -104,4 +104,52 @@ test.describe('Phase 25 Circle-Sync unified signup', () => {
       /community\.generation-ai\.org/,
     )
   })
+
+  test('[H3-5] REVIEW HI-01 — confirm redirect carries Supabase session cookie across Circle SSO handoff', async ({
+    page,
+    context,
+  }) => {
+    // Regression guard for HI-01: `NextResponse.redirect(externalUrl)` used to
+    // drop the `Set-Cookie` headers the Supabase SSR client writes during
+    // `verifyOtp`. After the fix, the confirm route explicitly copies captured
+    // session cookies onto the redirect response so the user lands on Circle
+    // (or the /welcome fallback) with an active session on generation-ai.org.
+    //
+    // Needs a confirm URL for a user that DOES have circle_member_id — we
+    // don't redirect to Circle here (test runs in CI without Circle access);
+    // instead we intercept the redirect and assert the `Set-Cookie` payload.
+    test.skip(
+      !process.env.E2E_TEST_CONFIRM_URL_WITH_CIRCLE,
+      'provide E2E_TEST_CONFIRM_URL_WITH_CIRCLE to run — fixture must target a user with circle_member_id set',
+    )
+
+    // Intercept the confirm-route response before the browser follows the 303.
+    let capturedSetCookie: string | null = null
+    page.on('response', (resp) => {
+      if (resp.url().includes('/auth/confirm') && resp.status() === 303) {
+        capturedSetCookie = resp.headers()['set-cookie'] ?? null
+      }
+    })
+
+    await page.goto(process.env.E2E_TEST_CONFIRM_URL_WITH_CIRCLE!, {
+      waitUntil: 'domcontentloaded',
+    })
+
+    // The Supabase SSR cookie name starts with `sb-` and contains the project ref.
+    // We accept any of the standard `sb-*-auth-token*` forms.
+    expect(
+      capturedSetCookie,
+      'confirm route must set at least one sb-*-auth-token cookie on the redirect response',
+    ).toMatch(/sb-[\w-]+-auth-token/)
+
+    // And the cookie must actually be accepted by the browser on the
+    // generation-ai.org domain after the redirect is followed.
+    const cookies = await context.cookies()
+    const hasSupabaseCookie = cookies.some((c) =>
+      /^sb-[\w-]+-auth-token/.test(c.name),
+    )
+    expect(hasSupabaseCookie, 'browser must hold an sb-*-auth-token cookie').toBe(
+      true,
+    )
+  })
 })

@@ -7,7 +7,10 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import * as Sentry from '@sentry/nextjs'
-import { createClient } from '@genai/auth/server'
+import {
+  createServerClient,
+  type CookieOptionsWithName,
+} from '@supabase/ssr'
 import { CircleApiError, generateSsoUrl } from '@genai/circle'
 import { checkConfirmRateLimit, getClientIp } from '@/lib/rate-limit'
 
@@ -50,7 +53,59 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   // -- 3. Supabase verifyOtp ------------------------------------------------
-  const supabase = await createClient()
+  //
+  // REVIEW HI-01 — The Supabase SSR client sets session cookies via the
+  // `setAll` callback below. We MUST capture those cookies onto the exact
+  // response object we return; otherwise a subsequent
+  // `NextResponse.redirect(externalUrl)` constructs a fresh response that
+  // does not carry the `Set-Cookie` headers and the user lands on Circle
+  // without a valid Supabase session on generation-ai.org. Pattern mirrors
+  // `@genai/auth/middleware.updateSession` — cookies are mirrored onto a
+  // local `carrier` response, then copied onto the final redirect response
+  // right before returning it.
+  const cookiesToPropagate: Array<{
+    name: string
+    value: string
+    options?: Parameters<NextResponse['cookies']['set']>[2]
+  }> = []
+
+  const envDomain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN
+  const cookieOptions: CookieOptionsWithName | undefined = envDomain
+    ? { domain: envDomain }
+    : undefined
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(toSet) {
+          for (const { name, value, options } of toSet) {
+            cookiesToPropagate.push({ name, value, options })
+          }
+        },
+      },
+      ...(cookieOptions ? { cookieOptions } : {}),
+    },
+  )
+
+  /**
+   * Build a redirect response and re-apply any session cookies the SSR
+   * client wrote during `verifyOtp`. Without this step cookies were being
+   * dropped when the redirect target is an external URL (Circle-SSO), which
+   * regressed Phase 12 + Phase 19 session handling in earlier phases.
+   */
+  const redirectWithCookies = (url: URL | string): NextResponse => {
+    const response = NextResponse.redirect(url, { status: 303 })
+    for (const { name, value, options } of cookiesToPropagate) {
+      response.cookies.set(name, value, options)
+    }
+    return response
+  }
+
   const { data, error } = await supabase.auth.verifyOtp({ type, token_hash })
 
   if (error || !data?.user) {
@@ -61,9 +116,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       level: 'warning',
       data: { reason: error?.message ?? 'no_user', type },
     })
-    return NextResponse.redirect(
+    return redirectWithCookies(
       new URL(`${ERROR_PATH_BASE}?reason=invalid_or_expired`, origin),
-      { status: 303 },
     )
   }
 
@@ -83,7 +137,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       level: 'info',
       data: { hasMetadata: !!meta },
     })
-    return NextResponse.redirect(new URL(FALLBACK_PATH, origin), { status: 303 })
+    return redirectWithCookies(new URL(FALLBACK_PATH, origin))
   }
 
   // -- 5. Generate Circle SSO URL -------------------------------------------
@@ -92,7 +146,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       memberId: circleMemberId,
       redirectPath: '/',
     })
-    return NextResponse.redirect(ssoUrl, { status: 303 })
+    // HI-01: If we fail to attach session cookies before the external
+    // redirect, users cannot re-use the magic-link (it's consumed). Log an
+    // explicit breadcrumb when we hand off without captured cookies so the
+    // regression is visible in Sentry.
+    if (cookiesToPropagate.length === 0) {
+      Sentry.captureMessage(
+        'confirm.sso_redirect.no_session_cookies',
+        'warning',
+      )
+    }
+    return redirectWithCookies(ssoUrl)
   } catch (err) {
     // Non-blocking — Supabase session is set (D-03)
     if (err instanceof CircleApiError) {
@@ -110,6 +174,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         tags: { 'circle-api': 'true', op: 'generateSsoUrl' },
       })
     }
-    return NextResponse.redirect(new URL(FALLBACK_PATH, origin), { status: 303 })
+    return redirectWithCookies(new URL(FALLBACK_PATH, origin))
   }
 }
