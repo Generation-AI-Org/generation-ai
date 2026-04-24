@@ -99,7 +99,7 @@ Der Unified-Signup-Flow ist **zu 95% durch**. End-to-End auf `feature/phase-25-c
 
 ### Bug #4 (cosmetisch) — Success-Screen zeigt "Warteliste"-Text (FIXED 2026-04-25)
 
-**Commit:** `<filled-in-on-commit>` (branch `feature/phase-25-circle-api-sync`)
+**Commit:** `1588a28` (branch `feature/phase-25-circle-api-sync`)
 
 **Fix:** `apps/website/components/join/join-success-card.tsx` — Headline + Body-Copy
 auf real-signup confirmation umgestellt. CTAs unverändert.
