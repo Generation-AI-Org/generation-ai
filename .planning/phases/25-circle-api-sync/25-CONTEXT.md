@@ -148,17 +148,23 @@ Signup-Flow ist so reibungsarm wie möglich. Technisch: Supabase bleibt Source-o
 
 ---
 
-## Offene Fragen (zu klären vor Planning)
+## Resolved Open Questions (2026-04-24, autonomous --interactive)
 
-1. **Circle Business-Plan-API Token:** Existiert der Plan bereits? Falls nicht, Upgrade-Aufwand + Cost-Check.
-2. **Community-ID + Welcome-Space-ID:** Luca liefert aus Circle-Admin-Panel.
-3. **Circle-Member-Role:** Default-Role beim Provisioning? „Member" reicht, oder bedarf es eines spezifischen Tier (z.B. für Freemium-Model)?
-4. **SSO-Link-Lebensdauer:** Circle-API konfiguriert wie lange SSO-URLs gültig sind. Für Mail-Flow: 7 Tage? 24h? Empfehlung: so lang wie Supabase-Confirm-Link (üblich 24h oder 7 Tage).
-5. **Existing-User-Migration:** Die ~50 Legacy-User in Supabase — lassen wir die bei manueller Dual-Login, oder migrieren wir sie? Empfehlung: **V1 manuelle Wartung**, Bulk-Migration-Script im Backlog.
-6. **Admin-Reprovision-Endpoint:** Admin-Auth via Magic-Link + Role-Check (wie Phase 17 Admin-Tools) oder eigenes Secret-Token-Header?
-7. **Mail-Template-Branching:** Sollen Confirm-Mails je nach Source (`/join` vs. Test-Signup vs. Waitlist-Migration) unterschiedlichen Text haben? Empfehlung: V1 **einheitlich**, Personalisierung in Phase 27.
-8. **Monitoring + Alerting:** Neben Sentry — Slack-Webhook für Signup-Counter (Daily-Summary „5 neue User heute")? Nice-to-have, nicht V1.
-9. **Circle-Profile-Pre-Fill:** Bei Signup-Form werden Email + Name erfasst. Circle-Member wird mit diesen Feldern provisioniert. Andere Felder (Bio, Avatar) bleiben leer → User füllt sie in Circle selbst. OK?
+Alle 9 originalen offenen Fragen + 2 Ergänzungen wurden vor Plan-Dispatch geklärt:
+
+- **Q1 Circle-API-Token** — Business-Plan aktiv, Admin-Token vorhanden. In Vercel-Env einspielen (prod + preview + dev).
+- **Q2 Community/Space-IDs** — Circle-MCP verfügbar (`mcp__aae5c88c-*`), IDs werden vom Planner/Executor via MCP live discovered statt hardcoded.
+- **Q3 Member-Role** — Standard `member` beim Provisioning. Upgrades via Circle-Admin manuell.
+- **Q4 SSO-Link-TTL** — **7 Tage** (matcht Supabase-Confirm-Link).
+- **Q5 Legacy-User-Migration** — **V1 manuell**: bleiben in Dual-Login, Re-Provision-Script deckt Edge-Cases. Bulk-Migration im Backlog.
+- **Q6 Admin-Reprovision-Auth** — **Magic-Link + Role-Check** (Phase-17-Pattern, konsistent mit Admin-Tools).
+- **Q7 Mail-Template-Branching** — **V1 einheitlich**, ein Template für alle Sources. Personalisierung in Phase 27.
+- **Q8 Monitoring** — **Sentry reicht** für V1. Slack-Webhook nicht in Scope.
+- **Q9 Profile-Pre-Fill** — **Nur Email + Name** an Circle. Uni/Status/Motivation bleiben in Supabase-Metadata (unsere Seite).
+- **Q10 Waitlist-Migration (Ergänzung)** — **Re-Invite-Mail-Script** post-Launch: Waitlist-Einträge bekommen Mail "Wir sind live — hier ist dein Account-Link". Einmalig, kein Auto-Trigger.
+- **Q11 Signup-Reactivation-Gate (Ergänzung)** — **Env-Var Feature-Flag `SIGNUP_ENABLED=true|false`**. Default false, Luca flippt in Phase 27 ohne Code-Deploy.
+
+**UI-SPEC-Gate:** Übersprungen — Phase 25 ist 90% Backend. UI-Work (Confirm-Route-Redirect, Fallback-Banner) ist minimal und nutzt bestehende DS-Tokens aus Phase 20.6. Confirm-Mail-Template aus Phase 17 existiert bereits.
 
 ---
 
