@@ -4,7 +4,8 @@ import { useEffect, useRef } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { ArrowRight } from 'lucide-react'
 
-// Success card shown after successful waitlist submit (D-22, Inline-Swap).
+// Success card shown after successful signup submit (D-22, Inline-Swap).
+// Phase 25: copy updated from waitlist-V1 to real-signup confirmation.
 // Animates in while form animates out (AnimatePresence mode="wait" in JoinFormSection).
 
 export interface JoinSuccessCardProps {
@@ -20,7 +21,7 @@ export function JoinSuccessCard({ name }: JoinSuccessCardProps) {
     headingRef.current?.focus()
   }, [])
 
-  // Extract first name for the headline (D-22: "Danke, [name]!")
+  // Extract first name for the headline.
   const firstName = name.trim().split(/\s+/)[0] ?? name
 
   return (
@@ -42,7 +43,7 @@ export function JoinSuccessCard({ name }: JoinSuccessCardProps) {
           lineHeight: 'var(--lh-headline)',
         }}
       >
-        Danke, {firstName}! Wir melden uns, sobald wir live gehen.
+        Willkommen, {firstName}! Du bist gleich drin.
       </h2>
 
       {/* Body */}
@@ -50,8 +51,8 @@ export function JoinSuccessCard({ name }: JoinSuccessCardProps) {
         className="mt-4 leading-[1.65] text-text-secondary text-pretty"
         style={{ fontSize: 'var(--fs-body)' }}
       >
-        Du stehst auf der Warteliste. Schau schon mal in deinen Posteingang —
-        wir haben dir eine kurze Bestätigung geschickt.
+        Wir haben dir eine Bestätigungs-E-Mail geschickt. Klicke den Link
+        darin — danach bist du eingeloggt und in der Community.
       </p>
 
       {/* Primary CTA — Assessment (D-15): "Jetzt Level testen (2 min)" → /test */}
