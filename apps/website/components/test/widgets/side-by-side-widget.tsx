@@ -147,7 +147,7 @@ export function SideBySideWidget({
                       }
                     }}
                     className={cn(
-                      'min-h-[40px] rounded-full border px-3 py-1 text-sm transition-colors',
+                      'min-h-[48px] rounded-full border px-3 py-1 text-sm transition-colors',
                       'focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] focus-visible:outline-offset-2',
                       'disabled:cursor-not-allowed disabled:opacity-60',
                       isChecked

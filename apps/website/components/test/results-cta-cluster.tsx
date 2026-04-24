@@ -58,7 +58,7 @@ export function ResultsCtaCluster({ slug, skills }: ResultsCtaClusterProps) {
       <button
         type="button"
         onClick={handleRetry}
-        className="rounded-full border border-[var(--border)] px-6 py-2.5 font-mono text-sm text-[var(--text-muted)] transition-colors hover:border-[var(--slate-7)] hover:text-[var(--text)]"
+        className="min-h-[48px] rounded-full border border-[var(--border)] px-6 py-2.5 font-mono text-sm text-[var(--text-muted)] transition-colors hover:border-[var(--slate-7)] hover:text-[var(--text)]"
       >
         Test nochmal machen
       </button>

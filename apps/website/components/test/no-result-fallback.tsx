@@ -14,7 +14,7 @@ export function NoResultFallback() {
       </h1>
       <Link
         href="/test"
-        className="rounded-full bg-[var(--accent)] px-8 py-3 font-mono text-sm font-bold tracking-[0.02em] text-[var(--text-on-accent)]"
+        className="inline-flex min-h-[48px] items-center justify-center rounded-full bg-[var(--accent)] px-8 py-3 font-mono text-sm font-bold tracking-[0.02em] text-[var(--text-on-accent)]"
       >
         Test starten
       </Link>
