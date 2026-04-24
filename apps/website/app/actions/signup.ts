@@ -4,9 +4,14 @@ import { headers } from 'next/headers'
 import { randomBytes } from 'node:crypto'
 import { z } from 'zod'
 import * as Sentry from '@sentry/nextjs'
+import { Resend } from 'resend'
+import { render } from '@react-email/render'
 import { createAdminClient } from '@genai/auth'
 import { addMemberToSpace, CircleApiError, createMember } from '@genai/circle'
+import { ConfirmSignupEmail } from '@genai/emails'
 import { checkSignupRateLimit, getClientIp } from '@/lib/rate-limit'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 // ---------------------------------------------------------------------------
 // Result types (identical shape to Phase 23 WaitlistResult for drop-in swap)
@@ -313,51 +318,56 @@ async function _submitJoinSignupInner(formData: FormData): Promise<SignupResult>
   }
 
   // -- 7. Trigger confirmation email ---------------------------------------
-  // admin.generateLink with type 'magiclink' sends the confirmation email
-  // to already-existing users. For brand-new users we use 'signup' — but
-  // that needs a password we already set above. Since we called createUser
-  // explicitly (with email_confirm:false), the user exists unconfirmed;
-  // 'magiclink' is the right type to trigger the confirm email via Supabase
-  // SMTP. Verify this live — if 'magiclink' refuses to send to unconfirmed
-  // users, switch to 'signup' with the same random password (Supabase just
-  // re-uses the existing user row).
+  // admin.generateLink in Supabase-JS v2 ONLY generates the link —
+  // it does NOT send an email, even with Custom-SMTP enabled.
+  // So we: generate the link → render our ConfirmSignup template →
+  // send via Resend directly (same path the waitlist-flow uses).
   try {
-    // REVIEW HI-02 — never read `redirectTo` origin from the request's
-    // `Origin` header (attacker-controlled via CSRF / custom client).
-    // Anchor to a server-side env constant so the magic-link URL in the
-    // outgoing email is always under our control.
     const origin =
       process.env.NEXT_PUBLIC_SITE_URL ??
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://generation-ai.org')
-    const { error: linkErr } = await supabase.auth.admin.generateLink({
-      type: 'magiclink',
+
+    // Use 'signup' type — it's the correct action for an unconfirmed user
+    // created via admin.createUser({ email_confirm: false }). Returns an
+    // action_link that points to Supabase's /verify endpoint which then
+    // redirects to redirectTo after verifying the token.
+    const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+      type: 'signup',
       email,
+      password: randomBytes(32).toString('base64url'),
       options: {
         redirectTo: `${origin}/auth/confirm`,
       },
     })
-    if (linkErr) {
-      // Fallback: if magiclink path is not accepted for unconfirmed users,
-      // try 'signup' type (needs password; reuse a fresh random — Supabase
-      // ignores the password field if the user already exists).
-      const { error: signupLinkErr } = await supabase.auth.admin.generateLink({
-        type: 'signup',
-        email,
-        password: randomBytes(32).toString('base64url'),
-        options: {
-          redirectTo: `${origin}/auth/confirm`,
-        },
+
+    if (linkErr || !linkData?.properties?.action_link) {
+      const dbg = `GENERATE_LINK_ERR: ${linkErr?.message ?? 'no action_link'}`
+      console.error('[signup][DEBUG]', dbg)
+      Sentry.captureException(linkErr ?? new Error('generateLink: no action_link'), {
+        tags: { op: 'generateLink' },
       })
-      if (signupLinkErr) {
-        console.error('[signup] generateLink (both paths) failed:', signupLinkErr)
-        Sentry.captureException(signupLinkErr, {
-          tags: { op: 'generateLink.signup' },
-        })
-      }
+      // Don't return ok:false — user is created, just mail is missing.
+      // Admin can re-trigger via a future resend-confirmation endpoint.
+      return { ok: true }
+    }
+
+    const actionLink = linkData.properties.action_link
+    const html = await render(ConfirmSignupEmail({ name: data.name, confirmationUrl: actionLink }))
+
+    const { error: sendErr } = await resend.emails.send({
+      from: 'Generation AI <noreply@generation-ai.org>',
+      to: email,
+      subject: 'Willkommen bei Generation AI 👋',
+      html,
+    })
+
+    if (sendErr) {
+      console.error('[signup][DEBUG] resend send failed:', JSON.stringify(sendErr))
+      Sentry.captureException(sendErr, { tags: { op: 'resend.emails.send' } })
     }
   } catch (mailErr) {
-    console.error('[signup] generateLink threw (non-blocking):', mailErr)
-    Sentry.captureException(mailErr, { tags: { op: 'generateLink' } })
+    console.error('[signup][DEBUG] confirm-mail send threw (non-blocking):', mailErr)
+    Sentry.captureException(mailErr, { tags: { op: 'confirm-mail-send' } })
   }
 
   return { ok: true }
