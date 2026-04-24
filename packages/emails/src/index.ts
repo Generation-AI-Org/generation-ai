@@ -13,3 +13,6 @@ export type { PartnerInquiryEmailProps } from './templates/partner-inquiry'
 
 export { default as PartnerInquiryConfirmationEmail } from './templates/partner-inquiry-confirmation'
 export type { PartnerInquiryConfirmationEmailProps } from './templates/partner-inquiry-confirmation'
+
+export { default as WaitlistConfirmationEmail } from './templates/waitlist-confirmation'
+export type { WaitlistConfirmationEmailProps } from './templates/waitlist-confirmation'
