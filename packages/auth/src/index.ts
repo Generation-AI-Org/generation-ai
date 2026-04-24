@@ -8,3 +8,6 @@
 export { createClient as createBrowserClient } from './browser'
 export { createAdminClient } from './admin'
 export { needsFirstLoginPrompt } from './password'
+
+// Phase 23 — /join Waitlist types
+export type { WaitlistRow, WaitlistInsert } from './waitlist'
