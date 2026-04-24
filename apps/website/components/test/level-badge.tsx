@@ -52,8 +52,8 @@ export function LevelBadge({ slug }: { slug: LevelSlug }) {
       >
         <Icon style={{ color: meta.colorVar }} className="h-7 w-7" aria-hidden />
         <span
-          className="font-mono text-3xl font-bold"
-          style={{ color: meta.colorVar }}
+          className="font-mono font-bold"
+          style={{ color: meta.colorVar, fontSize: '48px' }}
         >
           {meta.level}
         </span>

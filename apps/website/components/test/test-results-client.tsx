@@ -64,7 +64,10 @@ export function TestResultsClient({ nonce }: { nonce: string }) {
         <SectionTransition variant="soft-fade" />
 
         <section className="mx-auto max-w-4xl px-4 py-8">
-          <h2 className="mb-6 text-center text-2xl font-semibold text-[var(--text)]">
+          <h2
+            className="mb-6 text-center font-semibold text-[var(--text)]"
+            style={{ fontSize: 'var(--fs-h2)' }}
+          >
             Das empfehlen wir für Level {result.level}
           </h2>
           <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2">
