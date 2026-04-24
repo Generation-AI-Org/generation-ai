@@ -526,7 +526,7 @@ Plans:
 | 22.5 | `/events`-Seite | 🆕 neu | MDX-Pipeline, members-only gated, Hero + Kommende + Formate + Archiv + CTA |
 | 22.7 | Tools-Subdomain Polish | 🆕 neu | Logo-Link-Fix, Login-Button-Umbau (Registrieren + Einloggen), Hero, Nav-Sync |
 | 23 | 6/6 | Complete    | 2026-04-24 |
-| 24 | `/test` Assessment | ⏳ | Optionaler Test mit DSGVO-Consent, Score-Migration |
+| 24 | 9/9 | Complete   | 2026-04-24 |
 | 25 | Circle-API-Sync (Unified Signup) | ⏳ | Server-Action: Supabase+Circle, SSO-Link, Welcome-Flow |
 | 26 | `/community` + Subdomain-Integration | ⏳ erweitert | Eigene Seite mit MDX-Artikeln + SEO (/community/artikel/[slug]) + Featured-Tools-API |
 | 27 | Copy-Pass & Launch-Cleanup | 🆕 neu | Finales Wording, Dummy-Data raus, Meta/SEO-Pass, Signup-Go-Entscheidung |
@@ -968,7 +968,7 @@ Ideen & Follow-ups ohne feste Phase-Zuordnung. Mit `/gsd-review-backlog` in akti
 
 **Goal:** Placeholder `href="#"` mit `data-placeholder="linkedin"` Markern in `apps/website/components/partner/partner-person-card.tsx` durch echte LinkedIn-URLs für Alex, Janna und Simon ersetzen.
 **Requirements:** TBD — URLs von den 3 Personen einholen.
-**Plans:** 0 plans
+**Plans:** 9/9 plans complete
 
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
