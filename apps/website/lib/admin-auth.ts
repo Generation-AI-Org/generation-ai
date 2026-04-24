@@ -26,10 +26,40 @@ function getAllowlist(): string[] {
     .filter(Boolean)
 }
 
-export async function checkAdminAuth(_request: Request): Promise<AdminAuthResult> {
+/**
+ * REVIEW LO-02 — CSRF defence via `Origin` allowlist on admin routes.
+ *
+ * Admin routes are POST-only and high-impact (service-role mutations).
+ * Browsers always send `Origin` on cross-origin POSTs, so an explicit
+ * allowlist closes the cross-site-POST vector without depending on custom
+ * tokens. Same-origin requests (no `Origin` header, as some same-origin
+ * POSTs omit it) are allowed — session-cookie-auth already gates those.
+ */
+function getAllowedOrigins(): string[] {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://generation-ai.org'
+  const origins = new Set<string>([
+    siteUrl,
+    'https://generation-ai.org',
+    'https://www.generation-ai.org',
+  ])
+  // Vercel preview / local dev convenience — the service-role key must still
+  // be present, so this doesn't broaden the attack surface in prod.
+  if (process.env.NODE_ENV !== 'production') {
+    origins.add('http://localhost:3000')
+  }
+  return [...origins]
+}
+
+export async function checkAdminAuth(request: Request): Promise<AdminAuthResult> {
+  // LO-02: Only enforce cross-origin block when `Origin` is present.
+  // Some same-origin POSTs (e.g. from curl tests, older clients) omit it.
+  // Session-cookie-auth below still gates those requests.
+  const origin = request.headers.get('origin')
+  if (origin && !getAllowedOrigins().includes(origin)) {
+    return { ok: false, status: 403, reason: 'Cross-origin request denied' }
+  }
+
   // Route-Handler liest Session via Cookies (via @genai/auth/server createClient).
-  // _request wird derzeit nicht genutzt, bleibt aber in Signatur für zukünftige
-  // CSRF-Token-Prüfung + Content-Type-Guards.
   const supabase = await createClient()
   const {
     data: { user },

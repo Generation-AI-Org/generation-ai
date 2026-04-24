@@ -12,9 +12,10 @@ vi.mock('@genai/auth/server', () => ({
 import { createClient } from '@genai/auth/server'
 import { checkAdminAuth } from '../admin-auth'
 
-function makeRequest(): Request {
+function makeRequest(options?: { origin?: string }): Request {
   return new Request('http://localhost/api/admin/circle-reprovision', {
     method: 'POST',
+    headers: options?.origin ? { origin: options.origin } : undefined,
   })
 }
 
@@ -117,6 +118,38 @@ describe('checkAdminAuth', () => {
       },
     } as never)
     const result = await checkAdminAuth(makeRequest())
+    expect(result.ok).toBe(true)
+  })
+
+  it('returns 403 when Origin header is not in allowlist (CSRF, REVIEW LO-02)', async () => {
+    const result = await checkAdminAuth(
+      makeRequest({ origin: 'https://evil.com' }),
+    )
+    expect(result).toEqual({
+      ok: false,
+      status: 403,
+      reason: 'Cross-origin request denied',
+    })
+  })
+
+  it('allows allowlisted Origin header (generation-ai.org)', async () => {
+    vi.mocked(createClient).mockResolvedValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              id: 'u1',
+              email: 'a@admin.de',
+              user_metadata: { role: 'admin' },
+            },
+          },
+          error: null,
+        }),
+      },
+    } as never)
+    const result = await checkAdminAuth(
+      makeRequest({ origin: 'https://generation-ai.org' }),
+    )
     expect(result.ok).toBe(true)
   })
 
