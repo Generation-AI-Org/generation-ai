@@ -46,8 +46,14 @@ describe("buildArticleSchema", () => {
       excerpt: "y",
     };
     const json = JSON.stringify(buildArticleSchema(fm)).replace(/</g, "\\u003c");
+    // Canonical Next.js XSS-pattern (per RESEARCH §6.2) escapes only `<` —
+    // sufficient because the parser cannot see a tag boundary without `<`.
+    // Closing `>` stays literal. Plan-spec asserted `\u003c…\u003e` which
+    // would require also escaping `>` — bug in the spec, fixed here per Rule 1.
     expect(json).not.toContain("<script>");
-    expect(json).toContain("\\u003cscript\\u003e");
+    expect(json).not.toContain("</script>");
+    expect(json).toContain("\\u003cscript>");
+    expect(json).toContain("\\u003c/script>");
   });
 });
 
