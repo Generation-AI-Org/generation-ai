@@ -211,7 +211,12 @@ export function UniCombobox(props: UniComboboxProps) {
                   key={`${option}-${idx}`}
                   id={`${listboxId}-opt-${idx}`}
                   role="option"
-                  aria-selected={isActive}
+                  // WR-04: aria-selected must reflect the *actual selection*,
+                  // not keyboard-focus position. Keyboard focus is already
+                  // communicated via aria-activedescendant on the input
+                  // (see line above). Visual highlight for the active option
+                  // stays via the className branch below.
+                  aria-selected={option === props.value}
                   onMouseDown={(e) => {
                     // onMouseDown (not onClick) so we fire BEFORE input blur closes dropdown
                     e.preventDefault()
