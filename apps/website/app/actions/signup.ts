@@ -289,7 +289,11 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
   // users, switch to 'signup' with the same random password (Supabase just
   // re-uses the existing user row).
   try {
-    const origin = hdrs.get('origin') ?? 'https://generation-ai.org'
+    // REVIEW HI-02 — never read `redirectTo` origin from the request's
+    // `Origin` header (attacker-controlled via CSRF / custom client).
+    // Anchor to a server-side env constant so the magic-link URL in the
+    // outgoing email is always under our control.
+    const origin = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://generation-ai.org'
     const { error: linkErr } = await supabase.auth.admin.generateLink({
       type: 'magiclink',
       email,
