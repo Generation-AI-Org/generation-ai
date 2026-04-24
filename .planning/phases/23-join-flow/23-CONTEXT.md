@@ -4,7 +4,7 @@ slug: join-flow
 type: context
 status: planning
 created: 2026-04-23
-last-updated: 2026-04-23
+last-updated: 2026-04-24
 depends_on:
   - 20.6 (Landing Sections Rebuild — Nav + DS baseline, CTAs zeigen auf /join)
   - 21 (/about — FAQ als Fallback-Link „Offene Fragen?")
@@ -97,6 +97,12 @@ Später optional (Phase 24 Assessment, Phase 27):
 - **D-08** — Form-Validation Client-side (instant) + Server-side (Zod-Schema, bereits projektweit verwendet). Fehler-Messages deutsch (VOICE.md-konform).
 - **D-09** — Visual-Design: zwei CTA-Buttons im Hero **nicht** sinnvoll (es gibt nur einen primären Pfad). Nur ein Submit-Button „Kostenlos beitreten".
 - **D-10** — Nach Phase 25 Circle-API-Sync wird V1-Waitlist-Logic umgeswitcht auf echten Supabase-Signup + Magic-Link + Circle-Auto-Enrollment. Der V1-Code muss so strukturiert sein, dass der Submit-Handler atomar austauschbar ist (Interface bleibt stabil).
+- **D-11** — **Hero-Copy H1:** „2 Minuten — dann bist du dabei." (Conversion-fokussiert, baut auf Benefit-Icon „In 2 Minuten" auf).
+- **D-12** — **Uni/Ausbildung-Feld:** Combobox mit Autocomplete über deutsche Unis + Freitext-Option für „Andere / Ausbildung / Berufstätig". Non-Students dürfen frei eintippen (Simon §1.3-konform).
+- **D-13** — **Studiengang:** optional (Minimal-Friction). Kein Pflicht-Gate.
+- **D-14** — **DSGVO + Marketing = 2 getrennte Checkboxen.** DSGVO required, Marketing optional + default unchecked. Rechtlich sauber (Kopplungsverbot).
+- **D-15** — **Assessment-Integration als optionaler Step 2 in /join** (nicht als separater Post-Signup-Link). Step 2 ist Assessment-Weiche mit Link zu `/test` (Phase 24) + Skip-Button. Der Flow bleibt übersichtlich 3+1 (Fragebogen → Assessment-Weiche → Submit → Confirmation). Post-Signup wird Assessment zusätzlich via Welcome-Mails und Circle-Push erneut forciert — die mittelfristige Community-Mechanik (Level-Progression, nächste Level) baut auf dem Test-Score auf. Skipbar bleibt wichtig für User ohne Zeit. **Phase 23 baut Step 2 als Weiche — die `/test`-Seite selbst kommt in Phase 24.**
+- **D-16** — **Social-Share-Buttons auf Success-Screen: V1 ohne.** Phase 27 Copy-Pass entscheidet ob Viral-Coefficient eine Aufnahme rechtfertigt.
 
 ---
 
@@ -122,16 +128,18 @@ Später optional (Phase 24 Assessment, Phase 27):
 
 ---
 
-## Offene Fragen (zu klären vor Planning)
+## Resolved Questions (2026-04-24, `/gsd-autonomous --interactive`)
 
-1. **Hero-Copy:** Simon §10 hat keinen exakten H1-Claim. Vorschläge: „2 Minuten — dann bist du dabei." vs. „Willkommen in der Community." vs. „Fangen wir an."
-2. **Uni-Dropdown vs. Freitextfeld:** Dropdown aller deutschen Unis + „Andere" ist UX-Win aber wartungsintensiv. Freitextfeld ist simpel aber unsauber. Empfehlung: **Combobox** mit autocomplete + freier Eingabe.
-3. **Studiengang-Feld:** optional oder required? Empfehlung: optional (geringer Friction-Cost, Luca hat die Info ja in Circle wenn User aktiv wird).
-4. **Marketing-Opt-in vs. DSGVO-Consent:** zwei getrennte Checkboxen (rechtlich sauber) oder eine kombinierte? Empfehlung: zwei (Konsent-Kaskade: Datenschutz required, Marketing optional).
-5. **Waitlist-Mail-Template:** kurzer Text-Mail vs. volles React-Email-Template im Brand-Look? Empfehlung: Letztere (analog Phase 17 Supabase-Templates).
-6. **Social-Share-Buttons auf Success-Screen:** nice-to-have oder V1-Scope? Empfehlung: V1 ohne, in Phase 27 prüfen ob Viral-Coefficient das rechtfertigt.
-7. **Waitlist-Table: separate Tabelle oder `auth.users` mit Flag?** Empfehlung: separate `waitlist`-Table — cleaner, kein Noise in `auth.users`, einfacher Export für Launch-Kommunikation.
-8. **Assessment-Integration:** Luca hat in Phase 24 `/test` als Assessment geplant. Wird das **inline** in `/join` integriert oder **optional danach** angeboten? Empfehlung: separate Seite, optional angeboten („Möchtest du dich einschätzen lassen? →") — minimiert Join-Friction.
+Alle ursprünglich offenen Fragen geklärt und in D-11..D-16 kodifiziert:
+
+1. **Hero-Copy** → D-11 („2 Minuten — dann bist du dabei.")
+2. **Uni-Feld** → D-12 (Combobox + Autocomplete + Freitext)
+3. **Studiengang** → D-13 (optional)
+4. **Marketing vs. DSGVO** → D-14 (2 getrennte Checkboxen)
+5. **Waitlist-Mail-Template** → D-07 / D-14-Referenz (React-Email im Brand-Look, Phase 17 Setup)
+6. **Social-Share** → D-16 (V1 ohne, Phase 27 Review)
+7. **Waitlist-Table** → D-05 (separate `waitlist`-Table)
+8. **Assessment-Integration** → D-15 (optionaler Step 2 in /join als Weiche, nicht Post-Signup-Link)
 
 ---
 
