@@ -35,7 +35,7 @@ Der Unified-Signup-Flow ist **zu 95% durch**. End-to-End auf `feature/phase-25-c
 
 ### Bug #2 — Circle `generateSsoUrl` (FIXED 2026-04-25)
 
-**Commit:** `<filled-in-on-commit>` (branch `feature/phase-25-circle-api-sync`)
+**Commit:** `25c5f5b` (branch `feature/phase-25-circle-api-sync`)
 
 **Root-Cause (verified live):** `generateSsoUrl` zielte auf eine erfundene API:
 1. Falscher Endpoint: `/api/admin/v2/headless_auth_tokens` existiert nicht — korrekt ist `/api/v1/headless/auth_token` (eigene API-Surface, nicht Admin v2)
@@ -59,7 +59,7 @@ Der Unified-Signup-Flow ist **zu 95% durch**. End-to-End auf `feature/phase-25-c
 
 ### Bug #1 — Circle `addMemberToSpace` (FIXED 2026-04-25)
 
-**Commit:** `<filled-in-on-commit>` (branch `feature/phase-25-circle-api-sync`)
+**Commit:** `860302b` (branch `feature/phase-25-circle-api-sync`)
 
 **Root-Cause (verified live via Circle MCP):** Plan-B's Payload-Annahme war doppelt falsch:
 1. Falscher Key: `community_member_id` — Circle's `POST /space_members` resolved den Member über `email`, nicht über Member-ID
