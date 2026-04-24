@@ -28,27 +28,83 @@ if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN
   )
 }
 
-let ratelimit: Ratelimit | null = null
+let waitlistLimiter: Ratelimit | null = null
+let confirmLimiter: Ratelimit | null = null
+let signupLimiter: Ratelimit | null = null
+let adminLimiter: Ratelimit | null = null
+
+function envPresent(): boolean {
+  return !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+}
 
 function getLimiter(): Ratelimit | null {
-  if (ratelimit) return ratelimit
-  // Graceful: if env vars missing, disable (fail-open) — see WR-05 startup warn above
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
-    return null
-  }
+  if (waitlistLimiter) return waitlistLimiter
+  if (!envPresent()) return null
   try {
     const redis = Redis.fromEnv()
-    ratelimit = new Ratelimit({
+    waitlistLimiter = new Ratelimit({
       redis,
       limiter: Ratelimit.slidingWindow(5, '15 m'), // D-06
       prefix: 'ratelimit:waitlist:ip',
       analytics: true,
     })
-    return ratelimit
+    return waitlistLimiter
   } catch (err) {
-    // WR-05: elevate to console.error so log aggregators (Better Stack,
-    // Vercel logs) surface it as an error, not a warning.
     console.error('[rate-limit] Upstash init failed — falling back to unlimited:', err)
+    return null
+  }
+}
+
+function getConfirmLimiter(): Ratelimit | null {
+  if (confirmLimiter) return confirmLimiter
+  if (!envPresent()) return null
+  try {
+    const redis = Redis.fromEnv()
+    confirmLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, '15 m'), // Phase 25 Plan D
+      prefix: 'ratelimit:confirm:ip',
+      analytics: true,
+    })
+    return confirmLimiter
+  } catch (err) {
+    console.error('[rate-limit] Upstash confirm-limiter init failed:', err)
+    return null
+  }
+}
+
+function getSignupLimiter(): Ratelimit | null {
+  if (signupLimiter) return signupLimiter
+  if (!envPresent()) return null
+  try {
+    const redis = Redis.fromEnv()
+    signupLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, '15 m'), // Phase 25 Plan E — matches waitlist budget
+      prefix: 'ratelimit:signup:ip',
+      analytics: true,
+    })
+    return signupLimiter
+  } catch (err) {
+    console.error('[rate-limit] Upstash signup-limiter init failed:', err)
+    return null
+  }
+}
+
+function getAdminLimiter(): Ratelimit | null {
+  if (adminLimiter) return adminLimiter
+  if (!envPresent()) return null
+  try {
+    const redis = Redis.fromEnv()
+    adminLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, '15 m'), // Phase 25 Plan F — admin-user quota
+      prefix: 'ratelimit:admin-reprovision:userid',
+      analytics: true,
+    })
+    return adminLimiter
+  } catch (err) {
+    console.error('[rate-limit] Upstash admin-limiter init failed:', err)
     return null
   }
 }
@@ -72,6 +128,62 @@ export async function checkWaitlistRateLimit(ip: string): Promise<RateLimitResul
     // aggregation. TODO(phase-27): Sentry.captureException(err, { level: 'warning' })
     // with a rate-limited breadcrumb so we don't flood Sentry on sustained outages.
     console.error('[rate-limit] Upstash limit() failed — failing open for this request:', err)
+    return { success: true }
+  }
+}
+
+/**
+ * Check if an IP can hit the /auth/confirm route (Phase 25).
+ * Same 5/15min budget as waitlist. Fails open on Upstash outage.
+ */
+export async function checkConfirmRateLimit(ip: string): Promise<RateLimitResult> {
+  const limiter = getConfirmLimiter()
+  if (!limiter) return { success: true }
+  try {
+    const { success, reset, remaining } = await limiter.limit(ip)
+    if (success) return { success: true, remaining }
+    const retryAfter = Math.max(1, Math.ceil((reset - Date.now()) / 1000))
+    return { success: false, retryAfter, reset }
+  } catch (err) {
+    console.error('[rate-limit] confirm limit() failed — failing open:', err)
+    return { success: true }
+  }
+}
+
+/**
+ * Check if an IP can POST /api/auth/signup (Phase 25 Plan E).
+ * 5 requests / 15 min budget. Fails open on Upstash outage.
+ */
+export async function checkSignupRateLimit(ip: string): Promise<RateLimitResult> {
+  const limiter = getSignupLimiter()
+  if (!limiter) return { success: true }
+  try {
+    const { success, reset, remaining } = await limiter.limit(ip)
+    if (success) return { success: true, remaining }
+    const retryAfter = Math.max(1, Math.ceil((reset - Date.now()) / 1000))
+    return { success: false, retryAfter, reset }
+  } catch (err) {
+    console.error('[rate-limit] signup limit() failed — failing open:', err)
+    return { success: true }
+  }
+}
+
+/**
+ * Check if an admin can hit /api/admin/circle-reprovision (Phase 25 Plan F).
+ * Keyed by admin user-id (not IP) — 20 requests / 15 min.
+ */
+export async function checkAdminReprovisionRateLimit(
+  adminUserId: string,
+): Promise<RateLimitResult> {
+  const limiter = getAdminLimiter()
+  if (!limiter) return { success: true }
+  try {
+    const { success, reset, remaining } = await limiter.limit(adminUserId)
+    if (success) return { success: true, remaining }
+    const retryAfter = Math.max(1, Math.ceil((reset - Date.now()) / 1000))
+    return { success: false, retryAfter, reset }
+  } catch (err) {
+    console.error('[rate-limit] admin-reprovision limit() failed — failing open:', err)
     return { success: true }
   }
 }
