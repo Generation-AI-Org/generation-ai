@@ -78,7 +78,7 @@ Der Unified-Signup-Flow ist **zu 95% durch**. End-to-End auf `feature/phase-25-c
 
 ### Bug #5 — `getMemberByEmail` returnte FALSCHEN User (DSGVO-CRITICAL, FIXED 2026-04-25)
 
-**Commit:** `<filled-in-on-commit>` (branch `feature/phase-25-circle-api-sync`)
+**Commit:** `5b920d6` (branch `feature/phase-25-circle-api-sync`)
 
 **Symptom (E2E-Test, 2026-04-24 22:19):** Frischer Signup mit `+p25-test3@gmail.com` landete via Confirm-Link als **Bastian Gedon** in Circle. Supabase-DB zeigte: alle 3 Phase-25-Test-User (test1/2/3) hatten `circle_member_id = "80552151"` (Bastians ID) im `user_metadata`.
 
