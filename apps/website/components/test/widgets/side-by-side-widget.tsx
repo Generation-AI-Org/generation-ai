@@ -12,6 +12,7 @@ import type {
   SideBySideQuestion,
 } from '@/lib/assessment/types'
 import type { WidgetProps } from './widget-types'
+import { useRadioGroupKeyboard } from '@/hooks/use-radio-group-keyboard'
 
 export function SideBySideWidget({
   question,
@@ -22,6 +23,13 @@ export function SideBySideWidget({
   const reducedMotion = useReducedMotion()
   const choice = answer?.choice ?? null
   const reasonIds = answer?.reasonIds ?? []
+  // WR-03: roving tabindex + arrow-key nav for the A/B radiogroup.
+  const CHOICES = ['a', 'b'] as const
+  const checkedIndex = choice === null ? -1 : CHOICES.indexOf(choice)
+  const { containerRef, tabIndexFor, onKeyDown, onOptionFocus } = useRadioGroupKeyboard(
+    CHOICES.length,
+    checkedIndex,
+  )
 
   const [phaseBAnnounced, setPhaseBAnnounced] = useState(false)
   useEffect(() => {
@@ -66,11 +74,13 @@ export function SideBySideWidget({
     >
       {/* Phase A */}
       <div
+        ref={containerRef}
         role="radiogroup"
         aria-label="Welcher Output ist besser?"
+        onKeyDown={onKeyDown}
         className="grid grid-cols-1 gap-4 sm:grid-cols-2"
       >
-        {(['a', 'b'] as const).map((key) => {
+        {CHOICES.map((key, index) => {
           const isSelected = choice === key
           return (
             <button
@@ -79,6 +89,8 @@ export function SideBySideWidget({
               role="radio"
               aria-checked={isSelected}
               disabled={disabled}
+              tabIndex={tabIndexFor(index)}
+              onFocus={() => onOptionFocus(index)}
               onClick={() => handleChoose(key)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {

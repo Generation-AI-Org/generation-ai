@@ -13,9 +13,21 @@ export interface OptionCardProps {
   disabled?: boolean
   /** Optional id for testing/ARIA hook-up */
   id?: string
+  /** WR-03: roving tabindex from parent radio-group. */
+  tabIndex?: number
+  /** WR-03: notify parent when this option receives focus. */
+  onFocus?: () => void
 }
 
-export function OptionCard({ label, selected, onSelect, disabled, id }: OptionCardProps) {
+export function OptionCard({
+  label,
+  selected,
+  onSelect,
+  disabled,
+  id,
+  tabIndex,
+  onFocus,
+}: OptionCardProps) {
   return (
     <button
       type="button"
@@ -23,6 +35,8 @@ export function OptionCard({ label, selected, onSelect, disabled, id }: OptionCa
       id={id}
       aria-checked={selected}
       disabled={disabled}
+      tabIndex={tabIndex}
+      onFocus={onFocus}
       onClick={onSelect}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {

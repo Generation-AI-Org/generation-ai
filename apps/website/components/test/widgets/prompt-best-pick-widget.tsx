@@ -11,6 +11,7 @@ import type {
   BestPromptQuestion,
 } from '@/lib/assessment/types'
 import type { WidgetProps } from './widget-types'
+import { useRadioGroupKeyboard } from '@/hooks/use-radio-group-keyboard'
 
 export interface PromptBestPickWidgetProps
   extends WidgetProps<BestPromptQuestion, BestPromptAnswer> {
@@ -37,15 +38,22 @@ export function PromptBestPickWidget({
   highlightedCode,
 }: PromptBestPickWidgetProps) {
   const selected = answer?.optionId ?? null
+  const checkedIndex = question.options.findIndex((o) => o.id === selected)
+  const { containerRef, tabIndexFor, onKeyDown, onOptionFocus } = useRadioGroupKeyboard(
+    question.options.length,
+    checkedIndex,
+  )
 
   return (
     <div
+      ref={containerRef}
       role="radiogroup"
       aria-label={question.prompt}
       data-widget-type="best-prompt"
+      onKeyDown={onKeyDown}
       className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2"
     >
-      {question.options.map((opt) => {
+      {question.options.map((opt, index) => {
         const isSelected = selected === opt.id
         const html = highlightedCode[opt.id] ?? fallbackPre(opt.code)
         return (
@@ -55,6 +63,8 @@ export function PromptBestPickWidget({
             role="radio"
             aria-checked={isSelected}
             disabled={disabled}
+            tabIndex={tabIndexFor(index)}
+            onFocus={() => onOptionFocus(index)}
             onClick={() =>
               onAnswer({
                 questionId: question.id,

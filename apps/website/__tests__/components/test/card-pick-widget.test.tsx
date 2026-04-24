@@ -63,4 +63,31 @@ describe('CardPickWidget', () => {
       'true',
     )
   })
+
+  it('WR-03: only one option is tabbable at a time (roving tabindex)', () => {
+    render(<CardPickWidget question={mockQuestion} answer={undefined} onAnswer={vi.fn()} />)
+    const radios = screen.getAllByRole('radio')
+    const tabbable = radios.filter((r) => r.getAttribute('tabindex') === '0')
+    expect(tabbable).toHaveLength(1)
+    // First option is tabbable when nothing is checked.
+    expect(tabbable[0]).toHaveAccessibleName(/Option A/i)
+  })
+
+  it('WR-03: ArrowDown moves focus to the next option', async () => {
+    const user = userEvent.setup()
+    render(<CardPickWidget question={mockQuestion} answer={undefined} onAnswer={vi.fn()} />)
+    const optA = screen.getByRole('radio', { name: /Option A/i })
+    optA.focus()
+    await user.keyboard('{ArrowDown}')
+    expect(screen.getByRole('radio', { name: /Option B/i })).toHaveFocus()
+  })
+
+  it('WR-03: ArrowUp from first option wraps to last', async () => {
+    const user = userEvent.setup()
+    render(<CardPickWidget question={mockQuestion} answer={undefined} onAnswer={vi.fn()} />)
+    const optA = screen.getByRole('radio', { name: /Option A/i })
+    optA.focus()
+    await user.keyboard('{ArrowUp}')
+    expect(screen.getByRole('radio', { name: /Option C/i })).toHaveFocus()
+  })
 })
