@@ -134,7 +134,7 @@ describe('createMember', () => {
     })
   })
 
-  it('sends skip_invitation:true + space_ids + password by default', async () => {
+  it('sends skip_invitation:false (default) + space_ids + password', async () => {
     const fetchSpy = vi.fn(async (_url: unknown, init?: RequestInit) => {
       // First call: getMemberByEmail miss (404)
       if ((init?.method ?? 'GET') === 'GET') {
@@ -161,7 +161,10 @@ describe('createMember', () => {
 
     const postCall = fetchSpy.mock.calls[1]
     const body = JSON.parse((postCall?.[1] as RequestInit).body as string)
-    expect(body.skip_invitation).toBe(true)
+    // Default skip_invitation:false → Circle sends its Set-Password mail
+    // (the only way to activate the member; verified live 2026-04-25 that
+    // headless SSO doesn't work for active:false members).
+    expect(body.skip_invitation).toBe(false)
     expect(body.space_ids).toEqual([2574363])
     expect(typeof body.password).toBe('string')
     // Circle policy: ≥6 chars, 1 upper, 1 num, 1 sym
@@ -169,6 +172,22 @@ describe('createMember', () => {
     expect(body.password).toMatch(/[A-Z]/)
     expect(body.password).toMatch(/[0-9]/)
     expect(body.password).toMatch(/[!@#$%^&*]/)
+  })
+
+  it('respects explicit skipInvitation:true override', async () => {
+    const fetchSpy = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      if ((init?.method ?? 'GET') === 'GET') {
+        return { ok: false, status: 404, headers: new Headers(), json: async () => ({}) } as unknown as Response
+      }
+      return {
+        ok: true, status: 201, headers: new Headers(),
+        json: async () => ({ message: 'ok', community_member: { id: 1, email: 'a@b.de', name: 'A', community_id: 511295 } }),
+      } as unknown as Response
+    })
+    global.fetch = fetchSpy as unknown as typeof fetch
+    await createMember({ email: 'a@b.de', name: 'A', skipInvitation: true })
+    const body = JSON.parse((fetchSpy.mock.calls[1]?.[1] as RequestInit).body as string)
+    expect(body.skip_invitation).toBe(true)
   })
 })
 

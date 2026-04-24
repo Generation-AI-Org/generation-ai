@@ -172,7 +172,11 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
 
   const { data: createData, error: createErr } = await supabase.auth.admin.createUser({
     email,
-    email_confirm: false,
+    // Auto-confirm: Circle's Set-Password mail (skip_invitation:false in
+    // createMember below) is the de-facto email-validation; if the user can
+    // accept Circle's invitation, the email is theirs. We trust that signal.
+    // This removes the need for our own confirm-mail in the happy path.
+    email_confirm: true,
     // Random 32-byte password — never shown to user. They'll set one via
     // Phase-19 set-password flow. Supabase requires a password on createUser
     // but the magic-link/confirm flow does not use it.
@@ -223,7 +227,10 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
       email,
       name: data.name,
       spaceIds,
-      skipInvitation: true, // we send our own confirmation email
+      // skipInvitation defaults to false → Circle sends its Set-Password
+      // email. This is the only way to flip the new member from active:false
+      // to active:true (verified live 2026-04-25 — no admin or headless API
+      // can activate). After Set-Password, future logins via Headless SSO.
     })
     circleMemberId = result.circleMemberId
   } catch (err) {
@@ -281,48 +288,13 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
     })
   }
 
-  // -- 7. Trigger confirmation email ---------------------------------------
-  // admin.generateLink in Supabase-JS v2 ONLY generates the link —
-  // it does NOT send an email, even with Custom-SMTP enabled.
-  // So we: generate the link → render our ConfirmSignup template →
-  // send via Resend directly (same path the waitlist-flow uses).
+  // -- 7. Send our branded Welcome mail -------------------------------------
+  // We send a welcome mail (brand + tools-link) but NO confirmation link —
+  // Circle's Set-Password mail (triggered automatically by createMember above)
+  // is the action-mail. Our welcome explains what's coming and links to tools.
   try {
-    const origin =
-      process.env.NEXT_PUBLIC_SITE_URL ??
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://generation-ai.org')
-
-    // Use 'signup' type — it's the correct action for an unconfirmed user
-    // created via admin.createUser({ email_confirm: false }). Returns an
-    // action_link that points to Supabase's /verify endpoint which then
-    // redirects to redirectTo after verifying the token.
-    const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-      type: 'signup',
-      email,
-      password: randomBytes(32).toString('base64url'),
-      options: {
-        redirectTo: `${origin}/auth/confirm`,
-      },
-    })
-
-    if (linkErr || !linkData?.properties?.hashed_token) {
-      Sentry.captureException(linkErr ?? new Error('generateLink: no hashed_token'), {
-        tags: { op: 'generateLink' },
-      })
-      // Don't return ok:false — user is created, just mail is missing.
-      // Admin can re-trigger via a future resend-confirmation endpoint.
-      return { ok: true }
-    }
-
-    // Build our own confirm URL that points directly to our PKCE-style
-    // verifyOtp route. We bypass Supabase's /auth/v1/verify endpoint (which
-    // uses the implicit flow and is subject to the Site-URL-fallback bug).
-    // The hashed_token from generateLink IS the token_hash verifyOtp expects.
-    const confirmUrl = new URL(`${origin}/auth/confirm`)
-    confirmUrl.searchParams.set('token_hash', linkData.properties.hashed_token)
-    confirmUrl.searchParams.set('type', 'signup')
-
     const html = await render(
-      ConfirmSignupEmail({ name: data.name, confirmationUrl: confirmUrl.toString() }),
+      ConfirmSignupEmail({ name: data.name }),
     )
 
     const { error: sendErr } = await resend.emails.send({
@@ -336,8 +308,8 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
       Sentry.captureException(sendErr, { tags: { op: 'resend.emails.send' } })
     }
   } catch (mailErr) {
-    console.error('[signup] confirm-mail send threw (non-blocking):', mailErr)
-    Sentry.captureException(mailErr, { tags: { op: 'confirm-mail-send' } })
+    console.error('[signup] welcome-mail send threw (non-blocking):', mailErr)
+    Sentry.captureException(mailErr, { tags: { op: 'welcome-mail-send' } })
   }
 
   return { ok: true }

@@ -115,7 +115,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       email: targetEmail,
       name: targetName,
       spaceIds,
-      skipInvitation: true,
+      // skipInvitation defaults to false → Circle re-sends Set-Password mail
+      // on reprovision, which is what an admin-triggered reprovision should
+      // do (e.g. user lost their original invitation).
     })
 
     // -- 6. Persist link + metadata ----------------------------------------

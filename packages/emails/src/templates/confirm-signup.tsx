@@ -5,22 +5,27 @@ import { fontStack } from '../tokens'
 
 export interface ConfirmSignupEmailProps {
   name?: string
+  /**
+   * @deprecated Phase 25 — wir senden keinen eigenen Confirm-Link mehr.
+   * Email wird via Circle's Set-Password-Mail validiert; unsere Welcome-Mail
+   * hat nur Brand-Inhalt und einen Link zu tools. Prop bleibt nur für
+   * abwärtskompatible Caller (z.B. admin-resend-Tools).
+   */
   confirmationUrl?: string
 }
 
 /**
- * Confirm Signup email template.
+ * Welcome-Mail (Phase 25 onwards).
  *
- * Subject (set in Supabase Dashboard): "Willkommen bei Generation AI 👋"
- * Supabase template variables are embedded as default prop values so that
- * render(...) produces HTML with Go-template syntax intact for Dashboard import.
+ * Sent by signup-action right after the user signs up. Brand + onboarding
+ * context, no action button — the action lives in Circle's separate
+ * "Set Password" mail that arrives in parallel.
  */
 export default function ConfirmSignupEmail({
-  name = '{{ .Data.full_name }}',
-  confirmationUrl = '{{ .ConfirmationURL }}',
+  name = 'da',
 }: ConfirmSignupEmailProps): React.ReactElement {
   return (
-    <Layout preview="Bestätige kurz deine Mail — dann bist du drin.">
+    <Layout preview="Willkommen bei Generation AI — die Community-Mail kommt gleich.">
       <Heading
         className="email-heading"
         style={{
@@ -52,27 +57,42 @@ export default function ConfirmSignupEmail({
           fontSize: '16px',
           lineHeight: 1.65,
           color: tokens.light.text,
-          margin: '0 0 32px 0',
+          margin: '0 0 16px 0',
         }}
       >
-        Ein Klick — und du bist in der Community.
+        <strong>Was als Nächstes passiert:</strong>
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 16px 0',
+        }}
+      >
+        Du bekommst gleich eine zweite Mail von <strong>Circle</strong> (unser
+        Community-Host). Klick da auf <em>„Accept invitation"</em>, setz dir ein
+        Passwort und einen Namen — dann bist du direkt in der Community drin und
+        kannst loslegen.
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '24px 0 32px 0',
+        }}
+      >
+        Während du wartest: schau dir schon mal unsere KI-Tool-Bibliothek an.
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
-        <EmailButton slug="confirm-signup" href={confirmationUrl}>In die Community →</EmailButton>
+        <EmailButton slug="tools-link" href="https://tools.generation-ai.org">Zu den KI-Tools</EmailButton>
       </Section>
-
-      <Text
-        className="email-muted"
-        style={{
-          fontSize: '14px',
-          lineHeight: 1.55,
-          color: tokens.light.textMuted,
-          margin: '24px 0 0 0',
-        }}
-      >
-        Der Link loggt dich automatisch ein und bringt dich direkt in die Community. Gültig 7 Tage.
-      </Text>
 
       <Text
         className="email-muted"
@@ -80,10 +100,10 @@ export default function ConfirmSignupEmail({
           fontSize: '13px',
           lineHeight: 1.55,
           color: tokens.light.textMuted,
-          margin: '16px 0 0 0',
+          margin: '24px 0 0 0',
         }}
       >
-        Falls du dich nicht angemeldet hast, ignorier die Mail einfach.
+        Falls du dich nicht angemeldet hast, ignorier diese Mail einfach.
       </Text>
     </Layout>
   )

@@ -200,11 +200,16 @@ function generateCirclePassword(): string {
  * accepts all of: space assignment (space_ids), email-suppression
  * (skip_invitation), and password in a single call. Verified live 2026-04-25.
  *
- * Defaults:
- *   skipInvitation = true   (we send the confirmation email ourselves)
+ * Defaults (verified live 2026-04-25 — Headless SSO does NOT work for
+ * `active:false` invited members in real browsers, so we MUST run users
+ * through Circle's set-password flow to activate them):
+ *   skipInvitation = false  (Circle sends its Set-Password email — required
+ *                            to activate the member; without it our SSO
+ *                            redirect lands on login.circle.so instead of
+ *                            into the community)
  *   spaceIds       = []     (caller passes CIRCLE_DEFAULT_SPACE_ID)
- *   password       = random (Circle requires one but it's never used —
- *                            members log in via Headless SSO)
+ *   password       = random (Circle requires one on create; the user will
+ *                            override it via Set-Password)
  */
 export async function createMember(
   input: CreateMemberInput,
@@ -215,7 +220,7 @@ export async function createMember(
   }
 
   const { communityId } = getConfig()
-  const skipInvitation = input.skipInvitation ?? true
+  const skipInvitation = input.skipInvitation ?? false
 
   const response = await circleFetch<CreateMemberResponse>('/community_members', {
     method: 'POST',
