@@ -18,6 +18,5 @@ if (DSN) {
     },
   })
 } else if (process.env.NODE_ENV === 'production') {
-  // eslint-disable-next-line no-console
   console.warn('[sentry] SENTRY_DSN_WEBSITE not set in production')
 }
