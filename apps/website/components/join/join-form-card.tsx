@@ -113,8 +113,15 @@ export function JoinFormCard({ onSuccess }: JoinFormCardProps) {
 
   const validateField = (name: string, value: string): string => {
     if (name === 'email') {
-      if (!value.trim()) return 'Das Feld darf nicht leer sein.'
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+      const trimmed = value.trim()
+      if (!trimmed) return 'Das Feld darf nicht leer sein.'
+      // WR-02: use a permissive "looks like an email" check — the server-side
+      // Zod `.email()` schema is authoritative (see waitlist.ts). Diverging
+      // regexes cause UX confusion when the client accepts something the
+      // server rejects (or vice versa). HTML5 `type="email"` already gates
+      // browser-level validity; this is only for inline feedback before
+      // submit. The server re-validates everything.
+      if (!/^\S+@\S+\.\S+$/.test(trimmed))
         return 'Hmm, die Mail-Adresse passt noch nicht ganz.'
     }
     if (name === 'name' && !value.trim()) return 'Das Feld darf nicht leer sein.'
