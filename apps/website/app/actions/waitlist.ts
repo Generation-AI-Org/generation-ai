@@ -8,6 +8,7 @@ import { createAdminClient } from '@genai/auth'
 import type { WaitlistInsert } from '@genai/auth'
 import { WaitlistConfirmationEmail } from '@genai/emails'
 import { checkWaitlistRateLimit, getClientIp } from '@/lib/rate-limit'
+import { submitJoinSignup } from './signup'
 
 // ---------------------------------------------------------------------------
 // Result types — keep stable (D-10: Phase 25 swaps implementation, not interface)
@@ -83,18 +84,17 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 // ---------------------------------------------------------------------------
 
 /**
- * Phase 23 — /join Waitlist submit.
+ * Phase 23 — /join Waitlist submit (V1 implementation, kept for feature-flag rollback).
  *
  * D-10 Interface Contract (stable across Phase 25 swap):
  *   Input:  FormData with fields (email, name, university, study_program?,
  *           marketing_opt_in?, consent, redirect_after?, website [honeypot])
  *   Output: WaitlistResult — { ok: true } | { ok: false, error, fieldErrors? }
  *
- * Phase 25 will swap the Supabase `waitlist` insert + Resend confirmation
- * for a real Supabase signup + Circle-API-Sync, but this function's
- * signature stays identical.
+ * Phase 25 keeps this function internally and adds `submitJoinSignup` as V2.
+ * `submitJoinWaitlist` (the exported API) becomes a router (see bottom of file).
  */
-export async function submitJoinWaitlist(formData: FormData): Promise<WaitlistResult> {
+async function legacySubmitWaitlist(formData: FormData): Promise<WaitlistResult> {
   // -- 1. Honeypot check (silent reject, no hint to bots) -------------------
   const honeypot = formData.get('website')
   if (honeypot !== null && honeypot !== '') {
@@ -187,4 +187,30 @@ export async function submitJoinWaitlist(formData: FormData): Promise<WaitlistRe
   }
 
   return { ok: true }
+}
+
+// ---------------------------------------------------------------------------
+// Phase 25 — Feature-flag router (Q11 SIGNUP_ENABLED)
+// ---------------------------------------------------------------------------
+
+/**
+ * Phase 25 — Router between V1 waitlist (Phase 23) and V2 unified signup (Phase 25).
+ *
+ * Client-side code (`components/join/join-form.tsx`) calls this function
+ * unchanged. The router inspects `SIGNUP_ENABLED` at request time to decide
+ * which backend path runs.
+ *
+ * - `SIGNUP_ENABLED=true`  → Phase 25 `submitJoinSignup` (real user + Circle + mail)
+ * - `SIGNUP_ENABLED=false` → Phase 23 `legacySubmitWaitlist` (waitlist insert)
+ *
+ * The shapes of `SignupResult` and `WaitlistResult` are structurally identical
+ * (`{ ok: true } | { ok: false; error: string; fieldErrors?: ... }`), so the
+ * cast below is safe.
+ */
+export async function submitJoinWaitlist(formData: FormData): Promise<WaitlistResult> {
+  if (process.env.SIGNUP_ENABLED === 'true') {
+    const result = await submitJoinSignup(formData)
+    return result as WaitlistResult
+  }
+  return legacySubmitWaitlist(formData)
 }
