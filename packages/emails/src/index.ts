@@ -19,3 +19,10 @@ export type { WaitlistConfirmationEmailProps } from './templates/waitlist-confir
 
 export { default as WaitlistReinviteEmail } from './templates/waitlist-reinvite'
 export type { WaitlistReinviteEmailProps } from './templates/waitlist-reinvite'
+
+// REVIEW LO-01 — Re-exported for consistency even though the template is
+// rendered offline (pasted into Supabase Dashboard) and has no runtime
+// importer. Keeping the barrel complete avoids surprises for future callers
+// (e.g. an admin "resend confirmation" tool).
+export { default as ConfirmSignupEmail } from './templates/confirm-signup'
+export type { ConfirmSignupEmailProps } from './templates/confirm-signup'
