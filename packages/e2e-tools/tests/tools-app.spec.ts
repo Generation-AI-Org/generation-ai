@@ -5,14 +5,28 @@ import { test, expect } from '@playwright/test';
 const TOOLS_URL = process.env.TOOLS_URL ?? 'http://localhost:3001';
 
 test.describe('tools-app polish — Track B smoke (Phase 22.6)', () => {
-  test.fixme('login: 2 sichtbare Elemente (Primary CTA + Secondary Link) when logged-out (B-req-1)', async ({ page }) => {
+  test('login: 2 sichtbare Elemente (Primary CTA + Secondary Link) when logged-out (B-req-1)', async ({ page }) => {
     await page.goto(TOOLS_URL);
-    // Filled by Plan 07: assert "Kostenlos registrieren" button + "Bereits Mitglied? Einloggen" link
+
+    // Primary CTA button — "Kostenlos registrieren" (always visible)
+    const primary = page.locator('[data-cta="primary-register"]');
+    await expect(primary).toBeVisible();
+    await expect(primary).toHaveText(/Kostenlos registrieren/);
+
+    // Secondary login link — "Bereits Mitglied? Einloggen"
+    // Hidden below sm-breakpoint, visible on default Playwright viewport (1280×720 desktop)
+    const secondary = page.locator('[data-cta="secondary-login"]');
+    await expect(secondary).toBeVisible();
+    await expect(secondary).toHaveText(/Bereits Mitglied/);
   });
 
-  test.fixme('utm: "Kostenlos registrieren" href hat ?utm_source=tools (B-req-2)', async ({ page }) => {
+  test('utm: "Kostenlos registrieren" href hat ?utm_source=tools (B-req-2)', async ({ page }) => {
     await page.goto(TOOLS_URL);
-    // Filled by Plan 07: assert href ends with /join?utm_source=tools
+
+    const primary = page.locator('[data-cta="primary-register"]');
+    await expect(primary).toBeVisible();
+    const href = await primary.getAttribute('href');
+    expect(href).toBe('https://generation-ai.org/join?utm_source=tools');
   });
 
   test.fixme('hero: Hero-Sektion sichtbar zwischen Header und FilterBar mit H1 "KI-Tools" (B-req-3)', async ({ page }) => {
