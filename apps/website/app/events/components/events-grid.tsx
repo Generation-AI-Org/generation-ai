@@ -1,12 +1,49 @@
 "use client";
 
-// Phase 22.6 Plan 03 — EventsGrid (Task 2 implementation).
-// See events-grid.tsx — filled by Task 2 execution below.
-// Temporary stub so Task 1 build check resolves imports.
+// Phase 22.6 Plan 03 Task 2 — EventsGrid.
+// Holds Mehr-Anzeigen client state (Decision A-09: pure useState toggle, no re-fetch).
+// Shows first 3 upcoming events initially; expands to show all when button clicked.
 
+import { useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import type { EventEntry } from "@/lib/mdx/events";
+import { EventCard } from "./event-card";
 
-export function EventsGrid({ events: _events }: { events: EventEntry[] }) {
+interface EventsGridProps {
+  events: EventEntry[];
+}
+
+const INITIAL_VISIBLE = 3;
+
+export function EventsGrid({ events }: EventsGridProps) {
+  const prefersReducedMotion = useReducedMotion();
+  const [showAll, setShowAll] = useState(false);
+
+  const visibleEvents = showAll ? events : events.slice(0, INITIAL_VISIBLE);
+  const hasMore = events.length > INITIAL_VISIBLE && !showAll;
+
+  if (events.length === 0) {
+    return (
+      <section
+        aria-labelledby="events-empty-heading"
+        data-section="events-empty"
+        className="mx-auto max-w-4xl px-6 py-16 text-center"
+      >
+        <h2
+          id="events-empty-heading"
+          className="font-sans font-bold text-text"
+          style={{ fontSize: "var(--fs-h2)" }}
+        >
+          Bald neue Events
+        </h2>
+        <p className="mt-4 text-base leading-[1.65] text-text-muted">
+          Gerade keine Events in Planung — aber das ändert sich bald. Trag dich
+          ein und bleib informiert.
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section
       aria-labelledby="events-grid-heading"
@@ -20,6 +57,33 @@ export function EventsGrid({ events: _events }: { events: EventEntry[] }) {
       >
         Kommende Events
       </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {visibleEvents.map((event, idx) => (
+          <motion.div
+            key={event.slug}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: idx * 0.05 }}
+            data-event-card
+          >
+            <EventCard event={event} />
+          </motion.div>
+        ))}
+      </div>
+
+      {hasMore && (
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            data-action="show-more-events"
+            className="bg-bg-elevated border border-border text-text font-mono text-sm rounded-full px-6 py-2.5 hover:border-border-accent transition-colors duration-[var(--dur-normal)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+          >
+            Mehr anzeigen ↓
+          </button>
+        </div>
+      )}
     </section>
   );
 }
