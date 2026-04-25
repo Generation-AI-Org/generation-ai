@@ -527,7 +527,7 @@ Plans:
 | 24 | `/test` Assessment | ✅ complete 2026-04-24 | 9/9 plans |
 | 25 | Circle-API-Sync | ✅ complete 2026-04-25 | 9/9 plans (6 bugs + pivot) |
 | 26 | `/community` + Featured-Tools-API | ✅ complete 2026-04-25 | 6/6 plans, merged to develop |
-| 22.6 | 4/9 | In Progress|  |
+| 22.6 | 5/9 | In Progress|  |
 | 27 | Copy-Pass & Launch-Cleanup | ⏳ pending | Finales Wording, Dummy-Data raus, Meta/SEO-Pass, Signup-Go-Entscheidung |
 
 **Dependencies:**
@@ -723,14 +723,14 @@ Plans:
 **Detailplan:** `.planning/phases/22.6-pre-launch-polish-bundle/22.6-CONTEXT.md`
 **Out-of-Scope:** Circle-API-Integration, Luma-Embed, ICS-Download (V1), Filter/Search auf /events, packages/ui-Nav-Extraktion (Phase 28+), echte Event-Fotos, Plausible-Analytics.
 
-**Plans:** 4/9 plans executed
+**Plans:** 5/9 plans executed
 
 Plans:
 - [x] 22.6-01-PLAN.md — Wave 0 Track A: Test scaffolds (events.spec.ts + events.test.ts mit fixme/todo placeholders)
 - [x] 22.6-02-PLAN.md — Wave 1 Track A: MDX-Adapter `lib/mdx/events.ts` (reuse Phase-26 reader.ts) + 5 Placeholder-MDX-Files (3 upcoming + 2 archive, A-10) + 7 Vitest tests fill (A-req-7)
 - [x] 22.6-03-PLAN.md — Wave 2 Track A: /events Server-Component + Client-Wrapper + Hero (LabeledNodes) + Grid + Mehr-Anzeigen + Formats + Members-Only + Final-CTA + 3 Playwright tests fill (A-req-1, A-req-2, A-req-3)
 - [x] 22.6-04-PLAN.md — Wave 3 Track A: EventModal (@base-ui/react/dialog, focus-trap, mobile-sheet) + Anmelde-Flow mit Open-Redirect-Guard + 2 Playwright tests fill (A-req-4, A-req-5)
-- [ ] 22.6-05-PLAN.md — Wave 4 Track A: /events/[slug] Standalone-Page + Archive-Section + Sitemap + final 2 Playwright tests fill + Lighthouse human-gate (A-req-6, A-req-8)
+- [x] 22.6-05-PLAN.md — Wave 4 Track A: /events/[slug] Standalone-Page + Archive-Section + Sitemap + final 2 Playwright tests fill + Lighthouse human-gate (A-req-6, A-req-8)
 - [ ] 22.6-06-PLAN.md — Wave 5 Track B: Test scaffold tools-app.spec.ts mit 5 fixme placeholders
 - [ ] 22.6-07-PLAN.md — Wave 6 Track B: Login-Button-Umbau in GlobalLayout.tsx (Primary Kostenlos-registrieren + Secondary Einloggen, utm_source=tools, sync-anchor comment) + 2 Playwright tests fill (B-req-1, B-req-2, B-req-5)
 - [ ] 22.6-08-PLAN.md — Wave 6 Track B: ToolsHero component + HomeLayout integration (inside scroll container, Pitfall 2) + 1 Playwright test fill (B-req-3)
