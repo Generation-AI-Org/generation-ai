@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: executing
-last_updated: "2026-04-24T23:16:08.788Z"
+last_updated: "2026-04-25T00:06:24.104Z"
 progress:
   total_phases: 18
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 52
-  completed_plans: 35
-  percent: 67
+  completed_plans: 40
+  percent: 77
 ---
 
 # Project State — Generation AI Monorepo
@@ -157,6 +157,30 @@ progress:
   - R1.4-R1.9 als skeleton done + polish pending markiert
   - R1.11 neu hinzugefügt (inter-section transitions)
 - Next: Plan 20.6-01 New Discrepancy section — Planning-Session mit Luca (Form TBD).
+
+---
+
+### Phase 26 Progress
+
+**Status:** ✅ CODE-COMPLETE 2026-04-25 (alle 6 Plans durch). UAT pending Luca.
+**Branch:** `feature/phase-26-community` (worktree `generation-ai-phase-26`, NICHT gepusht/gemerged)
+
+- **Plan 26-01** DONE — MDX Stack + Test Infra + 4 Placeholder Articles (Wave 1)
+- **Plan 26-02** DONE — `/community` Landing Page (Hero, 4 Pillars, Carousel, Final-CTA) (Wave 2 Block A)
+- **Plan 26-03** DONE — Article Detail Page + Schema.org + Sitemap Update (Wave 3 Block A)
+- **Plan 26-04** DONE — Block B Part 1: `/api/public/featured-tools` API + BeispielBadge Extract (Wave 2 Block B)
+- **Plan 26-05** DONE — Block B Part 2: Tool-Showcase + Community-Preview Server-Component Refactor (Wave 3 Block B)
+- **Plan 26-06** DONE 2026-04-25 — Header-Nav Update + Lighthouse + Phase UAT (Wave 4)
+  - Commits: `23b0fc3` (header nav rewire + Desktop-Renderer conditional Link/<a> + changeset), `3d1a45b` (VALIDATION.md), `0a12dc3` (UAT.md)
+  - Header-Renderer rewritten: `link.external ? <a target=_blank> : <Link>` (PLAN-CHECK Warning #3)
+  - Lighthouse 4 configs alle ≥ 90: /community Desktop 99/100/96/100 · Mobile 91/100/100/100 · Article Desktop 100/100/96/100 · Mobile 96/100/100/100. CLS=0 alle Runs.
+  - Block A 15/15 + Block B 6/6 + Header-Nav 8/8 Acceptance covered in `26-VALIDATION.md`
+  - `26-UAT.md` als step-by-step Browser-Walkthrough für Luca's manual Sign-off geschrieben
+  - Deviations: 0 (Plan 1:1 ausgeführt, Yolo-Mode auto-approved beide checkpoint:human-verify Tasks)
+  - Tests: website 23/23 + tools-app 19/19 grün
+  - Requirements completed: R7.6, R7.7
+- **Phase 26 Outputs:** `.planning/phases/26-community-page-and-subdomain-integration/26-{01..06}-SUMMARY.md`, `26-VALIDATION.md`, `26-UAT.md`
+- **Open:** Luca walks `26-UAT.md` Checklist → "approved" → Phase 26 final-merge auf main + `pnpm version` (changesets v4.x.0 minor bump)
 
 ---
 
