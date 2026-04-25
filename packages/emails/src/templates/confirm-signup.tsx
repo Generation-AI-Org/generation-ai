@@ -95,10 +95,25 @@ export default function ConfirmSignupEmail({
           fontSize: '16px',
           lineHeight: 1.65,
           color: tokens.light.text,
-          margin: '24px 0 32px 0',
+          margin: '24px 0 16px 0',
         }}
       >
-        Während du wartest: schau dir schon mal unsere KI-Tool-Bibliothek an.
+        <strong>Während du wartest:</strong>
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 16px 0',
+        }}
+      >
+        Mit deinem Account hast du ab jetzt Zugriff auf den{' '}
+        <strong>Pro-Assistenten</strong> (Gemini 3 Flash mit Web-Suche und
+        Tools) und die komplette KI-Tool-Bibliothek mit allen Member-Tipps.
+        Klick einmal — du bist direkt eingeloggt:
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
