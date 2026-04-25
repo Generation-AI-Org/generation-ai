@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: executing
-last_updated: "2026-04-25T10:45:19.211Z"
+last_updated: "2026-04-25T11:15:00.000Z"
 progress:
   total_phases: 19
   completed_phases: 14
   total_plans: 101
-  completed_plans: 95
-  percent: 94
+  completed_plans: 96
+  percent: 95
 ---
 
 # Project State — Generation AI Monorepo
@@ -29,16 +29,17 @@ progress:
 - `feature/phase-22.6-pre-launch-polish` = aktiv im Hauptrepo (NEU 2026-04-25)
 - `feature/phase-26-community` = abgeschlossen, im Worktree `generation-ai-phase-26` (UAT pending)
 
-**Last Updated:** 2026-04-25 (22.6-06 DONE — Track B Wave 0 stub `tools-app.spec.ts` mit 5 fixme; Plans 07-09 ready to fill)
+**Last Updated:** 2026-04-25 (22.6-07 DONE — Track B login button umgebaut: Primary "Kostenlos registrieren" + Secondary "Bereits Mitglied? Einloggen" mit utm_source=tools, 2/5 Track B Playwright tests grün; Plans 08-09 next)
 **Site Status:** ✅ Live auf generation-ai.org (alter Stand). Develop-Preview hat alles bisher Gebaute (Phase 21–26). Phase 26 UAT noch offen (`pending-luca`). 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** 22.6 Pre-Launch Polish Bundle — **Track B tools-app polish** (Plans 07-09 next, Plan 06 stub done)
+**Next phase:** 22.6 Pre-Launch Polish Bundle — **Track B tools-app polish** (Plans 08-09 next, 06+07 done)
 **First command:** `/gsd-execute-phase 22.6 --auto --no-transition` (auf branch `feature/phase-22.6-pre-launch-polish`)
 
-   - Index wird die 3 incomplete Plans (07-09) automatisch finden, Track A + Plan-06-Stub sind done
-   - Plan 22.6-09 hat `autonomous: false` (Lucas Side-by-Side-Sticky-Nav-Vergleich) → wenn `--auto` → auto-approve, oder `/gsd-execute-phase 22.6` ohne `--auto` für interaktiven Stop am Checkpoint
+   - Index wird die 2 incomplete Plans (08-09) automatisch finden, Track A + Plan-06-Stub + Plan-07 sind done
+   - Plan 22.6-08 fügt ToolsHero in HomeLayout zwischen Header + FilterBar (B-req-3 fixme → active)
+   - Plan 22.6-09 hat `autonomous: false` (Lucas Side-by-Side-Sticky-Nav-Vergleich) → wenn `--auto` → auto-approve, oder `/gsd-execute-phase 22.6` ohne `--auto` für interaktiven Stop am Checkpoint. Füllt B-req-4 (nav-mirror) + B-req-5 (eingeloggt regression)
 
 **22.6-01 DONE:** Test scaffold (Playwright + Vitest stubs) — commit 5510c26
 **22.6-02 DONE:** events.ts MDX adapter + 5 placeholder MDX files + 7 Vitest tests passing — commits f44f45a, 910ab78, 457f45d
@@ -46,11 +47,14 @@ progress:
 **22.6-04 DONE:** EventModal + Anmelde-Flow (open-redirect guard, auth-aware CTA, mobile sheet, 5/7 Playwright green) — commits a2c754f, b2e08c2, 756146c
 **22.6-05 DONE (Track A COMPLETE):** /events/[slug] standalone page + EventsArchive (A-06) + sitemap events + 2 final Playwright tests — all 7 Track A tests green — commits 6f2669a, 61f4323
 **22.6-06 DONE (Track B Wave 0):** Playwright stub `packages/e2e-tools/tests/tools-app.spec.ts` mit 5 `test.fixme` für B-req-1..B-req-5 (login/utm/hero/nav/eingeloggt). TOOLS_URL constant mit `process.env.TOOLS_URL` Fallback auf `http://localhost:3001`. Suite green (5 skipped). Plans 07-09 swap fixme → active assertions — commit 700c8fc
+**22.6-07 DONE (Track B Login-Button-Umbau):** GlobalLayout.tsx Header right-side Cluster ersetzt — Primary `<a href="https://generation-ai.org/join?utm_source=tools">Kostenlos registrieren</a>` + Secondary `<Link href="/login">Bereits Mitglied? Einloggen</Link>`. data-cta="primary-register" + data-cta="secondary-login" als stable Playwright-Selektoren. MIRROR sync-anchor Comment am File-Top zeigt auf website header (B-08). 2/5 Track B Playwright Tests gefüllt + grün (B-req-1 login, B-req-2 utm). Logo + Settings + Signout + Theme Toggle + Search + Legal alle untouched. Logged-in Branch unverändert (Phase 12/19 auth no regression). Build grün, 46/46 routes ƒ — commits 2d136b1, 3ce1cb2
 **Working dir:** `/Users/lucaschweigmann/projects/generation-ai` (Hauptrepo, branch ist hier ausgecheckt)
 
 **Key decision (22.6-05):** FrontmatterEntry has no `body` field — V1 slug page uses `frontmatter.description` as lede. MDX body rendering via @next/mdx deferred to Phase 28+.
 
 **Key decision (22.6-06):** Separate `TOOLS_URL` env-var (not `E2E_BASE_URL`) entkoppelt tools-app spec von default Playwright baseURL — Plans 07-09 können tools-app gegen `localhost:3001` (Dev) oder `https://...preview.vercel.app` (CI) laufen lassen ohne andere Specs zu beeinflussen.
+
+**Key decision (22.6-07):** Branching im GlobalLayout.tsx via existing `mode === 'public'` prop, NICHT via neuem `useAuth()` Import. Plan-Frontmatter hatte useAuth empfohlen, aber GlobalLayout nutzt bereits den `mode: ChatMode` prop (public = logged-out). Mode = single source-of-truth, kein Hydration-Risiko, kein Refactor. Sync-anchor MIRROR comment als V1-Alternative zu packages/ui Extraktion (B-08). data-cta-Attribute geben stable Selektoren für Plans 08+09.
 
 **Context für neue Session:**
 
