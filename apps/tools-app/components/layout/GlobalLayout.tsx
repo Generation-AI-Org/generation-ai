@@ -223,7 +223,7 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
                   very narrow screens (<sm) to keep the header from wrapping.
             */}
             {mode === 'public' ? (
-              <div className="flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-3">
                 <a
                   href="https://generation-ai.org/join?utm_source=tools"
                   data-cta="primary-register"
