@@ -1,5 +1,12 @@
 'use client'
 
+// ─────────────────────────────────────────────────────────────────────────────
+// MIRROR: apps/website/components/layout/header.tsx
+// Phase 22.6 (Decision B-08): Nav structure & right-side CTAs are duplicated
+// from the website header. When updating one, update the other manually.
+// Future: extract to @genai/ui (Backlog Phase 28+).
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
@@ -160,22 +167,30 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
               )}
             </button>
 
-            {/* Mobile Login/Logout Button */}
+            {/* Logged-out: Primary CTA "Kostenlos registrieren" + Secondary "Bereits Mitglied? Einloggen"
+                Phase 22.6 Plan 07 (Decision B-03 + B-11): replaces the old single icon-button.
+                - Primary: cross-domain <a> (full page load, B-05) with hardcoded utm_source=tools (B-11).
+                - Secondary: internal <Link href="/login"> (tools-app route).
+                - Mobile burger sheet overhaul deferred to Plan 09; for V1 the secondary link hides on
+                  very narrow screens (<sm) to keep the header from wrapping.
+            */}
             {mode === 'public' ? (
-              <Link
-                href="/login"
-                className={`group md:hidden p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 active:scale-95 ${
-                  theme === 'dark'
-                    ? 'bg-[var(--accent)] hover:bg-[var(--accent)]/90'
-                    : 'bg-[var(--accent)] hover:bg-[var(--accent)]/90'
-                }`}
-                aria-label="Anmelden"
-              >
-                <svg className="w-5 h-5 text-[var(--text-on-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 17v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14" />
-                </svg>
-              </Link>
+              <div className="flex items-center gap-3">
+                <a
+                  href="https://generation-ai.org/join?utm_source=tools"
+                  data-cta="primary-register"
+                  className="bg-[var(--accent)] text-[var(--text-on-accent)] font-mono font-bold text-sm rounded-full px-4 py-2.5 hover:shadow-[0_0_20px_var(--accent-glow)] hover:scale-[1.03] transition-all duration-[var(--dur-fast)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] whitespace-nowrap"
+                >
+                  Kostenlos registrieren
+                </a>
+                <Link
+                  href="/login"
+                  data-cta="secondary-login"
+                  className="hidden sm:inline-block font-mono text-[12px] text-text-muted hover:text-text transition-colors whitespace-nowrap"
+                >
+                  Bereits Mitglied? Einloggen
+                </Link>
+              </div>
             ) : (
               <>
                 {/* Settings - use <a> to bypass router cache */}
