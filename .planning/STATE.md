@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: planning
-last_updated: "2026-04-25T11:27:00.848Z"
+last_updated: "2026-04-25T14:30:00.000Z"
 progress:
   total_phases: 19
-  completed_phases: 15
+  completed_phases: 16
   total_plans: 101
-  completed_plans: 98
-  percent: 97
+  completed_plans: 101
+  percent: 100
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,29 +18,37 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 22.6 ✅ done + auf develop, Phase 22.8 vorbereitet, Phase 27 last-before-launch)
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 23
+**Phase:** 22.8 (UI-Konsistenz & Section-Refinement) — ready for `/gsd-autonomous --only 22.8 --interactive` (von Luca in paralleler Session 2026-04-25 vorbereitet, Commit 9df90d7)
 **Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
 
 - `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
-- `develop` = Staging-Sammelbranch (Stand: + Phase 25 + Phase 26 ✅ gemerged 2026-04-25, commit 7b1a5aa). Vercel-Preview: https://website-git-develop-lucas-projects-e78962e9.vercel.app
-- `feature/phase-22.6-pre-launch-polish` = aktiv im Hauptrepo (NEU 2026-04-25)
+- `develop` = Staging-Sammelbranch (Stand: + Phase 25 + Phase 26 + **Phase 22.6** ✅ gemerged 2026-04-25, commits 7b1a5aa → ac01d32 → a28821b). Vercel-Preview: https://website-git-develop-lucas-projects-e78962e9.vercel.app
+- `feature/phase-22.6-pre-launch-polish` = ✅ DONE + gemerged in develop (kann gelöscht werden)
 - `feature/phase-26-community` = abgeschlossen, im Worktree `generation-ai-phase-26` (UAT pending)
 
-**Last Updated:** 2026-04-25 (22.6-09 DONE — Phase 22.6 feature-complete. Tools-app nav-mirror per B-08: 5 cross-domain items + Tools active + mobile burger menu. Final 2 Track B Playwright tests gefüllt → 5/5 grün. Phase ready für develop merge nach final polish review)
-**Site Status:** ✅ Live auf generation-ai.org (alter Stand). Develop-Preview hat alles bisher Gebaute (Phase 21–26). Phase 26 UAT noch offen (`pending-luca`). 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
+**Last Updated:** 2026-04-25 14:30 (Phase 22.6 → develop gemerged. UAT 5/7 passed durch autonomous + Luca live mobile preview. Footer /events Polish-Commit a28821b. Item 6 Logged-in Regression bleibt offen für Luca am PC mit Lite-Account auf develop-preview.)
+**Site Status:** ✅ Live auf generation-ai.org (alter Stand, Phase 20+20.5). Develop-Preview hat alles bisher Gebaute (Phase 21–26 + 22.6). Phase 26 UAT noch offen (`pending-luca`). 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke). 1 HUMAN-UAT-Item Phase 22.6 offen (Logged-in Regression).
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** Phase 27 (Copy-Pass & Launch-Cleanup) — Phase 22.6 ist DONE (9/9 plans)
-**First command:** `/gsd-discuss-phase 27` oder direkt merge-prep für develop
+**Next phase:** Phase 22.8 (UI-Konsistenz & Section-Refinement) — von Luca vorbereitet, ready für `/gsd-autonomous --only 22.8 --interactive`. Phase 27 (Copy-Pass & Launch-Cleanup) folgt.
+**First command (option A):** `/gsd-autonomous --only 22.8 --interactive` — Phase 22.8 starten
+**First command (option B):** `/gsd-progress` — Roadmap + offene UAT-Items checken
+**Erst tun (Phase 22.6 cleanup):**
+- Item 6 Logged-in Regression auf develop-Preview live testen (5min) — Lite-Account einloggen, CTAs verschwinden, Settings + Signout sichtbar, Lite/Pro Toggle, Logout. Siehe 22.6-HUMAN-UAT.md §6.
+- Optional: `git branch -d feature/phase-22.6-pre-launch-polish` (lokal löschen, ist gemerged)
 
-**Pre-merge polish flags from Phase 22.6:**
-
-- ⚠️ Website header.tsx fehlt noch der Events Nav-Item (Plan 09 Threat-Flag — Track A built /events route + sitemap, aber das Item im website-Nav `navLinks` Array wurde nicht gesetzt. Empfohlen: small commit in Phase 27 oder vor develop-merge.)
-- ⏳ Lucas live UAT für Plan 09 ausstehend (Side-by-side Sticky-Nav-Vergleich, Cross-domain Click-through, Mobile Burger touch-test, Lighthouse tools-app ≥90 — alle unter --auto-mode auto-approven mit technischer Verifikation, siehe 22.6-09-SUMMARY.md §"Other checkpoint items")
+**Phase 22.6 Status (final):**
+- 9/9 Plans done (Track A 5 + Track B 4)
+- Verifier passed (16/16 must_haves)
+- Code-Review: 0 Critical · 4 Warnings (V1-akzeptabel) · 6 Info
+- UAT: 5 passed · 1 partial (Item 2 perf pre-existing tech-debt) · 1 blocked (Item 6)
+- Lighthouse /events: **99/100/100/100** ✅
+- Lighthouse tools-app: 78/94/100/92 (perf pre-existing — eigene Performance-Phase post-launch, Pre-22.6 Baseline war 53)
+- Drive-by Footer-Polish: a28821b (/events in Footer Entdecken-section, Header bleibt D-18-locked)
 
 **22.6-01 DONE:** Test scaffold (Playwright + Vitest stubs) — commit 5510c26
 **22.6-02 DONE:** events.ts MDX adapter + 5 placeholder MDX files + 7 Vitest tests passing — commits f44f45a, 910ab78, 457f45d
