@@ -34,7 +34,7 @@ export function DeleteAccountButton() {
     return (
       <button
         onClick={() => setIsConfirming(true)}
-        className="px-4 py-2 text-red-500 border border-red-500 rounded-lg hover:bg-red-500/10 transition-colors"
+        className="px-4 py-2 text-[var(--status-error)] border border-[var(--status-error)] rounded-full hover:bg-[var(--status-error)]/10 transition-colors"
       >
         Account löschen
       </button>
@@ -42,23 +42,23 @@ export function DeleteAccountButton() {
   }
 
   return (
-    <div className="space-y-4 p-4 border border-red-500/30 rounded-lg bg-red-500/5">
-      <p className="text-sm text-red-400">
+    <div className="space-y-4 p-4 border border-[var(--status-error)]/30 rounded-2xl bg-[var(--status-error)]/5">
+      <p className="text-sm text-[var(--status-error)]">
         Bist du sicher? Diese Aktion löscht deinen Account und alle deine Daten unwiderruflich.
       </p>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-[var(--status-error)]">{error}</p>}
       <div className="flex gap-3">
         <button
           onClick={() => setIsConfirming(false)}
           disabled={isDeleting}
-          className="px-4 py-2 text-[var(--text-muted)] border border-[var(--border)] rounded-lg hover:bg-[var(--surface)] transition-colors disabled:opacity-50"
+          className="px-4 py-2 text-[var(--text-muted)] border border-[var(--border)] rounded-full hover:bg-[var(--surface)] transition-colors disabled:opacity-50"
         >
           Abbrechen
         </button>
         <button
           onClick={handleDelete}
           disabled={isDeleting}
-          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
+          className="px-4 py-2 bg-[var(--status-error)] text-white rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {isDeleting ? 'Wird gelöscht…' : 'Endgültig löschen'}
         </button>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createBrowserClient } from '@genai/auth'
+import { StatusPill } from '@/components/ui/StatusPill'
 
 type Props = {
   hasPassword: boolean
@@ -123,17 +124,7 @@ export function PasswordSection({ hasPassword: initialHasPassword, email }: Prop
         />
       </div>
 
-      {message && (
-        <div
-          className={`p-3 rounded-xl text-sm ${
-            message.type === 'success'
-              ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-              : 'bg-red-500/10 text-red-400 border border-red-500/20'
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
+      {message && <StatusPill type={message.type}>{message.text}</StatusPill>}
 
       <button
         type="submit"

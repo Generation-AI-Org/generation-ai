@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createBrowserClient } from '@genai/auth'
 import Link from 'next/link'
+import { StatusPill } from '@/components/ui/StatusPill'
 
 function SetPasswordInner() {
   const searchParams = useSearchParams()
@@ -127,17 +128,7 @@ function SetPasswordInner() {
           </div>
 
           {/* Message */}
-          {message && (
-            <div
-              className={`p-3 rounded-xl text-sm ${
-                message.type === 'success'
-                  ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                  : 'bg-red-500/10 text-red-400 border border-red-500/20'
-              }`}
-            >
-              {message.text}
-            </div>
-          )}
+          {message && <StatusPill type={message.type}>{message.text}</StatusPill>}
 
           {/* Submit Button */}
           <button
