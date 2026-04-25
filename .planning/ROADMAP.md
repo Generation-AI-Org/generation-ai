@@ -527,7 +527,7 @@ Plans:
 | 24 | `/test` Assessment | ✅ complete 2026-04-24 | 9/9 plans |
 | 25 | Circle-API-Sync | ✅ complete 2026-04-25 | 9/9 plans (6 bugs + pivot) |
 | 26 | `/community` + Featured-Tools-API | ✅ complete 2026-04-25 | 6/6 plans, merged to develop |
-| 22.6 | Pre-Launch Polish Bundle | 🚧 next | Track A: `/events` MDX-Pipeline + Members-Only-Gate. Track B: tools-app Login-Button-Umbau + Hero + Nav-Sync (Logo-Fix bereits done) |
+| 22.6 | 1/9 | In Progress|  |
 | 27 | Copy-Pass & Launch-Cleanup | ⏳ pending | Finales Wording, Dummy-Data raus, Meta/SEO-Pass, Signup-Go-Entscheidung |
 
 **Dependencies:**
@@ -723,10 +723,10 @@ Plans:
 **Detailplan:** `.planning/phases/22.6-pre-launch-polish-bundle/22.6-CONTEXT.md`
 **Out-of-Scope:** Circle-API-Integration, Luma-Embed, ICS-Download (V1), Filter/Search auf /events, packages/ui-Nav-Extraktion (Phase 28+), echte Event-Fotos, Plausible-Analytics.
 
-**Plans:** 9 plans (Track A: 5 plans, Track B: 4 plans, sequential A→B per Decision B-10)
+**Plans:** 1/9 plans executed
 
 Plans:
-- [ ] 22.6-01-PLAN.md — Wave 0 Track A: Test scaffolds (events.spec.ts + events.test.ts mit fixme/todo placeholders)
+- [x] 22.6-01-PLAN.md — Wave 0 Track A: Test scaffolds (events.spec.ts + events.test.ts mit fixme/todo placeholders)
 - [ ] 22.6-02-PLAN.md — Wave 1 Track A: MDX-Adapter `lib/mdx/events.ts` (reuse Phase-26 reader.ts) + 5 Placeholder-MDX-Files (3 upcoming + 2 archive, A-10) + 7 Vitest tests fill (A-req-7)
 - [ ] 22.6-03-PLAN.md — Wave 2 Track A: /events Server-Component + Client-Wrapper + Hero (LabeledNodes) + Grid + Mehr-Anzeigen + Formats + Members-Only + Final-CTA + 3 Playwright tests fill (A-req-1, A-req-2, A-req-3)
 - [ ] 22.6-04-PLAN.md — Wave 3 Track A: EventModal (@base-ui/react/dialog, focus-trap, mobile-sheet) + Anmelde-Flow mit Open-Redirect-Guard + 2 Playwright tests fill (A-req-4, A-req-5)
