@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: executing
-last_updated: "2026-04-25T10:03:02.297Z"
+last_updated: "2026-04-25T10:10:00Z"
 progress:
   total_phases: 19
   completed_phases: 14
   total_plans: 101
-  completed_plans: 90
-  percent: 89
+  completed_plans: 91
+  percent: 90
 ---
 
 # Project State — Generation AI Monorepo
@@ -34,8 +34,10 @@ progress:
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** 22.6 Pre-Launch Polish Bundle (Track A `/events` + Track B tools-app Polish, konsolidiert aus 22.5+22.7)
-**First command:** `/gsd-discuss-phase 22.6 --chain` (auf branch `feature/phase-22.6-pre-launch-polish`)
+**Next phase:** 22.6 Pre-Launch Polish Bundle — Plan 03 next (Events-Page Shell: page.tsx + events-client.tsx + events-hero.tsx + events-formats.tsx + events-members-only.tsx + events-final-cta.tsx)
+**First command:** `/gsd-execute-phase 22.6 --plan 03` (auf branch `feature/phase-22.6-pre-launch-polish`)
+**22.6-01 DONE:** Test scaffold (Playwright + Vitest stubs) — commit 5510c26
+**22.6-02 DONE:** events.ts MDX adapter + 5 placeholder MDX files + 7 Vitest tests passing — commits f44f45a, 910ab78, 457f45d
 **Working dir:** `/Users/lucaschweigmann/projects/generation-ai` (Hauptrepo, branch ist hier ausgecheckt)
 
 **Context für neue Session:**
