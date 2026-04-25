@@ -120,15 +120,35 @@ test.describe('events page — Track A smoke', () => {
   });
 
   // A-req-6: /events/[slug] renders as standalone page with H1 visible
-  test.fixme('slug page: /events/[slug] rendert Standalone (A-req-6)', async ({ page }) => {
+  test('slug page: /events/[slug] rendert Standalone (A-req-6)', async ({ page }) => {
     await page.goto('/events/2026-05-15-prompting-masterclass');
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+    // Title from MDX frontmatter should appear as H1
+    await expect(
+      page.getByRole('heading', { level: 1, name: /Prompting Masterclass/i }),
+    ).toBeVisible();
+
+    // "Zum Event anmelden" CTA with external link present
+    const externalLink = page.getByRole('link', { name: /Zum Event anmelden/i });
+    await expect(externalLink).toBeVisible();
+    const href = await externalLink.getAttribute('href');
+    expect(href).toMatch(/^https?:\/\//); // must be an absolute external URL
+
+    // Unknown slug should return 404
+    const res = await page.request.get('/events/this-slug-does-not-exist');
+    expect(res.status()).toBe(404);
   });
 
-  // A-req-8: /sitemap.xml contains /events entry (and slug entries added by Plan 05)
-  test.fixme('sitemap: /sitemap.xml enthält /events + /events/[slug] (A-req-8)', async ({ request }) => {
+  // A-req-8: /sitemap.xml contains /events + /events/[slug] entries
+  test('sitemap: /sitemap.xml enthält /events + /events/[slug] (A-req-8)', async ({ request }) => {
     const res = await request.get('/sitemap.xml');
+    expect(res.status()).toBe(200);
     const xml = await res.text();
+    // Static /events entry must be present
     expect(xml).toContain('/events');
+    // Upcoming event slug must be indexed
+    expect(xml).toContain('/events/2026-05-15-prompting-masterclass');
+    // Past/archive event slug must also be indexed
+    expect(xml).toContain('/events/2026-03-10-launch-event');
   });
 });
