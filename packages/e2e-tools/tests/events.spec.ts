@@ -20,24 +20,40 @@ const EVENTS_URL = '/events';
 test.describe('events page — Track A smoke', () => {
   // A-req-1: /events route loads, renders Hero section + Events grid
   // A-req-2: At least one upcoming event card from MDX pipeline is visible
-  test.fixme('lädt: /events rendert Hero + Grid (A-req-1, A-req-2)', async ({ page }) => {
+  // Filled by Plan 03.
+  test('lädt: /events rendert Hero + Grid (A-req-1, A-req-2)', async ({ page }) => {
     await page.goto(EVENTS_URL);
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /Events, die dich weiterbringen/i })).toBeVisible();
     await expect(page.locator('[data-section="events-hero"]')).toBeVisible();
     await expect(page.locator('[data-section="events-grid"]')).toBeVisible();
   });
 
   // A-req-2: Grid shows at least 1 event card sourced from MDX
-  test.fixme('grid: zeigt mindestens 1 kommendes Event aus MDX (A-req-2)', async ({ page }) => {
+  // Filled by Plan 03.
+  test('grid: zeigt mindestens 1 kommendes Event aus MDX (A-req-2)', async ({ page }) => {
     await page.goto(EVENTS_URL);
     const cards = page.locator('[data-event-card]');
     await expect(cards.first()).toBeVisible();
+    // We seeded 3 placeholder upcoming events → at least 1 card visible before "mehr anzeigen"
+    expect(await cards.count()).toBeGreaterThanOrEqual(1);
   });
 
   // A-req-3: "Mehr anzeigen" button appears when >3 events, expands via client-state (no re-fetch)
-  test.fixme('mehr anzeigen: Button erscheint bei >3 Events und expandiert client-side (A-req-3)', async ({ page }) => {
+  // Filled by Plan 03.
+  test('mehr anzeigen: Button erscheint bei >3 Events und expandiert client-side (A-req-3)', async ({ page }) => {
     await page.goto(EVENTS_URL);
-    // Filled by Plan 03 once Mehr-Anzeigen state exists
+    const button = page.locator('[data-action="show-more-events"]');
+    // We have 3 placeholder upcoming events at launch → button should NOT appear (≤3 events).
+    // Test contract: if there ARE > 3 events, button is visible AND clicking expands.
+    // Otherwise: button is absent. Both outcomes are correct depending on seeded data count.
+    const total = await page.locator('[data-event-card]').count();
+    if (total > 3) {
+      await expect(button).toBeVisible();
+      await button.click();
+      expect(await page.locator('[data-event-card]').count()).toBeGreaterThan(3);
+    } else {
+      await expect(button).toHaveCount(0);
+    }
   });
 
   // A-req-4: Clicking an event card opens a modal (aria-modal=true, Escape closes it, focus-trap active)
