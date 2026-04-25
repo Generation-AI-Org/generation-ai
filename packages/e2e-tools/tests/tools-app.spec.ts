@@ -29,9 +29,23 @@ test.describe('tools-app polish — Track B smoke (Phase 22.6)', () => {
     expect(href).toBe('https://generation-ai.org/join?utm_source=tools');
   });
 
-  test.fixme('hero: Hero-Sektion sichtbar zwischen Header und FilterBar mit H1 "KI-Tools" (B-req-3)', async ({ page }) => {
+  test('hero: Hero-Sektion sichtbar zwischen Header und FilterBar mit H1 "KI-Tools" (B-req-3)', async ({ page }) => {
     await page.goto(TOOLS_URL);
-    // Filled by Plan 08: data-section="tools-hero" + H1 contains "KI-Tools"
+
+    // Hero section visible — stable selector via data-section attribute
+    const hero = page.locator('[data-section="tools-hero"]');
+    await expect(hero).toBeVisible();
+
+    // H1 contains "KI-Tools"
+    const h1 = hero.getByRole('heading', { level: 1 });
+    await expect(h1).toBeVisible();
+    await expect(h1).toContainText(/KI-Tools/);
+
+    // Eyebrow label visible
+    await expect(hero).toContainText(/deine ki-tool-bibliothek/i);
+
+    // Body text visible — Umlaute mandatory ("Über", not "Ueber")
+    await expect(hero).toContainText(/Über 100 Tools/);
   });
 
   test.fixme('nav: alle Items sichtbar (Events, Tools active, Community, Für Partner, Über uns, CTA) (B-req-4)', async ({ page }) => {
