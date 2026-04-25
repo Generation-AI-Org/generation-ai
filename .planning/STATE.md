@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: executing
-last_updated: "2026-04-25T10:18:53.447Z"
+last_updated: "2026-04-25T10:29:10.410Z"
 progress:
   total_phases: 19
   completed_phases: 14
   total_plans: 101
-  completed_plans: 92
-  percent: 91
+  completed_plans: 93
+  percent: 92
 ---
 
 # Project State — Generation AI Monorepo
@@ -34,11 +34,12 @@ progress:
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** 22.6 Pre-Launch Polish Bundle — Plan 04 next (Event Modal + Auth Flow)
-**First command:** `/gsd-execute-phase 22.6 --plan 04` (auf branch `feature/phase-22.6-pre-launch-polish`)
+**Next phase:** 22.6 Pre-Launch Polish Bundle — Plan 05 next (Event Detail Page + Archiv + Sitemap)
+**First command:** `/gsd-execute-phase 22.6 --plan 05` (auf branch `feature/phase-22.6-pre-launch-polish`)
 **22.6-01 DONE:** Test scaffold (Playwright + Vitest stubs) — commit 5510c26
 **22.6-02 DONE:** events.ts MDX adapter + 5 placeholder MDX files + 7 Vitest tests passing — commits f44f45a, 910ab78, 457f45d
 **22.6-03 DONE:** /events page shell (Server Component + Hero + Grid + Formats + Members-Only + Final-CTA) — commits 98242ed, fc03be6, 8a2027b — build shows ƒ /events, Playwright 3/3 passing
+**22.6-04 DONE:** EventModal + Anmelde-Flow (open-redirect guard, auth-aware CTA, mobile sheet, 5/7 Playwright green) — commits a2c754f, b2e08c2, 756146c
 **Working dir:** `/Users/lucaschweigmann/projects/generation-ai` (Hauptrepo, branch ist hier ausgecheckt)
 
 **Context für neue Session:**
