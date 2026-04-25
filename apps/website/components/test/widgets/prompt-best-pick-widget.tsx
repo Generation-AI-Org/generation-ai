@@ -1,0 +1,115 @@
+'use client'
+
+// apps/website/components/test/widgets/prompt-best-pick-widget.tsx
+// Phase 24 — W3 PromptBestPickWidget: 4-card grid of shiki-highlighted code options.
+// The server wrapper (Plan 24-07) runs shiki and hands in `highlightedCode: Record<id, html>`.
+
+import { Check } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import type {
+  BestPromptAnswer,
+  BestPromptQuestion,
+} from '@/lib/assessment/types'
+import type { WidgetProps } from './widget-types'
+import { useRadioGroupKeyboard } from '@/hooks/use-radio-group-keyboard'
+
+export interface PromptBestPickWidgetProps
+  extends WidgetProps<BestPromptQuestion, BestPromptAnswer> {
+  /** Pre-rendered (server-side) shiki HTML per option id. */
+  highlightedCode: Record<string, string>
+}
+
+export function PromptBestPickWidget({
+  question,
+  answer,
+  onAnswer,
+  disabled,
+  highlightedCode,
+}: PromptBestPickWidgetProps) {
+  const selected = answer?.optionId ?? null
+  const checkedIndex = question.options.findIndex((o) => o.id === selected)
+  const { containerRef, tabIndexFor, onKeyDown, onOptionFocus } = useRadioGroupKeyboard(
+    question.options.length,
+    checkedIndex,
+  )
+
+  return (
+    <div
+      ref={containerRef}
+      role="radiogroup"
+      aria-label={question.prompt}
+      data-widget-type="best-prompt"
+      onKeyDown={onKeyDown}
+      className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2"
+    >
+      {question.options.map((opt, index) => {
+        const isSelected = selected === opt.id
+        // WR-07: only render shiki HTML when we have it. If the server-side
+        // highlighter didn't produce output for this option id, fall back to
+        // React-escaped plain text — do NOT wrap a string in
+        // dangerouslySetInnerHTML, since any future untrusted code content
+        // would then cross the trust boundary silently.
+        const html = highlightedCode[opt.id]
+        return (
+          <button
+            key={opt.id}
+            type="button"
+            role="radio"
+            aria-checked={isSelected}
+            disabled={disabled}
+            tabIndex={tabIndexFor(index)}
+            onFocus={() => onOptionFocus(index)}
+            onClick={() =>
+              onAnswer({
+                questionId: question.id,
+                type: 'best-prompt',
+                optionId: opt.id,
+              })
+            }
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onAnswer({
+                  questionId: question.id,
+                  type: 'best-prompt',
+                  optionId: opt.id,
+                })
+              }
+            }}
+            className={cn(
+              'relative rounded-2xl border p-3 text-left transition-all duration-150',
+              'bg-[var(--bg-card)]',
+              'hover:border-[var(--slate-7)] hover:bg-[var(--bg-elevated)]',
+              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] focus-visible:outline-offset-2',
+              'disabled:cursor-not-allowed disabled:opacity-60',
+              isSelected
+                ? 'border-[var(--border-accent)] bg-[var(--bg-elevated)]'
+                : 'border-[var(--border)]',
+            )}
+          >
+            {isSelected && (
+              <Check
+                className="absolute top-3 right-3 h-4 w-4 text-[var(--accent)]"
+                aria-hidden
+              />
+            )}
+            {html ? (
+              <div
+                className="shiki-wrapper max-h-48 overflow-x-auto rounded-lg bg-[var(--slate-2)] p-3 font-mono text-sm"
+                style={{ fontFamily: 'var(--font-geist-mono)' }}
+                dangerouslySetInnerHTML={{ __html: html }}
+              />
+            ) : (
+              <pre
+                className="shiki-wrapper max-h-48 overflow-x-auto rounded-lg bg-[var(--slate-2)] p-3 font-mono text-sm"
+                style={{ fontFamily: 'var(--font-geist-mono)' }}
+              >
+                <code>{opt.code}</code>
+              </pre>
+            )}
+          </button>
+        )
+      })}
+    </div>
+  )
+}

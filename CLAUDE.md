@@ -93,6 +93,22 @@ pnpm lint                 # Linting
 - **Hosting:** Vercel
 - **Monorepo:** Turborepo + pnpm
 
+## Branch Workflow (seit 2026-04-25 — Pre-Launch)
+
+**Wir sind in der Endphase vor dem Launch von v4.0.** Mehrere Phasen laufen parallel auf Feature-Branches. Statt einzeln in main zu mergen, sammeln wir alles auf **`develop`**:
+
+```
+feature/phase-XX-slug → develop → (bei Launch) → main → Vercel Prod
+```
+
+**Wichtig für jede neue Phase / Session:**
+- Feature-Branch von `main` (oder von der Phase auf der du baust) erstellen
+- Bei Phasen-Abschluss: in `develop` mergen (nicht in main!), `git pull origin develop` first wegen anderer Sessions
+- `main` ist Production-Source-of-Truth — nur über develop, nur beim Launch
+- Phase 26 läuft in **separatem Worktree** (`/Users/lucaschweigmann/projects/generation-ai-phase-26`) — nicht anrühren
+
+**Vollständiges Pattern:** [.planning/BRANCH-WORKFLOW.md](.planning/BRANCH-WORKFLOW.md)
+
 ## GSD Workflow
 
 Siehe `.planning/STATE.md` für aktuellen Stand.

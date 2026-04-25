@@ -4,7 +4,7 @@ slug: join-flow
 type: context
 status: planning
 created: 2026-04-23
-last-updated: 2026-04-23
+last-updated: 2026-04-24
 depends_on:
   - 20.6 (Landing Sections Rebuild — Nav + DS baseline, CTAs zeigen auf /join)
   - 21 (/about — FAQ als Fallback-Link „Offene Fragen?")
@@ -97,41 +97,72 @@ Später optional (Phase 24 Assessment, Phase 27):
 - **D-08** — Form-Validation Client-side (instant) + Server-side (Zod-Schema, bereits projektweit verwendet). Fehler-Messages deutsch (VOICE.md-konform).
 - **D-09** — Visual-Design: zwei CTA-Buttons im Hero **nicht** sinnvoll (es gibt nur einen primären Pfad). Nur ein Submit-Button „Kostenlos beitreten".
 - **D-10** — Nach Phase 25 Circle-API-Sync wird V1-Waitlist-Logic umgeswitcht auf echten Supabase-Signup + Magic-Link + Circle-Auto-Enrollment. Der V1-Code muss so strukturiert sein, dass der Submit-Handler atomar austauschbar ist (Interface bleibt stabil).
+- **D-11** — **Hero-Copy H1:** „2 Minuten — dann bist du dabei." (Conversion-fokussiert, baut auf Benefit-Icon „In 2 Minuten" auf).
+- **D-12** — **Uni/Ausbildung-Feld:** Combobox mit Autocomplete über deutsche Unis + Freitext-Option für „Andere / Ausbildung / Berufstätig". Non-Students dürfen frei eintippen (Simon §1.3-konform).
+- **D-13** — **Studiengang:** optional (Minimal-Friction). Kein Pflicht-Gate.
+- **D-14** — **DSGVO + Marketing = 2 getrennte Checkboxen.** DSGVO required, Marketing optional + default unchecked. Rechtlich sauber (Kopplungsverbot).
+- **D-15** — **Assessment-Weiche kommt POST-Submit, nicht als inline Step (revidiert).** Flow bleibt **Single-Page** (siehe D-17). Auf dem Success-Screen (Inline-Swap, D-19) erscheint ein Primär-Button `„Jetzt Level testen (2 min)"` → leitet nach Phase 24 auf `/test` weiter. Secondary-Link: `„Später im Dashboard"`. Post-Signup wird Assessment zusätzlich via Welcome-Mails und Circle-Push erneut forciert — die mittelfristige Community-Mechanik (Level-Progression, nächste Level) baut auf dem Test-Score auf. Phase 23 rendert den CTA; die `/test`-Seite selbst kommt in Phase 24 (der Link führt initial auf einen 503-/Placeholder, analog Signup-503).
+- **D-16** — **Social-Share-Buttons auf Success-Screen: V1 ohne.** Phase 27 Copy-Pass entscheidet ob Viral-Coefficient eine Aufnahme rechtfertigt.
+- **D-17** — **Flow-Struktur: Single-Page mit Inline-Success-Swap** (nicht Multi-Step-Wizard). Alle Felder auf einer Route, Submit triggert Card-Swap (Form → Success), kein Progress-Indicator, keine Step-Header. Entscheidung gegen ROADMAP-Wording „3-Step-Flow" → Conversion-Minimalismus > Wizard-Feeling. Self-Select-Level ist **raus** (D-18), Assessment-Weiche ist post-submit CTA.
+- **D-18** — **Self-Select-Level (1-5) raus.** ROADMAP listete das als Step-1-Feld — gestrichen. Begründung: Self-Rating ist ungenau; der /test-Flow (Phase 24) liefert den Score deutlich besser. Weniger Felder = mehr Conversion.
+- **D-19** — **Hero-Layout: reduziertes Hero (`min-h-[60vh]`) + Form direkt darunter.** Unterseiten-Blueprint (`min-h-[calc(100vh-5rem)]` bei /about, /partner) ist zu hoch für Simon §10 „Formular sofort sichtbar". Kompromiss: LabeledNodes-Background + max-w-4xl Hero-Container bleibt Blueprint-konform (Eyebrow-Pill, H1 mit `--fs-display`, text-shadows), aber vertikale Höhe reduziert, sodass Form auf Desktop ohne Scroll angeteasert ist. Auf Mobile kein Split-Layout; Form scrollt einfach unter Hero.
+- **D-20** — **Form-Style: Card mit Border + Subtle Shadow, max-w-lg, zentriert.** `border border-border/60 rounded-2xl` + `shadow-sm` (DS-Token-konform, keine inline-magic). Card-Style + zentriert anstatt Split-Layout (gegen Simon §10 „kein FAQ / keine Ablenkung"). Abstand Hero→Form via `<SectionTransition variant="soft-fade" />`.
+- **D-21** — **Hero-Copy finale:** Eyebrow = `„// jetzt beitreten"` (konsistent mit /about `„// Generation AI · Über uns"`, /partner `„// für partner"`). H1 = „2 Minuten — dann bist du dabei." (D-11). **KEINE H2-Subline** — Simon §10 `„kein FAQ, kein scroll-heavy Marketing"`, wir halten das Hero lean. Intro-Lede kurz: `„Kostenlos. Für alle Fachrichtungen. Keine Haken."` (max-w-2xl, `text-lg sm:text-xl`). 3 Benefit-Icons darunter als Pattern-Row: `„Kostenlos · Keine Verpflichtung · In 2 Minuten"` (Simon §10 explizit).
+- **D-22** — **Success-State = Inline-Swap in der Form-Card.** Submit erfolgreich → Form-Card animiert raus (motion opacity+y), Success-Card animiert rein im gleichen Container. Kein Route-Change, kein Full-Page-Takeover. Inhalt Success-Card: Dankeschoen-Headline („Danke, [Name]! Wir melden uns, sobald wir live gehen."), Assessment-Primär-CTA (D-15), Secondary-Link.
 
 ---
 
 ## Success Criteria
 
-- [ ] `/join` Route existiert in `apps/website/app/join/page.tsx`
-- [ ] Hero mit H1 + Subline + 3 Benefit-Icons + Form sofort sichtbar (ohne Scroll)
-- [ ] Form hat Felder: Email, Name, Uni/Ausbildung, DSGVO-Consent (plus optional: Studiengang, Marketing-Opt-in)
-- [ ] Client-side Validation (Email-Format, Required-Fields)
-- [ ] Server-side Validation (Zod), Fehler werden inline angezeigt
-- [ ] Submit → Server-Action → Waitlist-Insert (Supabase) + Confirmation-Mail (Resend)
+- [ ] `/join` Route existiert in `apps/website/app/join/page.tsx` (Server-Component mit `await headers()` für Nonce + Client-Wrapper analog `about-client.tsx`)
+- [ ] Reduziertes Hero (`min-h-[60vh]`) mit LabeledNodes + Eyebrow + H1 (`--fs-display`) + Lede + 3 Benefit-Icons — **keine H2-Subline** (D-21)
+- [ ] Form-Card direkt unter Hero (max-w-lg, `border border-border/60 rounded-2xl shadow-sm`, zentriert) — Desktop teased Form ohne Scroll an
+- [ ] Form-Felder: Email (required), Vor- + Nachname (oder kombiniert, required), Uni-Combobox (required, Autocomplete + Freitext), Studiengang (optional), DSGVO-Checkbox (required, verlinkt auf `/datenschutz`), Marketing-Opt-in (optional, default off)
+- [ ] **Kein** Self-Select-Level-Feld (D-18), **keine** Multi-Step-Progress-Bar (D-17)
+- [ ] Client-side Validation (Email-Format, Required-Fields, Inline-Fehler mit aria-live)
+- [ ] Server-side Validation (Zod), Fehler werden inline angezeigt (deutsch, VOICE.md-konform)
+- [ ] Submit → Server-Action → Waitlist-Insert (Supabase `waitlist` Table, RLS) + Confirmation-Mail (React-Email-Template in `packages/emails`)
 - [ ] Rate-Limit (5/15min per IP via Upstash)
-- [ ] Success-Screen „Danke, [Name]" rendert
+- [ ] Success-State = **Inline-Swap** (D-22): Form-Card animiert raus, Success-Card mit „Danke, [Name]"-Headline + Primär-CTA `„Jetzt Level testen (2 min)"` (→ `/test`, aktuell 503/placeholder) + Secondary-Link „Später im Dashboard" animiert rein
 - [ ] `?redirect_after=...` Query-Param wird nach erfolgreichem Submit gespeichert und bei späterem Auth-Flow wieder aufgegriffen (Phase 25)
-- [ ] DSGVO-Consent-Checkbox verlinkt auf `/datenschutz`
-- [ ] Mobile responsive, Form-Felder groß genug für Touch
-- [ ] A11y: Labels korrekt, Focus-States sichtbar, Submit-Button per Enter auslösbar
-- [ ] Lighthouse `/join` > 90
+- [ ] Sticky-Header + Footer aus Layout-Shell (Phase 20), MotionConfig mit Nonce
+- [ ] Mobile responsive, Form-Felder groß genug für Touch (≥44px)
+- [ ] A11y: Labels korrekt, Focus-States sichtbar (DS-Tokens), Submit per Enter auslösbar, Combobox keyboard-navigierbar, Fehler mit `aria-live="polite"`
+- [ ] Visuelle Konsistenz zu /about + /partner: gleicher Hero-Eyebrow-Style, gleicher Font-Token, gleiche Section-Transitions (`<SectionTransition variant="soft-fade" />`), **keine** `border-b border-border` auf Section-Level
+- [ ] Lighthouse `/join` > 90 (Performance + A11y + SEO + Best Practices)
 - [ ] Meta-Tags: `<title>Jetzt beitreten · Generation AI</title>`, überzeugende Description
 - [ ] Nav-Item „Jetzt beitreten" highlightet `/join` (sollte bereits funktionieren aus Phase 20)
-- [ ] Playwright-Smoke: Route lädt, Form submittet, Success-Screen rendert, Invalid-Email zeigt Error, Rate-Limit nach 6 Submits aktiv
-- [ ] Supabase `waitlist` Table existiert mit RLS (Migration im Repo)
+- [ ] Sitemap-Eintrag `/join` in `app/sitemap.ts` (Priority 0.8, changeFrequency monthly, analog /about)
+- [ ] Playwright-Smoke unter `packages/e2e-tools/tests/join.spec.ts`: Route lädt, Form submittet, Success-Card rendert, Invalid-Email zeigt Error, Rate-Limit nach 6 Submits aktiv
+- [ ] Supabase `waitlist` Table existiert mit RLS (Migration im Repo, via Supabase MCP oder `supabase/migrations/`)
 
 ---
 
-## Offene Fragen (zu klären vor Planning)
+## Resolved Questions (2026-04-24, `/gsd-autonomous --interactive` Batch 1+2)
 
-1. **Hero-Copy:** Simon §10 hat keinen exakten H1-Claim. Vorschläge: „2 Minuten — dann bist du dabei." vs. „Willkommen in der Community." vs. „Fangen wir an."
-2. **Uni-Dropdown vs. Freitextfeld:** Dropdown aller deutschen Unis + „Andere" ist UX-Win aber wartungsintensiv. Freitextfeld ist simpel aber unsauber. Empfehlung: **Combobox** mit autocomplete + freier Eingabe.
-3. **Studiengang-Feld:** optional oder required? Empfehlung: optional (geringer Friction-Cost, Luca hat die Info ja in Circle wenn User aktiv wird).
-4. **Marketing-Opt-in vs. DSGVO-Consent:** zwei getrennte Checkboxen (rechtlich sauber) oder eine kombinierte? Empfehlung: zwei (Konsent-Kaskade: Datenschutz required, Marketing optional).
-5. **Waitlist-Mail-Template:** kurzer Text-Mail vs. volles React-Email-Template im Brand-Look? Empfehlung: Letztere (analog Phase 17 Supabase-Templates).
-6. **Social-Share-Buttons auf Success-Screen:** nice-to-have oder V1-Scope? Empfehlung: V1 ohne, in Phase 27 prüfen ob Viral-Coefficient das rechtfertigt.
-7. **Waitlist-Table: separate Tabelle oder `auth.users` mit Flag?** Empfehlung: separate `waitlist`-Table — cleaner, kein Noise in `auth.users`, einfacher Export für Launch-Kommunikation.
-8. **Assessment-Integration:** Luca hat in Phase 24 `/test` als Assessment geplant. Wird das **inline** in `/join` integriert oder **optional danach** angeboten? Empfehlung: separate Seite, optional angeboten („Möchtest du dich einschätzen lassen? →") — minimiert Join-Friction.
+Alle ursprünglich offenen Fragen und die Architektur-Fragen geklärt und in D-11..D-22 kodifiziert:
+
+**Batch 1 — Ursprüngliche offene Fragen:**
+1. **Hero-Copy** → D-11 („2 Minuten — dann bist du dabei.")
+2. **Uni-Feld** → D-12 (Combobox + Autocomplete + Freitext)
+3. **Studiengang** → D-13 (optional)
+4. **Marketing vs. DSGVO** → D-14 (2 getrennte Checkboxen)
+5. **Waitlist-Mail-Template** → D-07 (React-Email im Brand-Look, Phase 17 Setup)
+6. **Social-Share** → D-16 (V1 ohne, Phase 27 Review)
+7. **Waitlist-Table** → D-05 (separate `waitlist`-Table)
+8. **Assessment-Integration** → D-15 (als post-submit CTA, nicht inline Step)
+
+**Batch 2 — Architektur + Copy + UX:**
+9. **Flow-Struktur** → D-17 (Single-Page statt Multi-Step-Wizard)
+10. **Self-Select-Level** → D-18 (raus — nur Assessment-Weiche post-submit)
+11. **Hero-Layout Konflikt Simon §10 vs. Blueprint** → D-19 (reduziertes Hero `min-h-[60vh]`)
+12. **Form-Style** → D-20 (Card mit Border + Shadow, max-w-lg, zentriert)
+13. **Waitlist-Backend-Scope** → D-05 bestätigt (volle Supabase-Migration jetzt)
+14. **Hero-Copy-Details** → D-21 (Eyebrow `// jetzt beitreten`, keine H2, kurze Lede, 3 Benefit-Icons)
+15. **Success-State-Präsentation** → D-22 (Inline-Card-Swap, kein Redirect)
+16. **Assessment-CTA-Hierarchie** → D-15 (Primär-Button + Secondary-Link)
+
+**Batch 3 — Danach (YOLO-Autonomie, Luca 2026-04-24):** Alle verbleibenden Detail-Entscheidungen werden vom Plan-Agent und Execute-Agent nach bestem Wissen getroffen (Empfehlungen + AGENTS.md-Blueprint + brand/VOICE.md + bestehende `/about` + `/partner` als Referenz-Konsistenz).
 
 ---
 

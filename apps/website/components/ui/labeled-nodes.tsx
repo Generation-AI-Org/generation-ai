@@ -6,6 +6,7 @@ import { useEffect, useRef, type ReactNode } from "react"
 interface LabeledNodesProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: ReactNode
   className?: string
+  labels?: string[]
 }
 
 /**
@@ -39,19 +40,40 @@ interface LabeledNodesProps extends React.HTMLAttributes<HTMLDivElement> {
  *   - ResizeObserver rebuilds nodes on container resize.
  *   - Canvas-Buffer × devicePixelRatio für crisp Retina.
  */
+const DEFAULT_LABELS = [
+  "FOUNDER",
+  "AGENT",
+  "HARNESS",
+  "MODEL",
+  "THESIS",
+  "MEETUP",
+  "OFFICE",
+  "PROF",
+  "IDEE",
+  "PROJEKT",
+  "VIBECODING",
+  "SKILL",
+  "MENTOR",
+  "FEEDBACK",
+  "HACKATHON",
+]
+
 export function LabeledNodes({
   children,
   className,
+  labels,
   ...props
 }: LabeledNodesProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const labelsRef = useRef<string[]>(labels ?? DEFAULT_LABELS)
+  labelsRef.current = labels ?? DEFAULT_LABELS
 
   useEffect(() => {
     const container = containerRef.current
     const canvas = canvasRef.current
     if (!container || !canvas) return
-    return startCanvasAnimation(container, canvas)
+    return startCanvasAnimation(container, canvas, labelsRef)
   }, [])
 
   return (
@@ -144,27 +166,11 @@ export function LabeledNodes({
 function startCanvasAnimation(
   container: HTMLDivElement,
   canvas: HTMLCanvasElement,
+  labelsRef: React.MutableRefObject<string[]>,
 ): () => void {
   const ctx = canvas.getContext("2d")
   if (!ctx) return () => {}
 
-  const LABELS = [
-    "FOUNDER",
-    "AGENT",
-    "HARNESS",
-    "MODEL",
-    "THESIS",
-    "MEETUP",
-    "OFFICE",
-    "PROF",
-    "IDEE",
-    "PROJEKT",
-    "VIBECODING",
-    "SKILL",
-    "MENTOR",
-    "FEEDBACK",
-    "HACKATHON",
-  ]
   const PROX = 140
   const CLUSTER_RADIUS = 150
 
@@ -390,7 +396,7 @@ function startCanvasAnimation(
           n.label = null
         }
       }
-      const freeLabels = LABELS.filter((l) => !taken.has(l))
+      const freeLabels = labelsRef.current.filter((l) => !taken.has(l))
       const freeIdx = 0
       for (const i of activeLabelable) {
         const n = nodes[i]!

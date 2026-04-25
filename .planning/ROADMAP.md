@@ -520,15 +520,15 @@ Plans:
 |-------|------|--------|------------|
 | 20 | Navigation + Landing-Skeleton | ✅ complete 2026-04-21 | 6/6 plans, Skeleton + Nav + 8 Sections |
 | 20.5 | Landing Wow-Pass (Signal-Grid) | ✅ closed at Hero 2026-04-22 | Hero signed-off, 20.5-04+05 deferred → 20.6 |
-| 20.6 | Landing Sections Rebuild | 🚧 planned (9 plans) | Discrepancy=Problem-Block + Polish aller Sections + Kurz-FAQ + Transitions |
-| 21 | `/about`-Seite | ⏳ next after 20.6 | Mission, Story, Team, Werte, Verein, FAQ (10), Abschluss-CTA, Kontakt |
-| 22 | `/partner`-Seite | ⏳ 4-Tab-System (REVIDIERT) | Unternehmen/Stiftungen/Hochschulen/Initiativen, URL-Param, Form, Ansprechpartner-Karten |
+| 20.6 | 9/9 | Complete    | 2026-04-23 |
+| 21 | 8/8 | Complete   | 2026-04-23 |
+| 22 | 8/8 | Complete    | 2026-04-24 |
 | 22.5 | `/events`-Seite | 🆕 neu | MDX-Pipeline, members-only gated, Hero + Kommende + Formate + Archiv + CTA |
 | 22.7 | Tools-Subdomain Polish | 🆕 neu | Logo-Link-Fix, Login-Button-Umbau (Registrieren + Einloggen), Hero, Nav-Sync |
-| 23 | `/join` Fragebogen-Flow | ⏳ | Linearer 4-Step-Flow mit Validation (Backend-503) |
-| 24 | `/test` Assessment | ⏳ | Optionaler Test mit DSGVO-Consent, Score-Migration |
-| 25 | Circle-API-Sync (Unified Signup) | ⏳ | Server-Action: Supabase+Circle, SSO-Link, Welcome-Flow |
-| 26 | `/community` + Subdomain-Integration | ✅ 6/6 complete (2026-04-25) | Eigene Seite mit MDX-Artikeln + SEO (/community/artikel/[slug]) + Featured-Tools-API |
+| 23 | 6/6 | Complete    | 2026-04-24 |
+| 24 | 9/9 | Complete   | 2026-04-24 |
+| 25 | 9/9 | Complete    | 2026-04-24 |
+| 26 | `/community` + Subdomain-Integration | ⏳ erweitert | Eigene Seite mit MDX-Artikeln + SEO (/community/artikel/[slug]) + Featured-Tools-API |
 | 27 | Copy-Pass & Launch-Cleanup | 🆕 neu | Finales Wording, Dummy-Data raus, Meta/SEO-Pass, Signup-Go-Entscheidung |
 
 **Dependencies:**
@@ -638,17 +638,17 @@ Plans:
 **Depends on:** Phase 20.5
 **Branch:** `feature/phase-20-landing-skeleton` (stays open, builds on top)
 **Out-of-Scope:** New sections, new pages, final copywriting (deferred to marketing pass), Hero changes (locked from Phase 20.5), sign-up reactivation (bleibt 503).
-**Plans:** 8
+**Plans:** 9/9 plans complete
 
 Plans:
-- [ ] 20.6-01-PLAN.md — New Discrepancy section (re-designed from scratch)
-- [ ] 20.6-02-PLAN.md — Offering polish
-- [ ] 20.6-03-PLAN.md — Tool-Showcase polish
-- [ ] 20.6-04-PLAN.md — Community-Preview polish
-- [ ] 20.6-05-PLAN.md — Audience-Split polish
-- [ ] 20.6-06-PLAN.md — Trust polish
-- [ ] 20.6-07-PLAN.md — Final-CTA polish
-- [ ] 20.6-08-PLAN.md — Inter-section transitions
+- [x] 20.6-01-PLAN.md — New Discrepancy section (re-designed from scratch)
+- [x] 20.6-02-PLAN.md — Offering polish
+- [x] 20.6-03-PLAN.md — Tool-Showcase polish
+- [x] 20.6-04-PLAN.md — Community-Preview polish
+- [x] 20.6-05-PLAN.md — Audience-Split polish
+- [x] 20.6-06-PLAN.md — Trust polish
+- [x] 20.6-07-PLAN.md — Final-CTA polish
+- [x] 20.6-08-PLAN.md — Inter-section transitions
 
 **Scope:**
 - Section-by-section co-build mit Luca in localhost:3000
@@ -789,51 +789,70 @@ Plans:
 
 ### Phase 23: `/join` Fragebogen-Flow
 
-**Goal:** Linearer 3-Step-Flow (+ Confirmation) mit Validation, State-Persistenz, 503-Backend.
+**Goal:** Waitlist-V1-Landing (Single-Page + Inline-Success-Swap) mit Form-Validation, Rate-Limit, Supabase-Insert, Resend-Confirmation-Mail. Live-Signup-Reaktivierung bleibt auf Phase 25 verschoben — bis dahin sammelt `/join` Waitlist-Einträge.
 **Requirements:** R4.1-R4.8
-**Depends on:** Phase 20
-**Out-of-Scope:** Live-Backend (Circle-Sync in Phase 25), Live-Signup-Reaktivierung (bleibt 503).
+**Depends on:** Phase 20 (Nav + Layout-Shell), Phase 17 (Resend + React-Email Setup)
+**Out-of-Scope:** Live-Backend (Circle-Sync in Phase 25), KI-Kompetenz-Assessment (Phase 24), Live-Signup-Reaktivierung (bleibt 503 bis Phase 27-Go).
 
-**Scope:**
-- Step 1: Fragebogen (Name, Email, Status, Uni, Motivation, Self-Select Level 1-5)
-- Step 2: Assessment-Weiche (Link zu `/test` oder Skip)
-- Step 3: Account + Circle-Flow-Stub (Submit-Button, aktuell mit 503-Response)
-- Step 4: Confirmation-Screen
-- Progress-Indicator, SessionStorage-State, Validation inline + aria-live
-- 503-Banner statt Success solange Luca nicht freigibt
+**Plans:** 6/6 plans complete
+
+Plans:
+- [ ] 23-01-PLAN.md — Supabase `waitlist`-Table + RLS + TypeScript-Types in @genai/auth
+- [x] 23-02-PLAN.md — React-Email-Template `WaitlistConfirmationEmail` in @genai/emails
+- [x] 23-03-PLAN.md — Server-Action `submitJoinWaitlist` mit Zod + Upstash-Rate-Limit + Supabase-Insert + Resend-Mail
+- [x] 23-04-PLAN.md — UniCombobox-Komponente + Universities-Liste (40 DE-Hochschulen + Fallback-Options)
+- [x] 23-05-PLAN.md — /join Route: Server-Component + Client-Wrapper + Hero + Form-Card + Success-Card (Inline-Swap)
+- [x] 23-06-PLAN.md — Sitemap + Playwright-Smoke-Tests + STATE.md-Update
+
+**Scope (revidiert 2026-04-24 per CONTEXT.md D-17 bis D-22):**
+- Single-Page-Flow mit Inline-Success-Swap (NICHT Multi-Step-Wizard, D-17)
+- Reduziertes Hero (`min-h-[60vh]`, D-19) + Form direkt sichtbar auf Desktop
+- 6 Form-Felder: Email, Name (Vor+Nachname), Uni-Combobox (Autocomplete + Freitext), Studiengang (optional), DSGVO-Checkbox (required), Marketing-Opt-in (optional default off)
+- Submit → Waitlist-Insert + Confirmation-Mail (V1) — Interface stabil für Phase 25 Swap (D-10)
+- Assessment-CTA post-submit (→ `/test`, D-15, Phase 24 baut die Seite)
+- `?redirect_after=...` Query-Param round-trip für Phase 22.5 Events-Gate
 
 **Success Criteria:**
-- [ ] Alle Steps keyboard-navigierbar + screen-reader-korrekt
-- [ ] Uni-Autocomplete funktioniert
-- [ ] State übersteht Reload innerhalb Session
-- [ ] Submit zeigt 503-Banner mit Erklärung "Anmeldung geschlossen, bald wieder"
-- [ ] Lighthouse `/join` > 90
+- [ ] /join lädt mit HTTP 200, Lighthouse > 90 (alle 4 Kategorien)
+- [ ] Hero + Form-Card + Success-Card DS-konform (UI-SPEC verbatim)
+- [ ] Form Client-side + Server-side validated (Zod), deutsche Fehlermeldungen VOICE.md-konform
+- [ ] Submit → Supabase `waitlist`-Row + Confirmation-Mail via Resend
+- [ ] Rate-Limit 5/15min/IP via Upstash (graceful-degrade)
+- [ ] Duplicate-Email → Silent-Success (no-leak Privacy)
+- [ ] Build-Output zeigt `ƒ /join` (dynamic, CSP-safe per LEARNINGS.md)
+- [ ] Playwright-Smoke-Test mit ≥9 Testcases grün
 
-**Release:** patch (UI ohne Live-Signup, bleibt sichtbar aber nicht wirksam)
+**Release:** patch (V1 Waitlist live-fähig; Live-Signup bleibt 503 bis Phase 25 Circle-Sync + Phase 27 Go-Decision)
 
 ---
 
-### Phase 24: `/test` Assessment
+### Phase 24: `/test` AI-Literacy-Assessment ✅ (REVIDIERT 2026-04-24)
 
-**Goal:** Optionaler Kompetenz-Test mit Level-Score-Output, DSGVO-konform, Standalone-fähig.
+**Goal:** Echter, deterministischer AI-Literacy-Test mit interaktiven closed-choice-Widgets (kein Selbsteinschätzungs-Quiz, kein stures MC). 5-Level-Output + Skill-Radar + Sparring-Placeholder für spätere PRISMA-Integration.
 **Requirements:** R5.1-R5.7
-**Depends on:** Phase 23 (State-Contract für Score-Migration)
-**Out-of-Scope:** Adaptive Test-Logik (nur gewichtete statische Fragen in v4.0).
+**Depends on:** Phase 23 (State-Contract für Score-Migration, Nav/Layout-Shell)
 
-**Scope:**
-- 5-8 gewichtete Fragen mit Multiple-Choice-Antworten → Level 1-5
-- DSGVO-Consent-Gate vor Test-Start
-- Ergebnis-Screen mit Level + Erklärung + CTA zurück zu `/join` (oder Standalone-CTA bei direktem Einstieg)
-- Score in SessionStorage + Migration ins Profile-Record bei späterem Signup
-- Lösch-Flow dokumentiert (Link zu `/datenschutz` mit Passage)
+**Delivered Scope (v4.0):**
+- 9 Widget-Typen: CardPick, DragRank (@dnd-kit), PromptBestPick (shiki), SideBySide+Reasons, Fehlerspot, Matching, ConfidenceSlider, FillIn, MC
+- Deterministisches Scoring (pure math in JS, 0 LLM-calls) — `lib/assessment/scoring.ts` mit 69+ Unit-Tests
+- 5 Level: Neugieriger / Einsteiger / Fortgeschritten / Pro / Expert
+- Recharts Skill-Radar über 5 Dimensionen (Tools / Prompting / Agents / Anwendung / Critical Literacy)
+- 3 Routes: `/test`, `/test/aufgabe/[n]`, `/test/ergebnis`
+- Framer Motion Transitions + reduced-motion-Fallbacks
+- A11y: Keyboard-Nav pro Widget, aria-live, Focus-Management
+- Content in JSON + MDX (editierbar ohne Code)
+- Sparring-Slot: V1-Placeholder, Props-Interface für späteren Live-Swap
+- Signup-CTA: `/join?pre={level}&source=test&skills={...}`
 
-**Success Criteria:**
-- [ ] Test ohne Login durchführbar
-- [ ] Consent blockt Submit wenn nicht aktiv
-- [ ] Score landet korrekt in `/join` Step-State bei Rückkehr
-- [ ] DSGVO-Passage in Datenschutzerklärung ergänzt
+**Out-of-Scope (spätere Phase):**
+- PRISMA-Backend-Integration (Anthropic Agent SDK Harness, Streaming, Rate-Limit) — Luca baut PRISMA parallel
+- Persistent User-Profile-Speicherung (`user_metadata.ki_level`) — kommt Phase 25 Unified Signup
+- LLM-basierte Ergebnis-Interpretation — V2-Option (Scoring bleibt NIE LLM)
+- Adaptive Fragen, Share-Cards, EN-Version — Roadmap
 
-**Release:** patch
+**Verification:** passed/human_needed (4 UAT-Items offen: E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke — siehe `24-HUMAN-UAT.md`)
+
+**Release:** patch (within v4.0)
 
 ---
 
@@ -883,16 +902,6 @@ Plans:
 **Depends on:** Phase 20.6 (Nav + DS), Phase 22.7 (tools-app nav consistent), Phase 25 (optional für Live-Post-API)
 **Detailplan:** `.planning/phases/26-community-page-and-subdomain-integration/26-CONTEXT.md`
 **Out-of-Scope:** Content-Management-UI, AI-Content-Agent (Roadmap), Live-Circle-Posts-API auf Landing (deferred bis Rate-Limits klar), Artikel-Kategorien/Tags/Suche/Kommentare.
-
-**Plans:** 6/6 plans complete
-
-Plans:
-- [x] 26-01-PLAN.md — MDX Stack + Test Infra + 4 Placeholder Articles (Wave 1, foundation)
-- [x] 26-02-PLAN.md — `/community` Landing Page (Hero, 4 Pillars, Carousel, Final-CTA) (Wave 2)
-- [x] 26-03-PLAN.md — Article Detail Page + Schema.org + Sitemap Update (Wave 3)
-- [x] 26-04-PLAN.md — Block B Part 1: `/api/public/featured-tools` API + BeispielBadge Extract (Wave 2, parallel)
-- [x] 26-05-PLAN.md — Block B Part 2: Tool-Showcase + Community-Preview Server-Component Refactor (Wave 3)
-- [x] 26-06-PLAN.md — Header-Nav Update + Lighthouse + Phase UAT (Wave 4)
 
 **Scope Block A — /community Seite:**
 - Hero + Direktlink zu `community.generation-ai.org` für Members
@@ -954,6 +963,30 @@ Plans:
 - [ ] Signup-Go-Entscheidung dokumentiert
 
 **Release:** Launch-Minor (v5.0 Final) — Ship-Ready-State
+
+---
+
+## Backlog
+
+Ideen & Follow-ups ohne feste Phase-Zuordnung. Mit `/gsd-review-backlog` in aktive Phase promoten, wenn reif.
+
+### Phase 999.1: Phase 22 /partner — echte LinkedIn-URLs einsetzen (BACKLOG)
+
+**Goal:** Placeholder `href="#"` mit `data-placeholder="linkedin"` Markern in `apps/website/components/partner/partner-person-card.tsx` durch echte LinkedIn-URLs für Alex, Janna und Simon ersetzen.
+**Requirements:** TBD — URLs von den 3 Personen einholen.
+**Plans:** 9/9 plans complete
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.2: Phase 22 /partner — sitemap.ts Eintrag (BACKLOG)
+
+**Goal:** `/partner` Route in `apps/website/app/sitemap.ts` aufnehmen, analog zum bestehenden `/about`-Eintrag (priority 0.8, changeFrequency monthly). Relevant für SEO-Crawling nach Launch.
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
 
 ---
 

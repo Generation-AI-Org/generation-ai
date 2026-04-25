@@ -67,7 +67,10 @@ test.describe.skip("Phase 20 — Landing", () => {
     const context = await browser.newContext({ reducedMotion: "reduce" })
     const page = await context.newPage()
     await page.goto(LANDING_URL)
-    const marquee = page.locator(".animate-marquee").first()
+    // Selector: data-section="trust" → .animate-scroll (Plan 20.6-06 Refactor:
+    // Trust nutzt jetzt das tool-showcase-Marquee-Pattern mit .animate-scroll
+    // statt der alten .animate-marquee MagicUI-Variante aus Plan 20-05).
+    const marquee = page.locator('[data-section="trust"] .animate-scroll').first()
     // Bei reduced-motion: animation-play-state = paused (durch globals.css Guard)
     const playState = await marquee.evaluate((el) => getComputedStyle(el).animationPlayState)
     expect(playState).toBe("paused")

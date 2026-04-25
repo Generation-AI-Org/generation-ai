@@ -32,7 +32,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // Phase 26: MDX als gültiges Page-Extension neben tsx (D-10)
+  // MDX als gültiges Page-Extension neben tsx (Phase 24 level-profiles + Phase 26 D-10).
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 
   // Expose env vars to client bundle at build time

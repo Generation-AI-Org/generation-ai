@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: executing
-last_updated: "2026-04-25T00:06:24.104Z"
+status: planning
+last_updated: "2026-04-24T13:49:43.096Z"
 progress:
-  total_phases: 18
-  completed_phases: 8
-  total_plans: 52
-  completed_plans: 40
-  percent: 77
+  total_phases: 20
+  completed_phases: 13
+  total_plans: 86
+  completed_plans: 83
+  percent: 97
 ---
 
 # Project State — Generation AI Monorepo
@@ -21,15 +21,19 @@ progress:
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 20.6 Landing Sections Rebuild — PLANNED (9 skeleton plans: 8 existing + neu 20.6-09 Kurz-FAQ). Problem-Block (Simon §4.4) ist neuer Scope für Plan 20.6-01. Bereit zur Execution.
-**Branch:** `main` (Phase 20 Skeleton + 20.5 Hero gemerged + gepusht 2026-04-22, Vercel auto-deployed) — neue Phasen starten auf frischem Feature-Branch
-**Last Updated:** 2026-04-23 (Roadmap-Revision + 5 neue/erweiterte Phase-CONTEXTs)
-**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, andere Sections (Offering, Tool-Showcase, Community, Audience-Split, Trust, Final-CTA) auf Phase-20-Skeleton-Level bis 20.6 drüber polished, Discrepancy-Section unmounted.
+**Phase:** 26 (parallel im Worktree)
+**Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
+- `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
+- `develop` = Staging-Sammelbranch (Stand: + Phase 25 ✅ gemerged 2026-04-25, commit 473edf9)
+- `feature/phase-25-circle-api-sync` = abgeschlossen, ready
+- `feature/phase-26-community` = aktiv im separaten Worktree `generation-ai-phase-26`
+**Last Updated:** 2026-04-25 (Phase 25 `Circle API Sync` ✅ DONE — 6 Bugs + Pivot zu Invitation-Flow + Magic-Link-SSO zu tools-app + Custom Welcome-Mail; merged → develop)
+**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, /about + /partner + /join fertig (nicht deployed). Phase 21 + 22 + 23 + 24 + 25 auf develop ready. 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** 20.6 Landing Sections Rebuild (9 Plans: 8 existing + 20.6-09 Kurz-FAQ neu 2026-04-23)
-**First command:** `/gsd-discuss-phase 20.6` (oder direkt `/gsd-plan-phase 20.6-01` für Problem-Block — ehemals Discrepancy)
+**Next phase:** 22.5 /events-page (MDX-Pipeline, members-only gated, Anmelde-Flow) oder 22.7 Tools-Subdomain-Polish — Luca entscheidet Reihenfolge.
+**First command:** `/gsd-plan-phase 22.5` oder `/gsd-plan-phase 22.7` (beide haben CONTEXT.md bereits)
 
 **Context für neue Session:**
 
@@ -122,7 +126,7 @@ progress:
 
 ### Phase 20.5 Progress
 
-**Status:** Executing Phase 20.6
+**Status:** Ready to plan
 
 - CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
 - 5 PLAN.md angelegt, 3 delivered + 2 deferred:
@@ -160,29 +164,25 @@ progress:
 
 ---
 
-### Phase 26 Progress
+### Phase 23 Progress
 
-**Status:** ✅ CODE-COMPLETE 2026-04-25 (alle 6 Plans durch). UAT pending Luca.
-**Branch:** `feature/phase-26-community` (worktree `generation-ai-phase-26`, NICHT gepusht/gemerged)
+**Status:** DONE 2026-04-24. Waitlist V1 live-fähig (Backend bleibt 503 bis Phase 25, Waitlist-Insert + Confirmation-Mail laufen).
 
-- **Plan 26-01** DONE — MDX Stack + Test Infra + 4 Placeholder Articles (Wave 1)
-- **Plan 26-02** DONE — `/community` Landing Page (Hero, 4 Pillars, Carousel, Final-CTA) (Wave 2 Block A)
-- **Plan 26-03** DONE — Article Detail Page + Schema.org + Sitemap Update (Wave 3 Block A)
-- **Plan 26-04** DONE — Block B Part 1: `/api/public/featured-tools` API + BeispielBadge Extract (Wave 2 Block B)
-- **Plan 26-05** DONE — Block B Part 2: Tool-Showcase + Community-Preview Server-Component Refactor (Wave 3 Block B)
-- **Plan 26-06** DONE 2026-04-25 — Header-Nav Update + Lighthouse + Phase UAT (Wave 4)
-  - Commits: `23b0fc3` (header nav rewire + Desktop-Renderer conditional Link/<a> + changeset), `3d1a45b` (VALIDATION.md), `0a12dc3` (UAT.md)
-  - Header-Renderer rewritten: `link.external ? <a target=_blank> : <Link>` (PLAN-CHECK Warning #3)
-  - Lighthouse 4 configs alle ≥ 90: /community Desktop 99/100/96/100 · Mobile 91/100/100/100 · Article Desktop 100/100/96/100 · Mobile 96/100/100/100. CLS=0 alle Runs.
-  - Block A 15/15 + Block B 6/6 + Header-Nav 8/8 Acceptance covered in `26-VALIDATION.md`
-  - `26-UAT.md` als step-by-step Browser-Walkthrough für Luca's manual Sign-off geschrieben
-  - Deviations: 0 (Plan 1:1 ausgeführt, Yolo-Mode auto-approved beide checkpoint:human-verify Tasks)
-  - Tests: website 23/23 + tools-app 19/19 grün
-  - Requirements completed: R7.6, R7.7
-- **Phase 26 Outputs:** `.planning/phases/26-community-page-and-subdomain-integration/26-{01..06}-SUMMARY.md`, `26-VALIDATION.md`, `26-UAT.md`
-- **Open:** Luca walks `26-UAT.md` Checklist → "approved" → Phase 26 final-merge auf main + `pnpm version` (changesets v4.x.0 minor bump)
+- Plan 23-01 DONE — Supabase `waitlist`-Table + RLS (service_role only) + TypeScript types in @genai/auth. Migration `supabase/migrations/20260424000001_waitlist.sql` via MCP applied.
+- Plan 23-02 DONE — React-Email-Template `WaitlistConfirmationEmail` in @genai/emails (Blueprint: partner-inquiry-confirmation).
+- Plan 23-03 DONE — Server-Action `submitJoinWaitlist` mit Zod-Validation + Upstash-Rate-Limit (5/15min/IP) + Supabase-Insert + Resend-Mail. Interface stabil für Phase 25 Swap (D-10).
+- Plan 23-04 DONE — UniCombobox-Komponente + Universities-Liste (40 DE-Hochschulen + 4 Fallback-Options). ARIA-combobox-Pattern, Keyboard-Nav, Freitext-Accept.
+- Plan 23-05 DONE — /join Route komplett: Server-Component + Client-Wrapper + Hero (`min-h-[60vh]`) + Form-Card + Success-Card mit Inline-Swap. Unterseiten-Blueprint-konform. CSP/Nonce intakt.
+- Plan 23-06 DONE — Sitemap-Eintrag `/join` (priority 0.8, changeFrequency monthly), Playwright-Smoke `join.spec.ts` mit 10 Testcases (loads, hero, form fields, email error, consent error, uni free-text, uni keyboard nav, redirect_after, valid submit swap, sessionStorage reload R4.7, CSP). Lighthouse /join: Perf 87⚠️ / A11y 95 / BP 100 / SEO 100. STATE.md updated.
 
----
+**Requirements completed:** R4.1, R4.2, R4.3, R4.4, R4.5, R4.6, R4.7, R4.8 (alle R4.*) — R4.1–R4.4 als-revidiert umgesetzt (Single-Page Waitlist statt Multi-Step-Wizard, per D-17/D-18/D-15/D-01).
+
+**Offen (bewusst, Phase 25):**
+
+- Live-Signup bleibt 503 (D-01, Luca-Go abhängig)
+- Assessment-CTA verlinkt auf `/test` (404 bis Phase 24 die Seite baut)
+- Phase 25 swapped Waitlist-Insert gegen echten Supabase-Signup + Circle-API-Sync
+- Lighthouse Performance 87 (LCP 3.6s lokal) — erwartet höher auf Vercel CDN; kein Blocking-Issue
 
 ---
 

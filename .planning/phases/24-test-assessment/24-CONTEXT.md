@@ -4,152 +4,224 @@ slug: test-assessment
 type: context
 status: planning
 created: 2026-04-23
-last-updated: 2026-04-23
+last-updated: 2026-04-24
 depends_on:
   - 20.6 (Landing Sections Rebuild — Nav + DS baseline)
-  - 23 (/join — Assessment optional angeboten nach Signup oder eigenständig vorher)
+  - 23 (/join — Signup-Target mit pre-fill Query-Params)
+  - Gemini-3-Flash-Agent-Infra aus tools-app (wiederverwendbar für Assessment-Agent)
 branch: feature/phase-24-test-assessment
 ---
 
-# Phase 24 — `/test` KI-Kompetenz-Assessment
+# Phase 24 — `/test` KI-Literacy-Assessment
 
-> Leichtgewichtiges Self-Assessment für Studierende: „Wo stehe ich mit KI-Skills?" 10-12 Multiple-Choice-Fragen → Kurz-Auswertung mit Einstiegs-Empfehlungen (Workshop-Level, Lernpfade, erste Events). Kein Gate für Signup, kein hartes Ranking. Empfehlung und Orientierung.
+> **Echter** Wissenstest für DACH-Studierende: „AI Literacy Test" — 8-10 interaktive Aufgaben in max. 15 Min (Ziel 10 Min), deterministisches Scoring, Level + Skill-Radar als Ergebnis, abschließend **Sparring mit Assessment-Agent** für personalisierte Community-Empfehlungen. Kein Selbsteinschätzungs-Quiz, sondern implizites Abfragen über Szenario-MC, Prompt-Improvement, Output-Beurteilung, Fakten-Check. Kein Gate für Signup — `/test` ist SEO-Entry und Onboarding-Tool.
 
 ---
 
-## Context-Klärung
+## Vision (2026-04-24, Luca)
 
-Simon §1.3 Leitprinzipien erwähnen **„Freemium-Logik für SEO und Aktivierung"** als generelles Prinzip. Simons Konzept hat `/test` nicht als eigene Sektion, sondern verweist im Roadmap-Teil §13.2 auf „KI-Kompetenz-Assessment im Registrierungsflow" als Roadmap-Item.
-
-Luca hat `/test` in der v4.0-Roadmap als eigene Phase 24 verankert (Rename von ursprünglich `/level-test` auf `/test` in Commit `c6e8ce2`). Die Intention: als **Entry-Point** auch ohne Signup (SEO-Traffic via „ki-skills test" Keywords), und als **Onboarding-Tool** für Post-Signup-User („Wo passt du hin?").
+Der Test soll:
+1. **Deterministisch** sein — gleicher User mit gleichen Antworten bekommt immer dasselbe Ergebnis. Kein LLM-Scoring.
+2. **Echt** sein — tests what you know, not what you think you know. User soll implizit abgefragt werden, auch wenn er sein Level nicht selbst einschätzen kann/will.
+3. **Interaktiv & spannend** — kein 08/15-Quiz. Verschiedene Aufgaben-Typen, visuelle Abwechslung, Micro-Interactions.
+4. **Schnell** — max 15 Min, Ziel 10 Min, sonst Drop-Off.
+5. **Follow-up-wertig** — nach dem Ergebnis Chat mit einem Agenten, der das Ergebnis + Community-Content kennt und echte Empfehlungen gibt („schau mal in Space X vorbei", „Event Y wäre gut für dich").
 
 ---
 
 ## Mission
 
-Besucher:innen (mit oder ohne Account) beantworten 10-12 Kurzfragen zu ihrem aktuellen KI-Stand (Tool-Kenntnis, Anwendungskontext, Level-Selfeinschätzung). Am Ende bekommen sie:
+Besucher:innen (mit oder ohne Account) durchlaufen einen **echten Kompetenz-Test** — 8-10 Aufgaben mit gemischten Typen — und bekommen am Ende:
 
-1. **Kurz-Auswertung**: „Du bist bei [Einsteiger / Fortgeschritten / Expert]" — kein hartes Ranking, sondern eine Einordnung
-2. **Empfehlungen**: 3-5 konkrete nächste Schritte (Workshop-Event, Lernpfad, Tool-Kacheln, Artikel)
-3. **Optionaler Follow-up**: „Willst du Updates bekommen?" → Signup-CTA oder Login-Prompt
+1. **Level (1-5)** — deterministisch berechnet aus Score-Summe (Schwellen in Code hart definiert).
+2. **Skill-Profile-Radar** — 5 Dimensionen: Tool-Kenntnis / Prompting / Agents & Advanced / Anwendung / Critical Literacy. Pro Dimension ein Score aus den zugehörigen Fragen.
+3. **Empfehlungs-Cards** (3-5) — Workshop, Lernpfad, Community-Artikel, Tool-Tipps. Static pro Level-Profil.
+4. **Sparring-Slot (Placeholder V1)** — auf Results-Page ist ein Chat-Widget sichtbar, das später PRISMA (Community-Agent auf Anthropic Agent SDK, in Migration) hosten wird. In V1 zeigt es eine Static-Opening-Message + CTA zu `/join`. UX-Rahmen ist da, damit Layout final ist; echte Integration folgt in separater Phase.
+5. **Signup-CTA** — prominent: „Jetzt beitreten" → `/join?pre={level}&source=test`.
 
-Der Test ist **öffentlich zugänglich** (keine Auth-Gate). Ergebnis wird nicht persistent gespeichert (außer optional als Teil des Signup-Flows).
+Der Test ist **öffentlich** (keine Auth-Gate). Ergebnis wird nicht persistent gespeichert (V1). Bei Signup-Click: Level + Profile als Query-Params an `/join` weitergereicht.
 
 ---
 
 ## Scope
 
-**In-scope:**
+### In-Scope
 
-### 1. Hero (§10-äquivalent im Pattern)
-- H1 „Wo stehst du mit KI?"
-- Subline: „10 Fragen, 3 Minuten. Am Ende weißt du, wo du anfangen solltest."
-- Intro-Badge-Zeile: „Kostenlos · Keine Anmeldung · Anonym"
+#### 1. Landing-Hero (`/test`)
+- H1: „Wo stehst du wirklich mit KI?"
+- Subline: „15 Minuten, 10 Aufgaben. Deterministisches Scoring, ehrliches Ergebnis."
+- Intro-Badge: „Kostenlos · Keine Anmeldung · Anonym · Max 15 Min"
 - Start-Button „Test starten"
+- Vertrauens-Zeile: „Kein Self-Assessment — wir fragen ab, was du kannst, nicht was du glaubst zu können."
 
-### 2. Test-Flow
-- **Single-Page-App-Style** (Framer Motion Page-Transitions zwischen Fragen)
-- Pro Frage: Question-Text + 3-5 Answer-Options (Radio oder Multi-Select je nach Frage)
-- Progress-Bar oben („Frage 3/10")
-- Back-Button (optional — verhindert Frustration bei Misclick)
-- Weiter-Button prominent
-- Keyboard-Nav: 1-5 für Options, Enter für Next
+#### 2. Test-Flow (8-10 Aufgaben)
 
-### 3. Frage-Katalog (10-12 Fragen — Drafting mit Luca)
-Beispiel-Dimensionen (Luca finalisiert Inhalte):
-- **Tool-Kenntnis:** „Welche Tools hast du schon benutzt?" (Multi-Select: ChatGPT / Claude / Perplexity / Midjourney / Notion AI / …)
-- **Anwendungs-Tiefe:** „Wie oft nutzt du KI für deine Studienarbeit?" (Nie / Gelegentlich / Wöchentlich / Täglich)
-- **Prompting-Erfahrung:** „Kennst du Begriffe wie Zero-Shot, Few-Shot, Chain-of-Thought?" (Ja/Teilweise/Nein)
-- **Agenten/Advanced:** „Hast du schon mit Agenten/Tool-Use/Automations gearbeitet?" (Ja/Nein/Was ist das?)
-- **Selfeinschätzung:** „Wie würdest du dein Level einschätzen?" (Einsteiger/Fortgeschritten/Expert/Weiß nicht)
-- **Kontext:** „Was ist deine Studienrichtung?" (STEM / Wirtschaft / Kommunikation / Medizin / Andere)
-- **Bedarf:** „Wofür willst du KI hauptsächlich nutzen?" (Recherche / Schreiben / Coding / Bilder / Automation / Andere)
+**Prinzip:** Jede Aufgabe ist eine **interaktive closed-choice-Aufgabe** — deterministisch scorebar, aber NICHT stures Multiple-Choice. Variety der Widgets ist Kern der „spannend/interaktiv"-Prämisse. Jeder User bei identischen Antworten bekommt identisches Ergebnis (Fairness).
 
-### 4. Auswertungs-Logic
-- Einfache Score-basierte Zuordnung (kein KI-Modell dahinter, keine API-Calls)
-- Score 0-10 → Einsteiger, 11-20 → Fortgeschritten, 21+ → Expert (Beispiel, Luca finalisiert)
-- Zuweisung zu Empfehlungs-Profilen mit pre-written Content
+**Aufgaben-Typ-Katalog (8-10 Aufgaben, Mix aus mehreren Typen):**
 
-### 5. Results-Page
-- **Level-Badge:** „Du bist: Einsteiger" (mit Pendant-Visualisierung — Farbe + Icon aus DS)
-- **Einordnung-Text:** 1-2 Absätze „Was das heißt und wo du anfangen solltest"
-- **3-5 Empfehlungen:** Cards mit Link-Out:
-  - Workshop-Event (Link zu `/events` gefiltert auf Level)
+- **Szenario-Pick** — „Du willst X. Welcher Tool/Ansatz passt?" → 4 Tool-Karten zum Klicken, subtile Distraktoren. Single-Select, aber Karten-Layout statt Radio-Buttons.
+- **Prompt-Ranking** (Drag-Drop) — „Ordne diese 4 Prompts von schlecht zu gut." → User sortiert 4 Prompt-Cards. Scoring: Levenshtein-Distanz zu korrekter Reihenfolge (oder exact-match-Schwelle).
+- **Prompt-Best-Pick** — „Welche dieser 4 Varianten ist der beste Prompt für X?" → Card-Select, alle 4 Prompts sichtbar nebeneinander mit Syntax-Highlighting.
+- **Output-Side-by-Side** — „Hier sind 2 KI-Outputs. Welcher ist besser — und warum?" → User wählt A oder B, danach Multi-Select „Warum?" (Halluzination / Verbosität / Format / Bias). Scoring: A/B korrekt + richtiger Grund = voll, nur A/B = halb.
+- **Output-Fehler-Spot** — „Markiere den problematischen Satz in diesem Output." → User klickt auf einen von 4-6 hervorgehobenen Textabschnitten. Testet Critical Literacy haptischer als stumpfes MC.
+- **Tool-zu-Task-Matching** — „Welcher Tool passt zu welcher Aufgabe?" → 4 Tasks, 4 Tools, Drag-Drop-Matching oder Dropdown-Pairing. Scoring: Anzahl korrekter Matches.
+- **Confidence-Slider** — „Wie sicher bist du, dass dieser Output halluziniert ist?" → Diskreter Slider (0/25/50/75/100%). Scoring: Abstand zur Ground-Truth-Stufe (5 Stufen deterministisch).
+- **Fill-in-Parameter** — „Der richtige Parameter für X ist: [Dropdown]." → Inline-Dropdown im Code-Block, deterministisch korrekt/falsch.
+- **Fakten-Check-MC** — „Welches Modell hat Feature X?" → Klassisch MC für schnelle Wissens-Checks. 2-3 Aufgaben davon reichen.
+
+**Rules für alle Typen:**
+- Jede Aufgabe-Interaktion ist **deterministisch scorebar** (kein LLM, kein Free-Text-Eval).
+- Scoring-Schema pro Aufgabe explizit im `questions.json` (z.B. `{ type: "rank", correctOrder: [2,0,3,1], scoring: "levenshtein", maxPoints: 3 }`).
+- Plan-Phase definiert genaues Schema pro Aufgaben-Typ (TypeScript-Discriminated-Union).
+
+**Pro Aufgabe (UI):**
+- Aufgabe-Text (max 2 Sätze) + Aufgaben-spezifisches Widget (Card-Grid / Drag-Drop-List / Slider / Matching-Board).
+- Code-/Text-Blöcke mit Syntax-Highlighting (shiki) wo relevant.
+- Progress-Bar oben („Aufgabe 3/10"), aria-live-Update.
+- Weiter-Button prominent (disabled bis valide Interaktion erfolgt — pro Widget-Typ definiert, z.B. Drag-Drop: alle Items platziert).
+- Kein Back-Button (Fairness + Determinismus-Feeling: „Antworten sind final").
+- Keyboard-Alternativen: Tab/Arrow-Keys für Drag-Drop, 1-5 für Card-Select, Slider via Arrow-Keys, Enter für Next.
+
+**Interaktivität / Spannung:**
+- Framer-Motion-Transitions zwischen Aufgaben (Slide + Fade, reduced-motion → Crossfade).
+- Drag-Drop mit haptic feedback (Scale-Up beim Pick-Up, Drop-Zone-Highlight).
+- Card-Select mit Hover-Preview (expandiert kurz bei Hover, zeigt Mini-Detail).
+- Progress-Bar animiert, bei Checkpoint (z.B. Aufgabe 5) Micro-Celebration („Halbzeit! 💡").
+- Mobile: Full-Screen pro Aufgabe, Drag-Drop als Tap-to-Select-Fallback wenn Touch-Support-Limitation.
+- A11y: Alle interaktiven Widgets keyboard-bedienbar + screen-reader-freundlich (announced drag state, matching state, etc.).
+
+#### 3. Frage-Katalog (10 Fragen finalisiert)
+- Claude drafted Erstentwurf aller 10 Aufgaben mit Scoring-Schema (Punkte pro Option, 0-3 je Frage).
+- Content in `apps/website/content/assessment/questions.json` — editierbar ohne Code-Änderung.
+- Scoring-Schema embedded im JSON: pro Option `points: number` und `dimension: 'tools' | 'prompting' | 'agents' | 'application' | 'literacy'`.
+- Luca reviewt + schärft Inhalte nach Execute.
+
+#### 4. Scoring (deterministisch, client-side)
+- Nach letzter Aufgabe: Summe aller Points → Gesamt-Score (z.B. 0-30).
+- Level-Schwellen hart definiert: `0-5 → Neugieriger`, `6-12 → Einsteiger`, `13-19 → Fortgeschritten`, `20-25 → Pro`, `26-30 → Expert`. (Schwellen von Plan-Phase final bestätigt.)
+- Pro Dimension: Sum der Points-Dimension-Tuples → Skill-Scores (0-6 pro Dimension, normalisiert auf 0-100%).
+- **Keine LLM-Eval, keine API-Calls im Scoring.** Pur math in JS.
+
+#### 5. Results-Page (`/test/ergebnis`)
+
+**Layout:**
+- **Top:** Level-Badge groß („Level 3: Fortgeschritten" + Icon + Level-Color aus DS).
+- **Einordnung:** 2-3 Absätze Level-Profile-Text (pre-written, 5 Varianten, MDX in `apps/website/content/assessment/profiles/`).
+- **Skill-Radar:** Chart über 5 Dimensionen mit User-Scores. Library: `recharts` (bereits bekannt in Next.js-Ökosystem) oder custom SVG (leichter). Plan-Phase entscheidet.
+- **Empfehlungs-Cards (3-5):** pre-written pro Level:
+  - Workshop-Event (Link zu `/events?level=X`)
   - Lernpfad / Tool-Kacheln (Links zu tools.generation-ai.org)
-  - Community-Artikel passend zum Level (Link zu /community)
-- **CTA:** „Jetzt beitreten & loslegen" → `/join`
-- **Secondary:** „Test nochmal machen" (resets)
-- **Optional Share-Line:** „Teile dein Ergebnis" (Share-Links — später, nicht V1)
+  - Community-Artikel passend zum Level
+- **Sparring-Panel (V1 = Rahmen/Placeholder):** Chat-Widget-Container auf Results-Page, sichtbar + styled als Teil des Ergebnis-Layouts, aber **ohne echten Agent-Backend in V1**. Zeigt statische Opening-Message (z.B. „Chat mit PRISMA kommt bald — deine Sparring-Partner:in für deinen Lernweg.") + disabled Input oder einfache FAQ-Antworten. Der Rahmen ist da, damit Layout/UX final ist. **Echte PRISMA-Integration** (Anthropic Agent SDK) kommt in späterer Phase, sobald PRISMA-Harness public ready.
+- **CTAs:**
+  - Primary: „Jetzt beitreten & loslegen" → `/join?pre={level}&source=test`
+  - Secondary: „Test nochmal machen" (reset → `/test`)
+- **Optional Share-Line** (V2): „Teile dein Ergebnis" → `/test/ergebnis?level=X&share=true` ohne Chat/Profile-Details.
 
-### 6. No-Auth-Path
-- Ergebnis wird client-side gehalten (React-State)
-- Kein Supabase-Write ohne Auth
-- Bei Signup-Click nach Test: Ergebnis als URL-Query-Param zu `/join?pre=einsteiger&source=test` weiterreichen (Waitlist-Entry bekommt Level-Flag)
+#### 6. Sparring-Slot (Placeholder V1, PRISMA-Integration später)
 
-### 7. Auth-Path (optional, V2)
-- Wenn User eingeloggt ist: Ergebnis wird in User-Profil gespeichert (`user_metadata.ki_level`)
-- Können wir in Community-Plattform nutzen für Event-Recommendations
-- **Out-of-scope V1**, prüfen in Phase 25 ob Signup-Integration sinnvoll
+**PRISMA** ist der existierende Community-Agent in Circle, den Luca aktuell auf eigenes Anthropic-Agent-SDK-Harness migriert. **PRISMA-Integration kommt NICHT in Phase 24.** Phase 24 baut nur den **UX-Rahmen**, damit Results-Page-Layout + Interaktions-Flow final ist und später ohne Re-Design ergänzt werden kann.
 
-**Out-of-scope:**
-- KI-basierte adaptive Fragen (jede Frage dynamisch an Vorantworten anpassen) — Roadmap
-- Benchmarking mit anderen Usern (Leaderboards) — nope, nicht die Zielgruppe
-- Zertifikat oder PDF-Export — Roadmap
-- Persistence des Ergebnisses für anonyme User (Cookie-State) — nicht V1
-- Skill-Badges mit Gamification — nicht Brand-fit
-- Finales Wording der Fragen/Antworten — Simon + Luca iterieren, Marketing-Pass in Phase 27
+**V1 Scope:**
+- **Sichtbares Chat-Widget** auf Results-Page — Layout, Container, Opening-Message, CTA. Visuell integriert.
+- **Static Opening-Message:** z.B. „PRISMA wird deine KI-Sparring-Partner:in für deinen Lernweg — sie kommt bald. Für jetzt: schau dir unten die Empfehlungen an oder tritt bei, um mit PRISMA zu chatten sobald sie live ist." + CTA zu `/join`.
+- **Disabled Input** ODER **einfache Pre-Written-FAQ-Antworten** (Plan entscheidet — „Frequently Asked" mit 3-4 statischen Buttons, die auf vorbereitete Texte verweisen).
+- **Kein Backend-Endpoint in V1.** Kein Anthropic-API-Call, kein Streaming, kein Rate-Limit nötig.
+- **Agent-Placeholder-Komponente** ist so designt, dass sie später ohne Re-Style gegen echten Streaming-Chat getauscht werden kann (gleiche Props/Slots).
+
+**Out-of-Scope Phase 24 (→ spätere Phase):**
+- Echter PRISMA-Endpoint-Call
+- Context-Injection (Level + Skills ins System-Prompt)
+- Streaming-Response-Handling
+- Rate-Limiting via Upstash
+- Multi-Turn-Conversation-State
+
+Plan-Phase definiert Props-Interface des Sparring-Slots (z.B. `<SparringSlot level={level} skills={skills} mode="placeholder" />` → später `mode="live"`).
+
+#### 7. No-Auth-Path
+- Ergebnis client-side in React-State.
+- Kein Supabase-Write V1.
+- Bei Signup-Click: Level + Skills als Query-Params an `/join?pre=fortgeschritten&source=test&skills=tools:80,prompting:60,agents:40,application:70,literacy:55`.
+
+#### 8. URL-State
+- `/test` — Landing
+- `/test/aufgabe/[n]` — Question n (1-10). URL-State für Deep-Linking UND Browser-Back-Verhalten (Back führt zu `/test`, NICHT zur vorherigen Frage — Determinismus).
+- `/test/ergebnis` — Results.
+- `/test/ergebnis?level=X` — Shareable Result (zeigt Level + Profile-Text, **ohne** User-Skills-Radar, **ohne** Agent).
+
+### Out-of-Scope
+
+- **Persistence für anonyme User** (Cookie-State) — V2
+- **User-Profile-Speicherung für Eingeloggte** (`user_metadata.ki_level`) — kommt Phase 25 (Unified Signup)
+- **Adaptive Fragen** (Folgefrage abhängig von Vorantwort) — Roadmap
+- **Share-Cards / OG-Images** mit Level — V2
+- **Multi-Language** (EN-Version) — Roadmap
+- **Zertifikat / PDF-Export** — Roadmap
+- **Leaderboards / Benchmarking** — nicht Brand-fit
+- **LLM-basiertes Scoring** — widerspricht Determinismus
+- **PRISMA-Backend-Integration** (Anthropic Agent SDK Harness, Streaming, Rate-Limit, Context-Injection) — kommt als spätere Phase sobald PRISMA-Harness public ready. V1 nur UX-Placeholder.
+- **LLM-basierte Ergebnis-Interpretation** — Level-Profile-Texte sind V1 statisch pre-written. LLM-Personalisierung des Profile-Texts („hier ist was DEIN Antwort-Muster aussagt…") ist V2-Option. Scoring bleibt NIE LLM-basiert.
+- **Adaptive Agent mit Tool-Use** (Web-Search, Circle-API-Lookup in Echtzeit) — V2+
 
 ---
 
 ## Decisions
 
-- **D-01** — **Client-side-Only V1**: Test-Logic, Scoring, Empfehlungen läuft komplett im Browser. Kein API-Call, kein Backend. Reduziert Latency + Cost, vereinfacht Deploy.
-- **D-02** — **Keine Auth-Pflicht**: Test ist public. Attraktiv für SEO (Keyword-Entry „ki skills test studenten"), low Friction für CTAs.
-- **D-03** — **Score-basierte Zuordnung**, kein ML. Simpel, transparent, wartbar.
-- **D-04** — **Fragen-Content als MDX oder JSON** in `apps/website/content/assessment/questions.json` — editable ohne Code-Änderung. Empfehlungs-Content analog in `apps/website/content/assessment/results.mdx` (3 Varianten: Einsteiger, Fortgeschritten, Expert).
-- **D-05** — **URL-State für Deep-Linking:** Jede Frage hat eine URL (`/test?q=3`), damit Back-Button im Browser funktioniert. Ergebnis-Seite als `/test/ergebnis` (oder `/test/result` EN — vermutlich `/test/ergebnis` wegen DE-Konsistenz).
-- **D-06** — **Ergebnis-Share-Link:** `/test/ergebnis?level=einsteiger` — wenn User den Link teilt, sehen andere dieselbe Ergebnis-Seite (ohne Tests-Run). Für V1 akzeptabel, Privacy ist hier kein Thema (Ergebnis enthält keine Personal-Info).
-- **D-07** — **Design-Aspekte:** Jede Frage nimmt ~50% der Viewport-Höhe ein, sauber zentriert, keine visuellen Ablenkungen. Framer-Motion-Transitions zwischen Fragen (Slide-In + Fade). Mobile: Full-Screen-Frage pro Screen.
-- **D-08** — **Post-Test CTA-Priorisierung:** Primary = „Jetzt beitreten" (Signup), Secondary = Empfehlungen-Cards, Tertiary = „Nochmal testen". Signup-Conversion ist Hauptziel.
-- **D-09** — **Keine Analytics V1** (außer Standard-Vercel-Analytics). Konversionsrate von `/test` → `/join` messen wir in Phase 27 falls relevant.
-- **D-10** — **Empfehlungs-Links:** Zu `/events?level=einsteiger`, `tools.generation-ai.org/?category=...`, `/community/artikel/[slug]`. Einige Targets existieren erst in späteren Phasen — für V1 placeholder oder leere Targets akzeptabel.
+- **D-01** — **Deterministisches Scoring, client-side.** Jede Option hat feste Points. Kein LLM, kein API-Call im Scoring-Pfad. Gleicher User + gleiche Antworten → garantiert gleiches Ergebnis.
+- **D-02** — **Echter Wissenstest mit Widget-Variety, keine Selbsteinschätzung, kein stures MC.** Interaktive closed-choice-Aufgaben: Szenario-Pick (Card-Grid), Prompt-Ranking (Drag-Drop), Prompt-Best-Pick, Output-Side-by-Side + Grund-Select, Output-Fehler-Spot (Click-to-Mark), Tool-zu-Task-Matching, Confidence-Slider, Fill-in-Parameter (Dropdown), Fakten-Check-MC. Alle deterministisch scorebar. Interpretation des Ergebnisses (Level-Text) bleibt pre-written V1 — LLM-Interpretation kann später ergänzt werden, aber Scoring NIE.
+- **D-03** — **15 Min max, 10 Min Ziel.** 8-10 Aufgaben, ~60-90 Sek pro Aufgabe.
+- **D-04** — **Level 1-5 + Skill-Radar.** Neugieriger / Einsteiger / Fortgeschritten / Pro / Expert. Radar über 5 Dimensionen: Tools / Prompting / Agents / Anwendung / Critical Literacy.
+- **D-05** — **Keine Auth V1.** Pure client-side, Results in React-State. `user_metadata.ki_level` kommt Phase 25.
+- **D-06** — **Kein Back-Button im Test.** Verhindert Reverse-Engineering der Scoring-Logic über Back/Forward + Determinismus-Feeling ("deine Antworten sind final").
+- **D-07** — **Sparring-Slot als Placeholder V1, echte PRISMA-Integration später.** Phase 24 baut nur UX-Rahmen auf Results-Page (Chat-Widget, Static Opening-Message, Placeholder-Komponente). Kein Anthropic-API-Call, kein Backend. Komponente so entwickelt, dass sie später ohne Re-Design gegen echten PRISMA-Stream getauscht werden kann (gleiche Props, `mode="placeholder"` → `mode="live"`). Grund: Fokus Phase 24 = geiler deterministischer Test. PRISMA-Harness entwickelt sich parallel separat.
+- **D-08** — **Signup-Integration via Query-Params.** „Jetzt beitreten" → `/join?pre={level}&source=test&skills={dimensionScores}`. Kein Inline-Email-Field.
+- **D-09** — **Content editierbar ohne Code.** Fragen in `questions.json`, Level-Profile in MDX unter `apps/website/content/assessment/profiles/`. Claude drafted Erstentwurf, Luca reviewt.
+- **D-10** — **SEO: „AI Literacy Test" als Primär-Keyword.** Meta-Description + OG-Tags auf Englisch für Keyword-Match, H1 bleibt Deutsch für Target-Audience.
+- **D-11** — **URL-State für Deep-Linking.** Jede Aufgabe hat eigene URL (`/test/aufgabe/3`), aber Browser-Back springt zu `/test`-Start (Determinismus-Policy). Result-Share via `?level=X`.
+- **D-12** — **Community-Content-Index als statisches JSON V1.** `apps/website/content/assessment/community-index.json` — Spaces, Events, Artikel kuratiert, Agent fetcht beim System-Prompt-Build. V2: Circle-API-Live-Query.
 
 ---
 
 ## Success Criteria
 
-- [ ] `/test` Route existiert in `apps/website/app/test/page.tsx`
-- [ ] `/test/ergebnis` Route existiert für Result-Display
-- [ ] Hero mit H1 + Subline + Start-Button
-- [ ] 10-12 Fragen abbildbar via JSON-Content-File
-- [ ] Frage-Navigation: Next/Back/Progress-Bar funktional
-- [ ] URL-State: `?q=N` synced mit aktueller Frage
-- [ ] Score-Berechnung läuft client-side nach letzter Frage
-- [ ] Result-Page zeigt Level-Badge + Text + 3-5 Empfehlungs-Cards + CTAs
-- [ ] Shared-Link mit `?level=X` zeigt Ergebnis ohne Test
-- [ ] „Test nochmal" Reset funktioniert
-- [ ] Signup-CTA reicht Level als Query-Param an `/join?pre=X&source=test` weiter
-- [ ] Mobile responsive (Single-Frage-per-Screen)
-- [ ] A11y: Keyboard-Nav (Tab/1-5/Enter), aria-live für Progress-Bar
-- [ ] Lighthouse `/test` und `/test/ergebnis` > 90
-- [ ] Meta-Tags: SEO-optimiert auf „ki kompetenz test studenten" oder ähnliche Keywords (Luca bestätigt Keyword-Strategie)
-- [ ] Playwright-Smoke: Start → 10 Fragen durchklicken → Result rendert → CTA funktional
-- [ ] Reduced-motion: Transitions werden zu Crossfades reduziert
+- [ ] `/test` Landing-Route mit Hero + Start-Button
+- [ ] `/test/aufgabe/[n]` Routes für Aufgaben 1-10 mit URL-State-Sync
+- [ ] `/test/ergebnis` Route mit Level-Badge + Skill-Radar + Empfehlungen + Sparring-Placeholder
+- [ ] 8-10 Aufgaben in `questions.json` mit Scoring-Schema pro Widget-Typ (Discriminated-Union TypeScript-Types: `{type:'pick'|'rank'|'match'|'spot'|'slider'|'fill'|'mc', ...}`)
+- [ ] Mindestens 5 verschiedene Widget-Typen vertreten im Aufgaben-Mix (nicht nur MC)
+- [ ] Widget-Komponenten: Card-Pick, Drag-Drop-Rank, Matching-Board, Click-to-Spot, Confidence-Slider, Dropdown-Fill, MC-Radio — alle keyboard-bedienbar
+- [ ] 5 Level-Profile in MDX (`profiles/neugieriger.mdx`, `einsteiger.mdx`, `fortgeschritten.mdx`, `pro.mdx`, `expert.mdx`)
+- [ ] Deterministisches Scoring-Modul in `lib/assessment/scoring.ts` mit Unit-Tests (gleicher Input → exakt gleiches Level + Skills, reproducible)
+- [ ] Framer-Motion-Transitions zwischen Aufgaben (reduced-motion → Crossfade)
+- [ ] Code-Blöcke mit Syntax-Highlighting in Aufgaben (shiki oder äquivalent)
+- [ ] Progress-Bar animiert, aria-live für Screen-Reader
+- [ ] Keyboard-Nav pro Widget-Typ dokumentiert + implementiert
+- [ ] Skill-Radar via `recharts` (entschieden D-07/D-recharts)
+- [ ] **Sparring-Slot (Placeholder V1):** sichtbares Chat-Widget auf Results-Page mit Static Opening-Message + Props-Interface für späteren Live-Swap. Kein Backend-Call in V1.
+- [ ] Community-Index-JSON mit 10-20 kuratierten Spaces/Events/Artikeln für Empfehlungs-Cards (nicht Agent-Context, kommt mit PRISMA-Integration später)
+- [ ] Signup-CTA reicht Level + Skills als Query-Params an `/join` weiter
+- [ ] Mobile responsive (Full-Screen pro Aufgabe, Touch-Targets ≥44px, Drag-Drop mit Tap-Fallback)
+- [ ] A11y: Keyboard-Nav, aria-live, Focus-Management zwischen Aufgaben, Screen-Reader-Announcements für Drag-Drop/Matching-State
+- [ ] Lighthouse `/test`, `/test/aufgabe/1`, `/test/ergebnis` > 90
+- [ ] Meta-Tags: SEO auf „AI Literacy Test" (EN-Keyword, DE-H1)
+- [ ] Playwright-Smoke: Start → durchspielt mindestens 3 verschiedene Widget-Typen → Result rendert → Signup-CTA funktional
+- [ ] Reduced-motion: Transitions zu Crossfades, keine Auto-Animations
+- [ ] Scoring-Unit-Tests verifizieren Determinismus (fixture-basiert: input array → exact expected level + skills, Fairness: 3 verschiedene Answer-Patterns getestet)
 
 ---
 
-## Offene Fragen (zu klären vor Planning)
+## Offene Technische Fragen (Plan-Phase entscheidet)
 
-1. **Frage-Content:** Wer schreibt die 10-12 Fragen und die 3 Empfehlungs-Profile? Luca allein, oder mit Simon/Team? Empfehlung: Luca liefert Draft, Claude formatiert + schärft.
-2. **SEO-Keyword-Fokus:** Welche Suchbegriffe sind Ziel? „KI Test", „KI Skills einschätzen", „AI Literacy Test"? Beeinflusst H1 + Meta-Description.
-3. **Ergebnis-Visualisierung:** Level-Badge als Pill, Sticker, oder Diagramm mit Radarplot (Dimensionen Tools/Prompting/Agents/Anwendung)? Radar wäre visual engaging aber Scope-Creep.
-4. **Assessment vs. Join-Flow-Integration:** Bietet /test nach Test eine Direct-Signup-Inline-Option (Email-only-Field auf Result-Page) oder Redirect zu /join? Empfehlung: Redirect mit pre-fill Query-Params für Konsistenz.
-5. **Persistent für eingeloggte User:** V1 ohne Auth-Integration okay? Oder schon lauffähig vorbereiten (`user_metadata.ki_level` Schema in Supabase vordefinieren)?
-6. **Fragen-Mix:** Multi-Select vs. Single-Select — darf eine Frage mehrere Antworten erlauben (z.B. „Welche Tools kennst du?")? Empfehlung: ja, 2-3 Fragen als Multi-Select, Scoring passt sich an.
-7. **Level-Kategorien:** 3 (Einsteiger/Fortgeschritten/Expert) oder 5 (+ Neugieriger/Pro)? Empfehlung: 3 — konsistent mit Simons Event-Level-Tags in §5.4.
+- **Radar-Chart-Library:** ✅ ENTSCHIEDEN — `recharts`. Bekannt in Next.js-Ökosystem, deklarativ, gute A11y-Defaults.
+- **Widget-Typ-Auswahl pro Aufgabe:** Plan-Phase entscheidet welche 8-10 Aufgaben welchen Widget-Typ bekommen — basierend auf Skill-Dimension + Aufgaben-Content. Constraint: mindestens 5 verschiedene Widget-Typen im Test.
+- **Drag-Drop-Library:** `@dnd-kit/core` (A11y-first, keyboard-support) vs native HTML5 DnD vs Framer-Motion-Reorder. Plan wägt ab (A11y ist hart required).
+- **Sparring-Placeholder-Variante:** Statisches „Chat kommt bald"-Panel ODER Pre-Written-FAQ mit 3-4 Button-Antworten? Plan entscheidet basierend auf UI-Weight vs Conversion.
+- **Community-Index-Content:** Wer kuratiert die 10-20 Empfehlungen für Level-Cards? Claude drafted, Luca reviewt — analog zu Fragen-Content.
+- **Level-Schwellen:** Plan bestätigt finale Punkteschwellen nach Fragen-Draft (Score-Range hängt an Fragenzahl × max-Points pro Widget-Typ).
 
 ---
 
 ## Release
 
-Patch innerhalb Milestone v4.0. Reine Page-Addition mit statischen Content-Files. Kein Backend, keine Migration, keine Breaking Changes.
+Patch innerhalb Milestone v4.0. Neue `/test`-Routes + Static Content-Files + Sparring-Placeholder-Komponente. **Kein neuer API-Endpoint in V1** (PRISMA-Backend folgt separat). Kein Supabase-Schema-Change. Kein Breaking Change. Deterministisches Scoring als wichtigste neue Infrastruktur.

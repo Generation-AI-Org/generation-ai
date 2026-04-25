@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react"
+import { BeispielBadge } from "@/components/ui/beispiel-badge"
 import {
   ToolShowcaseMarqueeClient,
   type MarqueeTool,
@@ -17,6 +18,11 @@ import {
 // Section auf `FALLBACK_TOOLS` zurück — die identische 12-Tool-Liste, die
 // vor Phase 26 hardcoded inline lebte. Visuell darf der Fallback nicht
 // vom alten State abweichen (daher 12 Entries, nicht 5).
+//
+// Header ist static (kein motion entry). Phase 20.6 hatte einen motion-
+// Wrapper hinzugefügt, mit Server-Component-Refactor wäre der jetzt
+// in eine eigene Client-Subcomp ausgelagert — Trade-off nicht wert.
+// Konsistent mit CommunityPreviewSection (D-24).
 
 const TOOLS_BASE =
   process.env.NEXT_PUBLIC_TOOLS_APP_URL ?? "https://tools.generation-ai.org"
@@ -165,12 +171,12 @@ export async function ToolShowcaseSection() {
     <section
       aria-labelledby="tool-showcase-heading"
       data-section="tool-showcase"
-      className="bg-bg py-24 sm:py-32 border-b border-border overflow-hidden"
+      className="bg-bg py-24 sm:py-32 overflow-hidden"
     >
       <div className="mx-auto max-w-6xl px-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 mb-12">
-          <div>
-            <div className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted mb-3">
+        <div className="flex flex-col gap-6 mb-14 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
               <span
                 aria-hidden="true"
                 className="h-1.5 w-1.5 rounded-full"
@@ -183,23 +189,32 @@ export async function ToolShowcaseSection() {
             </div>
             <h2
               id="tool-showcase-heading"
-              className="text-3xl sm:text-4xl font-bold tracking-tight text-text text-balance"
+              className="mt-4 font-mono font-bold leading-[1.1] tracking-[-0.025em] text-text text-balance"
+              style={{ fontSize: "clamp(32px, 5vw, 52px)" }}
             >
               Über 100 KI-Tools, kuratiert.
             </h2>
-            <p className="mt-3 text-base text-text-secondary max-w-xl text-pretty">
-              Eine wachsende Bibliothek mit Anleitungen — sortiert nach Anwendungsfall.
+            <p className="mt-5 text-lg leading-[1.5] text-text-secondary text-pretty sm:text-xl">
+              Eine wachsende Bibliothek mit Anleitungen — sortiert nach
+              Anwendungsfall.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-shrink-0 items-center gap-3 sm:pb-2">
+            <BeispielBadge />
             <a
               href={TOOLS_BASE}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm font-mono text-[var(--accent)] hover:text-[var(--accent-hover,var(--accent))] transition-colors"
+              className="inline-flex items-center gap-1 rounded-full font-mono text-[12px] font-bold uppercase tracking-[0.08em] text-[var(--accent)] hover:text-[var(--accent-hover,var(--accent))] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
+              style={{
+                outlineColor: "var(--text)",
+                transitionDuration: "var(--dur-normal)",
+                transitionTimingFunction: "var(--ease-out)",
+                transitionProperty: "color",
+              }}
             >
               Alle Tools ansehen
-              <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
         </div>

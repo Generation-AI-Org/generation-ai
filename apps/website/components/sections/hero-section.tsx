@@ -44,7 +44,7 @@ export function HeroSection() {
             id="hero-heading"
             className="mt-6 font-mono font-bold leading-[1.02] tracking-[-0.03em] text-text text-balance"
             style={{
-              fontSize: "clamp(40px, 6.5vw, 76px)",
+              fontSize: "var(--fs-display)",
               textShadow:
                 "0 0 18px rgba(var(--bg-rgb), 1), 0 0 8px rgba(var(--bg-rgb), 1)",
             }}
