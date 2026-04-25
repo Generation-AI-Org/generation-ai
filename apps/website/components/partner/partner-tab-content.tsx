@@ -141,7 +141,7 @@ export function PartnerTabContent({ activeTyp }: PartnerTabContentProps) {
                   {data.vorteile.map((vorteil) => (
                     <li
                       key={vorteil}
-                      className="rounded-2xl border border-border bg-bg-card p-5 text-left transition-all duration-[var(--dur-normal)] ease-[var(--ease-out)] hover:border-[var(--border-accent)] hover:-translate-y-0.5"
+                      className="rounded-2xl border border-border bg-bg-card p-5 text-left transition-all duration-300 ease-[var(--ease-out)] hover:border-[var(--border-accent)] hover:scale-[1.015] hover:shadow-[0_0_20px_var(--accent-glow)]"
                     >
                       <span
                         aria-hidden="true"
