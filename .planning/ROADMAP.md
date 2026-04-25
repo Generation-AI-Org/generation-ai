@@ -921,7 +921,7 @@ Page-Level (depends-on Foundation):
 - `/test` als öffentlicher Conversion-Hebel (Auth-Gate weg, sessionStorage, Migration nach Anmeldung)
 - Theme-Toggle Konsistenz Website ↔ tools-app (Microanimations angleichen)
 
-**Plans:** 13/13 skeleton, Foundation 3 (autonomous: 01,03 / depends-on-audit: 02), Page 10 (autonomous: 04,05,07,08,10,11,13 / Stop-Gate: 06 Schema-Migration, 09 Timeline UAT, 12 Auth-Refactor)
+**Plans:** 1/2 plans executed
 
 **Success Criteria:**
 - [ ] DS-Audit-Report committed mit Decision-Tabelle, must+should Findings gefixt

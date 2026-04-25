@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: planning
-last_updated: "2026-04-25T14:30:00.000Z"
+last_updated: "2026-04-25T16:47:04.726Z"
 progress:
-  total_phases: 19
-  completed_phases: 16
-  total_plans: 101
-  completed_plans: 101
-  percent: 100
+  total_phases: 20
+  completed_phases: 15
+  total_plans: 103
+  completed_plans: 99
+  percent: 96
 ---
 
 # Project State — Generation AI Monorepo
@@ -38,10 +38,12 @@ progress:
 **First command (option A):** `/gsd-autonomous --only 22.8 --interactive` — Phase 22.8 starten
 **First command (option B):** `/gsd-progress` — Roadmap + offene UAT-Items checken
 **Erst tun (Phase 22.6 cleanup):**
+
 - Item 6 Logged-in Regression auf develop-Preview live testen (5min) — Lite-Account einloggen, CTAs verschwinden, Settings + Signout sichtbar, Lite/Pro Toggle, Logout. Siehe 22.6-HUMAN-UAT.md §6.
 - Optional: `git branch -d feature/phase-22.6-pre-launch-polish` (lokal löschen, ist gemerged)
 
 **Phase 22.6 Status (final):**
+
 - 9/9 Plans done (Track A 5 + Track B 4)
 - Verifier passed (16/16 must_haves)
 - Code-Review: 0 Critical · 4 Warnings (V1-akzeptabel) · 6 Info
@@ -88,7 +90,12 @@ progress:
 
 **Phase 22.8 ready für autonomous run (2026-04-25)** — CONTEXT + DISCUSSION-LOG mit allen Decisions vorab gemacht + Foundation-Plan-Skeletons (01+02) + Brand-Favicon-Assets liegen in `.planning/phases/22.8-ui-konsistenz-section-refinement/` + `brand/logos/favicons/`.
 
+**22.8-01 DONE (2026-04-25):** DS-Compliance-Audit produced — `22.8-01-AUDIT.md` mit 24 findings (6 must / 11 should / 7 nice) clustered into 7 fix-types. Read-only audit, kein Code-Change. Cluster-Empfehlungen für Plan 22.8-02: Status-Pill primitive (5 hardcoded red/green in tools-app), Danger-Zone-Button, Logo-Hover spec (Logo.tsx hat keine), Card-Hover unification (3 competing scale/translate languages — Empfehlung: scale-[1.015] canonical), Form-Submit JS-Hover removal (JoinForm + PartnerContact), --color-destructive Token-Source-Fix, rounded-md/lg → rounded-full Standardisierung. Total estimated effort für Plan 02 (must+should): ~3.5-4h. Commit `945371e` auf `feature/phase-22.8-ui-konsistenz-section-refinement`.
+
+**22.8-02 STOP-GATE (awaiting Luca):** Plan 02 ist `autonomous: false` + `status: depends-on-audit` — wurde korrekt nicht ausgeführt. Luca-Review von `22.8-01-AUDIT.md` (~10 min) entscheidet must/should/nice + offene Spec-Fragen (A-M05 Logo-Hover, A-S06/S07 Feature-Card, A-N06 Button-Scale-Variant), dann gsd-planner befüllt 02-PLAN konkrete Tasks → Execute Plan 02.
+
 **Start-Kommando (sobald 22.6 + 26-UAT + 20.6-01 durch):**
+
 ```bash
 git checkout develop && git pull
 git checkout -b feature/phase-22.8-ui-konsistenz-section-refinement
