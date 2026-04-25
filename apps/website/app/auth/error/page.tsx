@@ -41,7 +41,7 @@ export default async function AuthErrorPage({
         <p className="text-lg text-muted-foreground mb-8">{msg.body}</p>
         <Link
           href="/join"
-          className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           Zurück zu /join
         </Link>

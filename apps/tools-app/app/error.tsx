@@ -19,7 +19,7 @@ export default function Error({
       <h1 className="text-text text-xl font-semibold mb-6">Unerwarteter Fehler</h1>
       <button
         onClick={reset}
-        className="bg-neon text-black-brand font-semibold px-5 py-2.5 rounded-lg hover:bg-neon/90 transition-colors text-sm"
+        className="bg-neon text-black-brand font-semibold px-5 py-2.5 rounded-full hover:bg-neon/90 transition-colors text-sm"
       >
         Nochmal versuchen
       </button>
