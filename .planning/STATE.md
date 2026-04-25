@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: planning
-last_updated: "2026-04-24T13:49:43.096Z"
+status: executing
+last_updated: "2026-04-25T09:57:34.192Z"
 progress:
-  total_phases: 12
-  completed_phases: 9
-  total_plans: 92
+  total_phases: 19
+  completed_phases: 14
+  total_plans: 101
   completed_plans: 89
-  percent: 97
+  percent: 88
 ---
 
 # Project State — Generation AI Monorepo
@@ -23,10 +23,12 @@ progress:
 
 **Phase:** 22.6 Pre-Launch Polish Bundle (next)
 **Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
+
 - `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
 - `develop` = Staging-Sammelbranch (Stand: + Phase 25 + Phase 26 ✅ gemerged 2026-04-25, commit 7b1a5aa). Vercel-Preview: https://website-git-develop-lucas-projects-e78962e9.vercel.app
 - `feature/phase-22.6-pre-launch-polish` = aktiv im Hauptrepo (NEU 2026-04-25)
 - `feature/phase-26-community` = abgeschlossen, im Worktree `generation-ai-phase-26` (UAT pending)
+
 **Last Updated:** 2026-04-25 (Phase 26 `/community` ✅ DONE + merged → develop, drive-by tools-app Logo-Fix; Phasen 22.5 + 22.7 zu 22.6 Bundle konsolidiert)
 **Site Status:** ✅ Live auf generation-ai.org (alter Stand). Develop-Preview hat alles bisher Gebaute (Phase 21–26). Phase 26 UAT noch offen (`pending-luca`). 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
 
@@ -129,7 +131,7 @@ progress:
 
 ### Phase 20.5 Progress
 
-**Status:** Ready to plan
+**Status:** Ready to execute
 
 - CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
 - 5 PLAN.md angelegt, 3 delivered + 2 deferred:
