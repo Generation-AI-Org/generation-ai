@@ -10,6 +10,7 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { Menu, X } from 'lucide-react'
 import { Logo } from '@genai/ui'
 import { useTheme } from '@/components/ThemeProvider'
 import { useChatContext } from '@/components/layout/ChatContextProvider'
@@ -72,6 +73,7 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
   const [highlightedSlugs, setHighlightedSlugs] = useState<string[]>([])
   const [isChatExpanded, setIsChatExpanded] = useState(false)
   const [openSearch, setOpenSearch] = useState<(() => void) | null>(null)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   const registerOpenSearch = (fn: (() => void) | null) => {
     setOpenSearch(() => fn)
@@ -83,7 +85,7 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
         <div className="flex flex-col h-screen overflow-hidden bg-bg">
           {/* Header */}
           <header
-            className="flex items-center gap-4 px-4 md:px-6 py-3 md:py-4 border-b border-[var(--border)] shrink-0 bg-[var(--bg-header)]"
+            className="relative flex items-center gap-4 px-4 md:px-6 py-3 md:py-4 border-b border-[var(--border)] shrink-0 bg-[var(--bg-header)]"
             onClick={() => setHighlightedSlugs([])}
           >
             <a href="https://generation-ai.org" className="shrink-0 hover:opacity-90 transition-opacity">
@@ -93,6 +95,52 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
             <span className="text-white/90 text-sm md:text-base font-semibold tracking-wide hidden md:block">
               KI-Tools
             </span>
+
+            {/* Desktop nav — Phase 22.6 Plan 09 (Decision B-08): mirrors website header.
+                5 items: Events · Tools (active) · Community · Für Partner · Über uns
+                Cross-domain links use <a> NOT <Link> (B-05 full page load). */}
+            <nav
+              aria-label="Hauptnavigation"
+              className="hidden md:flex items-center gap-6 ml-6"
+              data-tools-nav="desktop"
+            >
+              <a
+                href="https://generation-ai.org/events"
+                data-nav-item="events"
+                className="font-mono text-[13px] font-medium text-white/70 hover:text-white transition-colors"
+              >
+                Events
+              </a>
+              <a
+                href="https://tools.generation-ai.org"
+                data-nav-item="tools"
+                aria-current="page"
+                className="font-mono text-[13px] font-bold text-white border-b-2 border-[var(--accent)] pb-0.5"
+              >
+                Tools
+              </a>
+              <a
+                href="https://generation-ai.org/community"
+                data-nav-item="community"
+                className="font-mono text-[13px] font-medium text-white/70 hover:text-white transition-colors"
+              >
+                Community
+              </a>
+              <a
+                href="https://generation-ai.org/partner"
+                data-nav-item="partner"
+                className="font-mono text-[13px] font-medium text-white/70 hover:text-white transition-colors"
+              >
+                Für Partner
+              </a>
+              <a
+                href="https://generation-ai.org/about"
+                data-nav-item="about"
+                className="font-mono text-[13px] font-medium text-white/70 hover:text-white transition-colors"
+              >
+                Über uns
+              </a>
+            </nav>
 
             {/* Spacer */}
             <div className="flex-1" />
@@ -239,6 +287,97 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
                 Datenschutz
               </Link>
             </div>
+
+            {/* Mobile burger toggle — Phase 22.6 Plan 09 (Decision B-08).
+                Visible on mobile only. Opens panel with 5 nav-items + (logged-out only) CTAs. */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setMobileNavOpen((v) => !v)
+              }}
+              aria-label={mobileNavOpen ? 'Menü schließen' : 'Menü öffnen'}
+              aria-expanded={mobileNavOpen}
+              data-tools-burger
+              className="md:hidden inline-flex items-center justify-center min-w-[44px] min-h-[44px] p-2.5 rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              {mobileNavOpen ? (
+                <X className="h-5 w-5" aria-hidden="true" />
+              ) : (
+                <Menu className="h-5 w-5" aria-hidden="true" />
+              )}
+            </button>
+
+            {/* Mobile nav panel — anchored to header (relative). */}
+            {mobileNavOpen && (
+              <div
+                data-tools-nav="mobile"
+                onClick={(e) => e.stopPropagation()}
+                className="md:hidden absolute top-full left-0 right-0 bg-[var(--bg-header)] border-b border-[var(--border)] shadow-lg z-50"
+              >
+                <nav
+                  aria-label="Hauptnavigation mobil"
+                  className="flex flex-col p-4 gap-1"
+                >
+                  <a
+                    href="https://generation-ai.org/events"
+                    onClick={() => setMobileNavOpen(false)}
+                    className="font-mono text-sm text-white/80 hover:text-white px-2 py-3 rounded-md hover:bg-white/5 transition-colors"
+                  >
+                    Events
+                  </a>
+                  <a
+                    href="https://tools.generation-ai.org"
+                    aria-current="page"
+                    onClick={() => setMobileNavOpen(false)}
+                    className="font-mono text-sm text-white font-bold px-2 py-3 rounded-md bg-white/5 transition-colors"
+                  >
+                    Tools
+                  </a>
+                  <a
+                    href="https://generation-ai.org/community"
+                    onClick={() => setMobileNavOpen(false)}
+                    className="font-mono text-sm text-white/80 hover:text-white px-2 py-3 rounded-md hover:bg-white/5 transition-colors"
+                  >
+                    Community
+                  </a>
+                  <a
+                    href="https://generation-ai.org/partner"
+                    onClick={() => setMobileNavOpen(false)}
+                    className="font-mono text-sm text-white/80 hover:text-white px-2 py-3 rounded-md hover:bg-white/5 transition-colors"
+                  >
+                    Für Partner
+                  </a>
+                  <a
+                    href="https://generation-ai.org/about"
+                    onClick={() => setMobileNavOpen(false)}
+                    className="font-mono text-sm text-white/80 hover:text-white px-2 py-3 rounded-md hover:bg-white/5 transition-colors"
+                  >
+                    Über uns
+                  </a>
+
+                  {/* Logged-out CTAs in mobile menu (no CTAs when logged-in). */}
+                  {mode === 'public' && (
+                    <div className="flex flex-col gap-2 pt-3 mt-2 border-t border-white/10">
+                      <a
+                        href="https://generation-ai.org/join?utm_source=tools"
+                        onClick={() => setMobileNavOpen(false)}
+                        className="bg-[var(--accent)] text-[var(--text-on-accent)] font-mono font-bold text-sm rounded-full px-4 py-2.5 text-center hover:shadow-[0_0_20px_var(--accent-glow)] transition-all"
+                      >
+                        Kostenlos registrieren
+                      </a>
+                      <Link
+                        href="/login"
+                        onClick={() => setMobileNavOpen(false)}
+                        className="font-mono text-xs text-white/70 hover:text-white text-center py-2"
+                      >
+                        Bereits Mitglied? Einloggen
+                      </Link>
+                    </div>
+                  )}
+                </nav>
+              </div>
+            )}
           </header>
 
           {/* Main Content — children provide route-specific content */}
