@@ -8,9 +8,12 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
+    // Phase 26 Blocker-Fix: co-located __tests__/ directories wurden vorher
+    // nicht erfasst (nur Top-Level __tests__/). Broader pattern discovery
+    // für lib/mdx/__tests__/*, app/sitemap.test.ts, etc.
     include: [
-      "__tests__/**/*.test.{ts,tsx}",
-      "lib/**/__tests__/**/*.test.{ts,tsx}",
+      "**/__tests__/**/*.test.{ts,tsx}",
+      "**/*.test.{ts,tsx}",
     ],
   },
 })

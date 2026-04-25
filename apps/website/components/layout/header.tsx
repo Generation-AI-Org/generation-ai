@@ -27,7 +27,7 @@ import {
 // Nav-Struktur (D-18, locked)
 const navLinks = [
   { label: "Tools", href: "https://tools.generation-ai.org", external: true },
-  { label: "Community", href: "https://community.generation-ai.org", external: true },
+  { label: "Community", href: "/community", external: false },
 ] as const
 
 const partnerSubItems = [
@@ -59,17 +59,27 @@ export function Header() {
 
           {/* Desktop Nav (md+) */}
           <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 py-2 text-sm font-mono text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)] transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) =>
+              link.external ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-2 text-sm font-mono text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)] transition-colors"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="px-3 py-2 text-sm font-mono text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)] transition-colors"
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
 
             {/* Für Partner Dropdown (D-17) */}
             <DropdownMenu>
@@ -180,7 +190,7 @@ function MobileNavList({ prefersReducedMotion }: MobileNavListProps) {
   // Mobile-Nav items (locked D-18 order)
   const items: Array<{ type: "link" | "partner" | "about"; label?: string; href?: string; external?: boolean }> = [
     { type: "link", label: "Tools", href: "https://tools.generation-ai.org", external: true },
-    { type: "link", label: "Community", href: "https://community.generation-ai.org", external: true },
+    { type: "link", label: "Community", href: "/community", external: false },
     { type: "partner" },
     { type: "about", label: "Über uns", href: "/about" },
   ]

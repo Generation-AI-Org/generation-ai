@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { MotionConfig } from "motion/react"
 import { Header } from "@/components/layout/header"
@@ -8,18 +9,32 @@ import { TerminalSplash } from "@/components/terminal-splash"
 import { HeroSection } from "@/components/sections/hero-section"
 import { ProblemBlockSection } from "@/components/sections/problem-block-section"
 import { OfferingSection } from "@/components/sections/offering-section"
-import { ToolShowcaseSection } from "@/components/sections/tool-showcase-section"
-import { CommunityPreviewSection } from "@/components/sections/community-preview-section"
 import { TrustSection } from "@/components/sections/trust-section"
 import { FinalCTASection } from "@/components/sections/final-cta-section"
 import { KurzFaqSection } from "@/components/sections/kurz-faq-section"
 import { SectionTransition } from "@/components/ui/section-transition"
 
+// Phase 26 Plan 26-05 — Tool-Showcase + Community-Preview wandern auf
+// async Server-Components (D-15, D-08). Diese Datei ist `'use client'`
+// (TerminalSplash + state + MotionConfig) und kann sie deshalb nicht direkt
+// importieren — React verbietet das. Wir nehmen sie als ReactNode-Props
+// entgegen, die in `app/page.tsx` server-seitig gerendert werden.
+//
+// PRESERVED 1:1 (Plan 26-05 PLAN-CHECK Warning #5):
+//   - TerminalSplash mount + onComplete + skipIfSeen
+//   - showContent + splashDone state
+//   - handleSplashComplete callback
+//   - transition-wrapper div + classes (opacity/translate)
+//   - <main id="main-content" className="min-h-screen pt-20">
+//   - MotionConfig nonce wrapper (CSP-relevant, Phase 13)
+
 type HomeClientProps = {
   nonce: string
+  toolShowcase: ReactNode
+  communityPreview: ReactNode
 }
 
-export function HomeClient({ nonce }: HomeClientProps) {
+export function HomeClient({ nonce, toolShowcase, communityPreview }: HomeClientProps) {
   const [showContent, setShowContent] = useState(false)
   const [splashDone, setSplashDone] = useState(false)
 
@@ -52,9 +67,9 @@ export function HomeClient({ nonce }: HomeClientProps) {
           <SectionTransition variant="soft-fade" />
           <OfferingSection />
           <SectionTransition variant="soft-fade" />
-          <ToolShowcaseSection />
+          {toolShowcase}
           <SectionTransition variant="soft-fade" />
-          <CommunityPreviewSection />
+          {communityPreview}
           <SectionTransition variant="soft-fade" />
           <TrustSection />
           <SectionTransition variant="signal-echo" />

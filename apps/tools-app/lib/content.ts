@@ -17,7 +17,8 @@ async function getPublishedItems(): Promise<ContentItemMeta[]> {
 }
 
 // Featured tools appear first in this order
-const FEATURED_TOOLS = ['chatgpt', 'claude', 'lovable', 'cursor', 'perplexity']
+// D-17 (Phase 26): single source of truth — re-used by /api/public/featured-tools
+export const FEATURED_TOOLS = ['chatgpt', 'claude', 'lovable', 'cursor', 'perplexity']
 
 export async function getPublishedTools(): Promise<ContentItemMeta[]> {
   const supabase = createServerClient()

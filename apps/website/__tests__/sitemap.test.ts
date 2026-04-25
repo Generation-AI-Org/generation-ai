@@ -5,18 +5,21 @@ import { describe, it, expect } from 'vitest'
 import sitemap from '@/app/sitemap'
 
 describe('sitemap', () => {
-  const entries = sitemap()
-  const urls = entries.map((e) => e.url)
-
-  it('includes /test as indexed route', () => {
+  it('includes /test as indexed route', async () => {
+    const entries = await sitemap()
+    const urls = entries.map((e) => e.url)
     expect(urls).toContain('https://generation-ai.org/test')
   })
 
-  it('does NOT include /test/aufgabe/* paths (noindex)', () => {
+  it('does NOT include /test/aufgabe/* paths (noindex)', async () => {
+    const entries = await sitemap()
+    const urls = entries.map((e) => e.url)
     expect(urls.some((u) => u.includes('/test/aufgabe'))).toBe(false)
   })
 
-  it('does NOT include /test/ergebnis (noindex)', () => {
+  it('does NOT include /test/ergebnis (noindex)', async () => {
+    const entries = await sitemap()
+    const urls = entries.map((e) => e.url)
     expect(urls).not.toContain('https://generation-ai.org/test/ergebnis')
   })
 })

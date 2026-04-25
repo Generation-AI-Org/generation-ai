@@ -79,7 +79,7 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
             className="flex items-center gap-4 px-4 md:px-6 py-3 md:py-4 border-b border-[var(--border)] shrink-0 bg-[var(--bg-header)]"
             onClick={() => setHighlightedSlugs([])}
           >
-            <a href="https://community.generation-ai.org" target="_blank" rel="noopener noreferrer" className="shrink-0 hover:opacity-90 transition-opacity">
+            <a href="https://generation-ai.org" className="shrink-0 hover:opacity-90 transition-opacity">
               <Logo context="header" theme={theme} size="md" />
             </a>
             <div className="w-px h-6 md:h-7 bg-white/20 hidden md:block" />

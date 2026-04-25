@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import createMDX from '@next/mdx'
+import createMDX from "@next/mdx";
 
 // CSP moved to proxy.ts (Phase 13) — nonce-based via Next.js 16 Middleware Pattern
 
@@ -32,14 +32,18 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // MDX als gültiges Page-Extension neben tsx (Phase 24 level-profiles + Phase 26 D-10).
+  pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
+
   // Expose env vars to client bundle at build time
   env: {
     // Cookie domain must be inlined at build time for browser client
-    NEXT_PUBLIC_COOKIE_DOMAIN: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || '',
+    NEXT_PUBLIC_COOKIE_DOMAIN: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || "",
+    // Phase 26 Block B: tools-app public API endpoint (declared hier für Cohesion,
+    // konsumiert in Plan 26-05 via Server-Component)
+    NEXT_PUBLIC_TOOLS_APP_URL:
+      process.env.NEXT_PUBLIC_TOOLS_APP_URL || "https://tools.generation-ai.org",
   },
-
-  // Allow .mdx as a page extension (Phase 24 — level-profile MDX rendering)
-  pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
 
   async headers() {
     return [
@@ -53,10 +57,13 @@ const nextConfig: NextConfig = {
 };
 
 const withMDX = createMDX({
+  // V1: keine remark/rehype-Plugins — deutsche Artikel mit 2-3 Absätzen brauchen
+  // keine Tabellen (remark-gfm). Plugins bleiben bewusst leer für minimale
+  // Trust-Surface (Threat T-26-01-03).
   options: {
     remarkPlugins: [],
     rehypePlugins: [],
   },
-})
+});
 
 export default withMDX(nextConfig);

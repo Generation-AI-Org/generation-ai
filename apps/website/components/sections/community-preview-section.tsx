@@ -1,30 +1,20 @@
-'use client'
-
+import Link from "next/link"
 import { ArrowUpRight, Calendar, FileText } from "lucide-react"
-import { BeispielBadge } from "@/components/sections/tool-showcase-section"
+import { BeispielBadge } from "@/components/ui/beispiel-badge"
+import { getAllArticles } from "@/lib/mdx/community"
 
-// Community-Preview (Simon §4.7 "Aus der Community") — DS-polished.
+// Phase 26 Plan 26-05 — Server-Component (D-08 Option A, D-21).
 //
-// Struktur:
-//   1. Section-Header mit Eyebrow "// aus der community" + Hero-level H2 + Lede
-//      (Simon §4.7 Fix: slash-prefix Mono-Label mit Dot analog Offering / Tool-Showcase)
-//   2. 2-col Grid: Letzte Artikel | Kommende Events, je 3/2 Karten mit BeispielBadge
-//   3. Footer: zwei Links (Community-Subdomain + /events) — Simon §4.7 Spec
+// Article-Spalte (D-08): liest die 3 neuesten MDX-Artikel via getAllArticles()
+// (newest-first sortiert in lib/mdx/community.ts) und rendert eine 3-up Grid
+// mit internen `<Link>`-Cards auf `/community/artikel/[slug]`. KI-News-Artikel
+// (kind === "ki-news") bekommen ein zusätzliches Pill-Badge.
 //
-// DS-Alignment:
-//   - Section bleibt STATIC (D-24 aus Phase 20): keine motion/react entry, kein Skeleton
-//   - Easings + Durations via CSS-Tokens (--ease-out, --dur-normal) über inline styles
-//   - Keyboard-Fokus: Card-Links mit focus-visible:outline, Neutral-Ring (DS §C)
-//   - Hover: card border-accent + subtle accent-glow shadow (DS §C Interaction-States)
-//   - Tokens only: --accent, --text*, --border*, --bg-card, --bg-elevated, --accent-glow.
-//     Keine stray Hex-Werte.
-//   - BeispielBadge reused aus tool-showcase (theme-aware, konsistent zur Tool-Bibliothek)
-
-type StubArticle = {
-  title: string
-  readingTime: string
-  href: string
-}
+// Events-Spalte (D-21): bleibt Stub mit BeispielBadge — Live-Daten kommen
+// in Phase 22.5. Die Beispiel-Daten sind 1:1 die alte stubEvents-Liste.
+//
+// DS-Polish (Phase 20.6 §4.7): Eyebrow mit Dot, Hover-Glow auf Cards,
+// CSS-Token-driven transitions, focus-visible Outline.
 
 type StubEvent = {
   title: string
@@ -33,26 +23,7 @@ type StubEvent = {
   href: string
 }
 
-/** Stub-Artikel — RESEARCH § D-12 locked data. */
-const stubArticles: StubArticle[] = [
-  {
-    title: "Wie ich ChatGPT für meine Bachelorarbeit genutzt habe",
-    readingTime: "6 min Lesezeit",
-    href: "https://community.generation-ai.org",
-  },
-  {
-    title: "5 KI-Tools die jeder BWL-Student kennen sollte",
-    readingTime: "4 min Lesezeit",
-    href: "https://community.generation-ai.org",
-  },
-  {
-    title: "Prompt Engineering für Anfänger: Der komplette Guide",
-    readingTime: "9 min Lesezeit",
-    href: "https://community.generation-ai.org",
-  },
-]
-
-/** Stub-Events — RESEARCH § D-12 locked data. */
+/** Stub-Events — bleiben Stub bis Phase 22.5 (D-21). */
 const stubEvents: StubEvent[] = [
   {
     title: "KI-Basics Workshop",
@@ -68,7 +39,9 @@ const stubEvents: StubEvent[] = [
   },
 ]
 
-export function CommunityPreviewSection() {
+export async function CommunityPreviewSection() {
+  const articles = (await getAllArticles()).slice(0, 3)
+
   return (
     <section
       aria-labelledby="community-preview-heading"
@@ -97,32 +70,51 @@ export function CommunityPreviewSection() {
             Was gerade läuft.
           </h2>
           <p className="mt-5 text-lg leading-[1.5] text-text-secondary text-pretty sm:text-xl">
-            Ein Einblick in Diskussionen und Termine. Sobald die Community-API
-            live ist, erscheinen hier echte Artikel und Events.
+            Aktuelle Artikel aus der Community — und kommende Termine.
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {/* Spalte 1: Artikel */}
+          {/* Spalte 1: Artikel — echte MDX-Daten (D-08 Option A) */}
           <div>
             <h3 className="mb-6 inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
               <FileText className="h-3.5 w-3.5" aria-hidden="true" />
               {"// letzte artikel"}
             </h3>
-            <ul className="space-y-4">
-              {stubArticles.map((article) => (
-                <li key={article.title}>
-                  <PreviewCard
-                    href={article.href}
-                    title={article.title}
-                    meta={article.readingTime}
-                  />
+            <ul className="grid gap-5 sm:grid-cols-3">
+              {articles.map((article) => (
+                <li key={article.slug}>
+                  <Link
+                    href={`/community/artikel/${article.slug}`}
+                    className="group block h-full rounded-2xl border border-border bg-bg-card p-5 transition-all hover:-translate-y-[2px] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+                    style={{
+                      outlineColor: "var(--text)",
+                      transitionDuration: "var(--dur-normal)",
+                      transitionTimingFunction: "var(--ease-out)",
+                    }}
+                  >
+                    {article.frontmatter.kind === "ki-news" && (
+                      <span className="mb-2 inline-flex items-center gap-1 rounded-full bg-bg-elevated px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
+                        KI-News
+                      </span>
+                    )}
+                    <h4 className="font-mono text-base font-bold leading-snug text-text">
+                      {article.frontmatter.title}
+                    </h4>
+                    <p className="mt-3 line-clamp-2 text-sm text-text-secondary">
+                      {article.frontmatter.excerpt}
+                    </p>
+                    <p className="mt-3 inline-flex items-center gap-1 font-mono text-xs text-text-muted">
+                      {article.frontmatter.readingTime} min Lesezeit
+                      <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+                    </p>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Spalte 2: Events */}
+          {/* Spalte 2: Events — bleibt Stub bis Phase 22.5 (D-21) */}
           <div>
             <h3 className="mb-6 inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
               <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
@@ -142,14 +134,15 @@ export function CommunityPreviewSection() {
           </div>
         </div>
 
-        {/* Footer-Links — Simon §4.7: zwei Links (Community + Events) */}
+        {/* Footer-Links — Simon §4.7: Community + Events + alle Artikel */}
         <div className="mt-14 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-8">
+          <FooterLink href="/community" label="Alle Artikel" />
+          <FooterLink href="/events" label="Alle Events" />
           <FooterLink
             href="https://community.generation-ai.org"
             external
             label="Zur Community"
           />
-          <FooterLink href="/events" label="Alle Events" />
         </div>
       </div>
     </section>
@@ -215,10 +208,28 @@ function FooterLink({
     ? ({ target: "_blank", rel: "noopener noreferrer" } as const)
     : {}
 
+  if (external) {
+    return (
+      <a
+        href={href}
+        {...linkProps}
+        className="inline-flex items-center gap-1 font-mono text-[12px] font-bold uppercase tracking-[0.08em] text-[var(--accent)] hover:text-[var(--accent-hover,var(--accent))] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
+        style={{
+          outlineColor: "var(--text)",
+          transitionDuration: "var(--dur-normal)",
+          transitionTimingFunction: "var(--ease-out)",
+          transitionProperty: "color",
+        }}
+      >
+        {label}
+        <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+      </a>
+    )
+  }
+
   return (
-    <a
+    <Link
       href={href}
-      {...linkProps}
       className="inline-flex items-center gap-1 font-mono text-[12px] font-bold uppercase tracking-[0.08em] text-[var(--accent)] hover:text-[var(--accent-hover,var(--accent))] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
       style={{
         outlineColor: "var(--text)",
@@ -229,6 +240,6 @@ function FooterLink({
     >
       {label}
       <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-    </a>
+    </Link>
   )
 }
