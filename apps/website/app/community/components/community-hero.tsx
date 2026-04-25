@@ -21,7 +21,7 @@ export function CommunityHero() {
       data-section="community-hero"
       className="relative isolate"
     >
-      <LabeledNodes className="flex min-h-[calc(80vh-5rem)] flex-col items-center justify-center">
+      <LabeledNodes className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center">
         <motion.div
           initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
           animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}

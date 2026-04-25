@@ -21,9 +21,10 @@ MDX-Files in this directory render at `/community/artikel/[slug]`.
 
 ## Body
 
-2-3 short paragraphs. End with a markdown link „Weiterlesen in der Community →"
-to `circleUrl`. The `/community/artikel/[slug]` page also renders an explicit
-CTA button at the bottom — both is fine.
+2-3 short paragraphs. **Do NOT add a „Weiterlesen in der Community"-Link
+yourself** — the `/community/artikel/[slug]` page renders that CTA
+automatically using `circleUrl` from the frontmatter. Adding one in the body
+results in a duplicate link.
 
 ## After Adding a File
 
