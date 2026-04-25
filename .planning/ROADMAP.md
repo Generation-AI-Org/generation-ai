@@ -712,67 +712,40 @@ Plans:
 
 **Release:** patch
 
+
 ---
 
-### Phase 22.5: `/events`-Seite 🆕 (2026-04-23)
+### Phase 22.6: Pre-Launch Polish Bundle 🆕 (2026-04-25, konsolidiert aus 22.5+22.7)
 
-**Goal:** Members-Only-Akquisitionshebel — öffentlich sichtbare Events-Liste, Anmeldung gated hinter Signup.
-**Requirements:** Aus Simons Konzept §5 (Website-Konzept-Dokument, April 2026)
-**Depends on:** Phase 20.6 (Nav + DS), Phase 23 (`/join` als Signup-Gate-Target)
-**Detailplan:** `.planning/phases/22.5-events-page/22.5-CONTEXT.md`
-**Out-of-Scope:** Circle-API-Integration, Luma-Embed, ICS-Download V1, Event-Filter (Roadmap).
+**Goal:** Vor dem Launch zwei letzte Conversion-Bausteine: Track A baut `/events` (Members-Only-Akquisitionshebel mit MDX-Pipeline) + Track B poliert tools-app (Login-Button-Umbau + Hero + Nav-Sync zur Hauptdomain).
+**Requirements:** A-req-1..A-req-8 (Track A) + B-req-1..B-req-5 (Track B), kanonisch in `.planning/phases/22.6-pre-launch-polish-bundle/22.6-VALIDATION.md`
+**Depends on:** Phase 20.6 (DS+Nav baseline) ✅, Phase 23 (Signup-Gate als Redirect-Target) ✅, Phase 26 (MDX-Pipeline-Pattern als Vorlage) ✅
+**Detailplan:** `.planning/phases/22.6-pre-launch-polish-bundle/22.6-CONTEXT.md`
+**Out-of-Scope:** Circle-API-Integration, Luma-Embed, ICS-Download (V1), Filter/Search auf /events, packages/ui-Nav-Extraktion (Phase 28+), echte Event-Fotos, Plausible-Analytics.
 
-**Scope:**
-- Hero + 3-Kachel-Grid „Kommende Events"
-- Event-Metadaten: Titel, Datum+Uhrzeit, Format-Tag, Level-Tag, Ort, Partner (bei Masterclasses), Anmelde-Button
-- Event-Modal bei Klick: Beschreibung, Agenda, Speaker, optional ICS
-- Anmelde-Flow: Non-Member → `/join?redirect_after=/events/[slug]`, Member → direkt zu `ctaUrl`
-- Formate-Sektion (Workshops / Speaker Sessions / Masterclasses)
-- Members-Only-Hinweis („Kostenlos, 2 Minuten")
-- Archiv (minimal, Foto + Titel + Datum + Recap, keine Modals)
-- Abschluss-CTA „Jetzt beitreten"
-- **MDX-Pipeline** in `apps/website/content/events/` als Content-Source (kein CMS)
-- Event-Detail als Standalone-Route `/events/[slug]` für SEO + Share-Links
+**Plans:** 9 plans (Track A: 5 plans, Track B: 4 plans, sequential A→B per Decision B-10)
+
+Plans:
+- [ ] 22.6-01-PLAN.md — Wave 0 Track A: Test scaffolds (events.spec.ts + events.test.ts mit fixme/todo placeholders)
+- [ ] 22.6-02-PLAN.md — Wave 1 Track A: MDX-Adapter `lib/mdx/events.ts` (reuse Phase-26 reader.ts) + 5 Placeholder-MDX-Files (3 upcoming + 2 archive, A-10) + 7 Vitest tests fill (A-req-7)
+- [ ] 22.6-03-PLAN.md — Wave 2 Track A: /events Server-Component + Client-Wrapper + Hero (LabeledNodes) + Grid + Mehr-Anzeigen + Formats + Members-Only + Final-CTA + 3 Playwright tests fill (A-req-1, A-req-2, A-req-3)
+- [ ] 22.6-04-PLAN.md — Wave 3 Track A: EventModal (@base-ui/react/dialog, focus-trap, mobile-sheet) + Anmelde-Flow mit Open-Redirect-Guard + 2 Playwright tests fill (A-req-4, A-req-5)
+- [ ] 22.6-05-PLAN.md — Wave 4 Track A: /events/[slug] Standalone-Page + Archive-Section + Sitemap + final 2 Playwright tests fill + Lighthouse human-gate (A-req-6, A-req-8)
+- [ ] 22.6-06-PLAN.md — Wave 5 Track B: Test scaffold tools-app.spec.ts mit 5 fixme placeholders
+- [ ] 22.6-07-PLAN.md — Wave 6 Track B: Login-Button-Umbau in GlobalLayout.tsx (Primary Kostenlos-registrieren + Secondary Einloggen, utm_source=tools, sync-anchor comment) + 2 Playwright tests fill (B-req-1, B-req-2, B-req-5)
+- [ ] 22.6-08-PLAN.md — Wave 6 Track B: ToolsHero component + HomeLayout integration (inside scroll container, Pitfall 2) + 1 Playwright test fill (B-req-3)
+- [ ] 22.6-09-PLAN.md — Wave 7 Track B: Nav-Items Mirror (5 cross-domain links + Tools active + mobile burger) + final 2 Playwright tests fill + Lighthouse + side-by-side parity human-gate (B-req-4, B-req-5)
 
 **Success Criteria:**
-- [ ] MDX-Pipeline liest Files, rendert kommende Events chronologisch
-- [ ] Modal mit Details öffnet, schließt via Escape
-- [ ] Anmelde-Flow gegated korrekt (Auth-Check + Redirect)
-- [ ] Archiv rendert minimal ohne Modals
-- [ ] Lighthouse `/events` > 90, Mobile responsive, A11y-korrekt
+- [ ] /events live mit funktionierendem Modal-Flow (Member → ctaUrl, Non-Member → /join?redirect_after=)
+- [ ] /events/[slug] indexiert in sitemap.xml
+- [ ] tools-app Nav strukturell identisch zur Hauptdomain (5 items, Tools active)
+- [ ] Logged-out tools-app: 2 CTAs sichtbar (Primary Register + Secondary Login mit utm_source=tools)
+- [ ] Logged-in tools-app: User-Menu unverändert (Phase 12/19 Regression-Schutz)
+- [ ] Lighthouse ≥ 90 auf /events UND tools-app (Lucas-verifiziert)
+- [ ] 12 Playwright-Tests grün (7 Track A + 5 Track B) + 7 Vitest unit tests grün
 
-**Release:** patch
-
----
-
-### Phase 22.7: Tools-Subdomain Polish 🆕 (2026-04-23)
-
-**Goal:** tools.generation-ai.org visuell und navigatorisch mit Hauptdomain harmonisieren — Logo-Link-Fix, Login-Button-Umbau, Tools-Hero, Sticky-Nav-Sync.
-**Requirements:** Aus Simons Konzept §6
-**Depends on:** Phase 20.6 (DS baseline), Phase 23 (`/join` als Redirect-Target für „Kostenlos registrieren")
-**Detailplan:** `.planning/phases/22.7-tools-subdomain-polish/22.7-CONTEXT.md`
-**Out-of-Scope:** Tool-Kachel-Redesign, Agent-Chat-Änderungen, Lite/Pro-Logik-Änderungen, Tool-Detailseiten, Suchfeld (alles Roadmap).
-
-**Scope:**
-- **Logo-Link-Fix (CRIT):** Header-Logo führt aktuell auf Community-Subdomain → muss auf `generation-ai.org`
-- **Login-Button-Umbau:**
-  - Primary: `Kostenlos registrieren` → `https://generation-ai.org/join`
-  - Secondary: `Bereits Mitglied? → Einloggen` → tools-app `/login`
-- **Tools-Hero** über Filter-Tabs: „// deine ki-tool-bibliothek / # KI-Tools, kuratiert für dich. / Über 100 Tools, sortiert nach Anwendungsfall. Brauchst du Hilfe? Frag unseren Agenten."
-- **Sticky-Nav-Sync:** identisches Scroll-Verhalten wie Hauptdomain
-- **Nav-Struktur-Alignment:** gleiche Items wie Hauptdomain, Tools aktiv markiert, andere Items führen auf Hauptdomain
-
-**Success Criteria:**
-- [ ] Logo-Link korrekt (landet auf Hauptdomain, nicht Community)
-- [ ] Login-Button-Differenzierung sichtbar für ausgeloggte User
-- [ ] Neue Hero-Sektion über Filter-Tabs
-- [ ] Sticky-Nav-Verhalten identisch zur Hauptdomain
-- [ ] Mobile Burger-Menü korrekt mit Primary-CTA
-- [ ] Keine Regression in Lite/Pro-Sichtbarkeit oder Agent-Chat
-
-**Release:** patch
-
----
+**Release:** patch (V1 Events live, tools-app polish; kein Breaking Change, kein neues Backend)
 
 ### Phase 23: `/join` Fragebogen-Flow
 
