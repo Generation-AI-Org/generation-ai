@@ -895,10 +895,52 @@ Plans:
 
 ---
 
+### Phase 22.8: UI-Konsistenz & Section-Refinement 🆕 (2026-04-25)
+
+**Goal:** Letzte Polish-Phase vor Launch. DS-First-Audit + Token-/Component-Compliance + Page-Refinements aus Call mit Simon/Janna (Granola-Transkript 2026-04-25). Foundation-Layer (3 Plans) MUSS vor Page-Layer (10 Plans) — sonst werden Inkonsistenzen pro Page neu eingebaut während sie gefixt werden.
+**Depends on:** Phase 22.6 (Track A+B fertig + in develop), Phase 26 UAT durch, Plan 20.6-01 (Lücken-Hero) als separater Cycle vor 22.8
+**Detailplan:** `.planning/phases/22.8-ui-konsistenz-section-refinement/22.8-CONTEXT.md`
+**Out-of-Scope:** Prisma in jeder Form (eigene Phase nach Launch), Member-Trust-/Eventfotos-/Testimonial-Sektionen (Daten fehlen), Copy-Final + SEO (Phase 27), Hero-Lücken-Visualisierung (Plan 20.6-01)
+
+**Scope:**
+
+Foundation (vor Page-Plans):
+- DS-Compliance-Audit (read-only Inventur, Output: Decision-Tabelle)
+- Token-Source- + Component-Compliance-Fix (depends-on-audit)
+- Favicon-Konsolidierung (Asset-Swap auf Tools-App-Source-of-Truth)
+
+Page-Level (depends-on Foundation):
+- `/partner` Hero: 4 Boxen + Lucide-Icons + Hierarchie
+- `/partner` Nav-Logik (Click vs Chevron-Dropdown)
+- `/join` Status-Switch + Studienfeld + Schema-Migration (UI + DB + Email als Bündel)
+- `/join` Hero-Layout-Refinement (Headline links / Form rechts)
+- `/about` Verein-Formular (mailto raus, Resend Pattern aus `/partner`)
+- `/about` Timeline / Story-Scroll (motion useScroll, reduced-motion-Fallback)
+- `/test` Fragetypen-Ausbau (Drag-Drop + Slider + Matching final + 10 echte Fragen)
+- `/test` Spider-Chart + Ergebnisseite final + Level-Definitionen
+- `/test` als öffentlicher Conversion-Hebel (Auth-Gate weg, sessionStorage, Migration nach Anmeldung)
+- Theme-Toggle Konsistenz Website ↔ tools-app (Microanimations angleichen)
+
+**Plans:** 13/13 skeleton, Foundation 3 (autonomous: 01,03 / depends-on-audit: 02), Page 10 (autonomous: 04,05,07,08,10,11,13 / Stop-Gate: 06 Schema-Migration, 09 Timeline UAT, 12 Auth-Refactor)
+
+**Success Criteria:**
+- [ ] DS-Audit-Report committed mit Decision-Tabelle, must+should Findings gefixt
+- [ ] Favicon visuell identisch auf Website / tools-app / Mailings
+- [ ] `/partner` 4 Boxen above-the-fold mit Icons, Nav-Click → Übersicht
+- [ ] `/join` Status-Switch funktional, Schema migrated, Hero-Layout neu
+- [ ] `/about` Verein-Formular submitted, Timeline scroll-revealt
+- [ ] `/test` ohne Login lauffähig, 4 Fragetypen + Spider-Chart + Conversion-CTA
+- [ ] Theme-Toggle Website rendert + animiert wie tools-app
+- [ ] Lighthouse > 90, Build grün mit `ƒ` (dynamic) auf allen Routes (CSP)
+
+**Release:** Patch innerhalb v4.0 (additive Schema-Migration, kein Breaking Change)
+
+---
+
 ### Phase 27: Copy-Pass & Launch-Cleanup 🆕 (2026-04-23)
 
 **Goal:** Struktur steht, Copy wird geschärft. Alle Placeholder-Texte auf Simons Konzept + `brand/VOICE.md`. Dummy-Data raus, echte Inhalte rein. Finaler Durchgang vor Launch.
-**Depends on:** Alle prior Phasen (20.6, 21, 22, 22.5, 22.7, 23, 24, 25, 26)
+**Depends on:** Alle prior Phasen (20.6, 21, 22, 22.5, 22.7, 23, 24, 25, 26, 22.6, 22.8)
 **Detailplan:** `.planning/phases/27-copy-pass-and-launch-cleanup/27-CONTEXT.md`
 **Out-of-Scope:** Neue Features, Redesigns, neue Seiten.
 

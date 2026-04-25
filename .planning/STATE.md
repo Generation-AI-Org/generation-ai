@@ -72,11 +72,22 @@ progress:
 - `~/Downloads/Generation_AI_Website_Konzept.md` — Simons Konzept (April 2026) — strategische Quelle für alle Scope-Entscheidungen
 - Dev-Server: `pnpm --filter @genai/website dev` (auf localhost:3000 oder :3001)
 
-**Revidierte Roadmap-Reihenfolge (ab 2026-04-25):**
+**Revidierte Roadmap-Reihenfolge (ab 2026-04-25, Call mit Simon/Janna):**
 
 ```
-✅ 20.6 → ✅ 21 /about → ✅ 22 /partner → ✅ 23 /join → ✅ 24 /test → ✅ 25 circle-sync → ✅ 26 /community → 🚧 22.6 [Track A /events + Track B tools-polish] → ⏳ 27 copy-pass → LAUNCH
+✅ 20.6 → ✅ 21 → ✅ 22 → ✅ 23 → ✅ 24 → ✅ 25 → ✅ 26 → 🚧 22.6 → ⏳ 20.6-01 (Lücken-Hero, separater Cycle) → ⏳ 22.8 (UI-Konsistenz + Section-Refinement) → ⏳ 27 (Copy-Pass) → LAUNCH ~15.05
 ```
+
+**Phase 22.8 ready für autonomous run (2026-04-25)** — CONTEXT + DISCUSSION-LOG mit allen Decisions vorab gemacht + Foundation-Plan-Skeletons (01+02) + Brand-Favicon-Assets liegen in `.planning/phases/22.8-ui-konsistenz-section-refinement/` + `brand/logos/favicons/`.
+
+**Start-Kommando (sobald 22.6 + 26-UAT + 20.6-01 durch):**
+```bash
+git checkout develop && git pull
+git checkout -b feature/phase-22.8-ui-konsistenz-section-refinement
+/gsd-autonomous --only 22.8 --interactive
+```
+
+**Stop-Gates während Execute (nur 2):** 22.8-02 post-Audit-Review (~5 min) + 22.8-06 DB-Migration-Approval (~1 min). Sonst autonom durchlaufend. 09 (Timeline) und 12 (Auth-Refactor) sind autonomous mit Pre-Approval-Specs in DISCUSSION-LOG. Test-Fragen-Re-Konzeption (Lucas Kritik aus Call) ist DEFERRED — separater Pass nach 22.8-10 Tech-Build.
 
 **22.6 Konsolidierung:** Phasen 22.5 (Events) + 22.7 (Tools-Polish) am 2026-04-25 zusammengelegt — verschiedene Apps, kein Konflikt-Risiko, ein Discuss/Plan/Execute-Cycle. Logo-Link-Fix war Drive-by im Phase-26-Merge bereits done.
 
