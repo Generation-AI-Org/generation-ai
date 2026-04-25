@@ -921,12 +921,12 @@ Page-Level (depends-on Foundation):
 - `/test` als öffentlicher Conversion-Hebel (Auth-Gate weg, sessionStorage, Migration nach Anmeldung)
 - Theme-Toggle Konsistenz Website ↔ tools-app (Microanimations angleichen)
 
-**Plans:** 3 Foundation plans (2 executed, 1 ready) + Page-Layer plans not yet enumerated — see CONTEXT.md
+**Plans:** 3/3 plans complete
 
 Foundation Plans:
 - [x] 22.8-01-PLAN.md — DS-Compliance-Audit (read-only Inventur)
 - [x] 22.8-02-PLAN.md — Token-Source- + Component-Compliance-Fix
-- [ ] 22.8-03-PLAN.md — Favicon-Konsolidierung (Asset-Swap aus brand/logos/favicons/ → beide Apps via Next.js File Convention)
+- [x] 22.8-03-PLAN.md — Favicon-Konsolidierung (Asset-Swap aus brand/logos/favicons/ → beide Apps via Next.js File Convention)
 
 **Success Criteria:**
 - [ ] DS-Audit-Report committed mit Decision-Tabelle, must+should Findings gefixt

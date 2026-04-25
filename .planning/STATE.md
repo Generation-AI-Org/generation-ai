@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: planning
-last_updated: "2026-04-25T17:15:00.000Z"
+last_updated: "2026-04-25T17:24:28.763Z"
 progress:
   total_phases: 20
-  completed_phases: 15
-  total_plans: 103
-  completed_plans: 100
+  completed_phases: 16
+  total_plans: 104
+  completed_plans: 101
   percent: 97
 ---
 
@@ -18,25 +18,26 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 22.6 ✅ done + auf develop, Phase 22.8 vorbereitet, Phase 27 last-before-launch)
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 22.6 ✅ done + auf develop, **Phase 22.8 Foundation-Layer ✅ DONE 2026-04-25**, Phase 27 last-before-launch)
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 22.8 (UI-Konsistenz & Section-Refinement) — ready for `/gsd-autonomous --only 22.8 --interactive` (von Luca in paralleler Session 2026-04-25 vorbereitet, Commit 9df90d7)
+**Phase:** 22.8 (UI-Konsistenz & Section-Refinement) — Foundation-Layer 3/3 Plans DONE. Bereit für Layer-2/3 oder Phase 27.
 **Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
 
 - `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
 - `develop` = Staging-Sammelbranch (Stand: + Phase 25 + Phase 26 + **Phase 22.6** ✅ gemerged 2026-04-25, commits 7b1a5aa → ac01d32 → a28821b). Vercel-Preview: https://website-git-develop-lucas-projects-e78962e9.vercel.app
 - `feature/phase-22.6-pre-launch-polish` = ✅ DONE + gemerged in develop (kann gelöscht werden)
+- `feature/phase-22.8-ui-konsistenz-section-refinement` = Foundation-Layer 3/3 Plans done (commits b0116d1, ef7055d, plus 22.8-01 + 22.8-02). Bereit für Merge in develop nach Luca-OK.
 - `feature/phase-26-community` = abgeschlossen, im Worktree `generation-ai-phase-26` (UAT pending)
 
-**Last Updated:** 2026-04-25 14:30 (Phase 22.6 → develop gemerged. UAT 5/7 passed durch autonomous + Luca live mobile preview. Footer /events Polish-Commit a28821b. Item 6 Logged-in Regression bleibt offen für Luca am PC mit Lite-Account auf develop-preview.)
+**Last Updated:** 2026-04-25 17:25 (Phase 22.8-03 Favicon-Konsolidierung DONE — cross-domain favicon parity via Next.js File Convention, byte-identical icons in beiden Apps, tools-app metadata.icons-Block gestrippt, OG-image-default.png deployed. Build green beide Apps. Visuelle Cross-Domain-Verifikation post-deploy für Luca.)
 **Site Status:** ✅ Live auf generation-ai.org (alter Stand, Phase 20+20.5). Develop-Preview hat alles bisher Gebaute (Phase 21–26 + 22.6). Phase 26 UAT noch offen (`pending-luca`). 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke). 1 HUMAN-UAT-Item Phase 22.6 offen (Logged-in Regression).
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** Phase 22.8 (UI-Konsistenz & Section-Refinement) — von Luca vorbereitet, ready für `/gsd-autonomous --only 22.8 --interactive`. Phase 27 (Copy-Pass & Launch-Cleanup) folgt.
-**First command (option A):** `/gsd-autonomous --only 22.8 --interactive` — Phase 22.8 starten
-**First command (option B):** `/gsd-progress` — Roadmap + offene UAT-Items checken
+**Next phase:** Phase 22.8 Foundation-Layer ✅ DONE (3/3 Plans). Optionen: (A) Phase 22.8 Layer-2/3 weitere Plans planen, (B) `feature/phase-22.8-...` in develop mergen + Phase 27 (Copy-Pass & Launch-Cleanup) starten, (C) Visual cross-domain favicon check post-Vercel-Promotion.
+**First command (option A):** `/gsd-progress` — Roadmap + offene UAT-Items checken
+**First command (option B):** `git checkout develop && git merge feature/phase-22.8-ui-konsistenz-section-refinement && /gsd-plan-phase 27`
 **Erst tun (Phase 22.6 cleanup):**
 
 - Item 6 Logged-in Regression auf develop-Preview live testen (5min) — Lite-Account einloggen, CTAs verschwinden, Settings + Signout sichtbar, Lite/Pro Toggle, Logout. Siehe 22.6-HUMAN-UAT.md §6.
@@ -95,6 +96,8 @@ progress:
 **22.8-02 STOP-GATE (awaiting Luca):** Plan 02 ist `autonomous: false` + `status: depends-on-audit` — wurde korrekt nicht ausgeführt. Luca-Review von `22.8-01-AUDIT.md` (~10 min) entscheidet must/should/nice + offene Spec-Fragen (A-M05 Logo-Hover, A-S06/S07 Feature-Card, A-N06 Button-Scale-Variant), dann gsd-planner befüllt 02-PLAN konkrete Tasks → Execute Plan 02.
 
 **22.8-02 DONE (2026-04-25):** Token-Source + Component-Compliance-Fix — 22 of 24 audit findings resolved at component-source / token level. 27 files modified, 1 NEW (`apps/tools-app/components/ui/StatusPill.tsx`). 5 atomic commits per cluster (fb88afd, 8fa30c9, 11539bb, 16982a8, c808061). Full `pnpm build` green. Foundation-First wins: Logo gets opt-in `interactive` prop · `--color-destructive` aliased to `var(--status-error)` (single source of truth) · canonical card-hover language unified across 8 cards (`scale(1.015)` + accent-glow + border-accent) · 8 onMouse* handlers replaced with Tailwind `hover:`/`active:` classes in form submits · 4 primary CTAs aligned to `rounded-full` · 2 button-hover-scale outliers 1.02 → 1.03. Deferred to BACKLOG: A-N04 (ChatInput stop-button glow needs new token), A-N07 (email template token-import refactor), 3 out-of-scope tools-app red-* spots discovered during execution (settings/page wrapper, auth/callback, GlobalLayout logout). Visual-smoke checkpoint auto-approved per orchestrator direction (auto-mode + Luca pre-approved scope) — Luca spot-check post-hoc on light-mode tools-app auth/settings flows.
+
+**22.8-03 DONE (2026-04-25):** Favicon-Konsolidierung — Cross-domain Favicon-Parität via Next.js App Router File Convention. Beide Apps haben byte-identische Icons (`app/icon.svg` + `app/favicon.ico` + `app/apple-icon.png`) aus `brand/logos/favicons/`. Tools-app migriert auf Convention (expliziter `metadata.icons`-Block aus `apps/tools-app/app/layout.tsx` gestrippt). Tools-app OG-Image-Wechsel `/og-image-v2.png` → `/og-image-default.png` (kopiert aus `brand/logos/og-image-default.png`). 10 legacy `public/`-Files gelöscht (5 pro App). Schema.ts deviation-fix: JSON-LD `Organization.logo` + `Article.publisher.logo` URLs umgestellt von `/og-image.jpg` (gelöscht) → `/opengraph-image` (Phase 22.6 Track B canonical dynamic OG endpoint). Build green beide Apps, alle Page-Routes weiterhin `ƒ` (dynamic — CSP-Force-Dynamic-Regel unverletzt). Cross-app `diff -q` byte-identical confirmed. Visual cross-domain check (browser tab + iOS home screen + Slack/WhatsApp link preview) deferred to Luca post-Vercel-Promotion per D-14 (no Stop-Gate). Commits: b0116d1 (Task 1 website), ef7055d (Task 2 tools-app). **Phase 22.8 Foundation-Layer COMPLETE (3/3 Plans).**
 
 **Start-Kommando (sobald 22.6 + 26-UAT + 20.6-01 durch):**
 
