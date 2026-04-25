@@ -63,6 +63,15 @@ export function Footer() {
               </li>
               <li>
                 <Link
+                  href="/events"
+                  prefetch={false}
+                  className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
+                >
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/partner"
                   prefetch={false}
                   className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
