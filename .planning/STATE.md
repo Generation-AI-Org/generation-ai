@@ -5,10 +5,10 @@ milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: planning
 last_updated: "2026-04-24T13:49:43.096Z"
 progress:
-  total_phases: 20
-  completed_phases: 13
-  total_plans: 86
-  completed_plans: 83
+  total_phases: 12
+  completed_phases: 9
+  total_plans: 92
+  completed_plans: 89
   percent: 97
 ---
 
@@ -21,19 +21,20 @@ progress:
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 26 (parallel im Worktree)
+**Phase:** 22.6 Pre-Launch Polish Bundle (next)
 **Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
 - `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
-- `develop` = Staging-Sammelbranch (Stand: + Phase 25 ✅ gemerged 2026-04-25, commit 473edf9)
-- `feature/phase-25-circle-api-sync` = abgeschlossen, ready
-- `feature/phase-26-community` = aktiv im separaten Worktree `generation-ai-phase-26`
-**Last Updated:** 2026-04-25 (Phase 25 `Circle API Sync` ✅ DONE — 6 Bugs + Pivot zu Invitation-Flow + Magic-Link-SSO zu tools-app + Custom Welcome-Mail; merged → develop)
-**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, /about + /partner + /join fertig (nicht deployed). Phase 21 + 22 + 23 + 24 + 25 auf develop ready. 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
+- `develop` = Staging-Sammelbranch (Stand: + Phase 25 + Phase 26 ✅ gemerged 2026-04-25, commit 7b1a5aa). Vercel-Preview: https://website-git-develop-lucas-projects-e78962e9.vercel.app
+- `feature/phase-22.6-pre-launch-polish` = aktiv im Hauptrepo (NEU 2026-04-25)
+- `feature/phase-26-community` = abgeschlossen, im Worktree `generation-ai-phase-26` (UAT pending)
+**Last Updated:** 2026-04-25 (Phase 26 `/community` ✅ DONE + merged → develop, drive-by tools-app Logo-Fix; Phasen 22.5 + 22.7 zu 22.6 Bundle konsolidiert)
+**Site Status:** ✅ Live auf generation-ai.org (alter Stand). Develop-Preview hat alles bisher Gebaute (Phase 21–26). Phase 26 UAT noch offen (`pending-luca`). 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** 22.5 /events-page (MDX-Pipeline, members-only gated, Anmelde-Flow) oder 22.7 Tools-Subdomain-Polish — Luca entscheidet Reihenfolge.
-**First command:** `/gsd-plan-phase 22.5` oder `/gsd-plan-phase 22.7` (beide haben CONTEXT.md bereits)
+**Next phase:** 22.6 Pre-Launch Polish Bundle (Track A `/events` + Track B tools-app Polish, konsolidiert aus 22.5+22.7)
+**First command:** `/gsd-discuss-phase 22.6 --chain` (auf branch `feature/phase-22.6-pre-launch-polish`)
+**Working dir:** `/Users/lucaschweigmann/projects/generation-ai` (Hauptrepo, branch ist hier ausgecheckt)
 
 **Context für neue Session:**
 
@@ -44,11 +45,13 @@ progress:
 - `~/Downloads/Generation_AI_Website_Konzept.md` — Simons Konzept (April 2026) — strategische Quelle für alle Scope-Entscheidungen
 - Dev-Server: `pnpm --filter @genai/website dev` (auf localhost:3000 oder :3001)
 
-**Revidierte Roadmap-Reihenfolge (Pfad A):**
+**Revidierte Roadmap-Reihenfolge (ab 2026-04-25):**
 
 ```
-20.6 → 21 /about → 22 /partner (4-Tab) → 23 /join → 22.7 tools-polish → 22.5 /events → 24 /test → 25 circle-sync → 26 /community → 27 copy-pass → LAUNCH
+✅ 20.6 → ✅ 21 /about → ✅ 22 /partner → ✅ 23 /join → ✅ 24 /test → ✅ 25 circle-sync → ✅ 26 /community → 🚧 22.6 [Track A /events + Track B tools-polish] → ⏳ 27 copy-pass → LAUNCH
 ```
+
+**22.6 Konsolidierung:** Phasen 22.5 (Events) + 22.7 (Tools-Polish) am 2026-04-25 zusammengelegt — verschiedene Apps, kein Konflikt-Risiko, ein Discuss/Plan/Execute-Cycle. Logo-Link-Fix war Drive-by im Phase-26-Merge bereits done.
 
 **Phase-CONTEXTs (alle 2026-04-23 auf Simons Konzept + Handout-Reality aligned):**
 

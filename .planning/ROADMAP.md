@@ -5,7 +5,7 @@
 - ✅ **v1.0 Monorepo Migration** — shipped 2026-04-14
 - ✅ **v2.0 Production Hardening** — shipped 2026-04-17 (Release v4.1.0)
 - ✅ **v3.0 UX Polish & Feature Expansion** — shipped 2026-04-19 (Releases v4.2.0, v4.3.0, v4.3.x, v4.4.0) — Phases 14-19
-- 🚧 **v4.0 Website Conversion-Layer & Onboarding-Funnel** — Phases 20-26 (planning)
+- 🚧 **v4.0 Website Conversion-Layer & Onboarding-Funnel** — Phases 20-27 (in progress, Phase 26 ✅ 2026-04-25)
 
 ---
 
@@ -514,46 +514,33 @@ Plans:
 
 ## Milestone v4.0: Website Conversion-Layer & Onboarding-Funnel (2026-04-19+)
 
-**Status 2026-04-23:** Roadmap revidiert nach Simons Website-Konzept (April 2026). Phasen 22, 22.5, 22.7, 26, 27 neu bzw. erweitert. Siehe CONTEXT-Dokumente pro Phase für Detail-Scope.
+**Status 2026-04-25:** Phase 26 ✅. Phasen 22.5 + 22.7 zu **Phase 22.6 Pre-Launch Polish Bundle** konsolidiert (verschiedene Apps → kein Konflikt-Risiko, ein Discuss/Plan/Execute-Cycle). Letzter Schritt: Phase 27 Copy-Pass + Launch.
 
 | Phase | Name | Status | Scope-Kern |
 |-------|------|--------|------------|
 | 20 | Navigation + Landing-Skeleton | ✅ complete 2026-04-21 | 6/6 plans, Skeleton + Nav + 8 Sections |
 | 20.5 | Landing Wow-Pass (Signal-Grid) | ✅ closed at Hero 2026-04-22 | Hero signed-off, 20.5-04+05 deferred → 20.6 |
-| 20.6 | 9/9 | Complete    | 2026-04-23 |
-| 21 | 8/8 | Complete   | 2026-04-23 |
-| 22 | 8/8 | Complete    | 2026-04-24 |
-| 22.5 | `/events`-Seite | 🆕 neu | MDX-Pipeline, members-only gated, Hero + Kommende + Formate + Archiv + CTA |
-| 22.7 | Tools-Subdomain Polish | 🆕 neu | Logo-Link-Fix, Login-Button-Umbau (Registrieren + Einloggen), Hero, Nav-Sync |
-| 23 | 6/6 | Complete    | 2026-04-24 |
-| 24 | 9/9 | Complete   | 2026-04-24 |
-| 25 | 9/9 | Complete    | 2026-04-24 |
-| 26 | `/community` + Subdomain-Integration | ⏳ erweitert | Eigene Seite mit MDX-Artikeln + SEO (/community/artikel/[slug]) + Featured-Tools-API |
-| 27 | Copy-Pass & Launch-Cleanup | 🆕 neu | Finales Wording, Dummy-Data raus, Meta/SEO-Pass, Signup-Go-Entscheidung |
+| 20.6 | Landing Sections Rebuild | ✅ complete 2026-04-23 | 9/9 plans |
+| 21 | `/about` | ✅ complete 2026-04-23 | 8/8 plans |
+| 22 | `/partner` (4-Tab) | ✅ complete 2026-04-24 | 8/8 plans |
+| 23 | `/join` Waitlist | ✅ complete 2026-04-24 | 6/6 plans |
+| 24 | `/test` Assessment | ✅ complete 2026-04-24 | 9/9 plans |
+| 25 | Circle-API-Sync | ✅ complete 2026-04-25 | 9/9 plans (6 bugs + pivot) |
+| 26 | `/community` + Featured-Tools-API | ✅ complete 2026-04-25 | 6/6 plans, merged to develop |
+| 22.6 | Pre-Launch Polish Bundle | 🚧 next | Track A: `/events` MDX-Pipeline + Members-Only-Gate. Track B: tools-app Login-Button-Umbau + Hero + Nav-Sync (Logo-Fix bereits done) |
+| 27 | Copy-Pass & Launch-Cleanup | ⏳ pending | Finales Wording, Dummy-Data raus, Meta/SEO-Pass, Signup-Go-Entscheidung |
 
 **Dependencies:**
-- Phase 20 / 20.5 / 20.6 müssen durch — sonst Nav + DS-Baseline nicht stabil
-- Phase 21 (`/about`) blockt Phase 22 + 26 (Transparenz-Link auf `/about#verein`, FAQ-Deep-Link von Landing-Kurz-FAQ)
-- Phase 22.7 (Tools-Polish) depends on Phase 23 (`/join` muss als Redirect-Target existieren für „Kostenlos registrieren")
-- Phase 22.5 (`/events`) depends on Phase 23 (Signup-Gate) für Non-Member-Anmelde-Flow
-- Phase 25 (Circle-Sync) aktiviert Live-Signup-Tech (Gate bleibt zu bis Phase 27)
-- Phase 26 (`/community`) kann parallel zu 23/24/25 starten (MDX-Content ist unabhängig); Block B (API-Integration) wartet auf Phase 25
+- Phase 20 / 20.5 / 20.6 ✅ — Nav + DS-Baseline stabil
+- Phase 22.6 Track A (Events) depends on Phase 23 (Signup-Gate) ✅ + Phase 26 (MDX-Pipeline-Pattern als Vorlage) ✅
+- Phase 22.6 Track B (Tools-Polish) depends on Phase 23 ✅ (`/join` als Redirect-Target) und Track A (Events-Route als gültiges Nav-Link-Target)
 - Phase 27 (Copy-Pass) ist die letzte — alles andere muss durch sein
 
-**Empfohlene Reihenfolge (Pfad A — B2B-Conversion priorisiert):**
+**Reihenfolge ab 2026-04-25:**
 
 ```
-20.6 → 21 /about → 22 /partner → 23 /join → 22.7 tools-polish → 22.5 /events → 24 /test → 25 circle-sync → 26 /community → 27 copy-pass → LAUNCH
+[Phase 22.6 Track A Events] → [Phase 22.6 Track B Tools-Polish] → [Phase 27 Copy-Pass] → LAUNCH
 ```
-
-Rationale:
-- Partner-Seite früh, weil B2B-Leads für Vereinsarbeit wichtig (Spenden, Hochschul-Deals)
-- `/join` muss vor 22.7 und 22.5, weil beide `/join` als Redirect-Target brauchen
-- Tools-Polish vor Events, weil kleiner Scope (schnell done, Sichtbarer UX-Win)
-- `/test` spät, weil Placeholder-Content OK und optional
-- Circle-Sync nach allen UI-Seiten, weil aktiviert echte Live-Pipeline
-- `/community` kann auch früher eingeschoben werden, wenn Content-Pipeline gewünscht
-- Copy-Pass ganz am Ende
 
 **Design-System Source of Truth (ab 2026-04-21):** `brand/Generation AI Design System/` ist canonical für alle UI-Arbeiten ab Phase 20.5. CSS-Variablen aus `colors_and_type.css`, Typografie per DS-Spec (Geist Sans für Body, Geist Mono für Display/H1/Buttons/Labels/Tags), Motion-Easings aus DS (`--ease-out: cubic-bezier(0.16, 1, 0.3, 1)`, `--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1)`, `--dur-fast|normal|slow`). Kein Gradient-Spam, kein Glassmorphism, keine Stock-Fotos, kein dekorativer Blob. Connection-Motif durchgezogen — Signal-Grid im Hero, Linien+Knoten+roter Faden als Leitsignatur.
 
