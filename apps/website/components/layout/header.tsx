@@ -31,9 +31,10 @@ const navLinks = [
 ] as const
 
 const partnerSubItems = [
-  { label: "Unternehmen", href: "/partner#unternehmen" },
-  { label: "Stiftungen", href: "/partner#stiftungen" },
-  { label: "Hochschulen", href: "/partner#hochschulen" },
+  { label: "Unternehmen", href: "/partner?typ=unternehmen" },
+  { label: "Stiftungen", href: "/partner?typ=stiftungen" },
+  { label: "Hochschulen", href: "/partner?typ=hochschulen" },
+  { label: "Initiativen", href: "/partner?typ=initiativen" },
 ] as const
 
 const aboutLink = { label: "Über uns", href: "/about" } as const

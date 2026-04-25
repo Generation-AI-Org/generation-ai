@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import createMDX from '@next/mdx'
 
 // CSP moved to proxy.ts (Phase 13) — nonce-based via Next.js 16 Middleware Pattern
 
@@ -37,6 +38,9 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_COOKIE_DOMAIN: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || '',
   },
 
+  // Allow .mdx as a page extension (Phase 24 — level-profile MDX rendering)
+  pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
+
   async headers() {
     return [
       {
@@ -48,4 +52,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [],
+    rehypePlugins: [],
+  },
+})
+
+export default withMDX(nextConfig);

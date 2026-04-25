@@ -2,7 +2,7 @@ import React from 'react'
 
 export interface EmailButtonProps {
   href: string
-  slug: 'confirm-signup' | 'magic-link' | 'recovery' | 'email-change' | 'invite'
+  slug: 'confirm-signup' | 'magic-link' | 'recovery' | 'email-change' | 'invite' | 'tools-link'
   children: string
 }
 

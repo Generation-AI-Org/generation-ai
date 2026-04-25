@@ -1,26 +1,42 @@
-import { Heading, Section, Text } from '@react-email/components'
+import { Heading, Link, Section, Text } from '@react-email/components'
 import React from 'react'
-import { EmailButton, Layout, tokens } from '../index'
+import { Layout, tokens } from '../index'
 import { fontStack } from '../tokens'
 
 export interface ConfirmSignupEmailProps {
   name?: string
+  /**
+   * Per-user Supabase magic-link URL pointing at tools-app's /auth/confirm.
+   * When supplied, the "Zu den KI-Tools" CTA auto-logs the user into
+   * tools.generation-ai.org via verifyOtp + cross-subdomain Supabase cookie.
+   * Falls back to the bare tools URL (login required) if generation failed.
+   */
+  toolsLoginUrl?: string
+  /**
+   * @deprecated Phase 25 — wir senden keinen eigenen Confirm-Link mehr.
+   * Email wird via Circle's Set-Password-Mail validiert; unsere Welcome-Mail
+   * hat nur Brand-Inhalt und einen Link zu tools. Prop bleibt nur für
+   * abwärtskompatible Caller (z.B. admin-resend-Tools).
+   */
   confirmationUrl?: string
 }
 
 /**
- * Confirm Signup email template.
+ * Welcome-Mail (Phase 25 onwards).
  *
- * Subject (set in Supabase Dashboard): "Willkommen bei Generation AI 👋"
- * Supabase template variables are embedded as default prop values so that
- * render(...) produces HTML with Go-template syntax intact for Dashboard import.
+ * Sent by signup-action right after the user signs up. Brand + onboarding
+ * context, no action button — the action lives in Circle's separate
+ * "Set Password" mail that arrives in parallel.
  */
 export default function ConfirmSignupEmail({
-  name = '{{ .Data.full_name }}',
-  confirmationUrl = '{{ .ConfirmationURL }}',
+  name = 'da',
+  toolsLoginUrl,
 }: ConfirmSignupEmailProps): React.ReactElement {
+  // Auto-login fallback: if magic-link generation failed in signup-action,
+  // ship the bare URL so the mail still works (user just has to log in).
+  const toolsHref = toolsLoginUrl ?? 'https://tools.generation-ai.org'
   return (
-    <Layout preview="Schön dass du da bist. Hier geht's weiter.">
+    <Layout preview="Willkommen bei Generation AI — die Community-Mail kommt gleich.">
       <Heading
         className="email-heading"
         style={{
@@ -52,26 +68,109 @@ export default function ConfirmSignupEmail({
           fontSize: '16px',
           lineHeight: 1.65,
           color: tokens.light.text,
-          margin: '0 0 32px 0',
+          margin: '0 0 16px 0',
         }}
       >
-        Bestätige kurz deine Mail-Adresse, dann geht's los.
+        <strong>Was als Nächstes passiert:</strong>
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 16px 0',
+        }}
+      >
+        Du bekommst gleich eine zweite Mail von <strong>Circle</strong> (unser
+        Community-Host). Klick da auf <em>„Accept invitation"</em>, setz dir ein
+        Passwort und einen Namen — dann bist du direkt in der Community drin und
+        kannst loslegen.
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '24px 0 16px 0',
+        }}
+      >
+        <strong>Was du jetzt schon nutzen kannst:</strong>
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 16px 0',
+        }}
+      >
+        Als Member hast du <strong>exklusiven Zugriff auf den Pro-Assistenten</strong> —
+        unseren KI-Assistenten mit Web-Suche und Spezial-Tools. Damit
+        strukturierst du Hausarbeiten, recherchierst Quellen und lässt dir
+        komplexe Konzepte in Sekunden verständlich erklären.
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 16px 0',
+        }}
+      >
+        Plus: die komplette <strong>KI-Tool-Bibliothek</strong> mit Member-Tipps
+        zu ChatGPT, Claude, Cursor &amp; Co. — kuratiert für dein Studium.
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 24px 0',
+        }}
+      >
+        Ein Klick und du bist drin:
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
-        <EmailButton slug="confirm-signup" href={confirmationUrl}>E-Mail bestätigen</EmailButton>
+        <Link
+          href={toolsHref}
+          style={{
+            display: 'inline-block',
+            padding: '14px 32px',
+            backgroundColor: tokens.light.text,
+            color: tokens.light.bg,
+            fontFamily: fontStack.mono,
+            fontSize: '15px',
+            fontWeight: 700,
+            textDecoration: 'none',
+            borderRadius: '999px',
+            letterSpacing: '0.02em',
+          }}
+        >
+          Zu den KI-Tools →
+        </Link>
       </Section>
 
       <Text
         className="email-muted"
         style={{
-          fontSize: '14px',
+          fontSize: '13px',
           lineHeight: 1.55,
           color: tokens.light.textMuted,
           margin: '24px 0 0 0',
         }}
       >
-        Falls du dich nicht angemeldet hast, ignorier die Mail einfach.
+        Falls du dich nicht angemeldet hast, ignorier diese Mail einfach.
       </Text>
     </Layout>
   )

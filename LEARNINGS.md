@@ -4,6 +4,79 @@ Harte Lektionen aus Prod-Incidents. **Vor jeder Änderung an den hier genannten 
 
 ---
 
+## 2026-04-25 — Phase 25 Circle-API: Plan-B-Best-Guesses haben dreimal getroffen
+
+In Phase 25 (Circle API integration) wurden mehrere Endpoints + Payload-Shapes als
+"best guess" implementiert ohne Live-Verifikation gegen Circle. Drei davon waren
+falsch — die ersten beiden Bugs blieben tagelang unsichtbar weil sie sich
+gegenseitig kaschierten, der dritte erst nach Fix der ersten beiden sichtbar:
+
+| Bug | Wo | Plan-B-Annahme | Realität |
+|---|---|---|---|
+| #1 | `addMemberToSpace` | Body `{space_id, community_member_id}` | Body `{space_id, email}` (resolved by email) |
+| #2 | `generateSsoUrl` | `POST /api/admin/v2/headless_auth_tokens` | `POST /api/v1/headless/auth_token` + separater Token-Type |
+| #5 | `getMemberByEmail` | `GET /community_members?email=` | `GET /community_members/search?email=` (Plain-Endpoint ignoriert Filter silently) |
+| #6 | `createMember` | Response `{id, …}` direkt | Response `{message, community_member: {id, …}}` (gewrappt) |
+
+Bug #5 war der gefährlichste — ein DSGVO-Vorfall: weil das Plain-Endpoint die
+unfilterte Liste returned und Code `.records[0]` nahm, bekam JEDER neue Signup
+denselben (falschen) `circle_member_id` zugewiesen → Headless-SSO-Token wurde
+für den falschen Member gemintet → User loggte sich als jemand anders in Circle ein.
+
+Bug #6 versteckte sich hinter Bug #5: solange #5 broken war, wurde der echte
+POST `/community_members` nie ausgeführt (Idempotenz-Check returned die falsche
+"existing"-ID) — also fiel niemandem auf, dass der Code die Response falsch
+parsed. Erst nach Bug-#5-Fix wurde Bug #6 sichtbar.
+
+**Vorheriger Stand vor Bug #5 — Cross-User-Login:**
+Nach `/auth/confirm` landete der neue Signup-User mit `+p25-test3@gmail.com` als
+**Bastian Gedon** in Circle eingeloggt. Reproducierbar bei allen Phase-25-Test-
+Signups (test1, test2, test3 — alle hatten in Supabase
+`user_metadata.circle_member_id = "80552151"` (Bastians ID) gespeichert).
+
+**Symptom:** Nach `/auth/confirm` landete der neue Signup-User mit `+p25-test3@gmail.com` als **Bastian Gedon** in Circle eingeloggt. Reproducierbar bei allen Phase-25-Test-Signups (test1, test2, test3 — alle hatten in Supabase `user_metadata.circle_member_id = "80552151"` (Bastians ID) gespeichert).
+
+**Root Cause — `getMemberByEmail` in `packages/circle/src/client.ts` nutzte das falsche Endpoint:**
+
+Der ursprüngliche Code (Plan-B aus Phase-25-Planung, explizit als "best guess" markiert):
+```ts
+GET /community_members?email=<X>&community_id=<Y>
+```
+
+**Circle's Admin v2 ignoriert den `email` Query-Parameter auf der `/community_members`-Collection-Endpoint stillschweigend** und liefert die unfilterte Member-Liste. Der Code nahm `.records[0]` — also den ersten Member der Community — und gab dessen ID als "gefundener Member" zurück. Dann griff `createMember`'s Idempotenz-Check (`if (existing) return alreadyExists:true`) und verhinderte die echte `POST /community_members`. → Jeder Signup bekam denselben (falschen) `circle_member_id` ins Supabase-`user_metadata`. Beim Confirm-Click holte `generateSsoUrl(circle_member_id)` einen Headless-Auth-JWT für den FALSCHEN User → seamless-Login als fremder Account.
+
+**Fix (Commit `<hash>`):**
+- `packages/circle/src/client.ts` — Endpoint umgestellt auf `GET /community_members/search?email=<X>` (das einzige Admin-v2-Endpoint das tatsächlich nach Email filtert: 200+single-object bei Match, 404 bei Miss).
+- Tests in `packages/circle/src/__tests__/client.test.ts` — Regression-Guard: Test asserted explizit dass der URL `/community_members/search` enthält UND **nicht** das unfilterte `/community_members?` (sonst kommt der Bug zurück).
+
+**Warum nicht erkannt:**
+- Plan-B-Endpoints wurden als "best guess" geshipped ohne Live-Probe gegen Circle. Circle's API hat keine Validation — der Server ignoriert unbekannte Query-Params silently statt 400 zurückzugeben.
+- Phase-25-Tests vorher schienen "voll durch bis Login" zu laufen — weil `generateSsoUrl` zu der Zeit noch broken war (Bug #2) und der Fallback-Pfad griff. Erst NACH dem `generateSsoUrl`-Fix wurde der Cross-User-Login sichtbar.
+- Lokale Tests mockten `fetch` mit dem erwarteten Single-Object-Shape, ohne den echten Server-Roundtrip zu prüfen.
+- Bug #6 versteckte sich vollständig hinter Bug #5: weil getMemberByEmail immer einen falschen "existing" Member zurückgab, wurde der echte POST nie ausgeführt — und ohne POST-Roundtrip war der Response-Shape-Bug nie sichtbar. Erst nach Bug-#5-Fix kam der echte POST raus → "undefined" landete in Supabase.
+
+**Zusatz-Discovery beim Bug-#6-Fix (2026-04-25):**
+`POST /community_members` akzeptiert in einem Call drei Params die wir vorher in 2 Calls aufgeteilt hatten:
+- `skip_invitation: true` — unterdrückt Circle's eigene Invitation-Mail (wir senden unsere eigene via Resend)
+- `space_ids: [<int>]` — fügt Member atomar zu Spaces hinzu, kein separater addMemberToSpace nötig
+- `password: <random>` — required by Circle, aber für Headless-only Members irrelevant (Login läuft via SSO)
+
+Resultat: signup.ts macht jetzt 1 Circle-API-Call statt 2, und der User bekommt nur EINE Mail (von uns) statt 2 (uns + Circle).
+
+---
+
+## Regeln für zukünftige Arbeit an Circle-API (oder vergleichbaren externen APIs)
+
+**Vor jeder neuen Circle-API-Funktion:**
+
+1. **Niemals "best guess"-Endpoints shippen.** Wenn die Doku unklar ist oder Plan-B markiert "exact endpoint may be X or Y" — STOPPEN, vor Code-Commit live probieren (Circle-MCP, curl, oder Postman).
+2. **Live-Probe gegen den ECHTEN Server, nicht gegen Mocks.** Mocks bestätigen nur dass der Code mit dem erwarteten Response-Shape klarkommt — sie sagen NICHTS darüber aus ob der Server tatsächlich diese Response liefert oder eine andere (z.B. unfilterte Liste statt 404).
+3. **Bei "Lookup by Field"-Operations: Negativ-Test mit non-existent Wert.** Wenn Lookup mit `email=does-not-exist` 200 statt 404 liefert → Filter wird ignoriert → ALLES rote Flagge.
+4. **Cross-User-Identity ist DSGVO.** Jede Funktion die Identitäten zuordnet (Email → Member-ID, Token → User, Session → Account) muss in Tests mit mehreren echten Identitäten geprüft werden, nicht nur Single-User-Happy-Path.
+5. **Idempotenz-Checks sind gefährlich wenn die Lookup-Quelle broken ist.** `if (existing) return alreadyExists` schluckt den Bug — der echte `createMember`-POST wird nie getriggert, der Fehler bleibt unsichtbar bis der "existing" User in einem anderen Kontext (SSO, Posts) auftaucht.
+
+---
+
 ## 2026-04-18 — Website komplett schwarz durch CSP + static prerendering
 
 **Symptom:** `generation-ai.org` lieferte HTTP 200, aber die Seite war komplett schwarz. Browser-Console: 16 Errors — alle `<script>`-Chunks von Next.js durch CSP geblockt ("violates Content Security Policy directive").

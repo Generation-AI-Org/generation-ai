@@ -1,7 +1,26 @@
 'use client'
 
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import { motion, useReducedMotion } from "motion/react"
+
+// Offering-Section (Simon §4.5 "Drei Säulen") — DS-polished.
+//
+// Struktur:
+//   1. Section-Header mit Eyebrow "// was wir bauen" + H2 + Lede
+//   2. 3-Card-Grid (Community · Wissensplattform · Events), Card-Content:
+//      - Header: Nummer-Marker + Subdomain-URL
+//      - Title (Mono, 22px, bold) + Body (Sans, 15px, secondary)
+//      - Preview-Visualisierung (mini bento)
+//      - CTA-Row mit Arrow-Translate
+//
+// DS-Alignment:
+//   - Entry-Motion via motion/react (fadeIn, viewport once), reduced-motion Fallback
+//   - Easings + Durations via CSS-Tokens (--ease-out, --dur-normal) über inline styles
+//   - Keyboard-Fokus: Link-Wrapper mit focus-visible:outline, Neutral-Ring (DS §C)
+//   - Hover: card lift + glow (DS §C Interaction-States), Preview lebt subtil mit
+//   - Tokens only: --accent, --text*, --border*, --bg-card, --bg-elevated, --accent-glow,
+//     --accent-soft, --brand-blue, --brand-pink. Keine stray Hex-Werte.
+//   - Theme-aware: alles über CSS-Vars, light + dark werden automatisch mitgezogen.
 
 type Surface = {
   num: string
@@ -20,7 +39,7 @@ const surfaces: Surface[] = [
     url: "community.generation-ai.org",
     title: "Community",
     description:
-      "Circle-Community mit Peer-Learning, Austausch und Sparring. Der Ort für Diskussionen und den direkten Draht zu anderen Studis.",
+      "Peer-Learning, Austausch und Sparring — der Ort für Diskussionen und den direkten Draht zu anderen Studis.",
     cta: "Zur Community",
     href: "https://community.generation-ai.org",
     external: true,
@@ -31,7 +50,7 @@ const surfaces: Surface[] = [
     url: "tools.generation-ai.org",
     title: "Wissensplattform",
     description:
-      "Kuratierte KI-Tools mit Anleitungen, sortiert nach Anwendungsfall. Agent-Chat für Fragen zur Nutzung.",
+      "Über 100 KI-Tools, kuratiert nach Anwendungsfall. Mit Anleitungen und Agent-Chat für deine Fragen.",
     cta: "Tools entdecken",
     href: "https://tools.generation-ai.org",
     external: true,
@@ -42,7 +61,7 @@ const surfaces: Surface[] = [
     url: "generation-ai.org/events",
     title: "Events & Workshops",
     description:
-      "Monatliche Hands-on-Sessions zu Prompting, Automatisierung und Tools. Masterclasses mit Praktiker:innen.",
+      "Monatliche Hands-on-Sessions zu Prompting, Automatisierung und Agenten. Masterclasses mit Praktiker:innen.",
     cta: "Alle Events",
     href: "/events",
     external: false,
@@ -51,15 +70,30 @@ const surfaces: Surface[] = [
 ]
 
 export function OfferingSection() {
+  const prefersReducedMotion = useReducedMotion()
+
+  const fadeIn = prefersReducedMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 16 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: "-10% 0px" },
+        transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
+      }
+
   return (
     <section
       aria-labelledby="offering-heading"
       data-section="offering"
-      className="bg-bg py-24 sm:py-32 border-b border-border"
+      className="bg-bg py-24 sm:py-32"
     >
       <div className="mx-auto max-w-6xl px-6">
-        <div className="text-center mb-16 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted mb-4">
+        {/* Section-Header */}
+        <motion.div
+          {...fadeIn}
+          className="mx-auto mb-16 max-w-2xl text-center"
+        >
+          <div className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
             <span
               aria-hidden="true"
               className="h-1.5 w-1.5 rounded-full"
@@ -72,20 +106,23 @@ export function OfferingSection() {
           </div>
           <h2
             id="offering-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-text text-balance"
+            className="mt-4 font-mono font-bold leading-[1.1] tracking-[-0.025em] text-text text-balance"
+            style={{ fontSize: "clamp(32px, 5vw, 52px)" }}
           >
             Drei Säulen, ein Ökosystem.
           </h2>
-          <p className="mt-4 text-lg text-text-secondary text-pretty">
-            Community, Wissensplattform und Events — aufeinander abgestimmt, unabhängig nutzbar.
+          <p className="mt-5 text-lg leading-[1.5] text-text-secondary text-pretty sm:text-xl">
+            Community, Wissensplattform und Events — aufeinander abgestimmt,
+            unabhängig nutzbar.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid gap-5 md:grid-cols-3">
+        {/* 3-Card-Grid */}
+        <motion.div {...fadeIn} className="grid gap-5 md:grid-cols-3">
           {surfaces.map((s) => (
             <SurfaceCard key={s.title} surface={s} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )
@@ -93,9 +130,18 @@ export function OfferingSection() {
 
 function SurfaceCard({ surface }: { surface: Surface }) {
   const content = (
-    <article className="group flex h-full min-h-[420px] flex-col overflow-hidden rounded-[20px] border border-border bg-bg-card p-7 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-[3px] hover:border-[var(--border-accent)] hover:shadow-[0_0_32px_var(--accent-glow)]">
+    <article
+      className="group relative flex h-full min-h-[420px] flex-col overflow-hidden rounded-[20px] border border-border bg-bg-card p-7 transition-all hover:-translate-y-[3px] hover:border-[var(--border-accent)] hover:shadow-[0_0_32px_var(--accent-glow)] motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+      style={{
+        transitionDuration: "var(--dur-normal)",
+        transitionTimingFunction: "var(--ease-out)",
+      }}
+    >
       <header className="mb-5 flex items-start justify-between gap-2">
-        <span className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--accent)]">
+        <span
+          className="font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          style={{ color: "var(--accent)" }}
+        >
           {surface.num}
         </span>
         <span className="font-mono text-[11px] tracking-[0.04em] text-text-muted">
@@ -103,26 +149,52 @@ function SurfaceCard({ surface }: { surface: Surface }) {
         </span>
       </header>
 
-      <h3 className="font-mono text-[22px] font-bold leading-tight tracking-[-0.01em] text-text">
+      <h3 className="font-mono text-[22px] font-bold leading-[1.2] tracking-[-0.01em] text-text">
         {surface.title}
       </h3>
       <p className="mt-3 text-[15px] leading-[1.55] text-text-secondary">
         {surface.description}
       </p>
 
-      <div className="relative mt-6 flex-1 overflow-hidden rounded-xl border border-border bg-bg">
+      <div className="relative mt-6 flex-1 overflow-hidden rounded-xl border border-border bg-bg transition-colors group-hover:border-[var(--border-accent)] motion-reduce:transition-none"
+        style={{
+          transitionDuration: "var(--dur-normal)",
+          transitionTimingFunction: "var(--ease-out)",
+        }}
+      >
         {surface.preview}
       </div>
 
-      <div className="mt-5 inline-flex items-center gap-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-[var(--accent)]">
+      <div
+        className="mt-5 inline-flex items-center gap-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.08em]"
+        style={{ color: "var(--accent)" }}
+      >
         {surface.cta}
-        <ArrowRight
-          className="h-3.5 w-3.5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1"
+        <svg
           aria-hidden="true"
-        />
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none"
+          style={{
+            transitionDuration: "var(--dur-normal)",
+            transitionTimingFunction: "var(--ease-out)",
+          }}
+        >
+          <path d="M5 12h14M13 5l7 7-7 7" />
+        </svg>
       </div>
     </article>
   )
+
+  const linkClassName =
+    "block rounded-[20px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+  const linkStyle = { outlineColor: "var(--text)" } as const
 
   if (surface.external) {
     return (
@@ -130,15 +202,21 @@ function SurfaceCard({ surface }: { surface: Surface }) {
         href={surface.href}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`${surface.title} öffnen`}
-        className="block"
+        aria-label={`${surface.title} — ${surface.url} öffnen`}
+        className={linkClassName}
+        style={linkStyle}
       >
         {content}
       </a>
     )
   }
   return (
-    <Link href={surface.href} className="block" aria-label={surface.title}>
+    <Link
+      href={surface.href}
+      aria-label={surface.title}
+      className={linkClassName}
+      style={linkStyle}
+    >
       {content}
     </Link>
   )
@@ -154,9 +232,9 @@ function CommunityPreview() {
   ]
   return (
     <div className="absolute inset-3 flex flex-col gap-1.5">
-      {msgs.map((m, i) => (
+      {msgs.map((m) => (
         <div
-          key={i}
+          key={m.text}
           className="flex items-start gap-1.5 rounded-lg bg-bg-elevated px-2 py-1.5 text-[10px] leading-snug text-text-secondary"
         >
           <span
@@ -182,14 +260,10 @@ function ToolsPreview() {
   ]
   return (
     <div className="absolute inset-3 grid grid-cols-3 gap-2">
-      {tools.map((t, i) => (
+      {tools.map((t) => (
         <div
-          key={i}
-          className={
-            t.hl
-              ? "flex items-center justify-center rounded-lg border font-mono text-sm font-bold"
-              : "flex items-center justify-center rounded-lg border border-border bg-bg-elevated font-mono text-sm font-bold text-text-secondary"
-          }
+          key={t.letter}
+          className="flex items-center justify-center rounded-lg border font-mono text-sm font-bold"
           style={
             t.hl
               ? {
@@ -198,7 +272,11 @@ function ToolsPreview() {
                   boxShadow: "0 0 12px var(--accent-glow)",
                   background: "var(--bg-elevated)",
                 }
-              : undefined
+              : {
+                  borderColor: "var(--border)",
+                  color: "var(--text-secondary)",
+                  background: "var(--bg-elevated)",
+                }
           }
         >
           {t.letter}
@@ -216,9 +294,9 @@ function EventsPreview() {
   ]
   return (
     <div className="absolute inset-3 flex flex-col gap-1.5">
-      {events.map((e, i) => (
+      {events.map((e) => (
         <div
-          key={i}
+          key={`${e.day}-${e.month}`}
           className="flex items-center gap-2 rounded-lg bg-bg-elevated px-2 py-1.5"
         >
           <div

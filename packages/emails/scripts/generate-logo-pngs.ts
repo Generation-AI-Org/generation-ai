@@ -146,6 +146,7 @@ const BUTTONS: Array<{ slug: string; label: string }> = [
   { slug: 'recovery', label: 'Passwort zurücksetzen' },
   { slug: 'email-change', label: 'Änderung bestätigen' },
   { slug: 'invite', label: 'Account anlegen' },
+  { slug: 'tools-link', label: 'Zu den KI-Tools' },
 ]
 
 async function run() {
