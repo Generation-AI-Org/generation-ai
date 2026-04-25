@@ -1,7 +1,7 @@
 "use client";
 
-// Phase 22.6 Plan 03 Task 2 — EventCard.
-// Placeholder modal trigger — Plan 04 wires the real modal + auth flow.
+// Phase 22.6 Plan 04 Task 2 — EventCard (updated from Plan 03).
+// Card click now calls onOpenModal (required) to open the EventModal with full event details.
 // Decision A-12: When imageUrl is missing, uses brand-pattern gradient fallback (no stock photos).
 // BeispielBadge rendered top-right when frontmatter.example === true (Decision A-10).
 
@@ -11,8 +11,8 @@ import { BeispielBadge } from "@/components/ui/beispiel-badge";
 
 interface EventCardProps {
   event: EventEntry;
-  // onOpenModal optional — Plan 04 wires this. Until then, click is a placeholder.
-  onOpenModal?: (event: EventEntry) => void;
+  // Plan 04 wires the real modal + auth flow — onOpenModal is now required.
+  onOpenModal: (event: EventEntry) => void;
 }
 
 function formatDate(iso: string): string {
@@ -30,8 +30,7 @@ export function EventCard({ event, onOpenModal }: EventCardProps) {
   const fm = event.frontmatter;
 
   const handleClick = () => {
-    if (onOpenModal) onOpenModal(event);
-    // If no handler provided (Plan 03), no-op. Plan 04 wires the real modal.
+    onOpenModal(event);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -112,7 +111,7 @@ export function EventCard({ event, onOpenModal }: EventCardProps) {
           </span>
         </div>
 
-        {/* CTA button — placeholder until Plan 04 wires modal + auth flow */}
+        {/* CTA button — opens modal (Plan 04 wired) */}
         <button
           type="button"
           onClick={(e) => {
