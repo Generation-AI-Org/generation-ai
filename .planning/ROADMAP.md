@@ -921,7 +921,7 @@ Page-Level (depends-on Foundation):
 - `/test` als öffentlicher Conversion-Hebel (Auth-Gate weg, sessionStorage, Migration nach Anmeldung)
 - Theme-Toggle Konsistenz Website ↔ tools-app (Microanimations angleichen)
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans executed (Foundation Track A complete; Page-Layer plans not yet enumerated — see CONTEXT.md)
 
 **Success Criteria:**
 - [ ] DS-Audit-Report committed mit Decision-Tabelle, must+should Findings gefixt

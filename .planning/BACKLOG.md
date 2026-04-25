@@ -190,3 +190,12 @@ Aus `22.6-REVIEW.md` (4 Warnings · 6 Info, 0 Critical). Pre-launch nicht blocki
 
 - [x] **Footer /events Polish** — drive-by commit `a28821b` auf develop, Header bleibt D-18-locked.
 - [ ] **Lokal Branch löschen:** `git branch -d feature/phase-22.6-pre-launch-polish` — ist auf develop gemerged, kann lokal weg (remote auch wenn UAT Item 6 durch ist).
+
+### 🎨 Phase 22.8 — Deferred Items
+
+- [ ] **A-N04: ChatInput stop-button glow needs new --status-error-glow token** — `apps/tools-app/components/chat/ChatInput.tsx:86` uses `bg-red-500/80 hover:bg-red-500 hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]`. Plan 22.8-02 constraint: no new tokens. Defer until DS-token expansion plan adds `--status-error-glow` (or `--status-error/40` with rgba helper). Then swap inline.
+- [ ] **A-N07: Email template inline-CSS → packages/emails/src/tokens.ts refactor** — Email templates currently inline-CSS-style status colors (correct DS-mapping by value but not by import). Refactor to centralize in a shared `tokens.ts` for the emails package. Not a compliance fix — values are already correct; this is a maintainability improvement. Phase 28+.
+- [ ] **Tools-app out-of-scope red-* (audit didn't flag, follow-up):**
+  - `apps/tools-app/app/settings/page.tsx:73-74` — Gefahrenzone wrapper still uses `text-red-400` / `border-red-500/30`. Same pattern as DeleteAccountButton (now token-mapped). Quick swap to `--status-error` recommended.
+  - `apps/tools-app/app/auth/callback/page.tsx:97, 102` — error-icon circle + error text use `bg-red-500` / `text-red-400`. Light-mode visibility risk like A-M01..M03 had.
+  - `apps/tools-app/components/layout/GlobalLayout.tsx:266-271` — logout button hover state uses `red-500/20` / `red-400`. Consistent with FilterBar logout pattern (now token-mapped). Recommend follow-up to align.

@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: planning
-last_updated: "2026-04-25T16:47:04.726Z"
+last_updated: "2026-04-25T17:15:00.000Z"
 progress:
   total_phases: 20
   completed_phases: 15
   total_plans: 103
-  completed_plans: 99
-  percent: 96
+  completed_plans: 100
+  percent: 97
 ---
 
 # Project State — Generation AI Monorepo
@@ -93,6 +93,8 @@ progress:
 **22.8-01 DONE (2026-04-25):** DS-Compliance-Audit produced — `22.8-01-AUDIT.md` mit 24 findings (6 must / 11 should / 7 nice) clustered into 7 fix-types. Read-only audit, kein Code-Change. Cluster-Empfehlungen für Plan 22.8-02: Status-Pill primitive (5 hardcoded red/green in tools-app), Danger-Zone-Button, Logo-Hover spec (Logo.tsx hat keine), Card-Hover unification (3 competing scale/translate languages — Empfehlung: scale-[1.015] canonical), Form-Submit JS-Hover removal (JoinForm + PartnerContact), --color-destructive Token-Source-Fix, rounded-md/lg → rounded-full Standardisierung. Total estimated effort für Plan 02 (must+should): ~3.5-4h. Commit `945371e` auf `feature/phase-22.8-ui-konsistenz-section-refinement`.
 
 **22.8-02 STOP-GATE (awaiting Luca):** Plan 02 ist `autonomous: false` + `status: depends-on-audit` — wurde korrekt nicht ausgeführt. Luca-Review von `22.8-01-AUDIT.md` (~10 min) entscheidet must/should/nice + offene Spec-Fragen (A-M05 Logo-Hover, A-S06/S07 Feature-Card, A-N06 Button-Scale-Variant), dann gsd-planner befüllt 02-PLAN konkrete Tasks → Execute Plan 02.
+
+**22.8-02 DONE (2026-04-25):** Token-Source + Component-Compliance-Fix — 22 of 24 audit findings resolved at component-source / token level. 27 files modified, 1 NEW (`apps/tools-app/components/ui/StatusPill.tsx`). 5 atomic commits per cluster (fb88afd, 8fa30c9, 11539bb, 16982a8, c808061). Full `pnpm build` green. Foundation-First wins: Logo gets opt-in `interactive` prop · `--color-destructive` aliased to `var(--status-error)` (single source of truth) · canonical card-hover language unified across 8 cards (`scale(1.015)` + accent-glow + border-accent) · 8 onMouse* handlers replaced with Tailwind `hover:`/`active:` classes in form submits · 4 primary CTAs aligned to `rounded-full` · 2 button-hover-scale outliers 1.02 → 1.03. Deferred to BACKLOG: A-N04 (ChatInput stop-button glow needs new token), A-N07 (email template token-import refactor), 3 out-of-scope tools-app red-* spots discovered during execution (settings/page wrapper, auth/callback, GlobalLayout logout). Visual-smoke checkpoint auto-approved per orchestrator direction (auto-mode + Luca pre-approved scope) — Luca spot-check post-hoc on light-mode tools-app auth/settings flows.
 
 **Start-Kommando (sobald 22.6 + 26-UAT + 20.6-01 durch):**
 
