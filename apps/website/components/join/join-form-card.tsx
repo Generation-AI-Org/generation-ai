@@ -455,27 +455,9 @@ export function JoinFormCard({ onSuccess }: JoinFormCardProps) {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-full px-6 py-3 font-mono font-bold text-[14px] tracking-[0.02em] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+        className="w-full rounded-full px-6 py-3 font-mono font-bold text-[14px] tracking-[0.02em] bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-[1.03] hover:shadow-[0_0_20px_var(--accent-glow)] active:scale-[0.98] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none mt-2"
         style={{
-          background: 'var(--accent)',
-          color: 'var(--text-on-accent)',
           minHeight: '44px',
-        }}
-        onMouseEnter={(e) => {
-          if (!isPending) {
-            e.currentTarget.style.boxShadow = '0 0 20px var(--accent-glow)'
-            e.currentTarget.style.transform = 'scale(1.03)'
-          }
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = ''
-          e.currentTarget.style.transform = ''
-        }}
-        onMouseDown={(e) => {
-          e.currentTarget.style.transform = 'scale(0.98)'
-        }}
-        onMouseUp={(e) => {
-          e.currentTarget.style.transform = 'scale(1.03)'
         }}
       >
         {isPending ? (
