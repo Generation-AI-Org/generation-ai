@@ -527,7 +527,7 @@ Plans:
 | 24 | `/test` Assessment | ✅ complete 2026-04-24 | 9/9 plans |
 | 25 | Circle-API-Sync | ✅ complete 2026-04-25 | 9/9 plans (6 bugs + pivot) |
 | 26 | `/community` + Featured-Tools-API | ✅ complete 2026-04-25 | 6/6 plans, merged to develop |
-| 22.6 | 7/9 | In Progress|  |
+| 22.6 | 8/9 | In Progress|  |
 | 27 | Copy-Pass & Launch-Cleanup | ⏳ pending | Finales Wording, Dummy-Data raus, Meta/SEO-Pass, Signup-Go-Entscheidung |
 
 **Dependencies:**
@@ -723,7 +723,7 @@ Plans:
 **Detailplan:** `.planning/phases/22.6-pre-launch-polish-bundle/22.6-CONTEXT.md`
 **Out-of-Scope:** Circle-API-Integration, Luma-Embed, ICS-Download (V1), Filter/Search auf /events, packages/ui-Nav-Extraktion (Phase 28+), echte Event-Fotos, Plausible-Analytics.
 
-**Plans:** 7/9 plans executed
+**Plans:** 8/9 plans executed
 
 Plans:
 - [x] 22.6-01-PLAN.md — Wave 0 Track A: Test scaffolds (events.spec.ts + events.test.ts mit fixme/todo placeholders)
@@ -733,7 +733,7 @@ Plans:
 - [x] 22.6-05-PLAN.md — Wave 4 Track A: /events/[slug] Standalone-Page + Archive-Section + Sitemap + final 2 Playwright tests fill + Lighthouse human-gate (A-req-6, A-req-8)
 - [x] 22.6-06-PLAN.md — Wave 5 Track B: Test scaffold tools-app.spec.ts mit 5 fixme placeholders
 - [x] 22.6-07-PLAN.md — Wave 6 Track B: Login-Button-Umbau in GlobalLayout.tsx (Primary Kostenlos-registrieren + Secondary Einloggen, utm_source=tools, sync-anchor comment) + 2 Playwright tests fill (B-req-1, B-req-2, B-req-5)
-- [ ] 22.6-08-PLAN.md — Wave 6 Track B: ToolsHero component + HomeLayout integration (inside scroll container, Pitfall 2) + 1 Playwright test fill (B-req-3)
+- [x] 22.6-08-PLAN.md — Wave 6 Track B: ToolsHero component + HomeLayout integration (inside scroll container, Pitfall 2) + 1 Playwright test fill (B-req-3)
 - [ ] 22.6-09-PLAN.md — Wave 7 Track B: Nav-Items Mirror (5 cross-domain links + Tools active + mobile burger) + final 2 Playwright tests fill + Lighthouse + side-by-side parity human-gate (B-req-4, B-req-5)
 
 **Success Criteria:**
