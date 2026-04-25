@@ -48,13 +48,61 @@ test.describe('tools-app polish — Track B smoke (Phase 22.6)', () => {
     await expect(hero).toContainText(/Über 100 Tools/);
   });
 
-  test.fixme('nav: alle Items sichtbar (Events, Tools active, Community, Für Partner, Über uns, CTA) (B-req-4)', async ({ page }) => {
+  test('nav: alle Items sichtbar (Events, Tools active, Community, Für Partner, Über uns) (B-req-4)', async ({ page }) => {
     await page.goto(TOOLS_URL);
-    // Filled by Plan 09: assert nav text + Tools aria-current="page"
+
+    const desktopNav = page.locator('[data-tools-nav="desktop"]');
+    await expect(desktopNav).toBeVisible();
+
+    // All 5 items present with correct text (Umlaute mandatory)
+    await expect(desktopNav.locator('[data-nav-item="events"]')).toHaveText('Events');
+    await expect(desktopNav.locator('[data-nav-item="tools"]')).toHaveText('Tools');
+    await expect(desktopNav.locator('[data-nav-item="community"]')).toHaveText('Community');
+    await expect(desktopNav.locator('[data-nav-item="partner"]')).toHaveText(/Für Partner/);
+    await expect(desktopNav.locator('[data-nav-item="about"]')).toHaveText(/Über uns/);
+
+    // Tools is the active item
+    const tools = desktopNav.locator('[data-nav-item="tools"]');
+    await expect(tools).toHaveAttribute('aria-current', 'page');
+
+    // Cross-domain hrefs hardcoded (B-05 full page-load via <a>, no SPA routing)
+    await expect(desktopNav.locator('[data-nav-item="events"]')).toHaveAttribute('href', 'https://generation-ai.org/events');
+    await expect(desktopNav.locator('[data-nav-item="community"]')).toHaveAttribute('href', 'https://generation-ai.org/community');
+    await expect(desktopNav.locator('[data-nav-item="partner"]')).toHaveAttribute('href', 'https://generation-ai.org/partner');
+    await expect(desktopNav.locator('[data-nav-item="about"]')).toHaveAttribute('href', 'https://generation-ai.org/about');
   });
 
-  test.fixme('eingeloggt: User-Menu statt CTA-Buttons sichtbar — kein Regression (B-req-5)', async ({ page }) => {
-    await page.goto(TOOLS_URL);
-    // Filled by Plan 09: log in + assert user-menu present + CTAs absent
+  test('eingeloggt: User-Menu statt CTA-Buttons sichtbar — kein Regression (B-req-5)', async ({ page }) => {
+    test.setTimeout(60_000);
+
+    // Aligned with Phase 19 + auth.spec.ts: TEST_USER_EMAIL / TEST_USER_PASSWORD via repo secrets in CI.
+    // Skips gracefully in dev environments without credentials.
+    const email = process.env.TEST_USER_EMAIL;
+    const password = process.env.TEST_USER_PASSWORD;
+
+    if (!email || !password) {
+      test.skip(true, 'TEST_USER_EMAIL + TEST_USER_PASSWORD env vars required for logged-in regression test');
+      return;
+    }
+
+    // Log in via password (mirrors auth.spec.ts loginWithPassword helper)
+    await page.goto(`${TOOLS_URL}/login`);
+    await page.getByRole('button', { name: /mit passwort anmelden/i }).click();
+    await page.locator('#email').fill(email);
+    await page.locator('#password').fill(password);
+    await page.getByRole('button', { name: /^anmelden$/i }).click();
+    await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 20_000 });
+
+    // After login, the public CTAs MUST be gone (logged-in branch active)
+    await expect(page.locator('[data-cta="primary-register"]')).toHaveCount(0);
+    await expect(page.locator('[data-cta="secondary-login"]')).toHaveCount(0);
+
+    // User-menu hallmarks from GlobalLayout's logged-in branch:
+    // Settings link (aria-label="Einstellungen") + Signout button (aria-label="Abmelden")
+    // are mobile-only (md:hidden). On default Playwright viewport (1280×720) they would
+    // be hidden. We assert COUNT > 0 (in DOM) rather than visible — this proves the
+    // logged-in branch rendered, which is what the regression check protects.
+    await expect(page.getByLabel('Einstellungen')).toHaveCount(1);
+    await expect(page.getByLabel('Abmelden')).toHaveCount(1);
   });
 });
