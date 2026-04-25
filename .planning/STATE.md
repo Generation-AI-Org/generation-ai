@@ -21,10 +21,14 @@ progress:
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 26
-**Branch:** `main` (Phase 20 Skeleton + 20.5 Hero gemerged + gepusht 2026-04-22, Vercel auto-deployed) — neue Phasen starten auf frischem Feature-Branch
-**Last Updated:** 2026-04-24 (Phase 24 `/test` AI-Literacy-Assessment ✅ DONE — 9/9 Plans, 45 Commits + Code-Review-Fix + UI-Review-Fix applied)
-**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, /about + /partner + /join fertig (nicht deployed). Phase 21 + 22 + 23 + 24 bereit für Feature-Branch + PR. 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
+**Phase:** 26 (parallel im Worktree)
+**Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
+- `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
+- `develop` = Staging-Sammelbranch (Stand: + Phase 25 ✅ gemerged 2026-04-25, commit 473edf9)
+- `feature/phase-25-circle-api-sync` = abgeschlossen, ready
+- `feature/phase-26-community` = aktiv im separaten Worktree `generation-ai-phase-26`
+**Last Updated:** 2026-04-25 (Phase 25 `Circle API Sync` ✅ DONE — 6 Bugs + Pivot zu Invitation-Flow + Magic-Link-SSO zu tools-app + Custom Welcome-Mail; merged → develop)
+**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, /about + /partner + /join fertig (nicht deployed). Phase 21 + 22 + 23 + 24 + 25 auf develop ready. 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
 
 ## 🚀 Next Session Start Here
 

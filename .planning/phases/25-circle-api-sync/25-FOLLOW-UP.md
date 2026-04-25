@@ -1,209 +1,145 @@
 ---
 phase: 25
-status: partial-complete
+status: complete
 created: 2026-04-24
+completed: 2026-04-25
 branch: feature/phase-25-circle-api-sync
+merged_to: develop (commit 473edf9)
 preview_url: https://website-git-feature-phase-25-cir-0af118-lucas-projects-e78962e9.vercel.app
 ---
 
-# Phase 25 — Follow-Up (Next Session Context)
+# Phase 25 — Circle API Sync (DONE)
 
-> Kernspec aus `25-CONTEXT.md` + `25-VERIFICATION.md`. Dieses Doc ist der Handoff nach Session-Wrap am 2026-04-24 21:45.
-
----
-
-## Summary — was live auf Preview funktioniert ✅
-
-Der Unified-Signup-Flow ist **zu 95% durch**. End-to-End auf `feature/phase-25-circle-api-sync`-Branch → Preview-Deploy:
-
-1. ✅ `/join` Form submit → Zod-validation → Rate-limit
-2. ✅ Supabase-User angelegt via `admin.createUser({email_confirm:false})`
-3. ✅ Circle-Member provisioniert via `@genai/circle.createMember` (idempotent über `getMemberByEmail`)
-4. ✅ `user_circle_links` Row + `raw_user_meta_data.circle_member_id` geschrieben
-5. ✅ Confirm-Mail via Custom-SMTP (Resend) — Template `ConfirmSignupEmail` rendert, Versand funktioniert
-6. ✅ Mail-Link Format: `<preview>/auth/confirm?token_hash=XXX&type=signup` (PKCE-Style, bypasst Supabase-verify-endpoint)
-7. ✅ Click → `/auth/confirm` → `verifyOtp({token_hash, type:'signup'})` → Session-Cookie gesetzt → User eingeloggt
-8. ✅ `email_confirmed_at` + `last_sign_in_at` werden gesetzt
-
-**Verifizierte Test-Runs (nach Wrap):**
-- `movo.fitness+p25-test1@gmail.com` — voll durch bis Login
-- `movo.fitness+p25-test2@gmail.com` — voll durch bis Login
+> Phase 25 ist **komplett funktional und auf `develop` gemerged** (nicht prod, awaiting other phases). Alle 6 entdeckten Bugs gefixed, Pivot dokumentiert, E2E auf Preview verifiziert.
 
 ---
 
-## Resolved this session ✅
+## Endstand — was funktioniert E2E
 
-### Bug #2 — Circle `generateSsoUrl` (FIXED 2026-04-25)
+1. **`/join` Form-Submit** → Zod → Rate-Limit → Supabase `admin.createUser({email_confirm:true})` → User direkt confirmed
+2. **Atomic Circle createMember** → Member angelegt (in Welcome-Space) + Circle's Set-Password-Mail wird gesendet (`skip_invitation:false`, kein Password — sonst suppressed Circle die Mail)
+3. **2 Mails kommen parallel an:**
+   - **Circle Invitation** (customized in Circle Dashboard mit Generation-AI-Branding): "Letzter Schritt: Dein Account für die Generation AI Community"
+   - **Unsere Welcome-Mail** (Resend, eigenes React-Email-Template): Brand-Header + Erklärung "Klick die Circle-Mail" + Auto-Login-Link zu tools.generation-ai.org
+4. **User klickt Circle's "Accept invitation"** → Set Name + Password → ist `active:true` Member, in Community drin
+5. **User klickt unseren "Zu den KI-Tools"-Link** → Supabase Magic-Link → tools-app `/auth/confirm` → verifyOtp → Cookie auf `.generation-ai.org` → **direkt eingeloggt auf tools.generation-ai.org** (kein Login-Screen)
 
-**Commit:** `25c5f5b` (branch `feature/phase-25-circle-api-sync`)
-
-**Root-Cause (verified live):** `generateSsoUrl` zielte auf eine erfundene API:
-1. Falscher Endpoint: `/api/admin/v2/headless_auth_tokens` existiert nicht — korrekt ist `/api/v1/headless/auth_token` (eigene API-Surface, nicht Admin v2)
-2. Falscher Token-Type: Admin-Token kann Headless-Endpoints nicht authentifizieren — Circle braucht separat geminten "Headless Auth" Token
-3. Falsches Response-Model: Circle liefert kein `sso_url`-Feld — es kommt ein JWT `access_token`, der seamless-Login-URL wird client-side komponiert: `${CIRCLE_COMMUNITY_URL}/session/cookies?access_token=<jwt>`
-
-**Fix:**
-- `packages/circle/src/client.ts` — `circleFetch` akzeptiert jetzt `tokenType: 'admin' | 'headless'`, neuer `HEADLESS_BASE_URL`, `generateSsoUrl` rewritten
-- `packages/circle/src/types.ts` — `CircleSsoToken` + `GenerateSsoInput` an reale API angepasst (drop `redirect_path` + `ttl_seconds`, beide werden vom Endpoint nicht akzeptiert)
-- `packages/circle/src/__tests__/client.test.ts` — Tests gegen neue Endpoint-URL + Response-Shape, plus CONFIG_MISSING-Test für Headless-Token
-- `apps/website/app/auth/confirm/route.ts` — Call-Site auf neue Signatur reduziert
-- `apps/website/.env.example` — `CIRCLE_HEADLESS_TOKEN=` Placeholder
-
-**Live-Verify (vor Commit):** `curl -X POST https://app.circle.so/api/v1/headless/auth_token` mit echtem Headless-Token + `community_member_id: 80552151` → HTTP 200 mit erwartetem JWT-Response. Volles Detail-Log in `.planning/debug/resolved/phase-25-circle-sso-endpoint.md`.
-
-**Vitest:** 18/18 grün. **Typecheck:** `@genai/circle` clean.
-
-**Restliche Verifikation (offen, nach Push):** Preview-Deploy E2E mit frischer Test-Alias — bestätigen dass `/auth/confirm` direkt nach Circle redirected statt `/welcome?circle=pending`.
+**Verifizierte Test-Runs:**
+- test10 → Bastian-Bug-Negativ-Test: korrekte Identität, in Community als test10 drin
+- test11/12 → Magic-Link-Auto-Login funktioniert, Welcome-Copy iteriert
 
 ---
 
-### Bug #1 — Circle `addMemberToSpace` (FIXED 2026-04-25)
+## Resolved Bugs (alle live verifiziert)
 
-**Commit:** `860302b` (branch `feature/phase-25-circle-api-sync`)
+### Bug #1 — `addMemberToSpace` 404 (commit `860302b`)
+Plan-B-Payload `{space_id:string, community_member_id}` war doppelt falsch:
+- Circle resolved Member über `email`, nicht ID
+- `space_id` muss `integer` sein, nicht String
 
-**Root-Cause (verified live via Circle MCP):** Plan-B's Payload-Annahme war doppelt falsch:
-1. Falscher Key: `community_member_id` — Circle's `POST /space_members` resolved den Member über `email`, nicht über Member-ID
-2. Falscher Type: `space_id` muss `integer` sein (per MCP-Schema), nicht der String aus `process.env.CIRCLE_DEFAULT_SPACE_ID`
+Fix: Signatur `addMemberToSpace(email, spaceId)`, Body `{space_id: Number(spaceId), email}`.
 
-**Fix:**
-- `packages/circle/src/client.ts` — `addMemberToSpace(email, spaceId)` (Signatur), Body `{space_id: Number(spaceId), email}`
-- `apps/website/app/actions/signup.ts:218` — Call-Site auf `addMemberToSpace(email, spaceId)` umgestellt
-- `packages/circle/src/__tests__/client.test.ts` — alle Tests auf Email-Argument umgestellt + neuer Test asserted exakte Wire-Payload-Shape
+### Bug #2 — Circle SSO Endpoint (commit `25c5f5b`)
+Plan-B nutzte erfundenen Endpoint `/api/admin/v2/headless_auth_tokens`. Real:
+- `POST /api/v1/headless/auth_token` (eigene API-Surface)
+- Braucht **separat geminten** "Headless Auth"-Token (nicht der Admin-Token)
+- Response ist JWT-Pair, kein `sso_url`-Feld — URL wird komponiert: `${COMMUNITY_URL}/session/cookies?access_token=<jwt>`
 
-**Live-Verify (vor Commit):** `mcp__circle__create_space_member({email:"info@movo.fitness", space_id:2574363})` → `{success:true, message:"User added to space"}`. Schema bestätigt `{email, space_id:int}` als required.
+Fix: `circleFetch` kennt `tokenType: 'admin' | 'headless'`, neues Env `CIRCLE_HEADLESS_TOKEN`, `generateSsoUrl` rewritten.
 
-**Vitest:** 19/19 grün (+1 Payload-Shape-Test). **Typecheck:** `@genai/circle` clean, website unverändert clean.
+### Bug #4 — Join-Success-Card Copy (commit `1588a28`)
+Card war für Phase 23 Waitlist gebaut ("Du stehst auf der Warteliste..."). Copy auf real-signup confirmation umgestellt: "Willkommen, {firstName}! Du bist gleich drin."
 
----
+### Bug #5 — `getMemberByEmail` SECURITY (DSGVO, commit `5b920d6`)
+Plan-B-Endpoint `GET /community_members?email=X` ignoriert den `email`-Filter komplett und returnt die unfilterte Member-Liste. Code nahm `.records[0]` (= erster Member der Community) — **jeder Signup bekam denselben falschen `circle_member_id`**, beim Confirm-Click loggte sich der User als FREMDER User in Circle ein.
 
-### Bug #5 — `getMemberByEmail` returnte FALSCHEN User (DSGVO-CRITICAL, FIXED 2026-04-25)
+Fix: Endpoint umgestellt auf `GET /community_members/search?email=` (das einzige Endpoint das wirklich filtert). Tests inkl. Regression-Guard gegen das unfilterte Endpoint.
 
-**Commit:** `5b920d6` (branch `feature/phase-25-circle-api-sync`)
+### Bug #6 — `createMember` Response-Parsing (commit `9ed3ae2`)
+Circle wraps die POST-Response in `{message, community_member: {id, ...}}`, Code las `.id` direkt → `String(undefined)` = `"undefined"` String landete in Supabase. Versteckte sich bis Bug #5 fixed war (Idempotenz-Check schluckte den eigentlichen POST).
 
-**Symptom (E2E-Test, 2026-04-24 22:19):** Frischer Signup mit `+p25-test3@gmail.com` landete via Confirm-Link als **Bastian Gedon** in Circle. Supabase-DB zeigte: alle 3 Phase-25-Test-User (test1/2/3) hatten `circle_member_id = "80552151"` (Bastians ID) im `user_metadata`.
+Fix: `response.community_member.id` parsen, Error wenn missing. Plus `CreateMemberResponse` type.
 
-**Root-Cause (live-verified 2026-04-25):** Plan-B-Endpoint `GET /community_members?email=X&community_id=Y` ignoriert den `email`-Filter und returned die volle Liste. Code nahm `.records[0]` (= Bastian, der erste in der Member-Liste). `createMember`'s Idempotenz-Check (`if (existing) return alreadyExists:true`) verhinderte dann den echten POST → falsche ID landete in Supabase, später im SSO-Token.
+### Bug #7 — Password suppresses Invitation Mail (commit `fb716e7`)
+Live-Test: POST `/community_members` MIT `password` → keine Mail. OHNE password → Mail. Circle interpretiert "User hat schon Password" als "kein Invitation nötig".
 
-**Fix:**
-- `packages/circle/src/client.ts` — `getMemberByEmail` umgestellt auf korrektes Endpoint `GET /community_members/search?email=<X>` (single-object 200 / 404). Records-Array-Handling entfernt.
-- `packages/circle/src/__tests__/client.test.ts` — Test asserted explizit den korrekten URL-Pfad UND guardet gegen Regression auf das unfilterte `/community_members?` (sonst kommt der Bug zurück).
-- 3 broken Test-User in Supabase via SQL gelöscht (`auth.users` + `public.user_circle_links` für `email LIKE 'movo.fitness+p25%'`).
-
-**Live-Verify (vor Commit):** 4 curl-Probes parallel — `/community_members/search?email=` ist der einzige Endpoint der korrekt nach Email filtert (200+single bei Match, 404 bei Miss). `?filter[email]=` ignoriert genauso wie der Original-Plan-B-Pfad.
-
-**LEARNINGS.md** — Vollständiger Post-Mortem dort (2026-04-25 Eintrag), inkl. Regeln für zukünftige Circle-API-Funktionen (live-probe vor Commit, Negativ-Test bei Lookup-Operations, Idempotenz-Checks-sind-gefährlich-wenn-Lookup-broken).
-
-**Vitest:** 18/18 grün. **Typecheck:** clean.
+Fix: `password` nur senden wenn `skipInvitation:true` (headless flow). Bei `skipInvitation:false` (default, invitation flow) kein Password mitgeben — Circle generiert eigenes.
 
 ---
 
-## Offene Bugs (Must-Fix vor Launch) ❌
+## Pivot mid-phase: Headless SSO → Circle Invitation Flow
 
-### Bug #2 — Circle `generateSsoUrl` (RESOLVED — siehe Section "Resolved this session" oben)
+**Problem:** Headless SSO funktioniert technisch (`/session/cookies?access_token=<JWT>` returnt 302 + Cookies), aber **die Session wird für `active:false` Members vom Community-Backend abgelehnt** → User landet auf `login.circle.so` statt in Community. Live-verifiziert mit DevTools (8x 401 auf `/internal_api/pundit_users`).
 
----
+**Was wir nicht können:**
+- Member programmatisch aktivieren — Admin `PATCH active:true` returnt 200, ignoriert das Field silently
+- Set-Password via API — kein Endpoint vorhanden (Headless `/community_member` PATCH gibt 404 für password, kein dedicated password-set-endpoint)
+- Circle's `invitation_token` aus API holen — IMMER null in API-Response
 
-### Bug #3 — `/welcome?circle=pending` redirected zu `/`
-
-**Evidenz:** Runtime-Log `GET /welcome → 307`. 307 = Temporary Redirect.
-
-**Root-Cause (vermutet):** `apps/website/app/(fallback)/welcome/page.tsx` oder `welcome-client.tsx` checkt Session und redirect irgendwo hin wenn State nicht passt.
-
-**Fix-Plan:**
-1. `apps/website/app/(fallback)/welcome/page.tsx` + `welcome-client.tsx` lesen
-2. 307-Ursache identifizieren (vermutlich fehlende Session-Check-Tolerance: User ist eingeloggt aber Metadata-Flag fehlt?)
-3. Banner "Zur Community →" muss angezeigt werden, nicht redirect
-
-**Impact:** Low (User ist eingeloggt, sieht aber Landing statt Fallback-Banner). Kein Data-Loss.
+**Lösung:** User muss EINMAL durch Circle's Set-Password-Page (Activation). Danach ist Headless SSO permanent verfügbar für future logins. Wir senden:
+1. **Circle Invitation Mail** (`skip_invitation:false`, customized im Dashboard) — User setzt Name + Password, Member wird `active:true`
+2. **Eigene Welcome-Mail** (Resend, branded) — erklärt was kommt + Auto-Login-Magic-Link zu tools-app
 
 ---
 
-### Bug #4 (cosmetisch) — Success-Screen zeigt "Warteliste"-Text (FIXED 2026-04-25)
+## Files Changed (Summary)
 
-**Commit:** `1588a28` (branch `feature/phase-25-circle-api-sync`)
-
-**Fix:** `apps/website/components/join/join-success-card.tsx` — Headline + Body-Copy
-auf real-signup confirmation umgestellt. CTAs unverändert.
-
-**Original (für History):**
-
-**Evidenz:** `components/join/join-success-screen.tsx` zeigt beim Submit-Success: *"Du stehst auf der Warteliste. Schau schon mal in deinen Posteingang…"*
-
-**Root-Cause:** Component wurde für Phase 23 Waitlist-V1 gebaut, zeigt alten Text, obwohl Phase 25 jetzt echten Signup macht.
-
-**Fix-Plan:** Text umbauen auf:
-- *"Willkommen! Wir haben dir eine Bestätigungsmail geschickt. Click den Link und du bist drin."*
-
-**Impact:** Verwirrend für User, aber funktional egal. Priority: low.
-
----
-
-## State auf dem Branch
-
-- **Branch:** `feature/phase-25-circle-api-sync` (nicht in main)
-- **Letzter Commit:** `c90b129` fix(25): hashed_token PKCE (+ cleanup pending)
-- **31 Commits** seit origin/main — enthält Plans A–I execution + Code-Review-Fixes + Phase-25-Runtime-Fixes
-- **Prod live:** `79885b9` (pre-Phase-25 revert, rolled back via Vercel-CLI nach versehentlichem Push — siehe Session-Log)
-- **SIGNUP_ENABLED:** `false` in Prod, `true` in Preview + Dev
-
-## Vercel-Envs (alle clean nach `\n`-Patch + Sentry-Setup)
-
-| KEY | Prod | Preview | Dev |
-|---|---|---|---|
-| ADMIN_EMAIL_ALLOWLIST | ✓ | ✓ | ✓ |
-| CIRCLE_API_TOKEN | ✓ | ✓ | ✓ |
-| CIRCLE_COMMUNITY_ID (511295) | ✓ | ✓ | ✓ |
-| CIRCLE_COMMUNITY_URL | ✓ | ✓ | ✓ |
-| CIRCLE_DEFAULT_SPACE_ID (2574363) | ✓ | ✓ | ✓ |
-| NEXT_PUBLIC_SENTRY_DSN_WEBSITE | ✓ | ✓ | ✓ |
-| NEXT_PUBLIC_SITE_URL | ✓ | — | ✓ |
-| NEXT_PUBLIC_SUPABASE_ANON_KEY | ✓ | ✓ | ✓ |
-| NEXT_PUBLIC_SUPABASE_URL | ✓ | ✓ | ✓ |
-| SIGNUP_ENABLED | false | true | true |
-| SUPABASE_SERVICE_ROLE_KEY | ✓ | ✓ | ✓ |
-| SENTRY_DSN_WEBSITE | ✓ | ✓ | ✓ |
-
-## Supabase-Dashboard-State
-
-- **Custom SMTP:** Aktiv, Host `smtp.resend.com`:587, Sender `noreply@generation-ai.org`
-- **Redirect URLs Allowlist:** enthält `https://website-git-*.vercel.app/auth/confirm`, `generation-ai.org/auth/confirm`, `localhost:3000/auth/confirm` (nicht länger benötigt nach PKCE-Fix, aber schadet nicht)
-- **Email Template "Confirm signup":** Luca hat das Template aus `apps/website/emails/dist/confirm-signup.html` eingespielt — **nicht länger benötigt** weil Phase-25-Code jetzt direkt via Resend sendet mit gerendertem React-Email. Supabase-Template dient nur als Fallback falls jemand anders die Supabase-Auth-Mails triggert (magic-link-login z.B.).
-
-## Session-Log highlights (für Context)
-
-- Versehentlicher Push auf main + Rollback via `vercel rollback` (Memory: `feedback_branch_check_before_push.md`)
-- Alle Vercel-Envs hatten `\n`-Suffix (Backslash + n Escape aus `echo | vercel env add`) — per REST-API PATCHED
-- Supabase `admin.generateLink` sendet keine Mail in v2 — Resend-Direct-Send nötig (fix drin)
-- Supabase's action_link = Implicit-Flow, ging via Site-URL-Fallback auf tools.generation-ai.org → Fix: `hashed_token` statt `action_link` benutzen
+| File | Change |
+|---|---|
+| `packages/circle/src/client.ts` | `getMemberByEmail` /search-endpoint, `createMember` rewrite (atomic + skip_invitation + space_ids + conditional password), `addMemberToSpace` email-payload, `generateSsoUrl` Headless-API-rewrite |
+| `packages/circle/src/types.ts` | `CreateMemberInput` (spaceIds, skipInvitation), `CreateMemberResponse` (wrapped), `CircleSsoToken` JWT-shape, `GenerateSsoInput` simplified |
+| `packages/circle/src/__tests__/client.test.ts` | 21 tests, alle Bugs als Regression-Guards |
+| `apps/website/app/actions/signup.ts` | `email_confirm:true` (auto-confirm), createMember mit spaceIds, drop addMemberToSpace, drop generateLink/Resend confirm-chain, add Magic-Link für tools-app |
+| `apps/website/app/api/admin/circle-reprovision/route.ts` | Symmetrisch zu signup |
+| `apps/website/app/auth/confirm/route.ts` | Headless-SSO-Call (jetzt nur fallback path, nicht happy-path) |
+| `packages/emails/src/templates/confirm-signup.tsx` | Welcome-Mail rewrite — Brand + Pro-Assistant-Pitch + Auto-Login-CTA |
+| `packages/emails/src/components/EmailButton.tsx` | Slug-Type erweitert um `'tools-link'` |
+| `packages/emails/scripts/generate-logo-pngs.ts` | + `tools-link` Button-PNG |
+| `apps/website/public/brand/logos/btn-tools-link.png` | NEU |
+| `LEARNINGS.md` | Phase-25 Lessons (Plan-B-Best-Guess track-record + Live-Probe-Mandatory rule) |
+| `.changeset/phase-25-*.md` | 5 changesets dokumentiert |
 
 ---
 
-## Next-Session Commands
+## Open Items (low priority, nicht launch-blocker)
 
-### Resume-Command
-```
-/gsd-debug 25
-```
+- [ ] **PR + main-merge** — wenn alle Phasen fertig sind, develop → main → production. Aktuell: develop hat den vollen Phase-25-Stack. Nicht eilig.
+- [ ] **PNG-Button reaktivieren** nach Production-Deploy. Aktuell nutzt Welcome-Mail inline-HTML-Pill (sieht clean aus). PNG-Asset `btn-tools-link.png` ist ready, nur production hat es noch nicht. Nach prod-deploy: switch back zu `<EmailButton slug="tools-link">`.
+- [ ] **Cleanup Probe-Member im Circle** (`probe-skipinv-…`, `circle-test-…`, alte test5–test12) — kosmetisch, MCP needs re-auth. Liste in 25-DEBUG-CLEANUP.md ggf. nachreichen.
+- [ ] **Circle Mail-Sender-From-Address** — falls Plan erlaubt: `noreply@generation-ai.org` statt `notify@circle.so` (Circle Dashboard → Settings → Email).
 
-### Ziele für nächste Session (Priority-Order)
-1. Bug #2 fixen (Circle SSO endpoint) — Sentry-Event inspizieren, Circle-Docs checken, Code + Test + Live-Verify
-2. Bug #1 fixen (addMemberToSpace payload)
-3. Bug #3 fixen (welcome redirect)
-4. Bug #4 fixen (success-screen copy)
-5. Code-Review-Fix-Commits squashen/tidy, VERIFICATION.md auf `passed` updaten
-6. Feature-Branch → PR → main-Merge
-7. Phase 25 als completed markieren, weiter mit Phase 22.5 oder 22.7
+---
 
-### Test-Email
-Frische Alias verwenden: `movo.fitness+p25-test3@gmail.com` (nach jedem Test löschen via SQL:
+## Bug #3 (`/welcome → /` Redirect) — OBSOLET durch Pivot
+
+War nur im Headless-SSO-Fallback-Pfad relevant. Mit Invitation-Flow als Happy-Path wird `/welcome` praktisch nie betreten — User landet entweder direkt in Circle (via Accept-Invitation) oder via Magic-Link in tools-app. Kein Fix nötig, kann gelöscht werden falls die Page komplett unbenutzt ist.
+
+---
+
+## Test-Email-Cleanup-Script (für nächste Sessions)
+
 ```sql
-DELETE FROM public.user_circle_links WHERE user_id IN (SELECT id FROM auth.users WHERE email LIKE 'movo.fitness+p25%');
-DELETE FROM auth.users WHERE email LIKE 'movo.fitness+p25%';
+-- Supabase SQL für test-user cleanup (alle p25-test-Aliase)
+DELETE FROM public.user_circle_links WHERE user_id IN (SELECT id FROM auth.users WHERE email LIKE 'movo.fitness+p25-test%');
+DELETE FROM auth.users WHERE email LIKE 'movo.fitness+p25-test%';
+SELECT email FROM auth.users WHERE email LIKE 'movo.fitness%';
 ```
-).
 
-### Debug-Tools bereit
-- Sentry: https://sentry.io/organizations/<luca-org>/projects/generation-ai-website/issues/ (DSN konfiguriert)
-- Vercel-Runtime-Logs (MCP): `get_runtime_logs environment=preview since=5m`
-- Supabase-Auth-Logs (MCP): `get_logs service=auth`
-- Circle-API-Schemas (MCP): `list_space_members`, `create_space_member`, `get_community_member` etc.
+```js
+// Circle MCP für member cleanup (per ID)
+// IDs aus probe-Tests:
+// - test5: 80568846
+// - probe-skipinv-A: 80568995
+// - probe-skipinv-B: 80568996
+// - probe-test99: 80568902
+// - circle-test-noinvite: 80570142
+// - circle-test-withpw: 80570143
+// - probe-inv (forgot-password test): 80569672
+// - test7: 80569531
+// - test6: 80569247
+// - test9: 80570057
+// - test8: 80569611
+// - test10: ?
+// - test11/12: ?
+mcp__circle__delete_member_community_member({id: <id>})
+```
