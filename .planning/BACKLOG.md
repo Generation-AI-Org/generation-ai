@@ -160,3 +160,33 @@ Ohne diese Änderung: neue User kriegen „Hey ," in Auth-Mails (Template-Variab
 **Kontext:** Bei bestehenden Accounts wurden `name` + `full_name` am 2026-04-19 via SQL-Update konsistent gemacht. Der Signup-Code muss dieselbe Konvention beim Create anwenden, sonst driften wir wieder auseinander.
 
 **Verwandt:** Signup-Form sollte ein Name-Pflichtfeld haben (aktuell im Form bereits vorhanden laut Git-History), plus Datenschutz-Checkbox.
+
+---
+
+## Backlog — Neu aufgenommen 2026-04-25 (Phase 22.6 Closure)
+
+### 🧪 Phase 22.6 — UAT Follow-up
+
+- [ ] **Item 6 — Logged-in tools-app Regression-Smoke (~5min)** — auf develop-Preview (https://tools-app-git-develop-lucas-projects-e78962e9.vercel.app) live verifizieren. Test-Steps: Lite-Account einloggen → CTAs verschwinden → Settings + Signout sichtbar → Tool-Card-Click → Detail-Page lädt → Chat funktioniert → Lite/Pro Toggle in Settings → Logout → CTAs zurück. Phase 12/19 Auth-Schutz-Verifikation. Source: `.planning/phases/22.6-pre-launch-polish-bundle/22.6-HUMAN-UAT.md` §6.
+
+### 🔧 Phase 22.6 — Code-Review Follow-ups (V1-akzeptabel, nicht-blockierend)
+
+Aus `22.6-REVIEW.md` (4 Warnings · 6 Info, 0 Critical). Pre-launch nicht blocking. In nächster passender UI/Test-Phase abarbeiten oder bei tools-app Polish-Pass mitnehmen.
+
+- [ ] **WR-01: Mobile-Burger Accessibility-Härtung** — Escape-Handler, Auto-Focus auf erstes Item beim Open, optional Focus-Trap. Executor (Plan 09) hat das bewusst übersprungen um Zero-Deps zu bleiben — Escape + `role="dialog"` sind in ~10 Zeilen ohne neue Deps machbar. File: `apps/tools-app/components/layout/GlobalLayout.tsx` (Z. 311-380).
+- [ ] **WR-02: HomeLayout State-Reset Inkonsistenz** — Backdrop-Click schließt nur Search-Overlay, Escape resetted alles. Bug oder Absicht? Code-Kommentar fehlt. File: `apps/tools-app/components/HomeLayout.tsx`.
+- [ ] **WR-03: Mobile-Nav E2E-Coverage fehlt** — `tools-app.spec.ts` hat 5 Tests aber keinen einzigen Mobile-Burger-Tap. Test-Snippet vorgeschlagen in `22.6-REVIEW.md`.
+- [ ] **WR-04: B-req-5 schwacher Assert** — `toHaveCount(1)` statt `toBeVisible()` weil Buttons `md:hidden` sind. Würde nicht catchen wenn Buttons später auf Desktop sichtbar werden. File: `packages/e2e-tools/tests/tools-app.spec.ts`.
+
+### 🚀 Tools-app Performance-Phase (post-launch, eigene Phase)
+
+- [ ] **Bundle-Optimierung tools-app** — Aktuell Lighthouse Performance **78** (LCP 4.0s, 705 KiB unminified JS, 2.7 MB unused JS). Pre-22.6 Baseline war 53, Phase 22.6 hat +25 gebracht — 90er-Schwelle erfordert eigene Bundle-Phase. Approach: next/image für Tool-Logos · dynamic imports für tool-detail-page · code-splitting der 200+ Tool-Cards · Reduce unused JavaScript scan. **Nicht pre-launch-blocking.** Reports: `.planning/phases/22.6-pre-launch-polish-bundle/lighthouse/tools-app.report.html`.
+
+### 🎨 Phase 22.6 — Side-Findings (post-launch)
+
+- [ ] **Tools-app shared header → packages/ui extrahieren (B-08 V2)** — Aktuell sync-anchor MIRROR-Comment am File-Top der `apps/tools-app/components/layout/GlobalLayout.tsx` zeigt auf canonical Website-Header. Cheap V1. V2-Plan: shared `@genai/ui/Header` Component mit Theme-Prop, dann beide Apps importieren. Phase 28+ Backlog (UI-Polish-Phase nach Launch).
+
+### 🧹 Cleanup nach 22.6
+
+- [x] **Footer /events Polish** — drive-by commit `a28821b` auf develop, Header bleibt D-18-locked.
+- [ ] **Lokal Branch löschen:** `git branch -d feature/phase-22.6-pre-launch-polish` — ist auf develop gemerged, kann lokal weg (remote auch wenn UAT Item 6 durch ist).
