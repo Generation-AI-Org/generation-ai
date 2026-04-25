@@ -31,17 +31,8 @@ export const metadata: Metadata = {
   publisher: "Generation AI",
   metadataBase: new URL("https://tools.generation-ai.org"),
 
-  // Favicon & Icons
-  icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-  },
+  // Icons werden automatisch über app/icon.svg + app/favicon.ico + app/apple-icon.png
+  // (Next.js file convention) bereitgestellt — kein expliziter metadata.icons-Block mehr.
 
   // Open Graph (Facebook, WhatsApp, etc.)
   openGraph: {
@@ -53,7 +44,7 @@ export const metadata: Metadata = {
     description: "Die kuratierte KI-Tool-Bibliothek für Studierende im DACH-Raum. Finde die richtigen Tools für deinen Workflow.",
     images: [
       {
-        url: "/og-image-v2.png",
+        url: "/og-image-default.png",
         width: 1200,
         height: 630,
         alt: "Generation AI - KI-Tools für Studierende",
@@ -66,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Generation AI — KI-Tools für Studierende",
     description: "Die kuratierte KI-Tool-Bibliothek für Studierende im DACH-Raum.",
-    images: ["/og-image-v2.png"],
+    images: ["/og-image-default.png"],
   },
 
   // Robots
