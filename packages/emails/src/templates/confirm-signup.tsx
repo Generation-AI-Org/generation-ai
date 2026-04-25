@@ -1,6 +1,6 @@
-import { Heading, Section, Text } from '@react-email/components'
+import { Heading, Link, Section, Text } from '@react-email/components'
 import React from 'react'
-import { EmailButton, Layout, tokens } from '../index'
+import { Layout, tokens } from '../index'
 import { fontStack } from '../tokens'
 
 export interface ConfirmSignupEmailProps {
@@ -117,7 +117,23 @@ export default function ConfirmSignupEmail({
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
-        <EmailButton slug="tools-link" href={toolsHref}>Zu den KI-Tools</EmailButton>
+        <Link
+          href={toolsHref}
+          style={{
+            display: 'inline-block',
+            padding: '14px 32px',
+            backgroundColor: tokens.light.text,
+            color: tokens.light.bg,
+            fontFamily: fontStack.mono,
+            fontSize: '15px',
+            fontWeight: 700,
+            textDecoration: 'none',
+            borderRadius: '999px',
+            letterSpacing: '0.02em',
+          }}
+        >
+          Zu den KI-Tools →
+        </Link>
       </Section>
 
       <Text
