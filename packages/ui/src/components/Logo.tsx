@@ -27,6 +27,12 @@ export interface LogoProps {
   theme?: LogoTheme;
   className?: string;
   alt?: string;
+  /**
+   * When true, applies the canonical Logo-Hover (opacity-90 fade).
+   * Opt-in only — defaults to false to preserve static behavior in
+   * footer / tools-app / login callsites.
+   */
+  interactive?: boolean;
 }
 
 const SIZE_MAP: Record<LogoSize, number> = {
@@ -64,6 +70,7 @@ export function Logo({
   theme,
   className,
   alt = 'Generation AI',
+  interactive = false,
 }: LogoProps) {
   const resolvedHeight = height ?? SIZE_MAP[size];
 
@@ -82,12 +89,20 @@ export function Logo({
 
   const style: CSSProperties = { margin: 0, height: resolvedHeight, width: 'auto' };
 
+  const interactiveClasses = interactive
+    ? 'transition-opacity duration-[var(--dur-fast)] hover:opacity-90'
+    : '';
+  const mergedClassName = [className, interactiveClasses]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+
   return (
     <img
       src={src}
       alt={alt}
       height={resolvedHeight}
-      className={className}
+      className={mergedClassName || undefined}
       style={style}
       draggable={false}
     />

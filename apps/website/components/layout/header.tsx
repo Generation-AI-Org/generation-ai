@@ -54,7 +54,7 @@ export function Header() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center" aria-label="Generation AI - Startseite">
-            <Logo context="header" theme={theme} size="lg" className="hover:opacity-90 transition-opacity" />
+            <Logo context="header" theme={theme} size="lg" interactive />
           </Link>
 
           {/* Desktop Nav (md+) */}
