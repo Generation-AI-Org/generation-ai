@@ -34,8 +34,10 @@ progress:
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** 22.6 Pre-Launch Polish Bundle — **Track B tools-app polish** (Plans 06-09 next)
-**First command:** `/gsd-execute-phase 22.6 --plan 06` (auf branch `feature/phase-22.6-pre-launch-polish`)
+**Next phase:** 22.6 Pre-Launch Polish Bundle — **Track B tools-app polish** (Plans 06-09 next, fresh session for clean context)
+**First command:** `/gsd-execute-phase 22.6 --auto --no-transition` (auf branch `feature/phase-22.6-pre-launch-polish`)
+   - Index wird die 4 incomplete Plans (06-09) automatisch finden, Track A ist done
+   - Plan 22.6-09 hat `autonomous: false` (Lucas Side-by-Side-Sticky-Nav-Vergleich) → wenn `--auto` → auto-approve, oder `/gsd-execute-phase 22.6` ohne `--auto` für interaktiven Stop am Checkpoint
 **22.6-01 DONE:** Test scaffold (Playwright + Vitest stubs) — commit 5510c26
 **22.6-02 DONE:** events.ts MDX adapter + 5 placeholder MDX files + 7 Vitest tests passing — commits f44f45a, 910ab78, 457f45d
 **22.6-03 DONE:** /events page shell (Server Component + Hero + Grid + Formats + Members-Only + Final-CTA) — commits 98242ed, fc03be6, 8a2027b — build shows ƒ /events, Playwright 3/3 passing
