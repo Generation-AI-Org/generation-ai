@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: executing
-last_updated: "2026-04-25T11:08:37.982Z"
+status: planning
+last_updated: "2026-04-25T11:27:00.848Z"
 progress:
   total_phases: 19
   completed_phases: 15
@@ -21,7 +21,7 @@ progress:
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 22.6 Pre-Launch Polish Bundle ✅ COMPLETE (Track A + Track B done, 9/9 plans)
+**Phase:** 23
 **Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
 
 - `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
@@ -38,6 +38,7 @@ progress:
 **First command:** `/gsd-discuss-phase 27` oder direkt merge-prep für develop
 
 **Pre-merge polish flags from Phase 22.6:**
+
 - ⚠️ Website header.tsx fehlt noch der Events Nav-Item (Plan 09 Threat-Flag — Track A built /events route + sitemap, aber das Item im website-Nav `navLinks` Array wurde nicht gesetzt. Empfohlen: small commit in Phase 27 oder vor develop-merge.)
 - ⏳ Lucas live UAT für Plan 09 ausstehend (Side-by-side Sticky-Nav-Vergleich, Cross-domain Click-through, Mobile Burger touch-test, Lighthouse tools-app ≥90 — alle unter --auto-mode auto-approven mit technischer Verifikation, siehe 22.6-09-SUMMARY.md §"Other checkpoint items")
 
@@ -155,7 +156,7 @@ progress:
 
 ### Phase 20.5 Progress
 
-**Status:** Executing Phase 22.6
+**Status:** Ready to plan
 
 - CONTEXT.md committed — Design-System-Nordstern dokumentiert, 6 Decisions (D-01 bis D-06), Scope/Out-of-Scope, iterative Co-Build-Mode.
 - 5 PLAN.md angelegt, 3 delivered + 2 deferred:

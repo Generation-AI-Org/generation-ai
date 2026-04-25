@@ -527,7 +527,7 @@ Plans:
 | 24 | `/test` Assessment | ✅ complete 2026-04-24 | 9/9 plans |
 | 25 | Circle-API-Sync | ✅ complete 2026-04-25 | 9/9 plans (6 bugs + pivot) |
 | 26 | `/community` + Featured-Tools-API | ✅ complete 2026-04-25 | 6/6 plans, merged to develop |
-| 22.6 | 9/9 | Complete   | 2026-04-25 |
+| 22.6 | 9/9 | Complete    | 2026-04-25 |
 | 27 | Copy-Pass & Launch-Cleanup | ⏳ pending | Finales Wording, Dummy-Data raus, Meta/SEO-Pass, Signup-Go-Entscheidung |
 
 **Dependencies:**
