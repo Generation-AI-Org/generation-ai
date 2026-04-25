@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: planning
-last_updated: "2026-04-24T13:49:43.096Z"
+last_updated: "2026-04-25T11:27:00.848Z"
 progress:
-  total_phases: 20
-  completed_phases: 13
-  total_plans: 86
-  completed_plans: 83
+  total_phases: 19
+  completed_phases: 15
+  total_plans: 101
+  completed_plans: 98
   percent: 97
 ---
 
@@ -21,19 +21,47 @@ progress:
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 26 (parallel im Worktree)
+**Phase:** 23
 **Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
+
 - `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
-- `develop` = Staging-Sammelbranch (Stand: + Phase 25 ✅ gemerged 2026-04-25, commit 473edf9)
-- `feature/phase-25-circle-api-sync` = abgeschlossen, ready
-- `feature/phase-26-community` = aktiv im separaten Worktree `generation-ai-phase-26`
-**Last Updated:** 2026-04-25 (Phase 25 `Circle API Sync` ✅ DONE — 6 Bugs + Pivot zu Invitation-Flow + Magic-Link-SSO zu tools-app + Custom Welcome-Mail; merged → develop)
-**Site Status:** ✅ Live auf generation-ai.org — Hero mit Signal-Grid ist live, /about + /partner + /join fertig (nicht deployed). Phase 21 + 22 + 23 + 24 + 25 auf develop ready. 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
+- `develop` = Staging-Sammelbranch (Stand: + Phase 25 + Phase 26 ✅ gemerged 2026-04-25, commit 7b1a5aa). Vercel-Preview: https://website-git-develop-lucas-projects-e78962e9.vercel.app
+- `feature/phase-22.6-pre-launch-polish` = aktiv im Hauptrepo (NEU 2026-04-25)
+- `feature/phase-26-community` = abgeschlossen, im Worktree `generation-ai-phase-26` (UAT pending)
+
+**Last Updated:** 2026-04-25 (22.6-09 DONE — Phase 22.6 feature-complete. Tools-app nav-mirror per B-08: 5 cross-domain items + Tools active + mobile burger menu. Final 2 Track B Playwright tests gefüllt → 5/5 grün. Phase ready für develop merge nach final polish review)
+**Site Status:** ✅ Live auf generation-ai.org (alter Stand). Develop-Preview hat alles bisher Gebaute (Phase 21–26). Phase 26 UAT noch offen (`pending-luca`). 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke).
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** 22.5 /events-page (MDX-Pipeline, members-only gated, Anmelde-Flow) oder 22.7 Tools-Subdomain-Polish — Luca entscheidet Reihenfolge.
-**First command:** `/gsd-plan-phase 22.5` oder `/gsd-plan-phase 22.7` (beide haben CONTEXT.md bereits)
+**Next phase:** Phase 27 (Copy-Pass & Launch-Cleanup) — Phase 22.6 ist DONE (9/9 plans)
+**First command:** `/gsd-discuss-phase 27` oder direkt merge-prep für develop
+
+**Pre-merge polish flags from Phase 22.6:**
+
+- ⚠️ Website header.tsx fehlt noch der Events Nav-Item (Plan 09 Threat-Flag — Track A built /events route + sitemap, aber das Item im website-Nav `navLinks` Array wurde nicht gesetzt. Empfohlen: small commit in Phase 27 oder vor develop-merge.)
+- ⏳ Lucas live UAT für Plan 09 ausstehend (Side-by-side Sticky-Nav-Vergleich, Cross-domain Click-through, Mobile Burger touch-test, Lighthouse tools-app ≥90 — alle unter --auto-mode auto-approven mit technischer Verifikation, siehe 22.6-09-SUMMARY.md §"Other checkpoint items")
+
+**22.6-01 DONE:** Test scaffold (Playwright + Vitest stubs) — commit 5510c26
+**22.6-02 DONE:** events.ts MDX adapter + 5 placeholder MDX files + 7 Vitest tests passing — commits f44f45a, 910ab78, 457f45d
+**22.6-03 DONE:** /events page shell (Server Component + Hero + Grid + Formats + Members-Only + Final-CTA) — commits 98242ed, fc03be6, 8a2027b — build shows ƒ /events, Playwright 3/3 passing
+**22.6-04 DONE:** EventModal + Anmelde-Flow (open-redirect guard, auth-aware CTA, mobile sheet, 5/7 Playwright green) — commits a2c754f, b2e08c2, 756146c
+**22.6-05 DONE (Track A COMPLETE):** /events/[slug] standalone page + EventsArchive (A-06) + sitemap events + 2 final Playwright tests — all 7 Track A tests green — commits 6f2669a, 61f4323
+**22.6-06 DONE (Track B Wave 0):** Playwright stub `packages/e2e-tools/tests/tools-app.spec.ts` mit 5 `test.fixme` für B-req-1..B-req-5 (login/utm/hero/nav/eingeloggt). TOOLS_URL constant mit `process.env.TOOLS_URL` Fallback auf `http://localhost:3001`. Suite green (5 skipped). Plans 07-09 swap fixme → active assertions — commit 700c8fc
+**22.6-07 DONE (Track B Login-Button-Umbau):** GlobalLayout.tsx Header right-side Cluster ersetzt — Primary `<a href="https://generation-ai.org/join?utm_source=tools">Kostenlos registrieren</a>` + Secondary `<Link href="/login">Bereits Mitglied? Einloggen</Link>`. data-cta="primary-register" + data-cta="secondary-login" als stable Playwright-Selektoren. MIRROR sync-anchor Comment am File-Top zeigt auf website header (B-08). 2/5 Track B Playwright Tests gefüllt + grün (B-req-1 login, B-req-2 utm). Logo + Settings + Signout + Theme Toggle + Search + Legal alle untouched. Logged-in Branch unverändert (Phase 12/19 auth no regression). Build grün, 46/46 routes ƒ — commits 2d136b1, 3ce1cb2
+**22.6-08 DONE (Track B Hero):** Neue `apps/tools-app/components/tools-hero.tsx` (57 LOC, text-only V1 per B-09) — 3-Zeilen Hero (Eyebrow `// deine ki-tool-bibliothek` + Geist Mono H1 `KI-Tools, kuratiert für dich.` mit `var(--fs-h1)` token + Sans-Body `Über 100 Tools…`). HomeLayout.tsx restructured: FilterBar in den `overflow-y-auto` Wrapper verschoben (Pitfall 2 mitigation — Hero+FilterBar+CardGrid scrollen zusammen, scroll-with-content per CONTEXT.md §B.2). useReducedMotion guard, Umlaute korrekt (für/Über). 3/5 Track B Playwright Tests grün (B-req-3 hero ergänzt). Build grün 46/46 ƒ. Plan 09 next: nav-mirror + eingeloggt regression — commits 252136d, 45ece78, 51ac6d0
+**22.6-09 DONE (Track B Closer + Phase Done):** GlobalLayout.tsx Header-Block um 5-Items Desktop-Nav (Events · Tools active · Community · Für Partner · Über uns) + Mobile Burger Menu erweitert per Decision B-08 nav-mirror. Cross-domain hrefs als `<a>` (B-05 full page-load), aria-current="page" auf Tools (desktop + mobile). Mobile Burger nutzt simple useState + absolute panel anchored to header (`relative`), kein Dialog Primitive — schlanker und Zero new dependencies. CTAs in mobile panel guarded by `mode==='public'` (no CTAs für logged-in users, no Phase 12/19 regression). Plan 07 elements (sync-anchor MIRROR comment, data-cta selectors, utm_source=tools) alle preserved. Final 2 Playwright tests gefüllt (nav B-req-4 + eingeloggt B-req-5 mit graceful skip ohne TEST_USER_*-Env). 5/5 Track B tests grün lokal. Build grün 46/46 ƒ. Auto-approved checkpoint (--auto orchestrator flag): technische Verifikation Sticky-Nav (kein Drift, RESEARCH §9 bestätigt) + nav-mirror item-by-item grep dokumentiert in 22.6-09-SUMMARY.md. ⚠️ Threat flag: Website header.tsx fehlt noch der Events Item — Empfehlung kleiner Commit in Phase 27. Phase 22.6 = 9/9 DONE — commits 369b032, 88b96ad
+
+**Key decision (22.6-09):** Mobile burger uses simple useState toggle + absolute-positioned panel anchored to `header className="relative …"` instead of @base-ui Dialog — keeps tools-app bundle lean (zero new deps), trades focus-trap + portal for simplicity. Header chrome uses brand-blue/brand-pink bg-bg-header → nav text-colors swapped to white/70 default + white hover (vs website's text-text-muted/text-text token-swap). Plan-Frontmatter's class strings were template suggestions; tools-app header background mandates inverted contrast.
+**Working dir:** `/Users/lucaschweigmann/projects/generation-ai` (Hauptrepo, branch ist hier ausgecheckt)
+
+**Key decision (22.6-05):** FrontmatterEntry has no `body` field — V1 slug page uses `frontmatter.description` as lede. MDX body rendering via @next/mdx deferred to Phase 28+.
+
+**Key decision (22.6-06):** Separate `TOOLS_URL` env-var (not `E2E_BASE_URL`) entkoppelt tools-app spec von default Playwright baseURL — Plans 07-09 können tools-app gegen `localhost:3001` (Dev) oder `https://...preview.vercel.app` (CI) laufen lassen ohne andere Specs zu beeinflussen.
+
+**Key decision (22.6-07):** Branching im GlobalLayout.tsx via existing `mode === 'public'` prop, NICHT via neuem `useAuth()` Import. Plan-Frontmatter hatte useAuth empfohlen, aber GlobalLayout nutzt bereits den `mode: ChatMode` prop (public = logged-out). Mode = single source-of-truth, kein Hydration-Risiko, kein Refactor. Sync-anchor MIRROR comment als V1-Alternative zu packages/ui Extraktion (B-08). data-cta-Attribute geben stable Selektoren für Plans 08+09.
+
+**Key decision (22.6-08):** ToolsHero nutzt `--fs-h1` token (clamp 32→48px) NICHT `--fs-display` (clamp 40→76px) — UI-SPEC §Typography "tools-app hero specifics" sagt explizit `--fs-h1` für Inline-Heros (nicht full-viewport). Tools-app hero sitzt zwischen Header + FilterBar/Grid, nicht als full-viewport Subpage. `--fs-display` reserved für Subpage-Heros mit LabeledNodes-BG. FilterBar wurde in den `overflow-y-auto` Container verschoben (Pitfall 2 mitigation) → Trade-off dokumentiert: filterbar nicht mehr viewport-sticky, scroll-with-content per CONTEXT.md §B.2 V1-contract. Sticky kann später als 1-line className-change ergänzt werden falls gewünscht.
 
 **Context für neue Session:**
 
@@ -44,11 +72,24 @@ progress:
 - `~/Downloads/Generation_AI_Website_Konzept.md` — Simons Konzept (April 2026) — strategische Quelle für alle Scope-Entscheidungen
 - Dev-Server: `pnpm --filter @genai/website dev` (auf localhost:3000 oder :3001)
 
-**Revidierte Roadmap-Reihenfolge (Pfad A):**
+**Revidierte Roadmap-Reihenfolge (ab 2026-04-25, Call mit Simon/Janna):**
 
 ```
-20.6 → 21 /about → 22 /partner (4-Tab) → 23 /join → 22.7 tools-polish → 22.5 /events → 24 /test → 25 circle-sync → 26 /community → 27 copy-pass → LAUNCH
+✅ 20.6 → ✅ 21 → ✅ 22 → ✅ 23 → ✅ 24 → ✅ 25 → ✅ 26 → 🚧 22.6 → ⏳ 20.6-01 (Lücken-Hero, separater Cycle) → ⏳ 22.8 (UI-Konsistenz + Section-Refinement) → ⏳ 27 (Copy-Pass) → LAUNCH ~15.05
 ```
+
+**Phase 22.8 ready für autonomous run (2026-04-25)** — CONTEXT + DISCUSSION-LOG mit allen Decisions vorab gemacht + Foundation-Plan-Skeletons (01+02) + Brand-Favicon-Assets liegen in `.planning/phases/22.8-ui-konsistenz-section-refinement/` + `brand/logos/favicons/`.
+
+**Start-Kommando (sobald 22.6 + 26-UAT + 20.6-01 durch):**
+```bash
+git checkout develop && git pull
+git checkout -b feature/phase-22.8-ui-konsistenz-section-refinement
+/gsd-autonomous --only 22.8 --interactive
+```
+
+**Stop-Gates während Execute (nur 2):** 22.8-02 post-Audit-Review (~5 min) + 22.8-06 DB-Migration-Approval (~1 min). Sonst autonom durchlaufend. 09 (Timeline) und 12 (Auth-Refactor) sind autonomous mit Pre-Approval-Specs in DISCUSSION-LOG. Test-Fragen-Re-Konzeption (Lucas Kritik aus Call) ist DEFERRED — separater Pass nach 22.8-10 Tech-Build.
+
+**22.6 Konsolidierung:** Phasen 22.5 (Events) + 22.7 (Tools-Polish) am 2026-04-25 zusammengelegt — verschiedene Apps, kein Konflikt-Risiko, ein Discuss/Plan/Execute-Cycle. Logo-Link-Fix war Drive-by im Phase-26-Merge bereits done.
 
 **Phase-CONTEXTs (alle 2026-04-23 auf Simons Konzept + Handout-Reality aligned):**
 

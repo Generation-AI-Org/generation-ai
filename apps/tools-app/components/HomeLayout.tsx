@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import CardGrid from '@/components/library/CardGrid'
 import FilterBar from '@/components/library/FilterBar'
+import { ToolsHero } from '@/components/tools-hero'
 import { useAuth } from '@/components/AuthProvider'
 import {
   useHighlightContext,
@@ -173,8 +174,13 @@ export default function HomeLayout({ items }: HomeLayoutProps) {
           }
         }}
       >
-        <FilterBar active={activeFilter} onChange={setActiveFilter} mode={mode} />
         <div className="flex-1 overflow-y-auto">
+          {/* Phase 22.6 Plan 08: Hero inside scroll container per RESEARCH Pitfall 2.
+              FilterBar moved INSIDE the scroll container so hero+filterbar+grid scroll
+              together (V1 trade-off: filterbar is no longer position-sticky relative
+              to viewport — acceptable per CONTEXT.md §B.2 "scroll-with-content"). */}
+          <ToolsHero />
+          <FilterBar active={activeFilter} onChange={setActiveFilter} mode={mode} />
           <CardGrid
             items={items}
             highlightedSlugs={highlightedSlugs}

@@ -5,7 +5,7 @@
 - ✅ **v1.0 Monorepo Migration** — shipped 2026-04-14
 - ✅ **v2.0 Production Hardening** — shipped 2026-04-17 (Release v4.1.0)
 - ✅ **v3.0 UX Polish & Feature Expansion** — shipped 2026-04-19 (Releases v4.2.0, v4.3.0, v4.3.x, v4.4.0) — Phases 14-19
-- 🚧 **v4.0 Website Conversion-Layer & Onboarding-Funnel** — Phases 20-26 (planning)
+- 🚧 **v4.0 Website Conversion-Layer & Onboarding-Funnel** — Phases 20-27 (in progress, Phase 26 ✅ 2026-04-25)
 
 ---
 
@@ -514,46 +514,33 @@ Plans:
 
 ## Milestone v4.0: Website Conversion-Layer & Onboarding-Funnel (2026-04-19+)
 
-**Status 2026-04-23:** Roadmap revidiert nach Simons Website-Konzept (April 2026). Phasen 22, 22.5, 22.7, 26, 27 neu bzw. erweitert. Siehe CONTEXT-Dokumente pro Phase für Detail-Scope.
+**Status 2026-04-25:** Phase 26 ✅. Phasen 22.5 + 22.7 zu **Phase 22.6 Pre-Launch Polish Bundle** konsolidiert (verschiedene Apps → kein Konflikt-Risiko, ein Discuss/Plan/Execute-Cycle). Letzter Schritt: Phase 27 Copy-Pass + Launch.
 
 | Phase | Name | Status | Scope-Kern |
 |-------|------|--------|------------|
 | 20 | Navigation + Landing-Skeleton | ✅ complete 2026-04-21 | 6/6 plans, Skeleton + Nav + 8 Sections |
 | 20.5 | Landing Wow-Pass (Signal-Grid) | ✅ closed at Hero 2026-04-22 | Hero signed-off, 20.5-04+05 deferred → 20.6 |
-| 20.6 | 9/9 | Complete    | 2026-04-23 |
-| 21 | 8/8 | Complete   | 2026-04-23 |
-| 22 | 8/8 | Complete    | 2026-04-24 |
-| 22.5 | `/events`-Seite | 🆕 neu | MDX-Pipeline, members-only gated, Hero + Kommende + Formate + Archiv + CTA |
-| 22.7 | Tools-Subdomain Polish | 🆕 neu | Logo-Link-Fix, Login-Button-Umbau (Registrieren + Einloggen), Hero, Nav-Sync |
-| 23 | 6/6 | Complete    | 2026-04-24 |
-| 24 | 9/9 | Complete   | 2026-04-24 |
-| 25 | 9/9 | Complete    | 2026-04-24 |
-| 26 | `/community` + Subdomain-Integration | ⏳ erweitert | Eigene Seite mit MDX-Artikeln + SEO (/community/artikel/[slug]) + Featured-Tools-API |
-| 27 | Copy-Pass & Launch-Cleanup | 🆕 neu | Finales Wording, Dummy-Data raus, Meta/SEO-Pass, Signup-Go-Entscheidung |
+| 20.6 | Landing Sections Rebuild | ✅ complete 2026-04-23 | 9/9 plans |
+| 21 | `/about` | ✅ complete 2026-04-23 | 8/8 plans |
+| 22 | `/partner` (4-Tab) | ✅ complete 2026-04-24 | 8/8 plans |
+| 23 | `/join` Waitlist | ✅ complete 2026-04-24 | 6/6 plans |
+| 24 | `/test` Assessment | ✅ complete 2026-04-24 | 9/9 plans |
+| 25 | Circle-API-Sync | ✅ complete 2026-04-25 | 9/9 plans (6 bugs + pivot) |
+| 26 | `/community` + Featured-Tools-API | ✅ complete 2026-04-25 | 6/6 plans, merged to develop |
+| 22.6 | 9/9 | Complete    | 2026-04-25 |
+| 27 | Copy-Pass & Launch-Cleanup | ⏳ pending | Finales Wording, Dummy-Data raus, Meta/SEO-Pass, Signup-Go-Entscheidung |
 
 **Dependencies:**
-- Phase 20 / 20.5 / 20.6 müssen durch — sonst Nav + DS-Baseline nicht stabil
-- Phase 21 (`/about`) blockt Phase 22 + 26 (Transparenz-Link auf `/about#verein`, FAQ-Deep-Link von Landing-Kurz-FAQ)
-- Phase 22.7 (Tools-Polish) depends on Phase 23 (`/join` muss als Redirect-Target existieren für „Kostenlos registrieren")
-- Phase 22.5 (`/events`) depends on Phase 23 (Signup-Gate) für Non-Member-Anmelde-Flow
-- Phase 25 (Circle-Sync) aktiviert Live-Signup-Tech (Gate bleibt zu bis Phase 27)
-- Phase 26 (`/community`) kann parallel zu 23/24/25 starten (MDX-Content ist unabhängig); Block B (API-Integration) wartet auf Phase 25
+- Phase 20 / 20.5 / 20.6 ✅ — Nav + DS-Baseline stabil
+- Phase 22.6 Track A (Events) depends on Phase 23 (Signup-Gate) ✅ + Phase 26 (MDX-Pipeline-Pattern als Vorlage) ✅
+- Phase 22.6 Track B (Tools-Polish) depends on Phase 23 ✅ (`/join` als Redirect-Target) und Track A (Events-Route als gültiges Nav-Link-Target)
 - Phase 27 (Copy-Pass) ist die letzte — alles andere muss durch sein
 
-**Empfohlene Reihenfolge (Pfad A — B2B-Conversion priorisiert):**
+**Reihenfolge ab 2026-04-25:**
 
 ```
-20.6 → 21 /about → 22 /partner → 23 /join → 22.7 tools-polish → 22.5 /events → 24 /test → 25 circle-sync → 26 /community → 27 copy-pass → LAUNCH
+[Phase 22.6 Track A Events] → [Phase 22.6 Track B Tools-Polish] → [Phase 27 Copy-Pass] → LAUNCH
 ```
-
-Rationale:
-- Partner-Seite früh, weil B2B-Leads für Vereinsarbeit wichtig (Spenden, Hochschul-Deals)
-- `/join` muss vor 22.7 und 22.5, weil beide `/join` als Redirect-Target brauchen
-- Tools-Polish vor Events, weil kleiner Scope (schnell done, Sichtbarer UX-Win)
-- `/test` spät, weil Placeholder-Content OK und optional
-- Circle-Sync nach allen UI-Seiten, weil aktiviert echte Live-Pipeline
-- `/community` kann auch früher eingeschoben werden, wenn Content-Pipeline gewünscht
-- Copy-Pass ganz am Ende
 
 **Design-System Source of Truth (ab 2026-04-21):** `brand/Generation AI Design System/` ist canonical für alle UI-Arbeiten ab Phase 20.5. CSS-Variablen aus `colors_and_type.css`, Typografie per DS-Spec (Geist Sans für Body, Geist Mono für Display/H1/Buttons/Labels/Tags), Motion-Easings aus DS (`--ease-out: cubic-bezier(0.16, 1, 0.3, 1)`, `--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1)`, `--dur-fast|normal|slow`). Kein Gradient-Spam, kein Glassmorphism, keine Stock-Fotos, kein dekorativer Blob. Connection-Motif durchgezogen — Signal-Grid im Hero, Linien+Knoten+roter Faden als Leitsignatur.
 
@@ -725,67 +712,40 @@ Plans:
 
 **Release:** patch
 
+
 ---
 
-### Phase 22.5: `/events`-Seite 🆕 (2026-04-23)
+### Phase 22.6: Pre-Launch Polish Bundle 🆕 (2026-04-25, konsolidiert aus 22.5+22.7)
 
-**Goal:** Members-Only-Akquisitionshebel — öffentlich sichtbare Events-Liste, Anmeldung gated hinter Signup.
-**Requirements:** Aus Simons Konzept §5 (Website-Konzept-Dokument, April 2026)
-**Depends on:** Phase 20.6 (Nav + DS), Phase 23 (`/join` als Signup-Gate-Target)
-**Detailplan:** `.planning/phases/22.5-events-page/22.5-CONTEXT.md`
-**Out-of-Scope:** Circle-API-Integration, Luma-Embed, ICS-Download V1, Event-Filter (Roadmap).
+**Goal:** Vor dem Launch zwei letzte Conversion-Bausteine: Track A baut `/events` (Members-Only-Akquisitionshebel mit MDX-Pipeline) + Track B poliert tools-app (Login-Button-Umbau + Hero + Nav-Sync zur Hauptdomain).
+**Requirements:** A-req-1..A-req-8 (Track A) + B-req-1..B-req-5 (Track B), kanonisch in `.planning/phases/22.6-pre-launch-polish-bundle/22.6-VALIDATION.md`
+**Depends on:** Phase 20.6 (DS+Nav baseline) ✅, Phase 23 (Signup-Gate als Redirect-Target) ✅, Phase 26 (MDX-Pipeline-Pattern als Vorlage) ✅
+**Detailplan:** `.planning/phases/22.6-pre-launch-polish-bundle/22.6-CONTEXT.md`
+**Out-of-Scope:** Circle-API-Integration, Luma-Embed, ICS-Download (V1), Filter/Search auf /events, packages/ui-Nav-Extraktion (Phase 28+), echte Event-Fotos, Plausible-Analytics.
 
-**Scope:**
-- Hero + 3-Kachel-Grid „Kommende Events"
-- Event-Metadaten: Titel, Datum+Uhrzeit, Format-Tag, Level-Tag, Ort, Partner (bei Masterclasses), Anmelde-Button
-- Event-Modal bei Klick: Beschreibung, Agenda, Speaker, optional ICS
-- Anmelde-Flow: Non-Member → `/join?redirect_after=/events/[slug]`, Member → direkt zu `ctaUrl`
-- Formate-Sektion (Workshops / Speaker Sessions / Masterclasses)
-- Members-Only-Hinweis („Kostenlos, 2 Minuten")
-- Archiv (minimal, Foto + Titel + Datum + Recap, keine Modals)
-- Abschluss-CTA „Jetzt beitreten"
-- **MDX-Pipeline** in `apps/website/content/events/` als Content-Source (kein CMS)
-- Event-Detail als Standalone-Route `/events/[slug]` für SEO + Share-Links
+**Plans:** 9/9 plans complete
+
+Plans:
+- [x] 22.6-01-PLAN.md — Wave 0 Track A: Test scaffolds (events.spec.ts + events.test.ts mit fixme/todo placeholders)
+- [x] 22.6-02-PLAN.md — Wave 1 Track A: MDX-Adapter `lib/mdx/events.ts` (reuse Phase-26 reader.ts) + 5 Placeholder-MDX-Files (3 upcoming + 2 archive, A-10) + 7 Vitest tests fill (A-req-7)
+- [x] 22.6-03-PLAN.md — Wave 2 Track A: /events Server-Component + Client-Wrapper + Hero (LabeledNodes) + Grid + Mehr-Anzeigen + Formats + Members-Only + Final-CTA + 3 Playwright tests fill (A-req-1, A-req-2, A-req-3)
+- [x] 22.6-04-PLAN.md — Wave 3 Track A: EventModal (@base-ui/react/dialog, focus-trap, mobile-sheet) + Anmelde-Flow mit Open-Redirect-Guard + 2 Playwright tests fill (A-req-4, A-req-5)
+- [x] 22.6-05-PLAN.md — Wave 4 Track A: /events/[slug] Standalone-Page + Archive-Section + Sitemap + final 2 Playwright tests fill + Lighthouse human-gate (A-req-6, A-req-8)
+- [x] 22.6-06-PLAN.md — Wave 5 Track B: Test scaffold tools-app.spec.ts mit 5 fixme placeholders
+- [x] 22.6-07-PLAN.md — Wave 6 Track B: Login-Button-Umbau in GlobalLayout.tsx (Primary Kostenlos-registrieren + Secondary Einloggen, utm_source=tools, sync-anchor comment) + 2 Playwright tests fill (B-req-1, B-req-2, B-req-5)
+- [x] 22.6-08-PLAN.md — Wave 6 Track B: ToolsHero component + HomeLayout integration (inside scroll container, Pitfall 2) + 1 Playwright test fill (B-req-3)
+- [x] 22.6-09-PLAN.md — Wave 7 Track B: Nav-Items Mirror (5 cross-domain links + Tools active + mobile burger) + final 2 Playwright tests fill + Lighthouse + side-by-side parity human-gate (B-req-4, B-req-5)
 
 **Success Criteria:**
-- [ ] MDX-Pipeline liest Files, rendert kommende Events chronologisch
-- [ ] Modal mit Details öffnet, schließt via Escape
-- [ ] Anmelde-Flow gegated korrekt (Auth-Check + Redirect)
-- [ ] Archiv rendert minimal ohne Modals
-- [ ] Lighthouse `/events` > 90, Mobile responsive, A11y-korrekt
+- [ ] /events live mit funktionierendem Modal-Flow (Member → ctaUrl, Non-Member → /join?redirect_after=)
+- [ ] /events/[slug] indexiert in sitemap.xml
+- [ ] tools-app Nav strukturell identisch zur Hauptdomain (5 items, Tools active)
+- [ ] Logged-out tools-app: 2 CTAs sichtbar (Primary Register + Secondary Login mit utm_source=tools)
+- [ ] Logged-in tools-app: User-Menu unverändert (Phase 12/19 Regression-Schutz)
+- [ ] Lighthouse ≥ 90 auf /events UND tools-app (Lucas-verifiziert)
+- [ ] 12 Playwright-Tests grün (7 Track A + 5 Track B) + 7 Vitest unit tests grün
 
-**Release:** patch
-
----
-
-### Phase 22.7: Tools-Subdomain Polish 🆕 (2026-04-23)
-
-**Goal:** tools.generation-ai.org visuell und navigatorisch mit Hauptdomain harmonisieren — Logo-Link-Fix, Login-Button-Umbau, Tools-Hero, Sticky-Nav-Sync.
-**Requirements:** Aus Simons Konzept §6
-**Depends on:** Phase 20.6 (DS baseline), Phase 23 (`/join` als Redirect-Target für „Kostenlos registrieren")
-**Detailplan:** `.planning/phases/22.7-tools-subdomain-polish/22.7-CONTEXT.md`
-**Out-of-Scope:** Tool-Kachel-Redesign, Agent-Chat-Änderungen, Lite/Pro-Logik-Änderungen, Tool-Detailseiten, Suchfeld (alles Roadmap).
-
-**Scope:**
-- **Logo-Link-Fix (CRIT):** Header-Logo führt aktuell auf Community-Subdomain → muss auf `generation-ai.org`
-- **Login-Button-Umbau:**
-  - Primary: `Kostenlos registrieren` → `https://generation-ai.org/join`
-  - Secondary: `Bereits Mitglied? → Einloggen` → tools-app `/login`
-- **Tools-Hero** über Filter-Tabs: „// deine ki-tool-bibliothek / # KI-Tools, kuratiert für dich. / Über 100 Tools, sortiert nach Anwendungsfall. Brauchst du Hilfe? Frag unseren Agenten."
-- **Sticky-Nav-Sync:** identisches Scroll-Verhalten wie Hauptdomain
-- **Nav-Struktur-Alignment:** gleiche Items wie Hauptdomain, Tools aktiv markiert, andere Items führen auf Hauptdomain
-
-**Success Criteria:**
-- [ ] Logo-Link korrekt (landet auf Hauptdomain, nicht Community)
-- [ ] Login-Button-Differenzierung sichtbar für ausgeloggte User
-- [ ] Neue Hero-Sektion über Filter-Tabs
-- [ ] Sticky-Nav-Verhalten identisch zur Hauptdomain
-- [ ] Mobile Burger-Menü korrekt mit Primary-CTA
-- [ ] Keine Regression in Lite/Pro-Sichtbarkeit oder Agent-Chat
-
-**Release:** patch
-
----
+**Release:** patch (V1 Events live, tools-app polish; kein Breaking Change, kein neues Backend)
 
 ### Phase 23: `/join` Fragebogen-Flow
 
@@ -935,10 +895,52 @@ Plans:
 
 ---
 
+### Phase 22.8: UI-Konsistenz & Section-Refinement 🆕 (2026-04-25)
+
+**Goal:** Letzte Polish-Phase vor Launch. DS-First-Audit + Token-/Component-Compliance + Page-Refinements aus Call mit Simon/Janna (Granola-Transkript 2026-04-25). Foundation-Layer (3 Plans) MUSS vor Page-Layer (10 Plans) — sonst werden Inkonsistenzen pro Page neu eingebaut während sie gefixt werden.
+**Depends on:** Phase 22.6 (Track A+B fertig + in develop), Phase 26 UAT durch, Plan 20.6-01 (Lücken-Hero) als separater Cycle vor 22.8
+**Detailplan:** `.planning/phases/22.8-ui-konsistenz-section-refinement/22.8-CONTEXT.md`
+**Out-of-Scope:** Prisma in jeder Form (eigene Phase nach Launch), Member-Trust-/Eventfotos-/Testimonial-Sektionen (Daten fehlen), Copy-Final + SEO (Phase 27), Hero-Lücken-Visualisierung (Plan 20.6-01)
+
+**Scope:**
+
+Foundation (vor Page-Plans):
+- DS-Compliance-Audit (read-only Inventur, Output: Decision-Tabelle)
+- Token-Source- + Component-Compliance-Fix (depends-on-audit)
+- Favicon-Konsolidierung (Asset-Swap auf Tools-App-Source-of-Truth)
+
+Page-Level (depends-on Foundation):
+- `/partner` Hero: 4 Boxen + Lucide-Icons + Hierarchie
+- `/partner` Nav-Logik (Click vs Chevron-Dropdown)
+- `/join` Status-Switch + Studienfeld + Schema-Migration (UI + DB + Email als Bündel)
+- `/join` Hero-Layout-Refinement (Headline links / Form rechts)
+- `/about` Verein-Formular (mailto raus, Resend Pattern aus `/partner`)
+- `/about` Timeline / Story-Scroll (motion useScroll, reduced-motion-Fallback)
+- `/test` Fragetypen-Ausbau (Drag-Drop + Slider + Matching final + 10 echte Fragen)
+- `/test` Spider-Chart + Ergebnisseite final + Level-Definitionen
+- `/test` als öffentlicher Conversion-Hebel (Auth-Gate weg, sessionStorage, Migration nach Anmeldung)
+- Theme-Toggle Konsistenz Website ↔ tools-app (Microanimations angleichen)
+
+**Plans:** 13/13 skeleton, Foundation 3 (autonomous: 01,03 / depends-on-audit: 02), Page 10 (autonomous: 04,05,07,08,10,11,13 / Stop-Gate: 06 Schema-Migration, 09 Timeline UAT, 12 Auth-Refactor)
+
+**Success Criteria:**
+- [ ] DS-Audit-Report committed mit Decision-Tabelle, must+should Findings gefixt
+- [ ] Favicon visuell identisch auf Website / tools-app / Mailings
+- [ ] `/partner` 4 Boxen above-the-fold mit Icons, Nav-Click → Übersicht
+- [ ] `/join` Status-Switch funktional, Schema migrated, Hero-Layout neu
+- [ ] `/about` Verein-Formular submitted, Timeline scroll-revealt
+- [ ] `/test` ohne Login lauffähig, 4 Fragetypen + Spider-Chart + Conversion-CTA
+- [ ] Theme-Toggle Website rendert + animiert wie tools-app
+- [ ] Lighthouse > 90, Build grün mit `ƒ` (dynamic) auf allen Routes (CSP)
+
+**Release:** Patch innerhalb v4.0 (additive Schema-Migration, kein Breaking Change)
+
+---
+
 ### Phase 27: Copy-Pass & Launch-Cleanup 🆕 (2026-04-23)
 
 **Goal:** Struktur steht, Copy wird geschärft. Alle Placeholder-Texte auf Simons Konzept + `brand/VOICE.md`. Dummy-Data raus, echte Inhalte rein. Finaler Durchgang vor Launch.
-**Depends on:** Alle prior Phasen (20.6, 21, 22, 22.5, 22.7, 23, 24, 25, 26)
+**Depends on:** Alle prior Phasen (20.6, 21, 22, 22.5, 22.7, 23, 24, 25, 26, 22.6, 22.8)
 **Detailplan:** `.planning/phases/27-copy-pass-and-launch-cleanup/27-CONTEXT.md`
 **Out-of-Scope:** Neue Features, Redesigns, neue Seiten.
 

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllArticles } from "@/lib/mdx/community";
+import { getUpcomingEvents, getPastEvents } from "@/lib/mdx/events";
 
 // Phase 26 Plan 03 Task 3 — Dynamic sitemap reading content/community/*.mdx
 // at build/revalidate. RESEARCH §7.1. Block A success-criterion: sitemap lists
@@ -22,6 +23,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(a.frontmatter.date),
     changeFrequency: "monthly",
     priority: 0.7,
+  }));
+
+  // Phase 22.6 Plan 05 — Event entries (A-req-8).
+  // Includes both upcoming + past events so every /events/[slug] is indexed.
+  const upcomingEvents = await getUpcomingEvents();
+  const pastEvents = await getPastEvents();
+  const allEvents = [...upcomingEvents, ...pastEvents];
+
+  const eventEntries: MetadataRoute.Sitemap = allEvents.map((e) => ({
+    url: `${BASE}/events/${e.slug}`,
+    lastModified: new Date(e.frontmatter.date),
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
   }));
 
   return [
@@ -56,5 +70,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     ...articleEntries,
+    {
+      url: `${BASE}/events`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    ...eventEntries,
   ];
 }
