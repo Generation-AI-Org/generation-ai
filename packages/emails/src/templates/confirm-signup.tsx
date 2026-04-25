@@ -98,7 +98,7 @@ export default function ConfirmSignupEmail({
           margin: '24px 0 16px 0',
         }}
       >
-        <strong>Während du wartest:</strong>
+        <strong>Was du jetzt schon nutzen kannst:</strong>
       </Text>
 
       <Text
@@ -110,10 +110,35 @@ export default function ConfirmSignupEmail({
           margin: '0 0 16px 0',
         }}
       >
-        Mit deinem Account hast du ab jetzt Zugriff auf den{' '}
-        <strong>Pro-Assistenten</strong> (Gemini 3 Flash mit Web-Suche und
-        Tools) und die komplette KI-Tool-Bibliothek mit allen Member-Tipps.
-        Klick einmal — du bist direkt eingeloggt:
+        Als Member hast du <strong>exklusiven Zugriff auf den Pro-Assistenten</strong> —
+        unseren KI-Assistenten mit Web-Suche und Spezial-Tools. Damit
+        strukturierst du Hausarbeiten, recherchierst Quellen und lässt dir
+        komplexe Konzepte in Sekunden verständlich erklären.
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 16px 0',
+        }}
+      >
+        Plus: die komplette <strong>KI-Tool-Bibliothek</strong> mit Member-Tipps
+        zu ChatGPT, Claude, Cursor &amp; Co. — kuratiert für dein Studium.
+      </Text>
+
+      <Text
+        className="email-text"
+        style={{
+          fontSize: '16px',
+          lineHeight: 1.65,
+          color: tokens.light.text,
+          margin: '0 0 24px 0',
+        }}
+      >
+        Ein Klick und du bist drin:
       </Text>
 
       <Section style={{ textAlign: 'center', margin: '40px 0' }}>
