@@ -17,8 +17,8 @@ export function Footer() {
               <Logo
                 context="footer"
                 theme={theme}
-                colorway={theme === "dark" ? "white" : "red-on-pink"}
-                size="md"
+                colorway={theme === "dark" ? "neon" : "red"}
+                size="lg"
               />
             </Link>
             <p className="mt-3 max-w-xs text-sm font-mono leading-[1.45] text-[var(--text-on-header)]">
@@ -31,7 +31,7 @@ export function Footer() {
 
           {/* Col 2: Sitemap */}
           <nav aria-label="Sitemap">
-            <h3 className="mb-3 text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-on-header)]">
+            <h3 className="mb-3 text-xs font-mono font-bold uppercase tracking-wider text-[var(--accent)]">
               Entdecken
             </h3>
             <ul className="space-y-1.5 text-sm font-mono">
@@ -94,7 +94,7 @@ export function Footer() {
 
           {/* Col 3: Legal */}
           <nav aria-label="Rechtliches">
-            <h3 className="mb-3 text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-on-header)]">
+            <h3 className="mb-3 text-xs font-mono font-bold uppercase tracking-wider text-[var(--accent)]">
               Rechtliches
             </h3>
             <ul className="space-y-1.5 text-sm font-mono">
@@ -119,7 +119,7 @@ export function Footer() {
 
           {/* Col 4: Kontakt + Social */}
           <div>
-            <h3 className="mb-3 text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-on-header)]">
+            <h3 className="mb-3 text-xs font-mono font-bold uppercase tracking-wider text-[var(--accent)]">
               Kontakt
             </h3>
             <ul className="space-y-1.5 text-sm font-mono">
