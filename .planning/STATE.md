@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: planning
-last_updated: "2026-04-25T17:24:28.763Z"
+last_updated: "2026-04-26T00:00:00.000Z"
 progress:
   total_phases: 20
   completed_phases: 16
   total_plans: 104
-  completed_plans: 101
-  percent: 97
+  completed_plans: 103
+  percent: 99
 ---
 
 # Project State — Generation AI Monorepo
@@ -21,16 +21,16 @@ progress:
 **Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 22.6 ✅ done + auf develop, **Phase 22.8 Foundation-Layer ✅ DONE 2026-04-25**, Phase 27 last-before-launch)
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 22.8 (UI-Konsistenz & Section-Refinement) — Foundation-Layer 3/3 Plans DONE. Bereit für Layer-2/3 oder Phase 27.
+**Phase:** 22.8 (UI-Konsistenz & Section-Refinement) — Foundation-Layer 3/3 + Page-Layer 2/10 DONE (04 Partner-Hero, 05 Partner-Nav). 8 Page-Plans offen (06–13).
 **Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
 
 - `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
 - `develop` = Staging-Sammelbranch (Stand: + Phase 25 + Phase 26 + **Phase 22.6** ✅ gemerged 2026-04-25, commits 7b1a5aa → ac01d32 → a28821b). Vercel-Preview: https://website-git-develop-lucas-projects-e78962e9.vercel.app
 - `feature/phase-22.6-pre-launch-polish` = ✅ DONE + gemerged in develop (kann gelöscht werden)
-- `feature/phase-22.8-ui-konsistenz-section-refinement` = Foundation-Layer 3/3 Plans done (commits b0116d1, ef7055d, plus 22.8-01 + 22.8-02). Bereit für Merge in develop nach Luca-OK.
+- `feature/phase-22.8-ui-konsistenz-section-refinement` = Foundation 3/3 + Page-Layer 2/10 done (commits b0116d1, ef7055d, 22d3e90, d76e92e, 77d8510). Page-Layer 06–13 offen — separater Cycle.
 - `feature/phase-26-community` = abgeschlossen, im Worktree `generation-ai-phase-26` (UAT pending)
 
-**Last Updated:** 2026-04-25 17:25 (Phase 22.8-03 Favicon-Konsolidierung DONE — cross-domain favicon parity via Next.js File Convention, byte-identical icons in beiden Apps, tools-app metadata.icons-Block gestrippt, OG-image-default.png deployed. Build green beide Apps. Visuelle Cross-Domain-Verifikation post-deploy für Luca.)
+**Last Updated:** 2026-04-26 (Plan 22.8-04 Partner-Hero 4 Lucide-Icon-Boxen + 22.8-05 Nav Split-Button DONE auf feature/phase-22.8 — commits d76e92e + 77d8510. tsc grün. Visual-Check pending. 8 Page-Plans 06–13 für separate Session.)
 **Site Status:** ✅ Live auf generation-ai.org (alter Stand, Phase 20+20.5). Develop-Preview hat alles bisher Gebaute (Phase 21–26 + 22.6). Phase 26 UAT noch offen (`pending-luca`). 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke). 1 HUMAN-UAT-Item Phase 22.6 offen (Logged-in Regression).
 
 ## 🚀 Next Session Start Here
