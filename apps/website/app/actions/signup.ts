@@ -109,8 +109,8 @@ const schema = z
     birth_year: z.coerce
       .number()
       .int()
-      .min(1940)
-      .max(new Date().getFullYear() - 12)
+      .min(1950)
+      .max(2010)
       .optional()
       .or(z.literal('').transform(() => undefined)),
     marketing_opt_in: z.boolean().default(false),

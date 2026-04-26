@@ -98,6 +98,13 @@ const degreeOptions = [
   'Sonstiges',
 ]
 
+const MIN_BIRTH_YEAR = 1950
+const MAX_BIRTH_YEAR = 2010
+const birthYearOptions = Array.from(
+  { length: MAX_BIRTH_YEAR - MIN_BIRTH_YEAR + 1 },
+  (_, index) => String(MAX_BIRTH_YEAR - index),
+)
+
 const levelBySlug: Record<LevelSlug, Level> = {
   neugieriger: 1,
   einsteiger: 2,
@@ -245,8 +252,7 @@ export function JoinFormCard({ compact = false, onSuccess }: JoinFormCardProps) 
     draft.status === 'student' || draft.status === 'early_career'
   const hasCustomUniversity =
     !!draft.university && !UNIVERSITIES.includes(draft.university)
-  const showUniversityOther =
-    draft.university === OTHER_UNIVERSITY || hasCustomUniversity
+  const showUniversityOther = draft.university === OTHER_UNIVERSITY
   const showStudyFieldOther =
     draft.status === 'student' && draft.study_field === 'Sonstiges'
   // R4.7 — Hydrate from sessionStorage on mount (client-only, post-SSR)
@@ -328,8 +334,11 @@ export function JoinFormCard({ compact = false, onSuccess }: JoinFormCardProps) 
       const trimmed = value.trim()
       if (!trimmed) return 'Das Feld darf nicht leer sein.'
       const year = Number(trimmed)
-      const maxYear = new Date().getFullYear() - 12
-      if (!Number.isInteger(year) || year < 1940 || year > maxYear) {
+      if (
+        !Number.isInteger(year) ||
+        year < MIN_BIRTH_YEAR ||
+        year > MAX_BIRTH_YEAR
+      ) {
         return 'Gib ein plausibles Geburtsjahr ein.'
       }
     }
@@ -523,7 +532,7 @@ export function JoinFormCard({ compact = false, onSuccess }: JoinFormCardProps) 
             onChange={(e) => updateField('first_name', e.target.value)}
             onBlur={handleTextBlur}
             autoComplete="given-name"
-            placeholder="Luca"
+            placeholder="Max"
             className={`w-full rounded-2xl border border-[var(--border)] bg-bg px-4 text-text placeholder:text-text-muted transition-colors focus-visible:border-[var(--border-accent)] focus-visible:outline-none ${compact ? 'py-2.5' : 'py-3'}`}
             style={{
               fontSize: 'var(--fs-body)',
@@ -565,7 +574,7 @@ export function JoinFormCard({ compact = false, onSuccess }: JoinFormCardProps) 
             onChange={(e) => updateField('last_name', e.target.value)}
             onBlur={handleTextBlur}
             autoComplete="family-name"
-            placeholder="Schweigmann"
+            placeholder="Mustermann"
             className={`w-full rounded-2xl border border-[var(--border)] bg-bg px-4 text-text placeholder:text-text-muted transition-colors focus-visible:border-[var(--border-accent)] focus-visible:outline-none ${compact ? 'py-2.5' : 'py-3'}`}
             style={{
               fontSize: 'var(--fs-body)',
@@ -598,20 +607,21 @@ export function JoinFormCard({ compact = false, onSuccess }: JoinFormCardProps) 
         >
           GEBURTSJAHR
         </label>
-        <input
+        <select
           id={`${formId}-birth-year`}
           name="birth_year"
-          type="number"
-          inputMode="numeric"
-          min={1940}
-          max={new Date().getFullYear() - 12}
           required
           disabled={isPending}
           value={draft.birth_year}
           onChange={(e) => updateField('birth_year', e.target.value)}
-          onBlur={handleTextBlur}
+          onBlur={(e) => {
+            const err = validateField(e.target.name, e.target.value)
+            setFieldErrors((prev) => ({
+              ...prev,
+              birth_year: err || undefined,
+            }))
+          }}
           autoComplete="bday-year"
-          placeholder="2001"
           className={`w-full rounded-2xl border border-[var(--border)] bg-bg px-4 text-text placeholder:text-text-muted transition-colors focus-visible:border-[var(--border-accent)] focus-visible:outline-none ${compact ? 'py-2.5' : 'py-3'}`}
           style={{
             fontSize: 'var(--fs-body)',
@@ -621,7 +631,14 @@ export function JoinFormCard({ compact = false, onSuccess }: JoinFormCardProps) 
           aria-describedby={
             fieldErrors.birth_year ? `${formId}-birth-year-error` : undefined
           }
-        />
+        >
+          <option value="">Auswählen</option>
+          {birthYearOptions.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
         {fieldErrors.birth_year && (
           <p
             id={`${formId}-birth-year-error`}

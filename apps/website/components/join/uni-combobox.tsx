@@ -41,7 +41,7 @@ export function UniCombobox(props: UniComboboxProps) {
   // Filter universities based on typed input
   const filtered = useMemo(() => {
     const q = props.value.trim().toLowerCase()
-    if (!q) return UNIVERSITIES.slice(0, 15) // Show top 15 when input is empty + focused
+    if (!q) return UNIVERSITIES
     const matches = UNIVERSITIES.filter((u) => u.toLowerCase().includes(q))
     if (matches.length === 0) return [OTHER_UNIVERSITY]
     if (!matches.includes(OTHER_UNIVERSITY)) return [...matches, OTHER_UNIVERSITY]
@@ -196,7 +196,7 @@ export function UniCombobox(props: UniComboboxProps) {
               prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }
             }
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute z-50 mt-1 w-full max-h-64 overflow-y-auto rounded-2xl border border-[var(--border)] bg-bg-elevated shadow-md"
+            className="absolute z-50 mt-1 max-h-72 w-full overflow-y-auto overscroll-contain rounded-2xl border border-[var(--border)] bg-bg-elevated shadow-md"
           >
             {filtered.map((option, idx) => {
               const isActive = idx === activeIndex
