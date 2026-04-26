@@ -62,11 +62,12 @@ export function PartnerTabSystem({ activeTyp, onTypChange }: PartnerTabSystemPro
         e.preventDefault()
         const nextSlug = TABS[nextIndex]!.slug
         setActiveTyp(nextSlug)
-        // Focus the next tab button
-        const nextBtn = tabRailRef.current?.querySelector(
-          `[id="${nextSlug}-tab"]`,
-        ) as HTMLButtonElement | null
-        nextBtn?.focus()
+        requestAnimationFrame(() => {
+          const nextBtn = tabRailRef.current?.querySelector(
+            `[id="${nextSlug}-tab"]`,
+          ) as HTMLButtonElement | null
+          nextBtn?.focus()
+        })
       }
     },
     [setActiveTyp],

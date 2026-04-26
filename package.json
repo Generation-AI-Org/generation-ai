@@ -15,6 +15,7 @@
     "dev:tools": "turbo dev --filter=@genai/tools-app",
     "build:website": "turbo build --filter=@genai/website",
     "build:tools": "turbo build --filter=@genai/tools-app",
+    "gsd": "node scripts/gsd.cjs",
     "knip": "knip",
     "changeset": "changeset",
     "version": "changeset version",
