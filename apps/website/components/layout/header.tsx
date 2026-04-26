@@ -81,28 +81,35 @@ export function Header() {
               )
             )}
 
-            {/* Für Partner Dropdown (D-17) */}
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                aria-label="Für Partner Untermenü öffnen"
-                className="px-3 py-2 text-sm font-mono text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)] inline-flex items-center gap-1 transition-colors cursor-pointer"
+            {/* Für Partner: Text → /partner overview, Chevron → Dropdown (D-17) */}
+            <div className="flex items-center">
+              <Link
+                href="/partner"
+                className="px-3 py-2 text-sm font-mono text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)] transition-colors"
               >
                 Für Partner
-                <ChevronDown className="w-3.5 h-3.5" aria-hidden="true" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-bg-card border-border">
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-text-muted text-xs font-mono uppercase tracking-wider">
-                    Für Partner
-                  </DropdownMenuLabel>
-                  {partnerSubItems.map((item) => (
-                    <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
-                      <span className="font-mono text-sm">{item.label}</span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  aria-label="Partnertypen-Untermenü öffnen"
+                  className="-ml-1 p-1.5 text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)] transition-colors cursor-pointer"
+                >
+                  <ChevronDown className="w-3.5 h-3.5" aria-hidden="true" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-bg-card border-border">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-text-muted text-xs font-mono uppercase tracking-wider">
+                      Für Partner
+                    </DropdownMenuLabel>
+                    {partnerSubItems.map((item) => (
+                      <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
+                        <span className="font-mono text-sm">{item.label}</span>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
             {/* Über uns */}
             <Link
@@ -225,22 +232,34 @@ function MobileNavList({ prefersReducedMotion }: MobileNavListProps) {
 
             {item.type === "partner" && (
               <div>
-                <button
-                  type="button"
-                  onClick={() => setIsPartnerOpen((v) => !v)}
-                  aria-expanded={isPartnerOpen}
-                  aria-controls="mobile-partner-submenu"
-                  className="w-full flex items-center justify-between px-3 py-3 text-base font-mono text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
-                >
-                  <span>Für Partner</span>
-                  <ChevronDown
-                    className={cn(
-                      "w-4 h-4 transition-transform",
-                      isPartnerOpen && "rotate-180"
-                    )}
-                    aria-hidden="true"
+                <div className="flex items-center">
+                  <SheetClose
+                    render={
+                      <Link
+                        href="/partner"
+                        className="flex-1 px-3 py-3 text-base font-mono text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)] hover:bg-white/5 rounded-lg transition-colors"
+                      >
+                        Für Partner
+                      </Link>
+                    }
                   />
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsPartnerOpen((v) => !v)}
+                    aria-expanded={isPartnerOpen}
+                    aria-controls="mobile-partner-submenu"
+                    aria-label="Partnertypen anzeigen"
+                    className="p-3 text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <ChevronDown
+                      className={cn(
+                        "w-4 h-4 transition-transform",
+                        isPartnerOpen && "rotate-180"
+                      )}
+                      aria-hidden="true"
+                    />
+                  </button>
+                </div>
                 {isPartnerOpen && (
                   <ul
                     id="mobile-partner-submenu"
