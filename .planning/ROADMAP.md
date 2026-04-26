@@ -1007,6 +1007,15 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.3: Tools-App als Website-Teil integrieren (BACKLOG)
+
+**Goal:** Tools-App soll sich wie ein Teil der Website anfühlen, nicht wie ein separates Produkt. Gemeinsamer Rahmen für alle öffentlichen Flächen: Header, Navigation, Theme-Toggle, Footer-/Shell-Logik, Abstände, Logo-Verhalten und Light/Dark-Auftritt sollen grundsätzlich der Website folgen. Abweichungen nur dort behalten, wo die Tools-App sie funktional braucht (z.B. Suche, eingeloggter Zustand, Settings/Signout, app-spezifische aktive Route).
+**Requirements:** TBD — Website-Frame als Blueprint definieren, Tools-App-Shell dagegen mappen, notwendige Unterschiede explizit festlegen, Desktop/Mobile/Light/Dark prüfen.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ---
 
 *v2.0 Roadmap erstellt: 2026-04-13*
