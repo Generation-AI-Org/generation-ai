@@ -74,7 +74,7 @@ export default function AttachmentsPanel({ attachments, onRemove, onAddLink }: A
 
             <button
               onClick={() => onRemove(attachment.id)}
-              className="shrink-0 p-1 rounded-md text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all"
+              className="shrink-0 p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--status-error)] hover:bg-[var(--status-error)]/10 opacity-0 group-hover:opacity-100 transition-all"
               title="Entfernen"
             >
               <X className="w-4 h-4" />

@@ -480,7 +480,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
               className={`px-2 py-0.5 text-xs font-medium rounded-full border ${
                 mode === 'member'
                   ? 'bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/25'
-                  : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
+                  : 'bg-[var(--status-success)]/10 text-[var(--status-success)] border-[var(--status-success)]/25'
               }`}
             >
               {mode === 'member' ? 'Pro' : 'Lite'}
@@ -860,7 +860,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                   className={`px-2 py-0.5 text-xs font-medium rounded-full border ${
                     mode === 'member'
                       ? 'bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/25'
-                      : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
+                      : 'bg-[var(--status-success)]/10 text-[var(--status-success)] border-[var(--status-success)]/25'
                   }`}
                 >
                   {mode === 'member' ? 'Pro' : 'Lite'}
@@ -1169,7 +1169,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
 
       {/* Voice Error Toast */}
       {voiceError && (
-        <div className="fixed bottom-28 right-4 md:right-6 z-50 px-4 py-3 bg-red-500/90 text-white text-sm rounded-xl shadow-lg animate-in slide-in-from-bottom-2 max-w-xs">
+        <div className="fixed bottom-28 right-4 md:right-6 z-50 px-4 py-3 bg-[var(--status-error)]/90 text-white text-sm rounded-xl shadow-lg animate-in slide-in-from-bottom-2 max-w-xs">
           {voiceError}
         </div>
       )}

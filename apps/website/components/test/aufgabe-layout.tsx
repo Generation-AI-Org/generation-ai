@@ -87,7 +87,7 @@ export function AufgabeLayout({
             'min-h-[48px] rounded-full px-8 py-3 font-mono text-sm font-bold tracking-[0.02em]',
             'bg-[var(--accent)] text-[var(--text-on-accent)]',
             'transition-all duration-150',
-            'hover:scale-[1.02] hover:shadow-[0_0_20px_var(--accent-glow)]',
+            'hover:scale-[1.03] hover:shadow-[0_0_20px_var(--accent-glow)]',
             'disabled:cursor-not-allowed disabled:opacity-50',
             'disabled:hover:scale-100 disabled:hover:shadow-none',
           )}

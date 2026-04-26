@@ -38,7 +38,9 @@ export function buildOrganizationSchema(): JsonLdOrganization {
     "@type": "Organization",
     name: "Generation AI",
     url: "https://generation-ai.org",
-    logo: "https://generation-ai.org/og-image.jpg",
+    // Dynamische OG-Image-Generation (Phase 22.6 Track B) ist die canonical
+    // Brand-Logo-Quelle. Static og-image.jpg wurde in Plan 22.8-03 entfernt.
+    logo: "https://generation-ai.org/opengraph-image",
     description:
       "Die erste kostenlose KI-Community für Studierende im DACH-Raum",
     sameAs: [],
@@ -113,7 +115,9 @@ export function buildArticleSchema(fm: ArticleFrontmatter): JsonLdArticle {
       url: "https://generation-ai.org",
       logo: {
         "@type": "ImageObject",
-        url: "https://generation-ai.org/og-image.jpg",
+        // Dynamische OG-Image-Generation (Phase 22.6 Track B) ist die canonical
+        // Brand-Logo-Quelle. Static og-image.jpg wurde in Plan 22.8-03 entfernt.
+        url: "https://generation-ai.org/opengraph-image",
       },
     },
     mainEntityOfPage: {

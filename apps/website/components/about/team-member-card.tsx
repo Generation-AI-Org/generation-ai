@@ -20,7 +20,7 @@ type TeamMemberCardProps = {
 export function TeamMemberCard({ name }: TeamMemberCardProps) {
   return (
     <div
-      className="rounded-2xl bg-bg-card border border-border px-4 py-6 flex flex-col items-center gap-3 text-center transition-all duration-[var(--dur-normal)] ease-[var(--ease-out)] hover:border-[var(--border-accent)] hover:-translate-y-0.5"
+      className="rounded-2xl bg-bg-card border border-border px-4 py-6 flex flex-col items-center gap-3 text-center transition-all duration-300 ease-[var(--ease-out)] hover:border-[var(--border-accent)] hover:scale-[1.015] hover:shadow-[0_0_20px_var(--accent-glow)]"
     >
       <div aria-label={`Platzhalter-Porträt von ${name}`}>
         <PlaceholderAvatar name={name} size="md" />

@@ -22,7 +22,7 @@
   --color-secondary-foreground: var(--text);
   --color-muted: var(--bg-elevated);
   --color-muted-foreground: var(--text-muted);
-  --color-destructive: #DC2626;
+  --color-destructive: var(--status-error);
   --color-input: var(--border);
   --color-ring: var(--text);
 

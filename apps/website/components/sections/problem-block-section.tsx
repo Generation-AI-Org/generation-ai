@@ -195,7 +195,7 @@ export function ProblemBlockSection() {
 
 function EvidenceCard({ item }: { item: Evidence }) {
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[20px] border border-border bg-bg-card p-7 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-[3px] hover:border-[var(--border-accent)] hover:shadow-[0_0_32px_var(--accent-glow)]">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[20px] border border-border bg-bg-card p-7 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.015] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)]">
       {/* Header: Number-Marker */}
       <header className="mb-5 flex items-center gap-3">
         <span className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--accent)]">

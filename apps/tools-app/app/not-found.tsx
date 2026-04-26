@@ -8,7 +8,7 @@ export default function NotFound() {
       <p className="text-text-muted text-sm mb-8">Dieses Tool oder dieser Guide existiert nicht.</p>
       <Link
         href="/"
-        className="bg-neon text-black-brand font-semibold px-5 py-2.5 rounded-lg hover:bg-neon/90 transition-colors text-sm"
+        className="bg-neon text-black-brand font-semibold px-5 py-2.5 rounded-full hover:bg-neon/90 transition-colors text-sm"
       >
         Zurück zur Bibliothek
       </Link>

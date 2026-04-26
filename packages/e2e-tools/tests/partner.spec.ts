@@ -97,7 +97,7 @@ test.describe('/partner page', () => {
     await expect(page.locator('[data-section="partner-kontakt"]')).toBeVisible()
     // Form fields
     await expect(page.getByLabel('Name')).toBeVisible()
-    await expect(page.getByLabel('E-Mail')).toBeVisible()
+    await expect(page.getByRole('textbox', { name: 'E-Mail' })).toBeVisible()
     await expect(page.getByLabel('Organisation')).toBeVisible()
   })
 
@@ -126,10 +126,10 @@ test.describe('/partner page', () => {
     await page.goto(PARTNER_URL)
     await page.locator('[data-section="partner-kontakt"]').scrollIntoViewIfNeeded()
 
-    await expect(page.getByText('Alex')).toBeVisible()
-    await expect(page.getByText('Janna')).toBeVisible()
-    await expect(page.getByText('Simon')).toBeVisible()
-    await expect(page.getByText('Head of Partnerships')).toBeVisible()
+    await expect(page.getByText('Alex', { exact: true })).toBeVisible()
+    await expect(page.getByText('Janna', { exact: true })).toBeVisible()
+    await expect(page.getByText('Simon', { exact: true })).toBeVisible()
+    await expect(page.getByText('Head of Partnerships', { exact: true })).toBeVisible()
   })
 
   test('trust section renders', async ({ page }) => {

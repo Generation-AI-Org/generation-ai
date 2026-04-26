@@ -9,7 +9,6 @@ beforeAll(() => {
     unobserve() {}
     disconnect() {}
   }
-  // @ts-expect-error — jsdom doesn't define this
   globalThis.ResizeObserver = RO
 })
 

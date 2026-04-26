@@ -131,7 +131,7 @@ export function OfferingSection() {
 function SurfaceCard({ surface }: { surface: Surface }) {
   const content = (
     <article
-      className="group relative flex h-full min-h-[420px] flex-col overflow-hidden rounded-[20px] border border-border bg-bg-card p-7 transition-all hover:-translate-y-[3px] hover:border-[var(--border-accent)] hover:shadow-[0_0_32px_var(--accent-glow)] motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+      className="group relative flex h-full min-h-[420px] flex-col overflow-hidden rounded-[20px] border border-border bg-bg-card p-7 transition-all hover:scale-[1.015] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)] motion-reduce:hover:scale-100 motion-reduce:transition-none"
       style={{
         transitionDuration: "var(--dur-normal)",
         transitionTimingFunction: "var(--ease-out)",

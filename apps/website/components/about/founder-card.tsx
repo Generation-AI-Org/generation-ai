@@ -52,7 +52,7 @@ export function FounderCard({
   linkedinUrl,
 }: FounderCardProps) {
   return (
-    <div className="rounded-2xl bg-bg-card border border-border px-6 py-8 flex flex-col items-center gap-4 text-center min-h-[320px] max-w-sm transition-all duration-[var(--dur-normal)] ease-[var(--ease-out)] hover:border-[var(--border-accent)]">
+    <div className="rounded-2xl bg-bg-card border border-border px-6 py-8 flex flex-col items-center gap-4 text-center min-h-[320px] max-w-sm transition-all duration-300 ease-[var(--ease-out)] hover:border-[var(--border-accent)] hover:scale-[1.015] hover:shadow-[0_0_20px_var(--accent-glow)]">
       <div aria-label={`Platzhalter-Porträt von ${name}`}>
         <PlaceholderAvatar name={name} size="lg" />
       </div>

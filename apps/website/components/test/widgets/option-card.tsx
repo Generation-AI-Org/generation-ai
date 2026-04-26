@@ -47,7 +47,7 @@ export function OptionCard({
       className={cn(
         'relative min-h-[80px] min-w-[48px] rounded-2xl border p-4 text-left transition-all duration-150',
         'bg-[var(--bg-card)]',
-        'hover:border-[var(--slate-7)] hover:bg-[var(--bg-elevated)] hover:scale-[1.01]',
+        'hover:border-[var(--border-accent)] hover:bg-[var(--bg-elevated)] hover:scale-[1.015] hover:shadow-[0_0_20px_var(--accent-glow)]',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] focus-visible:outline-offset-2',
         'disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100',
         selected

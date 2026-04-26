@@ -75,7 +75,7 @@ export default function FilterBar({ active, onChange, mode = 'public' }: FilterB
           <form action="/auth/signout" method="POST" className="shrink-0">
             <button
             type="submit"
-            className="group shrink-0 px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium bg-[var(--border)] text-[var(--text-muted)] hover:bg-red-500/10 hover:text-red-400 transition-all duration-300 flex items-center gap-2 hover:scale-[1.02]"
+            className="group shrink-0 px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium bg-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--status-error)]/10 hover:text-[var(--status-error)] transition-all duration-300 flex items-center gap-2 hover:scale-[1.02]"
             title="Abmelden"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

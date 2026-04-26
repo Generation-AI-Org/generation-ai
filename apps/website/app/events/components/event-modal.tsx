@@ -264,7 +264,7 @@ export function EventModal({ event, open, onOpenChange }: EventModalProps) {
                 type="button"
                 onClick={handleAnmelden}
                 data-action="anmelden"
-                className="mt-8 w-full bg-[var(--accent)] text-[var(--text-on-accent)] font-mono font-bold text-sm rounded-full px-4 py-3 hover:shadow-[0_0_20px_var(--accent-glow)] hover:scale-[1.02] transition-all duration-[var(--dur-fast)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+                className="mt-8 w-full bg-[var(--accent)] text-[var(--text-on-accent)] font-mono font-bold text-sm rounded-full px-4 py-3 hover:shadow-[0_0_20px_var(--accent-glow)] hover:scale-[1.03] transition-all duration-[var(--dur-fast)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
               >
                 {isAuthed === true
                   ? "Jetzt zum Event anmelden →"

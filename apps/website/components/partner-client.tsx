@@ -115,7 +115,7 @@ export function PartnerClient({ nonce, initialTyp }: PartnerClientProps) {
     <MotionConfig nonce={nonce}>
       <Header />
       <main id="main-content" className="min-h-screen pt-20">
-        <PartnerHeroSection />
+        <PartnerHeroSection onTypChange={handleTypChange} />
         {/* Hero → TabSystem: keine SectionTransition (immediate continuity) */}
         <PartnerTabSystem activeTyp={activeTyp} onTypChange={handleTypChange} />
         <SectionTransition variant="soft-fade" />

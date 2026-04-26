@@ -86,7 +86,7 @@ export async function CommunityPreviewSection() {
                 <li key={article.slug}>
                   <Link
                     href={`/community/artikel/${article.slug}`}
-                    className="group block h-full rounded-2xl border border-border bg-bg-card p-5 transition-all hover:-translate-y-[2px] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+                    className="group block h-full rounded-2xl border border-border bg-bg-card p-5 transition-all hover:scale-[1.015] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:hover:scale-100 motion-reduce:transition-none"
                     style={{
                       outlineColor: "var(--text)",
                       transitionDuration: "var(--dur-normal)",
@@ -167,7 +167,7 @@ function PreviewCard({
     <a
       href={href}
       {...linkProps}
-      className="group block rounded-2xl border border-border bg-bg-card p-5 transition-all hover:-translate-y-[2px] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+      className="group block rounded-2xl border border-border bg-bg-card p-5 transition-all hover:scale-[1.015] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:hover:scale-100 motion-reduce:transition-none"
       style={{
         outlineColor: "var(--text)",
         transitionDuration: "var(--dur-normal)",
