@@ -14,6 +14,7 @@
 // Tokens: DS-only.
 
 import { motion, useReducedMotion } from "motion/react"
+import { AboutVereinForm } from "@/components/about/about-verein-form"
 
 export function AboutVereinSection() {
   const prefersReducedMotion = useReducedMotion()
@@ -34,7 +35,7 @@ export function AboutVereinSection() {
       data-section="about-verein"
       className="relative bg-bg py-24 sm:py-32"
     >
-      <div className="mx-auto max-w-3xl px-6">
+      <div className="mx-auto max-w-5xl px-6">
         {/* Eyebrow */}
         <motion.div
           {...fadeIn}
@@ -61,37 +62,43 @@ export function AboutVereinSection() {
           Gemeinnützig. Transparent. Offen.
         </motion.h2>
 
-        {/* Verein-Card mit Accent-Hairline oben */}
-        <motion.div
-          {...fadeIn}
-          className="relative mt-12 rounded-2xl border border-border bg-bg-card px-8 py-10 overflow-hidden"
-        >
-          {/* Accent-Hairline oben — echo zu final-cta-section.tsx */}
-          <div
-            aria-hidden="true"
-            className="absolute top-0 left-0 right-0 h-[2px]"
-            style={{
-              background: "var(--accent)",
-              opacity: 0.6,
-              boxShadow: "0 0 8px var(--accent-glow)",
-            }}
-          />
-
-          <div
-            className="flex flex-col gap-6 text-text-secondary text-pretty"
-            style={{ fontSize: "var(--fs-body)", lineHeight: "var(--lh-body)" }}
+        <div className="mt-12 grid gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+          {/* Verein-Card mit Accent-Hairline oben */}
+          <motion.div
+            {...fadeIn}
+            className="relative overflow-hidden rounded-2xl border border-border bg-bg-card px-8 py-10"
           >
-            <p>
-              Generation AI ist ein gemeinnütziger Verein in Gründung (e.V. i.G.). Gewinnorientiert sind wir nicht — alles, was reinkommt, geht in die Community zurück.
-            </p>
-            <p>
-              Finanziert durch Fördermittel, Sachleistungen und Partnerschaften mit Unternehmen, Stiftungen und Hochschulen. Keine Paywall, keine versteckten Kosten für Mitglieder.
-            </p>
-            <p>
-              Mitgliedschaft ist kostenlos. Aktives Mitmachen — Events organisieren, Content beitragen, Strategie mitbauen — ist möglich und willkommen.
-            </p>
-          </div>
-        </motion.div>
+            {/* Accent-Hairline oben — echo zu final-cta-section.tsx */}
+            <div
+              aria-hidden="true"
+              className="absolute left-0 right-0 top-0 h-[2px]"
+              style={{
+                background: "var(--accent)",
+                opacity: 0.6,
+                boxShadow: "0 0 8px var(--accent-glow)",
+              }}
+            />
+
+            <div
+              className="flex flex-col gap-6 text-pretty text-text-secondary"
+              style={{ fontSize: "var(--fs-body)", lineHeight: "var(--lh-body)" }}
+            >
+              <p>
+                Generation AI ist ein gemeinnütziger Verein in Gründung (e.V. i.G.). Gewinnorientiert sind wir nicht — alles, was reinkommt, geht in die Community zurück.
+              </p>
+              <p>
+                Finanziert durch Fördermittel, Sachleistungen und Partnerschaften mit Unternehmen, Stiftungen und Hochschulen. Keine Paywall, keine versteckten Kosten für Mitglieder.
+              </p>
+              <p>
+                Mitgliedschaft ist kostenlos. Aktives Mitmachen — Events organisieren, Content beitragen, Strategie mitbauen — ist möglich und willkommen.
+              </p>
+            </div>
+          </motion.div>
+
+          <motion.div {...fadeIn}>
+            <AboutVereinForm />
+          </motion.div>
+        </div>
       </div>
     </section>
   )

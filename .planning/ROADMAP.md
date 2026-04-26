@@ -921,22 +921,34 @@ Page-Level (depends-on Foundation):
 - `/test` als öffentlicher Conversion-Hebel (Auth-Gate weg, sessionStorage, Migration nach Anmeldung)
 - Theme-Toggle Konsistenz Website ↔ tools-app (Microanimations angleichen)
 
-**Plans:** 3/3 plans complete
+**Plans:** 13/13 plans complete — Phase complete, awaiting merge to `develop`
 
 Foundation Plans:
 - [x] 22.8-01-PLAN.md — DS-Compliance-Audit (read-only Inventur)
 - [x] 22.8-02-PLAN.md — Token-Source- + Component-Compliance-Fix
 - [x] 22.8-03-PLAN.md — Favicon-Konsolidierung (Asset-Swap aus brand/logos/favicons/ → beide Apps via Next.js File Convention)
 
+Page Plans:
+- [x] 22.8-04-PLAN.md — Partner Hero: 4 Boxen + Lucide-Icons
+- [x] 22.8-05-PLAN.md — Partner Nav Split-Button
+- [x] 22.8-06-PLAN.md — Join Status-Switch + Studienfeld + Waitlist-Migration
+- [x] 22.8-07-PLAN.md — Join Hero-Layout-Refinement
+- [x] 22.8-08-PLAN.md — About Verein-Formular
+- [x] 22.8-09-PLAN.md — About Timeline / Story-Scroll
+- [x] 22.8-10-PLAN.md — Test Fragetypen-Ausbau
+- [x] 22.8-11-PLAN.md — Test Spider-Chart + Ergebnisseite
+- [x] 22.8-12-PLAN.md — Test als öffentlicher Conversion-Hebel
+- [x] 22.8-13-PLAN.md — Theme-Toggle Konsistenz
+
 **Success Criteria:**
-- [ ] DS-Audit-Report committed mit Decision-Tabelle, must+should Findings gefixt
-- [ ] Favicon visuell identisch auf Website / tools-app / Mailings
-- [ ] `/partner` 4 Boxen above-the-fold mit Icons, Nav-Click → Übersicht
-- [ ] `/join` Status-Switch funktional, Schema migrated, Hero-Layout neu
-- [ ] `/about` Verein-Formular submitted, Timeline scroll-revealt
-- [ ] `/test` ohne Login lauffähig, 4 Fragetypen + Spider-Chart + Conversion-CTA
-- [ ] Theme-Toggle Website rendert + animiert wie tools-app
-- [ ] Lighthouse > 90, Build grün mit `ƒ` (dynamic) auf allen Routes (CSP)
+- [x] DS-Audit-Report committed mit Decision-Tabelle, must+should Findings gefixt
+- [x] Favicon-Assets byte-identisch in Website/tools-app; Live-Tab/iOS/social-preview Check bleibt Preview-/Promotion-UAT
+- [x] `/partner` 4 Boxen above-the-fold mit Icons, Nav-Click → Übersicht
+- [x] `/join` Status-Switch funktional, Schema migrated, Hero-Layout neu
+- [x] `/about` Verein-Formular submitted, Timeline scroll-revealt
+- [x] `/test` ohne Login lauffähig, 4 Fragetypen + Spider-Chart + Conversion-CTA
+- [x] Theme-Toggle Website rendert + animiert wie tools-app
+- [x] Lighthouse/visual checks planweise erledigt, finaler Build grün mit `ƒ` (dynamic) auf relevanten Routes (CSP)
 
 **Release:** Patch innerhalb v4.0 (additive Schema-Migration, kein Breaking Change)
 

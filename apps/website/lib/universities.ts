@@ -1,16 +1,17 @@
 /**
  * Phase 23 — Uni-Dropdown-Liste für /join Waitlist-Form.
  *
- * Enthält die ~40 grössten deutschen Hochschulen (nach Studierendenzahl 2024/25),
- * gemischt Unis + HAWs, plus 4 Fallback-Optionen am Ende für Non-Students
- * (D-12: Combobox + Freitext-Option für Berufstätig / Ausbildung / Andere).
+ * Enthält 50 wichtige Hochschulen im DACH-Raum, gemischt Unis + HAWs,
+ * plus deterministische Fallback-Option "Andere" am Ende.
  *
- * Der Combobox akzeptiert ausserdem Freitext — diese Liste ist nur die
- * Autocomplete-Quelle, kein Whitelist-Filter. Validation erfolgt in der
- * Server-Action (Plan 23-03): jeder nicht-leere String ist erlaubt.
+ * Auswertung: "Andere" bleibt als stabiler Wert in `waitlist.university`.
+ * Der optionale Freitext dazu wird separat als Kontext gesendet, damit
+ * Analytics nicht durch Schreibvarianten fragmentieren.
  */
 
 export type University = string
+
+export const OTHER_UNIVERSITY = 'Andere'
 
 export const UNIVERSITIES: University[] = [
   // Grosse Unis (Studierenden-top-15 2024/25)
@@ -56,15 +57,27 @@ export const UNIVERSITIES: University[] = [
   'Universität Augsburg',
   'Universität Mainz (Johannes Gutenberg)',
   'Universität Marburg',
-  'Universität Münster (FH)',
   'Universität Osnabrück',
+  'Universität Passau',
+  'Universität Erlangen-Nürnberg',
+  'Universität Trier',
+  'Universität des Saarlandes',
+  'Bergische Universität Wuppertal',
 
   // Ausgewählte grosse HAWs / Hochschulen
+  'IU Internationale Hochschule',
+  'FOM Hochschule',
   'Hochschule München',
   'Hochschule für Angewandte Wissenschaften Hamburg (HAW)',
+  'FH Aachen',
   'Technische Hochschule Köln',
+  'Hochschule der Medien Stuttgart (HdM)',
   'Hochschule Niederrhein',
   'Frankfurt University of Applied Sciences',
+  'Hochschule Darmstadt',
+  'Berliner Hochschule für Technik',
+  'Hochschule Mannheim',
+  'Hochschule Bonn-Rhein-Sieg',
 
   // Österreich & Schweiz (DACH)
   'Universität Wien',
@@ -72,8 +85,6 @@ export const UNIVERSITIES: University[] = [
   'ETH Zürich',
   'Universität Zürich',
 
-  // Fallback-Optionen (immer am Ende, D-12)
-  'Andere Hochschule',
-  'Ausbildung / Berufstätig',
-  'Kein Studium',
+  // Deterministischer Fallback (immer am Ende)
+  OTHER_UNIVERSITY,
 ]

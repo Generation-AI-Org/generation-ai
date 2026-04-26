@@ -122,21 +122,35 @@ export function Header() {
 
           {/* Right side: Theme Toggle + CTA + Mobile Hamburger */}
           <div className="flex items-center gap-2">
-            {/* Theme Toggle (D-20, existing pattern preserved) */}
+            {/* SYNC: tools-app GlobalLayout theme toggle microinteraction. */}
             <button
+              type="button"
               onClick={toggleTheme}
               className={cn(
-                "p-2.5 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer",
-                theme === "dark" ? "bg-white/10 hover:bg-white/20" : "bg-black/20 hover:bg-black/30"
+                "group flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-full p-2.5 transition-[background-color,transform] duration-300 hover:scale-105 active:scale-[0.96]",
+                theme === "dark"
+                  ? "bg-white/10 hover:bg-white/15"
+                  : "bg-black/20 hover:bg-black/25"
               )}
               aria-label={theme === "dark" ? "Light Mode aktivieren" : "Dark Mode aktivieren"}
+              aria-pressed={theme === "dark"}
             >
               {theme === "dark" ? (
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="h-5 w-5 text-white transition-transform duration-300 group-hover:rotate-45 group-hover:scale-110 group-active:rotate-45 group-active:scale-110"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               ) : (
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="h-5 w-5 text-white transition-transform duration-300 group-hover:rotate-[-20deg] group-hover:scale-110 group-active:rotate-[-20deg] group-active:scale-110"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                 </svg>
               )}

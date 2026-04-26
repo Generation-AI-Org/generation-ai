@@ -66,6 +66,75 @@ test.describe("Phase 21 — /about", () => {
     await expect(page.locator("#werte")).toBeAttached()
   })
 
+  test("Story-Timeline rendert die Vereinsentstehung", async ({ page }) => {
+    await page.goto(`${BASE_URL}/about#story`)
+
+    const timeline = page.locator('[data-timeline="about-story"]')
+    await expect(timeline).toBeVisible()
+    await expect(
+      page.getByRole("list", { name: "Timeline der Vereinsentstehung" }),
+    ).toBeVisible()
+
+    for (const label of ["Februar 2026", "März 2026", "April 2026", "Mai 2026"]) {
+      await expect(timeline.getByText(label)).toBeVisible()
+    }
+  })
+
+  test("Story-Timeline bleibt mit Reduced Motion lesbar", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" })
+    await page.goto(`${BASE_URL}/about#story`)
+
+    const timeline = page.locator('[data-timeline="about-story"]')
+    await expect(timeline).toBeVisible()
+    await expect(timeline.getByText("Generation AI wird Verein.")).toBeVisible()
+  })
+
+  test("Verein-Formular ist sichtbar und validiert Pflichtfelder", async ({
+    page,
+  }) => {
+    await page.goto(`${BASE_URL}/about#verein`)
+
+    const form = page.locator("#verein-form")
+    await expect(form).toBeVisible()
+    await expect(form.getByLabel("Name")).toBeVisible()
+    await expect(form.getByRole("textbox", { name: "E-Mail" })).toBeVisible()
+    await expect(form.getByLabel("Wobei willst du mitmachen?")).toBeVisible()
+
+    await form.getByRole("button", { name: "Nachricht senden" }).click()
+    await expect(form.getByText("Dieses Feld ist erforderlich.").first()).toBeVisible()
+  })
+
+  test("Mitmach-CTA springt zum Verein-Formular", async ({ page }) => {
+    await page.goto(`${BASE_URL}/about#mitmach`)
+
+    const link = page.getByRole("link", { name: "Zum Formular" })
+    await expect(link).toHaveAttribute("href", "#verein-form")
+    await link.click()
+    await expect(page.locator("#verein-form")).toBeInViewport()
+  })
+
+  test("Verein-Formular Submit zeigt Success-Screen (skip ohne Resend)", async ({
+    page,
+  }) => {
+    if (!process.env.RESEND_API_KEY) {
+      test.skip()
+      return
+    }
+
+    await page.goto(`${BASE_URL}/about#verein`)
+    const form = page.locator("#verein-form")
+
+    await form.getByLabel("Name").fill("Test Person")
+    await form.getByRole("textbox", { name: "E-Mail" }).fill("test@example.com")
+    await form.getByLabel("Wobei willst du mitmachen?").selectOption("Tech")
+    await form.getByLabel("Nachricht (optional)").fill("Ich möchte beim Tech-Team helfen.")
+    await form.getByRole("button", { name: "Nachricht senden" }).click()
+
+    await expect(page.getByText("Nachricht angekommen.")).toBeVisible({
+      timeout: 10000,
+    })
+  })
+
   test("FAQ-Accordion öffnet bei Klick auf Trigger", async ({ page }) => {
     await page.goto(`${BASE_URL}/about#faq`)
 

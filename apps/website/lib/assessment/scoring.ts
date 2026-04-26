@@ -181,14 +181,12 @@ export function scoreAssessment(
     prompting: 0,
     agents: 0,
     application: 0,
-    literacy: 0,
   }
   const dimMax: Record<Dimension, number> = {
     tools: 0,
     prompting: 0,
     agents: 0,
     application: 0,
-    literacy: 0,
   }
 
   for (const question of questions) {
@@ -205,7 +203,6 @@ export function scoreAssessment(
     prompting: 0,
     agents: 0,
     application: 0,
-    literacy: 0,
   }
   for (const d of DIMENSIONS) {
     const max = dimMax[d]

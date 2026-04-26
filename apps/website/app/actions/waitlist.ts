@@ -17,9 +17,17 @@ import { submitJoinSignup } from './signup'
 export type WaitlistFieldErrors = Partial<{
   email: string
   name: string
+  status: string
   university: string
+  university_other: string
+  study_field: string
+  study_field_other: string
   study_program: string
   consent: string
+  source: string
+  pre: string
+  skills: string
+  test_result: string
 }>
 
 export type WaitlistResult =
@@ -32,46 +40,101 @@ export type WaitlistResult =
 
 const ERR_REQUIRED = 'Das Feld darf nicht leer sein.'
 const ERR_EMAIL = 'Hmm, die Mail-Adresse passt noch nicht ganz.'
-const ERR_CONSENT = 'Du musst der Datenschutzerklärung zustimmen, um fortzufahren.'
+const ERR_CONSENT =
+  'Du musst der Datenschutzerklärung zustimmen, um fortzufahren.'
 const ERR_GENERIC =
   "Ups, da ist was schiefgelaufen. Probier's nochmal oder schreib uns: admin@generation-ai.org"
 const ERR_RATE_LIMIT = 'Zu viele Versuche. Bitte warte einen Moment.'
 const ERR_INVALID = 'Ungültige Anfrage.'
 
-const schema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, ERR_REQUIRED)
-    .email(ERR_EMAIL)
-    .max(320), // RFC 5321
-  name: z.string().trim().min(1, ERR_REQUIRED).max(200),
-  university: z.string().trim().min(1, ERR_REQUIRED).max(200),
-  study_program: z
-    .string()
-    .trim()
-    .max(200)
-    .optional()
-    .or(z.literal('').transform(() => undefined)),
-  marketing_opt_in: z.boolean().default(false),
-  // consent must be literal true — checkbox either 'on' (HTML default) or 'true'
-  consent: z.literal(true, { message: ERR_CONSENT }),
-  // CR-01 fix: block protocol-relative URLs (`//evil.com`) and backslash tricks
-  // (`/\evil.com`). Only accept same-origin absolute paths starting with a
-  // safe character class. Persisted to DB and consumed by Phase 25 — see D-03
-  // and WR-06. Must NOT land in an `href` without an additional
-  // `new URL(value, expectedOrigin)` origin check on the consumer side.
-  redirect_after: z
-    .string()
-    .trim()
-    .max(500)
-    .optional()
-    .or(z.literal('').transform(() => undefined))
-    .refine(
-      (v) => !v || /^\/[A-Za-z0-9_\-][A-Za-z0-9_\-/?=&.%#]*$/.test(v),
-      'redirect_after must be a same-origin absolute path',
-    ),
-})
+const waitlistStatusSchema = z.enum(['student', 'working', 'alumni', 'other'])
+
+const schema = z
+  .object({
+    email: z.string().trim().min(1, ERR_REQUIRED).email(ERR_EMAIL).max(320), // RFC 5321
+    name: z.string().trim().min(1, ERR_REQUIRED).max(200),
+    status: waitlistStatusSchema.default('student'),
+    university: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    university_other: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    study_field: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    study_field_other: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    study_program: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    marketing_opt_in: z.boolean().default(false),
+    // consent must be literal true — checkbox either 'on' (HTML default) or 'true'
+    consent: z.literal(true, { message: ERR_CONSENT }),
+    // CR-01 fix: block protocol-relative URLs (`//evil.com`) and backslash tricks
+    // (`/\evil.com`). Only accept same-origin absolute paths starting with a
+    // safe character class. Persisted to DB and consumed by Phase 25 — see D-03
+    // and WR-06. Must NOT land in an `href` without an additional
+    // `new URL(value, expectedOrigin)` origin check on the consumer side.
+    redirect_after: z
+      .string()
+      .trim()
+      .max(500)
+      .optional()
+      .or(z.literal('').transform(() => undefined))
+      .refine(
+        (v) => !v || /^\/[A-Za-z0-9_\-][A-Za-z0-9_\-/?=&.%#]*$/.test(v),
+        'redirect_after must be a same-origin absolute path',
+      ),
+    source: z
+      .enum(['test', 'test-sparring', 'join-page'])
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    pre: z
+      .enum(['neugieriger', 'einsteiger', 'fortgeschritten', 'pro', 'expert'])
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    skills: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    test_result: z
+      .string()
+      .trim()
+      .max(3000)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      (data.status === 'student' || data.status === 'alumni') &&
+      !data.university
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['university'],
+        message: ERR_REQUIRED,
+      })
+    }
+  })
 
 // ---------------------------------------------------------------------------
 // Resend client (singleton)
@@ -87,14 +150,17 @@ const resend = new Resend(process.env.RESEND_API_KEY)
  * Phase 23 — /join Waitlist submit (V1 implementation, kept for feature-flag rollback).
  *
  * D-10 Interface Contract (stable across Phase 25 swap):
- *   Input:  FormData with fields (email, name, university, study_program?,
- *           marketing_opt_in?, consent, redirect_after?, website [honeypot])
+ *   Input:  FormData with fields (email, name, status, university?,
+ *           study_field?, study_program?, marketing_opt_in?, consent,
+ *           redirect_after?, website [honeypot])
  *   Output: WaitlistResult — { ok: true } | { ok: false, error, fieldErrors? }
  *
  * Phase 25 keeps this function internally and adds `submitJoinSignup` as V2.
  * `submitJoinWaitlist` (the exported API) becomes a router (see bottom of file).
  */
-async function legacySubmitWaitlist(formData: FormData): Promise<WaitlistResult> {
+async function legacySubmitWaitlist(
+  formData: FormData,
+): Promise<WaitlistResult> {
   // -- 1. Honeypot check (silent reject, no hint to bots) -------------------
   const honeypot = formData.get('website')
   if (honeypot !== null && honeypot !== '') {
@@ -113,13 +179,23 @@ async function legacySubmitWaitlist(formData: FormData): Promise<WaitlistResult>
   const raw = {
     email: formData.get('email')?.toString() ?? '',
     name: formData.get('name')?.toString() ?? '',
+    status: formData.get('status')?.toString() ?? 'student',
     university: formData.get('university')?.toString() ?? '',
+    university_other: formData.get('university_other')?.toString() ?? '',
+    study_field: formData.get('study_field')?.toString() ?? '',
+    study_field_other: formData.get('study_field_other')?.toString() ?? '',
     study_program: formData.get('study_program')?.toString() ?? '',
     // checkboxes: 'on' in default HTML, '' or null otherwise; we coerce manually
     marketing_opt_in:
-      formData.get('marketing_opt_in') === 'on' || formData.get('marketing_opt_in') === 'true',
-    consent: formData.get('consent') === 'on' || formData.get('consent') === 'true',
+      formData.get('marketing_opt_in') === 'on' ||
+      formData.get('marketing_opt_in') === 'true',
+    consent:
+      formData.get('consent') === 'on' || formData.get('consent') === 'true',
     redirect_after: formData.get('redirect_after')?.toString() ?? '',
+    source: formData.get('source')?.toString() ?? '',
+    pre: formData.get('pre')?.toString() ?? '',
+    skills: formData.get('skills')?.toString() ?? '',
+    test_result: formData.get('test_result')?.toString() ?? '',
   }
 
   const parsed = schema.safeParse(raw)
@@ -151,11 +227,13 @@ async function legacySubmitWaitlist(formData: FormData): Promise<WaitlistResult>
   const payload: WaitlistInsert = {
     email: data.email.toLowerCase(),
     name: data.name,
-    university: data.university,
+    status: data.status,
+    university: data.university ?? null,
+    study_field: data.study_field ?? null,
     study_program: data.study_program ?? null,
     marketing_opt_in: data.marketing_opt_in,
     redirect_after: sanitizedRedirect,
-    source: 'join-page',
+    source: data.source ?? 'join-page',
   }
 
   const { error: insertError } = await supabase.from('waitlist').insert(payload)
@@ -165,7 +243,9 @@ async function legacySubmitWaitlist(formData: FormData): Promise<WaitlistResult>
     // (do not tell bots or curious users "this email is already on the list")
     // Postgres error code for unique_violation is '23505'
     if (insertError.code === '23505') {
-      console.log('[waitlist] duplicate email — returning ok without re-sending mail')
+      console.log(
+        '[waitlist] duplicate email — returning ok without re-sending mail',
+      )
       return { ok: true }
     }
     console.error('[waitlist] insert failed:', insertError)
@@ -183,7 +263,10 @@ async function legacySubmitWaitlist(formData: FormData): Promise<WaitlistResult>
       html,
     })
   } catch (mailError) {
-    console.error('[waitlist] confirmation mail failed (non-blocking):', mailError)
+    console.error(
+      '[waitlist] confirmation mail failed (non-blocking):',
+      mailError,
+    )
   }
 
   return { ok: true }
@@ -207,7 +290,9 @@ async function legacySubmitWaitlist(formData: FormData): Promise<WaitlistResult>
  * (`{ ok: true } | { ok: false; error: string; fieldErrors?: ... }`), so the
  * cast below is safe.
  */
-export async function submitJoinWaitlist(formData: FormData): Promise<WaitlistResult> {
+export async function submitJoinWaitlist(
+  formData: FormData,
+): Promise<WaitlistResult> {
   if (process.env.SIGNUP_ENABLED === 'true') {
     const result = await submitJoinSignup(formData)
     return result as WaitlistResult

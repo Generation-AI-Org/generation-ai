@@ -10,7 +10,7 @@ import {
 } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { ChevronDown } from 'lucide-react'
-import { UNIVERSITIES } from '@/lib/universities'
+import { OTHER_UNIVERSITY, UNIVERSITIES } from '@/lib/universities'
 
 export interface UniComboboxProps {
   id: string
@@ -43,10 +43,8 @@ export function UniCombobox(props: UniComboboxProps) {
     const q = props.value.trim().toLowerCase()
     if (!q) return UNIVERSITIES.slice(0, 15) // Show top 15 when input is empty + focused
     const matches = UNIVERSITIES.filter((u) => u.toLowerCase().includes(q))
-    if (matches.length === 0) {
-      // Non-student fallback (D-12): user can submit free-text value
-      return [`Andere: ${props.value.trim()} übernehmen`]
-    }
+    if (matches.length === 0) return [OTHER_UNIVERSITY]
+    if (!matches.includes(OTHER_UNIVERSITY)) return [...matches, OTHER_UNIVERSITY]
     return matches
   }, [props.value])
 
@@ -95,10 +93,7 @@ export function UniCombobox(props: UniComboboxProps) {
         clearTimeout(blurTimerRef.current)
         blurTimerRef.current = null
       }
-      // Strip the "Andere: ... übernehmen" wrapper if present — keep raw typed text
-      const free = option.match(/^Andere: (.+) übernehmen$/)
-      const value = free ? free[1] : option
-      onChange(value)
+      onChange(option)
       setOpen(false)
       setActiveIndex(-1)
       inputRef.current?.focus()
@@ -205,7 +200,7 @@ export function UniCombobox(props: UniComboboxProps) {
           >
             {filtered.map((option, idx) => {
               const isActive = idx === activeIndex
-              const isFreetext = /^Andere: .+ übernehmen$/.test(option)
+              const isOther = option === OTHER_UNIVERSITY
               return (
                 <li
                   key={`${option}-${idx}`}
@@ -225,7 +220,7 @@ export function UniCombobox(props: UniComboboxProps) {
                   onMouseEnter={() => setActiveIndex(idx)}
                   className={`px-4 py-2.5 text-text cursor-pointer outline-none ${
                     isActive ? 'bg-[var(--bg-card)]' : 'hover:bg-[var(--bg-card)]'
-                  } ${isFreetext ? 'italic text-text-secondary' : ''}`}
+                  } ${isOther ? 'italic text-text-secondary' : ''}`}
                   style={{ fontSize: 'var(--fs-body)' }}
                 >
                   {option}

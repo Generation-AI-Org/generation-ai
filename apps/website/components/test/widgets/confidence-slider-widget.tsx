@@ -74,6 +74,7 @@ export function ConfidenceSliderWidget({
       data-widget-type="confidence"
       className="mx-auto w-full max-w-2xl space-y-6"
       onKeyDown={handleKeyDown}
+      tabIndex={0}
     >
       {/* Output to evaluate */}
       <div className="rounded-xl bg-[var(--slate-2)] p-4 font-mono text-sm leading-relaxed text-[var(--text)]">

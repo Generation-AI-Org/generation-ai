@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { Dimension, LevelSlug } from '@/lib/assessment/types'
 import { useAssessment } from '@/lib/assessment/use-assessment'
+import { buildSkillsParam } from '@/lib/assessment/storage'
 
 export interface ResultsCtaClusterProps {
   slug: LevelSlug
@@ -21,18 +22,10 @@ export function buildJoinHref(
   slug: LevelSlug,
   skills: Record<Dimension, number>,
 ): string {
-  const dimensions: Dimension[] = [
-    'tools',
-    'prompting',
-    'agents',
-    'application',
-    'literacy',
-  ]
-  const skillsParam = dimensions.map((d) => `${d}:${skills[d]}`).join(',')
   const qs = new URLSearchParams({
     pre: slug,
     source: 'test',
-    skills: skillsParam,
+    skills: buildSkillsParam(skills),
   }).toString()
   return `/join?${qs}`
 }

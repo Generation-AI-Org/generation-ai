@@ -1,9 +1,9 @@
 // apps/website/lib/assessment/types.ts
 // Phase 24 — Assessment type system.
-// Discriminated-union shapes for all 9 widget question/answer variants.
+// Discriminated-union shapes for all widget question/answer variants.
 // No runtime code — types + interfaces + a single readonly constant.
 
-export type Dimension = 'tools' | 'prompting' | 'agents' | 'application' | 'literacy'
+export type Dimension = 'tools' | 'prompting' | 'agents' | 'application'
 
 export type Level = 1 | 2 | 3 | 4 | 5
 
@@ -20,13 +20,7 @@ export type WidgetType =
   | 'confidence'
   | 'fill'
 
-export const DIMENSIONS: readonly Dimension[] = [
-  'tools',
-  'prompting',
-  'agents',
-  'application',
-  'literacy',
-] as const
+export const DIMENSIONS: readonly Dimension[] = ['tools', 'prompting', 'agents', 'application'] as const
 
 // ---------------------------------------------------------------------------
 // Question shapes (discriminated union on `type`)
@@ -182,7 +176,6 @@ export interface SkillScores {
   prompting: number
   agents: number
   application: number
-  literacy: number
 }
 
 export interface AssessmentResult {

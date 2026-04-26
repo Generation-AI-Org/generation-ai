@@ -56,8 +56,23 @@ export function TestResultsClient({ nonce }: { nonce: string }) {
 
         <section
           className="mx-auto max-w-4xl px-4 py-8"
-          aria-label="Skill-Profil"
+          aria-labelledby="skill-profile-heading"
         >
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent-hover)]">
+              Spider-Chart
+            </p>
+            <h2
+              id="skill-profile-heading"
+              className="mt-3 font-semibold text-[var(--text)]"
+              style={{ fontSize: 'var(--fs-h2)' }}
+            >
+              Dein Profil auf vier Achsen
+            </h2>
+            <p className="mt-3 text-sm leading-[1.7] text-[var(--text-muted)]">
+              Tools, Prompting, Agents und Anwendung zeigen, wo du heute stehst.
+            </p>
+          </div>
           <SkillRadarChart skills={result.skills} slug={result.slug} />
         </section>
 

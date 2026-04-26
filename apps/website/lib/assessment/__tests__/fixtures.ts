@@ -151,11 +151,11 @@ export const FIXTURE_QUESTIONS: Question[] = [
       },
     ],
   },
-  // q9 — confidence (literacy, maxPoints 3)
+  // q9 — confidence (application, maxPoints 3)
   // pointByDistance [3,2,1,0,0]: dist=0 -> 3, dist=1 -> 2, dist>=3 -> 0
   {
     id: 'q9',
-    dimension: 'literacy',
+    dimension: 'application',
     prompt: 'Wie zuverlaessig ist der Output?',
     maxPoints: 3,
     type: 'confidence',
@@ -163,10 +163,10 @@ export const FIXTURE_QUESTIONS: Question[] = [
     groundTruthStep: 2,
     pointByDistance: [3, 2, 1, 0, 0],
   },
-  // q10 — mc (literacy, maxPoints 3)
+  // q10 — mc (tools, maxPoints 3)
   {
     id: 'q10',
-    dimension: 'literacy',
+    dimension: 'tools',
     prompt: 'Welche Aussage zu KI-Halluzinationen stimmt?',
     maxPoints: 3,
     type: 'mc',

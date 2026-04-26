@@ -1,26 +1,45 @@
 'use client'
 
-// AboutStorySection — Story-Section der /about-Seite (Plan 21-02).
-//
-// Layout: Eyebrow-Bullet + H2 (visuell H3-Size) + 3 Absätze + Inline-CTA zum
-// #mitmach-Anker. Gründungs-Narrative, Copy 1:1 aus UI-SPEC.
-//
-// A11y: Section-Anker id="story" für Deep-Linking. Semantisch `<h2>` mit
-// visueller `--fs-h3`-Size (Heading-Hierarchie: H1 Hero → H2 alle Section-Heads).
-// KEIN h3-Tag im DOM.
-//
-// Motion: fadeIn-Entry, useReducedMotion-Gate. Pattern reused aus
-// AboutHeroSection / kurz-faq-section.
-//
-// Tokens: --fs-h3, --fs-body, --lh-sub, --lh-body, --accent, --accent-glow,
-// --dur-fast, --ease-out.
-
+import { useRef } from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import { motion, useReducedMotion } from "motion/react"
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
+
+const TIMELINE_ITEMS = [
+  {
+    date: "Februar 2026",
+    title: "Die Lücke wird sichtbar.",
+    body:
+      "Janna und Simon starten mit der Frage, warum KI überall erwartet wird, aber kaum jemand im Studium praktisch lernt, damit zu arbeiten.",
+  },
+  {
+    date: "März 2026",
+    title: "Aus Workshops wird ein Team.",
+    body:
+      "Die ersten Formate zeigen, dass der Bedarf real ist. Aus einem Versuch zu zweit wird ein ehrenamtliches Team aus Studierenden und Early-Careers.",
+  },
+  {
+    date: "April 2026",
+    title: "Generation AI wird Verein.",
+    body:
+      "Wir bauen die Struktur, die zu unserer Mission passt: gemeinnützig, transparent, kostenlos für Mitglieder und offen für alle Fachrichtungen.",
+  },
+  {
+    date: "Mai 2026",
+    title: "Launch statt lose Idee.",
+    body:
+      "Website, Community, Tools und erste Events laufen zusammen. Ab hier wächst Generation AI mit den Menschen, die KI praktisch gestalten wollen.",
+  },
+]
 
 export function AboutStorySection() {
+  const timelineRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
+  const { scrollYProgress } = useScroll({
+    target: timelineRef,
+    offset: ["start 70%", "end 35%"],
+  })
+  const progressScaleY = useTransform(scrollYProgress, [0, 1], [0, 1])
 
   const fadeIn = prefersReducedMotion
     ? {}
@@ -38,7 +57,7 @@ export function AboutStorySection() {
       data-section="about-story"
       className="relative bg-bg py-24 sm:py-32"
     >
-      <div className="mx-auto max-w-3xl px-6">
+      <div className="mx-auto max-w-4xl px-6">
         {/* Eyebrow: // unsere story */}
         <motion.div
           {...fadeIn}
@@ -61,32 +80,74 @@ export function AboutStorySection() {
           id="about-story-heading"
           className="text-center font-sans font-bold text-text text-balance"
           style={{
-            fontSize: "var(--fs-h3)",
-            lineHeight: "var(--lh-sub)",
+            fontSize: "var(--fs-h2)",
+            lineHeight: "var(--lh-headline)",
           }}
         >
-          Warum wir das machen.
+          Wie aus einer Idee ein Verein wurde.
         </motion.h2>
 
-        {/* 3 Absätze — Gründungs-Narrative */}
-        <motion.div
+        <motion.p
           {...fadeIn}
-          className="mt-12 flex flex-col gap-6 text-text-secondary text-pretty"
+          className="mx-auto mt-6 max-w-2xl text-center text-pretty text-text-secondary"
           style={{
-            fontSize: "var(--fs-body)",
-            lineHeight: "var(--lh-body)",
+            fontSize: "var(--fs-lede)",
+            lineHeight: "var(--lh-lede)",
           }}
         >
-          <p>
-            Janna und Simon haben Generation AI im Februar 2026 gegründet. Beide haben selbst studiert, als KI in der Mitte der Gesellschaft ankam — und gemerkt, wie schnell der Abstand wächst zwischen dem, was Unis lehren, und dem, was in Jobs heute erwartet wird.
-          </p>
-          <p>
-            Aus einem Workshop-Versuch zu zweit ist ein Team von zehn Leuten geworden. Studierende, Early-Careers, ehrenamtlich. Wir bauen die Community auf, die wir selbst gebraucht hätten.
-          </p>
-          <p>
-            Ziel: eine Generation, die KI nicht erleidet, sondern gestaltet. Offen für alle Fachrichtungen, kostenlos, unabhängig.
-          </p>
-        </motion.div>
+          Wir bauen die Community auf, die wir selbst gebraucht hätten: praktisch, unabhängig und nah an dem, was Studierende gerade wirklich brauchen.
+        </motion.p>
+
+        <div ref={timelineRef} className="relative mx-auto mt-14 max-w-3xl" data-timeline="about-story">
+          <div
+            aria-hidden="true"
+            className="absolute bottom-8 left-4 top-8 hidden w-px bg-border sm:block"
+          />
+          <motion.div
+            aria-hidden="true"
+            className="absolute bottom-8 left-4 top-8 hidden w-px origin-top bg-[var(--accent)] shadow-[0_0_16px_var(--accent-glow)] sm:block"
+            style={{ scaleY: prefersReducedMotion ? 1 : progressScaleY }}
+          />
+
+          <ol className="space-y-5" aria-label="Timeline der Vereinsentstehung">
+            {TIMELINE_ITEMS.map((item, index) => (
+              <motion.li
+                key={item.date}
+                className="relative sm:pl-12"
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+                whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-12% 0px" }}
+                transition={{
+                  duration: 0.5,
+                  delay: prefersReducedMotion ? 0 : index * 0.05,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  className="absolute left-[11px] top-8 hidden h-2.5 w-2.5 rounded-full border border-[var(--accent)] bg-bg shadow-[0_0_10px_var(--accent-glow)] sm:block"
+                />
+                <article className="rounded-2xl border border-border bg-bg-card px-6 py-6">
+                  <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
+                    {item.date}
+                  </p>
+                  <h3
+                    className="mt-3 font-sans font-bold text-text text-balance"
+                    style={{ fontSize: "var(--fs-h3)", lineHeight: "var(--lh-sub)" }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p
+                    className="mt-3 text-pretty text-text-secondary"
+                    style={{ fontSize: "var(--fs-body)", lineHeight: "var(--lh-body)" }}
+                  >
+                    {item.body}
+                  </p>
+                </article>
+              </motion.li>
+            ))}
+          </ol>
+        </div>
 
         {/* Inline-CTA zum #mitmach-Anker */}
         <motion.div {...fadeIn} className="mt-10 flex justify-center">
