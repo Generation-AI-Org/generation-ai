@@ -8,30 +8,33 @@ export function Footer() {
   const { theme } = useTheme()
 
   return (
-    <footer className="bg-bg-header border-t border-white/10 pt-10 pb-6">
+    <footer className="bg-bg-header border-t border-white/10 py-7">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 gap-7 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:gap-8">
           {/* Col 1: Logo + Tagline */}
           <div>
             <Link href="/" aria-label="Generation AI - Startseite" className="inline-flex">
               <Logo
                 context="footer"
                 theme={theme}
-                colorway={theme === "dark" ? "neon" : "auto"}
-                size="lg"
+                colorway={theme === "dark" ? "neon" : "red"}
+                size="md"
               />
             </Link>
-            <p className="mt-4 text-sm font-mono text-[var(--text-on-header)] max-w-xs">
+            <p className="mt-3 max-w-xs text-sm font-mono leading-[1.45] text-[var(--text-on-header)]">
               Die KI-Community für Studierende im DACH-Raum.
+            </p>
+            <p className="mt-4 text-[11px] font-mono leading-[1.45] text-[var(--text-on-header)] opacity-75">
+              © {new Date().getFullYear()} Generation AI e.V. (i.G.).
             </p>
           </div>
 
           {/* Col 2: Sitemap */}
           <nav aria-label="Sitemap">
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-on-header)] mb-4">
+            <h3 className="mb-3 text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-on-header)]">
               Entdecken
             </h3>
-            <ul className="space-y-2 text-sm font-mono">
+            <ul className="space-y-1.5 text-sm font-mono">
               <li>
                 <Link
                   href="/about"
@@ -91,10 +94,10 @@ export function Footer() {
 
           {/* Col 3: Legal */}
           <nav aria-label="Rechtliches">
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-on-header)] mb-4">
+            <h3 className="mb-3 text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-on-header)]">
               Rechtliches
             </h3>
-            <ul className="space-y-2 text-sm font-mono">
+            <ul className="space-y-1.5 text-sm font-mono">
               <li>
                 <Link
                   href="/impressum"
@@ -116,10 +119,10 @@ export function Footer() {
 
           {/* Col 4: Kontakt + Social */}
           <div>
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-on-header)] mb-4">
+            <h3 className="mb-3 text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-on-header)]">
               Kontakt
             </h3>
-            <ul className="space-y-2 text-sm font-mono">
+            <ul className="space-y-1.5 text-sm font-mono">
               <li>
                 <a
                   href="mailto:info@generation-ai.org"
@@ -130,16 +133,6 @@ export function Footer() {
               </li>
             </ul>
           </div>
-        </div>
-
-        {/* Bottom bar: Copyright */}
-        <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs font-mono text-[var(--text-on-header)]">
-            © {new Date().getFullYear()} Generation AI e.V. (i.G.). Alle Rechte vorbehalten.
-          </p>
-          <p className="text-xs font-mono text-[var(--text-on-header)]">
-            Made with care in Berlin &amp; Hamburg.
-          </p>
         </div>
       </div>
     </footer>
