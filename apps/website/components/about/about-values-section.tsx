@@ -78,7 +78,7 @@ export function AboutValuesSection() {
         <motion.h2
           {...fadeIn}
           id="about-values-heading"
-          className="text-center font-sans font-bold text-text text-balance"
+          className="text-center font-mono font-bold text-text text-balance"
           style={{ fontSize: "var(--fs-h3)", lineHeight: "var(--lh-sub)" }}
         >
           Worauf wir Wert legen.

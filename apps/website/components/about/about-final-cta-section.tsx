@@ -39,7 +39,7 @@ export function AboutFinalCTASection() {
         <motion.h2
           {...fadeIn}
           id="about-final-cta-heading"
-          className="font-sans font-bold text-text text-balance"
+          className="font-mono font-bold text-text text-balance"
           style={{ fontSize: "var(--fs-h2)", lineHeight: "var(--lh-headline)" }}
         >
           Wir freuen uns auf dich.

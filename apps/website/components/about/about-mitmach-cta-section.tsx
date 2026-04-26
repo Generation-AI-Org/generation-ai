@@ -45,7 +45,7 @@ export function AboutMitmachCTASection() {
         <motion.h2
           {...fadeIn}
           id="about-mitmach-heading"
-          className="font-sans font-bold text-text text-balance"
+          className="font-mono font-bold text-text text-balance"
           style={{ fontSize: "var(--fs-h2)", lineHeight: "var(--lh-headline)" }}
         >
           Bock, mitzumachen?
