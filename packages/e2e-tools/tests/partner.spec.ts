@@ -112,7 +112,7 @@ test.describe('/partner page', () => {
     await page.locator('[data-section="partner-kontakt"]').scrollIntoViewIfNeeded()
 
     await page.getByLabel('Name').fill('Test Person')
-    await page.getByLabel('E-Mail').fill('test@example.com')
+    await page.getByRole('textbox', { name: 'E-Mail' }).fill('test@example.com')
     await page.getByLabel('Organisation').fill('Test GmbH')
 
     await page.getByRole('button', { name: 'Anfrage senden' }).click()
