@@ -45,14 +45,14 @@ export function JoinHeroSection({ formSlot }: { formSlot?: ReactNode }) {
           transition={{ duration: 0.7, ease: 'easeOut' }}
           className={
             formSlot
-              ? 'relative z-10 mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl content-center items-center gap-4 px-5 py-4 sm:gap-6 sm:px-6 sm:py-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,0.75fr)] lg:gap-10 lg:py-6'
+              ? 'relative z-10 mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl content-start items-start gap-4 px-5 py-4 sm:gap-6 sm:px-6 sm:py-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,0.75fr)] lg:gap-10 lg:py-0'
               : 'relative z-10 mx-auto flex min-h-[calc(100vh-5rem)] max-w-4xl flex-col items-center justify-center px-6 py-20 text-center'
           }
         >
           <div
             className={
               formSlot
-                ? 'pt-4 text-left sm:pt-10 lg:self-center lg:pt-0 lg:pr-4'
+                ? 'pt-4 text-left sm:pt-10 lg:flex lg:h-[calc(100vh-5rem)] lg:min-h-[640px] lg:flex-col lg:justify-center lg:pt-0 lg:pr-4'
                 : 'text-center'
             }
           >
@@ -124,7 +124,7 @@ export function JoinHeroSection({ formSlot }: { formSlot?: ReactNode }) {
           </div>
 
           {formSlot && (
-            <div className="-mt-1 flex w-full justify-self-center sm:mt-0 lg:min-h-[min(680px,calc(100vh-7rem))] lg:items-center lg:justify-self-end">
+            <div className="-mt-1 flex w-full justify-self-center sm:mt-0 lg:min-h-[calc(100vh-5rem)] lg:items-center lg:justify-self-end lg:py-6">
               {formSlot}
             </div>
           )}
