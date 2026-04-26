@@ -2,7 +2,7 @@
 
 // apps/website/components/test/no-result-fallback.tsx
 // Phase 24 — Empty-state for /test/ergebnis when user deep-links without a
-// completed assessment (D-11 — no persistence, state lost after navigation away).
+// completed or persisted assessment result.
 
 import Link from 'next/link'
 

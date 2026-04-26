@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Website Conversion-Layer & Onboarding-Funnel
-status: planning
+status: in_progress
 last_updated: "2026-04-26T00:00:00.000Z"
 progress:
   total_phases: 20
-  completed_phases: 16
-  total_plans: 104
-  completed_plans: 103
-  percent: 99
+  completed_phases: 17
+  total_plans: 113
+  completed_plans: 111
+  percent: 98
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,26 +18,26 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 22.6 ✅ done + auf develop, **Phase 22.8 Foundation-Layer ✅ DONE 2026-04-25**, Phase 27 last-before-launch)
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 22.6 ✅ done + auf develop, **Phase 22.8 ✅ DONE 2026-04-26**, Phase 27 last-before-launch)
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 22.8 (UI-Konsistenz & Section-Refinement) — Foundation-Layer 3/3 + Page-Layer 2/10 DONE (04 Partner-Hero, 05 Partner-Nav). 8 Page-Plans offen (06–13).
+**Phase:** 22.8 (UI-Konsistenz & Section-Refinement) — ✅ DONE. Foundation-Layer 3/3 + Page-Layer 10/10 + Phase-Closeout abgeschlossen (04 Partner-Hero, 05 Partner-Nav, 06 Join Status-Switch, 07 Join Hero-Layout, 08 About Formular, 09 About Timeline, 10 Test Fragetypen, 11 Test Spider-Chart, 12 Test Public Conversion, 13 Theme-Toggle Konsistenz). Nächster Schritt: Merge-Vorbereitung Richtung `develop`, danach Phase 27.
 **Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
 
 - `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
 - `develop` = Staging-Sammelbranch (Stand: + Phase 25 + Phase 26 + **Phase 22.6** ✅ gemerged 2026-04-25, commits 7b1a5aa → ac01d32 → a28821b). Vercel-Preview: https://website-git-develop-lucas-projects-e78962e9.vercel.app
 - `feature/phase-22.6-pre-launch-polish` = ✅ DONE + gemerged in develop (kann gelöscht werden)
-- `feature/phase-22.8-ui-konsistenz-section-refinement` = Foundation 3/3 + Page-Layer 2/10 done (commits b0116d1, ef7055d, 22d3e90, d76e92e, 77d8510). Page-Layer 06–13 offen — separater Cycle.
+- `feature/phase-22.8-join-about-test-polish` = Phase 22.8 complete. Foundation 3/3 + Page-Layer 10/10 + Closeout done. Bereit für Merge-Vorbereitung nach `develop` (kein Push/Merge ohne explizites OK).
 - `feature/phase-26-community` = abgeschlossen, im Worktree `generation-ai-phase-26` (UAT pending)
 
-**Last Updated:** 2026-04-26 (Plan 22.8-04 Partner-Hero 4 Lucide-Icon-Boxen + 22.8-05 Nav Split-Button DONE auf feature/phase-22.8 — commits d76e92e + 77d8510. tsc grün. Visual-Check pending. 8 Page-Plans 06–13 für separate Session.)
+**Last Updated:** 2026-04-26 (Phase 22.8 final DONE auf `feature/phase-22.8-join-about-test-polish`. `/test` persistiert anonymen Fortschritt in `sessionStorage` und abgeschlossene Ergebnisse in `localStorage`; `/join` übernimmt gespeicherte Testdaten als Hidden Payload, `submitJoinSignup` schreibt validiertes `user_metadata.test_result` bei aktivem Signup. Website- und tools-app-Theme-Toggle sind visuell synchronisiert. Closeout-Rerun: Website + tools-app Typecheck grün, Website Vitest 110/110, Lint 0 Errors/15 bestehende Warnings, Full Build grün. Wave-4 E2E/Visual-Smoke: `/test` Playwright 9/9, `/join` Playwright 14/14, Theme-Toggle Visual-Smoke grün gegen lokale Production-Server.)
 **Site Status:** ✅ Live auf generation-ai.org (alter Stand, Phase 20+20.5). Develop-Preview hat alles bisher Gebaute (Phase 21–26 + 22.6). Phase 26 UAT noch offen (`pending-luca`). 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke). 1 HUMAN-UAT-Item Phase 22.6 offen (Logged-in Regression).
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** Phase 22.8 Foundation-Layer ✅ DONE (3/3 Plans). Optionen: (A) Phase 22.8 Layer-2/3 weitere Plans planen, (B) `feature/phase-22.8-...` in develop mergen + Phase 27 (Copy-Pass & Launch-Cleanup) starten, (C) Visual cross-domain favicon check post-Vercel-Promotion.
+**Next phase:** Merge-Vorbereitung für Phase 22.8 Richtung `develop`; danach Phase 27 Copy-Pass & Launch-Cleanup.
 **First command (option A):** `/gsd-progress` — Roadmap + offene UAT-Items checken
-**First command (option B):** `git checkout develop && git merge feature/phase-22.8-ui-konsistenz-section-refinement && /gsd-plan-phase 27`
+**First command (option B):** Phase 22.8 nach `develop` mergen (nach explizitem OK), dann Phase 27 planen/starten.
 **Erst tun (Phase 22.6 cleanup):**
 
 - Item 6 Logged-in Regression auf develop-Preview live testen (5min) — Lite-Account einloggen, CTAs verschwinden, Settings + Signout sichtbar, Lite/Pro Toggle, Logout. Siehe 22.6-HUMAN-UAT.md §6.
@@ -86,7 +86,7 @@ progress:
 **Revidierte Roadmap-Reihenfolge (ab 2026-04-25, Call mit Simon/Janna):**
 
 ```
-✅ 20.6 → ✅ 21 → ✅ 22 → ✅ 23 → ✅ 24 → ✅ 25 → ✅ 26 → 🚧 22.6 → ⏳ 20.6-01 (Lücken-Hero, separater Cycle) → ⏳ 22.8 (UI-Konsistenz + Section-Refinement) → ⏳ 27 (Copy-Pass) → LAUNCH ~15.05
+✅ 20.6 → ✅ 21 → ✅ 22 → ✅ 23 → ✅ 24 → ✅ 25 → ✅ 26 → ✅ 22.6 → ⏳ 20.6-01 (Lücken-Hero, separater Cycle) → ✅ 22.8 (UI-Konsistenz + Section-Refinement) → ⏳ 27 (Copy-Pass) → LAUNCH ~15.05
 ```
 
 **Phase 22.8 ready für autonomous run (2026-04-25)** — CONTEXT + DISCUSSION-LOG mit allen Decisions vorab gemacht + Foundation-Plan-Skeletons (01+02) + Brand-Favicon-Assets liegen in `.planning/phases/22.8-ui-konsistenz-section-refinement/` + `brand/logos/favicons/`.
@@ -98,6 +98,14 @@ progress:
 **22.8-02 DONE (2026-04-25):** Token-Source + Component-Compliance-Fix — 22 of 24 audit findings resolved at component-source / token level. 27 files modified, 1 NEW (`apps/tools-app/components/ui/StatusPill.tsx`). 5 atomic commits per cluster (fb88afd, 8fa30c9, 11539bb, 16982a8, c808061). Full `pnpm build` green. Foundation-First wins: Logo gets opt-in `interactive` prop · `--color-destructive` aliased to `var(--status-error)` (single source of truth) · canonical card-hover language unified across 8 cards (`scale(1.015)` + accent-glow + border-accent) · 8 onMouse* handlers replaced with Tailwind `hover:`/`active:` classes in form submits · 4 primary CTAs aligned to `rounded-full` · 2 button-hover-scale outliers 1.02 → 1.03. Deferred to BACKLOG: A-N04 (ChatInput stop-button glow needs new token), A-N07 (email template token-import refactor), 3 out-of-scope tools-app red-* spots discovered during execution (settings/page wrapper, auth/callback, GlobalLayout logout). Visual-smoke checkpoint auto-approved per orchestrator direction (auto-mode + Luca pre-approved scope) — Luca spot-check post-hoc on light-mode tools-app auth/settings flows.
 
 **22.8-03 DONE (2026-04-25):** Favicon-Konsolidierung — Cross-domain Favicon-Parität via Next.js App Router File Convention. Beide Apps haben byte-identische Icons (`app/icon.svg` + `app/favicon.ico` + `app/apple-icon.png`) aus `brand/logos/favicons/`. Tools-app migriert auf Convention (expliziter `metadata.icons`-Block aus `apps/tools-app/app/layout.tsx` gestrippt). Tools-app OG-Image-Wechsel `/og-image-v2.png` → `/og-image-default.png` (kopiert aus `brand/logos/og-image-default.png`). 10 legacy `public/`-Files gelöscht (5 pro App). Schema.ts deviation-fix: JSON-LD `Organization.logo` + `Article.publisher.logo` URLs umgestellt von `/og-image.jpg` (gelöscht) → `/opengraph-image` (Phase 22.6 Track B canonical dynamic OG endpoint). Build green beide Apps, alle Page-Routes weiterhin `ƒ` (dynamic — CSP-Force-Dynamic-Regel unverletzt). Cross-app `diff -q` byte-identical confirmed. Visual cross-domain check (browser tab + iOS home screen + Slack/WhatsApp link preview) deferred to Luca post-Vercel-Promotion per D-14 (no Stop-Gate). Commits: b0116d1 (Task 1 website), ef7055d (Task 2 tools-app). **Phase 22.8 Foundation-Layer COMPLETE (3/3 Plans).**
+
+**22.8-08 DONE (2026-04-26):** About Verein-Formular — `/about#verein` behält den bestehenden Verein-Textblock und ergänzt eine DS-konforme Form-Card. Neue Server-Action `submitVereinInquiry` validiert Name/E-Mail/Bereich, nutzt Honeypot und sendet Admin-Mail an `info@generation-ai.org`; Confirmation-Mail an Submitter ist best-effort analog Partner-Pattern. Neue React-Email-Templates in `@genai/emails`. Mitmach-CTA springt zu `#verein-form`, kein primärer `mailto:`-Flow mehr. `scroll-mt-28` verhindert fixed-header overlap bei direktem Anchor.
+
+**22.8-09 DONE (2026-04-26):** About Timeline / Story-Scroll — `/about#story` rendert eine Timeline Februar/März/April/Mai 2026 mit Desktop-Progress-Line via `useScroll`/`useTransform`, Milestone-Reveals und statischem Reduced-Motion-Fallback. About-E2E erweitert um Timeline, Reduced-Motion, Formularvalidierung, CTA-Anchor und optionalen Resend-Submit-Smoke. Typecheck + build grün, About Playwright 15/15 grün gegen lokalen Production-Server.
+
+**22.8-10 DONE (2026-04-26):** Test Fragetypen-Ausbau — bestehender Phase-24-Assessment-Code als Delta weitergebaut. Aktiver Fragenkatalog ersetzt durch 10 solide Launch-Defaults mit den 4 Widgettypen MC, Drag-Rank, Confidence-Slider und Matching. Test-Fragen-Re-Konzeption bleibt bewusst deferred. Rank kann initiale Reihenfolge bestätigen, Slider ist per Fokus/Number-Key bedienbar, Playwright-Smoke erzwingt alle 4 Widgettypen.
+
+**22.8-11 DONE (2026-04-26):** Test Spider-Chart / Ergebnisseite — Assessment-Dimensionen auf 4 Achsen umgestellt (Tools / Prompting / Agents / Anwendung), `SkillRadarChart` nutzt `--accent-hover`, Result-Page erklärt das Vier-Achsen-Profil, Join-CTA serialisiert Skills in vierachsiger canonical order. Sitemap-Test auf bestehende Events-Einträge aktualisiert, React-Compiler-Lint-Blocker in `LabeledNodes` und `useAssessment` gefixt. Website Vitest 110/110, Typecheck, Lint, Build und `/test` Playwright 7/7 grün.
 
 **Start-Kommando (sobald 22.6 + 26-UAT + 20.6-01 durch):**
 

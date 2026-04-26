@@ -10,6 +10,7 @@ import { createAdminClient } from '@genai/auth'
 import { CircleApiError, createMember } from '@genai/circle'
 import { ConfirmSignupEmail } from '@genai/emails'
 import { checkSignupRateLimit, getClientIp } from '@/lib/rate-limit'
+import { parseTestResultMetadata } from '@/lib/assessment/test-result-metadata'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -20,10 +21,18 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export type SignupFieldErrors = Partial<{
   email: string
   name: string
+  status: string
   university: string
+  university_other: string
+  study_field: string
+  study_field_other: string
   study_program: string
   consent: string
   redirect_after: string
+  source: string
+  pre: string
+  skills: string
+  test_result: string
 }>
 
 export type SignupResult =
@@ -36,49 +45,108 @@ export type SignupResult =
 
 const ERR_REQUIRED = 'Das Feld darf nicht leer sein.'
 const ERR_EMAIL = 'Hmm, die Mail-Adresse passt noch nicht ganz.'
-const ERR_CONSENT = 'Du musst der Datenschutzerklärung zustimmen, um fortzufahren.'
+const ERR_CONSENT =
+  'Du musst der Datenschutzerklärung zustimmen, um fortzufahren.'
 const ERR_GENERIC =
   "Ups, da ist was schiefgelaufen. Probier's nochmal oder schreib uns: admin@generation-ai.org"
 const ERR_RATE_LIMIT = 'Zu viele Versuche. Bitte warte einen Moment.'
 const ERR_INVALID = 'Ungültige Anfrage.'
 const ERR_SIGNUP_CLOSED = 'Anmeldung ist momentan geschlossen.'
 
+const signupStatusSchema = z.enum(['student', 'working', 'alumni', 'other'])
+
 // ---------------------------------------------------------------------------
 // Validation schema
 // ---------------------------------------------------------------------------
 
-const schema = z.object({
-  email: z.string().trim().min(1, ERR_REQUIRED).email(ERR_EMAIL).max(320),
-  name: z.string().trim().min(1, ERR_REQUIRED).max(200),
-  university: z.string().trim().min(1, ERR_REQUIRED).max(200),
-  study_program: z
-    .string()
-    .trim()
-    .max(200)
-    .optional()
-    .or(z.literal('').transform(() => undefined)),
-  marketing_opt_in: z.boolean().default(false),
-  consent: z.literal(true, { message: ERR_CONSENT }),
-  redirect_after: z
-    .string()
-    .trim()
-    .max(500)
-    .optional()
-    .or(z.literal('').transform(() => undefined))
-    .refine(
-      (v) => !v || /^\/[A-Za-z0-9_\-][A-Za-z0-9_\-/?=&.%#]*$/.test(v),
-      'redirect_after must be a same-origin absolute path',
-    ),
-  // Optional R4/R5 fields (carried through from /join flow)
-  status: z.enum(['student', 'pre-studium', 'early-career']).optional(),
-  motivation: z
-    .string()
-    .trim()
-    .max(2000)
-    .optional()
-    .or(z.literal('').transform(() => undefined)),
-  level: z.coerce.number().int().min(1).max(5).optional(),
-})
+const schema = z
+  .object({
+    email: z.string().trim().min(1, ERR_REQUIRED).email(ERR_EMAIL).max(320),
+    name: z.string().trim().min(1, ERR_REQUIRED).max(200),
+    status: signupStatusSchema.default('student'),
+    university: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    university_other: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    study_field: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    study_field_other: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    study_program: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    marketing_opt_in: z.boolean().default(false),
+    consent: z.literal(true, { message: ERR_CONSENT }),
+    redirect_after: z
+      .string()
+      .trim()
+      .max(500)
+      .optional()
+      .or(z.literal('').transform(() => undefined))
+      .refine(
+        (v) => !v || /^\/[A-Za-z0-9_\-][A-Za-z0-9_\-/?=&.%#]*$/.test(v),
+        'redirect_after must be a same-origin absolute path',
+      ),
+    // Optional R4/R5 fields (carried through from /join flow)
+    motivation: z
+      .string()
+      .trim()
+      .max(2000)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    level: z.coerce.number().int().min(1).max(5).optional(),
+    source: z
+      .enum(['test', 'test-sparring', 'join-page'])
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    pre: z
+      .enum(['neugieriger', 'einsteiger', 'fortgeschritten', 'pro', 'expert'])
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    skills: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    test_result: z
+      .string()
+      .trim()
+      .max(3000)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      (data.status === 'student' || data.status === 'alumni') &&
+      !data.university
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['university'],
+        message: ERR_REQUIRED,
+      })
+    }
+  })
 
 // ---------------------------------------------------------------------------
 // Server Action
@@ -95,7 +163,9 @@ const schema = z.object({
  *
  * Returns { ok: true } for duplicate emails as well (no-leak).
  */
-export async function submitJoinSignup(formData: FormData): Promise<SignupResult> {
+export async function submitJoinSignup(
+  formData: FormData,
+): Promise<SignupResult> {
   // -- 0. Feature-flag defense-in-depth (REVIEW MD-02) ----------------------
   // `/api/auth/signup` checks this too, but the server action is a
   // separate public surface (server-form-actions). A stale flag check
@@ -122,20 +192,24 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
   const raw = {
     email: formData.get('email')?.toString() ?? '',
     name: formData.get('name')?.toString() ?? '',
+    status: formData.get('status')?.toString() ?? 'student',
     university: formData.get('university')?.toString() ?? '',
+    university_other: formData.get('university_other')?.toString() ?? '',
+    study_field: formData.get('study_field')?.toString() ?? '',
+    study_field_other: formData.get('study_field_other')?.toString() ?? '',
     study_program: formData.get('study_program')?.toString() ?? '',
     marketing_opt_in:
       formData.get('marketing_opt_in') === 'on' ||
       formData.get('marketing_opt_in') === 'true',
-    consent: formData.get('consent') === 'on' || formData.get('consent') === 'true',
+    consent:
+      formData.get('consent') === 'on' || formData.get('consent') === 'true',
     redirect_after: formData.get('redirect_after')?.toString() ?? '',
-    status: (formData.get('status')?.toString() as
-      | 'student'
-      | 'pre-studium'
-      | 'early-career'
-      | undefined) ?? undefined,
     motivation: formData.get('motivation')?.toString() ?? '',
     level: formData.get('level')?.toString() ?? undefined,
+    source: formData.get('source')?.toString() ?? '',
+    pre: formData.get('pre')?.toString() ?? '',
+    skills: formData.get('skills')?.toString() ?? '',
+    test_result: formData.get('test_result')?.toString() ?? '',
   }
   const parsed = schema.safeParse(raw)
   if (!parsed.success) {
@@ -157,32 +231,47 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
   const sanitizedRedirect = data.redirect_after
     ? data.redirect_after.replace(/\\/g, '').replace(/^\/+/, '/')
     : null
+  const testResult = parseTestResultMetadata({
+    source: data.source,
+    pre: data.pre,
+    skills: data.skills,
+    testResult: data.test_result,
+  })
 
   const baseMetadata: Record<string, unknown> = {
     full_name: data.name,
-    university: data.university,
+    status: data.status,
+    ...(data.university ? { university: data.university } : {}),
+    ...(data.university_other
+      ? { university_other: data.university_other }
+      : {}),
+    ...(data.study_field ? { study_field: data.study_field } : {}),
+    ...(data.study_field_other
+      ? { study_field_other: data.study_field_other }
+      : {}),
     ...(data.study_program ? { study_program: data.study_program } : {}),
     marketing_opt_in: data.marketing_opt_in,
     ...(sanitizedRedirect ? { redirect_after: sanitizedRedirect } : {}),
-    ...(data.status ? { status: data.status } : {}),
     ...(data.motivation ? { motivation: data.motivation } : {}),
     ...(data.level !== undefined ? { level: data.level } : {}),
+    ...(testResult ? { test_result: testResult } : {}),
     has_password: false, // Phase 19 first-login-set-password pattern
   }
 
-  const { data: createData, error: createErr } = await supabase.auth.admin.createUser({
-    email,
-    // Auto-confirm: Circle's Set-Password mail (skip_invitation:false in
-    // createMember below) is the de-facto email-validation; if the user can
-    // accept Circle's invitation, the email is theirs. We trust that signal.
-    // This removes the need for our own confirm-mail in the happy path.
-    email_confirm: true,
-    // Random 32-byte password — never shown to user. They'll set one via
-    // Phase-19 set-password flow. Supabase requires a password on createUser
-    // but the magic-link/confirm flow does not use it.
-    password: randomBytes(32).toString('base64url'),
-    user_metadata: baseMetadata,
-  })
+  const { data: createData, error: createErr } =
+    await supabase.auth.admin.createUser({
+      email,
+      // Auto-confirm: Circle's Set-Password mail (skip_invitation:false in
+      // createMember below) is the de-facto email-validation; if the user can
+      // accept Circle's invitation, the email is theirs. We trust that signal.
+      // This removes the need for our own confirm-mail in the happy path.
+      email_confirm: true,
+      // Random 32-byte password — never shown to user. They'll set one via
+      // Phase-19 set-password flow. Supabase requires a password on createUser
+      // but the magic-link/confirm flow does not use it.
+      password: randomBytes(32).toString('base64url'),
+      user_metadata: baseMetadata,
+    })
 
   if (createErr) {
     const code = (createErr as unknown as { code?: string }).code
@@ -299,16 +388,20 @@ export async function submitJoinSignup(formData: FormData): Promise<SignupResult
     // endpoint (which has the Site-URL implicit-flow bug we hit in Bug #2)
     // by constructing our own URL pointing directly at tools-app's PKCE-
     // style /auth/confirm route — same pattern as website/auth/confirm.
-    const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-      type: 'magiclink',
-      email,
-    })
+    const { data: linkData, error: linkErr } =
+      await supabase.auth.admin.generateLink({
+        type: 'magiclink',
+        email,
+      })
 
     let toolsLoginUrl: string | undefined
     if (linkErr || !linkData?.properties?.hashed_token) {
-      Sentry.captureException(linkErr ?? new Error('generateLink: no hashed_token for tools'), {
-        tags: { op: 'generateLink.magiclink' },
-      })
+      Sentry.captureException(
+        linkErr ?? new Error('generateLink: no hashed_token for tools'),
+        {
+          tags: { op: 'generateLink.magiclink' },
+        },
+      )
       // Fall back to bare tools URL — user lands on /login instead of being
       // auto-logged-in, but mail still ships and is functional.
     } else {

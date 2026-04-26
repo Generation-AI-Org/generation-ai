@@ -17,14 +17,12 @@ describe('buildJoinHref', () => {
       prompting: 60,
       agents: 40,
       application: 70,
-      literacy: 55,
     })
     expect(href).toContain('pre=fortgeschritten')
     expect(href).toContain('source=test')
     // URLSearchParams percent-encodes `:` and `,` inside values.
     expect(href).toContain('tools%3A80')
     expect(href).toContain('prompting%3A60')
-    expect(href).toContain('literacy%3A55')
     expect(href).toMatch(/^\/join\?/)
   })
 
@@ -35,26 +33,24 @@ describe('buildJoinHref', () => {
         prompting: 10,
         agents: 10,
         application: 10,
-        literacy: 10,
       })
       expect(href.startsWith('/join?')).toBe(true)
       expect(href).toContain(`pre=${slug}`)
     }
   })
 
-  it('keeps skills in canonical dimension order (tools, prompting, agents, application, literacy)', () => {
+  it('keeps skills in canonical dimension order (tools, prompting, agents, application)', () => {
     const href = buildJoinHref('pro', {
       tools: 1,
       prompting: 2,
       agents: 3,
       application: 4,
-      literacy: 5,
     })
     // The `skills=` param, decoded, should be exactly:
-    //   tools:1,prompting:2,agents:3,application:4,literacy:5
+    //   tools:1,prompting:2,agents:3,application:4
     const url = new URL(`http://example.com${href}`)
     const skills = url.searchParams.get('skills')
-    expect(skills).toBe('tools:1,prompting:2,agents:3,application:4,literacy:5')
+    expect(skills).toBe('tools:1,prompting:2,agents:3,application:4')
   })
 
   it('buildJoinHref is a pure function — same input yields same output', () => {
@@ -63,14 +59,12 @@ describe('buildJoinHref', () => {
       prompting: 88,
       agents: 77,
       application: 66,
-      literacy: 55,
     })
     const b = buildJoinHref('expert', {
       tools: 99,
       prompting: 88,
       agents: 77,
       application: 66,
-      literacy: 55,
     })
     expect(a).toBe(b)
   })

@@ -5,7 +5,7 @@ import type { ConfidenceQuestion } from '@/lib/assessment/types'
 
 const mockQuestion: ConfidenceQuestion = {
   id: 'qC',
-  dimension: 'literacy',
+  dimension: 'application',
   prompt: 'How confident are you?',
   maxPoints: 3,
   type: 'confidence',

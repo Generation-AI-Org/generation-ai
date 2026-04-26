@@ -7,7 +7,6 @@ const skills = {
   prompting: 50,
   agents: 50,
   application: 50,
-  literacy: 50,
 } as const
 
 describe('SparringSlot (placeholder)', () => {

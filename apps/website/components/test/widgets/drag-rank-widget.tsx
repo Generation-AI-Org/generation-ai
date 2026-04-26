@@ -153,7 +153,6 @@ export function DragRankWidget({
     answer?.order ?? question.items.map((i) => i.id),
   )
   const [tapSelection, setTapSelection] = useState<string | null>(null)
-  const [hasInteracted, setHasInteracted] = useState<boolean>(false)
   const [confirmed, setConfirmed] = useState<boolean>(answer?.confirmed ?? false)
 
   const labelFor = useCallback(
@@ -164,7 +163,6 @@ export function DragRankWidget({
   const commit = useCallback(
     (next: string[]) => {
       setOrder(next)
-      setHasInteracted(true)
       // Reset confirmed when order changes — user must re-confirm after each reorder.
       setConfirmed(false)
       onAnswer({ questionId: question.id, type: 'rank', order: next, confirmed: false })
@@ -290,8 +288,8 @@ export function DragRankWidget({
           </SortableContext>
         </DndContext>
       )}
-      {/* Confirm step — required by UI-SPEC W2: explicit "Reihenfolge bestätigen" gates Nächste Aufgabe */}
-      {hasInteracted && !confirmed && !disabled && (
+      {/* Confirm step — explicit confirmation gates Nächste Aufgabe, including when the initial order is already the user's intended order. */}
+      {!confirmed && !disabled && (
         <button
           type="button"
           onClick={handleConfirm}

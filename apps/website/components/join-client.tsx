@@ -25,8 +25,7 @@ export function JoinClient({ nonce }: JoinClientProps) {
     <MotionConfig nonce={nonce}>
       <Header />
       <main id="main-content" className="min-h-screen pt-20">
-        <JoinHeroSection />
-        <JoinFormSection />
+        <JoinHeroSection formSlot={<JoinFormSection embedded />} />
       </main>
       <Footer />
     </MotionConfig>

@@ -49,7 +49,7 @@ describe('scoreAssessment', () => {
 
   it('skill scores are per-dimension percentages 0-100', () => {
     const r = scoreAssessment(FIXTURE_QUESTIONS, FIXTURE_ANSWERS_MID)
-    for (const d of ['tools', 'prompting', 'agents', 'application', 'literacy'] as const) {
+    for (const d of ['tools', 'prompting', 'agents', 'application'] as const) {
       expect(Number.isInteger(r.skills[d])).toBe(true)
       expect(r.skills[d]).toBeGreaterThanOrEqual(0)
       expect(r.skills[d]).toBeLessThanOrEqual(100)

@@ -6,7 +6,7 @@ import type { SpotAnswer, SpotQuestion } from '@/lib/assessment/types'
 
 const mockQuestion: SpotQuestion = {
   id: 'qSpot',
-  dimension: 'literacy',
+  dimension: 'application',
   prompt: 'Find the hallucination',
   maxPoints: 3,
   type: 'spot',

@@ -22,20 +22,22 @@ describe('Assessment content', () => {
     expect(qs).toHaveLength(10)
   })
 
-  it('questions cover at least 5 distinct widget types', () => {
+  it('questions cover the four 22.8 launch widget types', () => {
     const qs = loadQuestions()
     const types = new Set(qs.map((q) => q.type))
-    expect(types.size).toBeGreaterThanOrEqual(5)
+    expect(types).toEqual(new Set(['mc', 'rank', 'match', 'confidence']))
   })
 
-  it('every dimension appears in exactly 2 questions', () => {
+  it('every 22.8 spider-chart dimension appears in 2-3 questions', () => {
     const qs = loadQuestions()
     const counts: Record<string, number> = {}
     for (const q of qs) {
       counts[q.dimension] = (counts[q.dimension] ?? 0) + 1
     }
-    for (const dim of ['tools', 'prompting', 'agents', 'application', 'literacy']) {
-      expect(counts[dim]).toBe(2)
+    expect(Object.keys(counts).sort()).toEqual(['agents', 'application', 'prompting', 'tools'])
+    for (const dim of ['tools', 'prompting', 'agents', 'application']) {
+      expect(counts[dim]).toBeGreaterThanOrEqual(2)
+      expect(counts[dim]).toBeLessThanOrEqual(3)
     }
   })
 

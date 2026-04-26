@@ -2,7 +2,7 @@
 
 // AboutMitmachCTASection — Mitmach-CTA der /about-Seite (Plan 21-05).
 //
-// Layout: zentriert. H2 + Body + Primary-Mailto-Pill. Anker id="mitmach"
+// Layout: zentriert. H2 + Body + Primary-Pill zum Verein-Formular. Anker id="mitmach"
 // ist load-bearing: Targets von Story-CTA, Abschluss-Secondary-Link,
 // Kontaktbox-Mitmach-Link, FAQ-Inline-Link.
 //
@@ -10,8 +10,6 @@
 // Plan 20.6-07 Baseline). Background über `style={{ background: var(--accent) }}`
 // weil Tailwind `bg-[var(--accent)]`-Arbitrary sonst nicht mit Opacity-Utility
 // kombiniert — gleiches Pattern wie in der Landing-CTA.
-//
-// Mailto via plain <a> (Next.js Link wirft bei mailto: eine Warnung).
 //
 // Motion: fadeIn-Entry mit useReducedMotion-Gate. Reduced-Motion disablet auch
 // hover:scale — Browser respektiert `prefers-reduced-motion: reduce` auf
@@ -62,14 +60,14 @@ export function AboutMitmachCTASection() {
           Wir suchen Leute, die mit aufbauen wollen. Events, Content, Strategie, Tech — sag uns, wo du anpacken würdest.
         </motion.p>
 
-        {/* Primary-CTA: Mailto mit Subject */}
+        {/* Primary-CTA: Sprung zum Verein-Formular */}
         <motion.div {...fadeIn} className="mt-10 flex justify-center">
           <a
-            href="mailto:info@generation-ai.org?subject=Mitmachen"
+            href="#verein-form"
             className="group inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 font-mono text-[15px] font-bold tracking-[0.02em] text-[var(--text-on-accent)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.03] hover:shadow-[0_0_24px_var(--accent-glow)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
             style={{ background: "var(--accent)" }}
           >
-            Melde dich
+            Zum Formular
             <ArrowRight
               className="w-4 h-4 transition-transform duration-[var(--dur-fast)] ease-[var(--ease-out)] group-hover:translate-x-0.5"
               aria-hidden="true"

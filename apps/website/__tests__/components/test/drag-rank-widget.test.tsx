@@ -53,9 +53,9 @@ describe('DragRankWidget', () => {
     expect(options[3]).toHaveTextContent('Item B')
   })
 
-  it('does not show confirm button before any interaction', () => {
+  it('shows confirm button immediately so the initial order can be accepted', () => {
     render(<DragRankWidget question={mockQuestion} answer={undefined} onAnswer={vi.fn()} />)
-    expect(screen.queryByRole('button', { name: /Reihenfolge bestätigen/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Reihenfolge bestätigen/i })).toBeInTheDocument()
   })
 
   // isAnswerReady: confirm step required for rank type

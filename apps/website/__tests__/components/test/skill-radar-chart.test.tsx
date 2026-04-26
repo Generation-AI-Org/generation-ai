@@ -17,7 +17,6 @@ const skills = {
   prompting: 60,
   agents: 40,
   application: 70,
-  literacy: 55,
 } as const
 
 describe('SkillRadarChart', () => {

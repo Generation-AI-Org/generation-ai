@@ -38,8 +38,8 @@ describe("sitemap", () => {
     );
   });
 
-  it("contains exactly 9 entries (root + about + join + test + /community + 4 articles)", async () => {
+  it("contains exactly 15 entries (static pages + community articles + events)", async () => {
     const entries = await sitemap();
-    expect(entries.length).toBe(9);
+    expect(entries.length).toBe(15);
   });
 });

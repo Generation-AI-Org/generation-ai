@@ -34,7 +34,7 @@ export function AufgabeClient(props: AufgabeClientProps) {
 function AufgabeInner({ questions, currentIndex, highlightedCode }: AufgabeClientProps) {
   const router = useRouter()
   const reducedMotion = useReducedMotion()
-  const { answers, answerQuestion } = useAssessment()
+  const { answers, answerQuestion, hydrated } = useAssessment()
   const [showCheckpoint, setShowCheckpoint] = useState(false)
   const checkpointTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   // A11y: ref for the question H2 so we can focus it after the enter transition
@@ -59,6 +59,7 @@ function AufgabeInner({ questions, currentIndex, highlightedCode }: AufgabeClien
   // URL-state guard (CONTEXT D-11): if user deep-links into aufgabe/3 without
   // having answered 1-2, redirect to /test. Run once on mount / index change.
   useEffect(() => {
+    if (!hydrated) return
     for (let i = 0; i < currentIndex; i++) {
       const prev = questions[i]
       if (!answers[prev.id]) {
@@ -68,7 +69,7 @@ function AufgabeInner({ questions, currentIndex, highlightedCode }: AufgabeClien
     }
     // Only run when index changes — not on every answer update.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIndex])
+  }, [currentIndex, hydrated])
 
   const handleNext = useCallback(() => {
     const isLast = currentIndex === questions.length - 1

@@ -196,7 +196,7 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
                 e.stopPropagation()
                 toggleTheme()
               }}
-              className={`group p-2.5 rounded-full transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 active:scale-95 ${
+              className={`group p-2.5 rounded-full transition-[background-color,transform] duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center hover:scale-105 active:scale-[0.96] ${
                 theme === 'dark'
                   ? 'bg-white/10 hover:bg-white/15'
                   : 'bg-black/20 hover:bg-black/25'

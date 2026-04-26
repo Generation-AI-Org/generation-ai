@@ -67,7 +67,10 @@ export function LabeledNodes({
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const labelsRef = useRef<string[]>(labels ?? DEFAULT_LABELS)
-  labelsRef.current = labels ?? DEFAULT_LABELS
+
+  useEffect(() => {
+    labelsRef.current = labels ?? DEFAULT_LABELS
+  }, [labels])
 
   useEffect(() => {
     const container = containerRef.current

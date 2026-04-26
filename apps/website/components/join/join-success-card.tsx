@@ -9,10 +9,11 @@ import { ArrowRight } from 'lucide-react'
 // Animates in while form animates out (AnimatePresence mode="wait" in JoinFormSection).
 
 export interface JoinSuccessCardProps {
+  compact?: boolean
   name: string
 }
 
-export function JoinSuccessCard({ name }: JoinSuccessCardProps) {
+export function JoinSuccessCard({ compact = false, name }: JoinSuccessCardProps) {
   const prefersReducedMotion = useReducedMotion()
   const headingRef = useRef<HTMLHeadingElement>(null)
 
@@ -29,7 +30,11 @@ export function JoinSuccessCard({ name }: JoinSuccessCardProps) {
       initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: 'easeOut', delay: 0.05 }}
-      className="rounded-2xl border border-[var(--border)]/60 bg-bg-card shadow-sm px-6 py-8 sm:px-8 sm:py-10"
+      className={
+        compact
+          ? 'rounded-2xl border border-[var(--border)]/60 bg-bg-card px-5 py-6 shadow-sm sm:px-6'
+          : 'rounded-2xl border border-[var(--border)]/60 bg-bg-card px-6 py-8 shadow-sm sm:px-8 sm:py-10'
+      }
       role="status"
       aria-live="polite"
     >
