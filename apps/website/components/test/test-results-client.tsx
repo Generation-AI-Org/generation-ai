@@ -70,7 +70,8 @@ export function TestResultsClient({ nonce }: { nonce: string }) {
               Dein Profil auf vier Achsen
             </h2>
             <p className="mt-3 text-sm leading-[1.7] text-[var(--text-muted)]">
-              Tools, Prompting, Agents und Anwendung zeigen, wo du heute stehst.
+              Tools, Prompting, Agents und Anwendung zeigen deinen Status quo.
+              Von hier aus wird es konkret: verbessern, ausprobieren, loslegen.
             </p>
           </div>
           <SkillRadarChart skills={result.skills} slug={result.slug} />

@@ -18,37 +18,36 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 22.6 ✅ done + auf develop, **Phase 22.8 ✅ DONE 2026-04-26**, Phase 27 last-before-launch)
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 22.6 ✅ done + auf develop, **Phase 22.8 ✅ DONE + auf develop 2026-04-26**, Phase 27 last-before-launch)
 **Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** 22.8 (UI-Konsistenz & Section-Refinement) — ✅ DONE. Foundation-Layer 3/3 + Page-Layer 10/10 + Phase-Closeout abgeschlossen (04 Partner-Hero, 05 Partner-Nav, 06 Join Status-Switch, 07 Join Hero-Layout, 08 About Formular, 09 About Timeline, 10 Test Fragetypen, 11 Test Spider-Chart, 12 Test Public Conversion, 13 Theme-Toggle Konsistenz). Nächster Schritt: Merge-Vorbereitung Richtung `develop`, danach Phase 27.
+**Phase:** Phase 27 Copy-Pass & Launch-Cleanup — in progress. 22.8 ist auf `develop`; offene nicht-Circle-UATs wurden von Luca am 2026-04-26 für Phase-27-Readiness akzeptiert. Janna/Sparring-Feedback vom 2026-04-26 wurde als erster Phase-27-Slice umgesetzt (Join-Formular, `/test` Leadmagnet-CTA, Footer/Header, Welcome-Mail, Tools-Hero-Copy). Supabase `early_career`/`birth_year` Migration ist live angewendet. Circle-Sync bleibt separates Preview-/Launch-UAT-Gate; `SIGNUP_ENABLED` bleibt unverändert.
 **Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
 
 - `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
-- `develop` = Staging-Sammelbranch (Stand: + Phase 25 + Phase 26 + **Phase 22.6** ✅ gemerged 2026-04-25, commits 7b1a5aa → ac01d32 → a28821b). Vercel-Preview: https://website-git-develop-lucas-projects-e78962e9.vercel.app
+- `develop` = Staging-Sammelbranch (Stand: + Phase 25 + Phase 26 + Phase 22.6 + **Phase 22.8** ✅ gemerged 2026-04-26). Vercel-Preview: https://website-git-develop-lucas-projects-e78962e9.vercel.app
 - `feature/phase-22.6-pre-launch-polish` = ✅ DONE + gemerged in develop (kann gelöscht werden)
-- `feature/phase-22.8-join-about-test-polish` = Phase 22.8 complete. Foundation 3/3 + Page-Layer 10/10 + Closeout done. Bereit für Merge-Vorbereitung nach `develop` (kein Push/Merge ohne explizites OK).
-- `feature/phase-26-community` = abgeschlossen, im Worktree `generation-ai-phase-26` (UAT pending)
+- `feature/phase-22.8-join-about-test-polish` = Phase 22.8 complete + in `develop` integriert.
+- `feature/phase-26-community` = abgeschlossen + von Luca für Phase-27-Readiness akzeptiert.
 
 **Last Updated:** 2026-04-26 (Phase 22.8 final DONE auf `feature/phase-22.8-join-about-test-polish`. `/test` persistiert anonymen Fortschritt in `sessionStorage` und abgeschlossene Ergebnisse in `localStorage`; `/join` übernimmt gespeicherte Testdaten als Hidden Payload, `submitJoinSignup` schreibt validiertes `user_metadata.test_result` bei aktivem Signup. Website- und tools-app-Theme-Toggle sind visuell synchronisiert. Closeout-Rerun: Website + tools-app Typecheck grün, Website Vitest 110/110, Lint 0 Errors/15 bestehende Warnings, Full Build grün. Wave-4 E2E/Visual-Smoke: `/test` Playwright 9/9, `/join` Playwright 14/14, Theme-Toggle Visual-Smoke grün gegen lokale Production-Server.)
-**Site Status:** ✅ Live auf generation-ai.org (alter Stand, Phase 20+20.5). Develop-Preview hat alles bisher Gebaute (Phase 21–26 + 22.6). Phase 26 UAT noch offen (`pending-luca`). 4 HUMAN-UAT-Items Phase 24 offen (E2E-Live, Lighthouse, Content-Review, CSP-Prod-Smoke). 1 HUMAN-UAT-Item Phase 22.6 offen (Logged-in Regression).
+**Site Status:** ✅ Live auf generation-ai.org (alter Stand, Phase 20+20.5). `develop` hat alles bisher Gebaute (Phase 21–26 + 22.6 + 22.8). Luca hat am 2026-04-26 die offenen nicht-Circle-UATs für Phase-27-Readiness akzeptiert (20.6 Landing, 22.6 Logged-in Risk, 23 deferred Checks, 24 `/test`, 26 `/community`). Phase 25 Circle-Sync bleibt External-Setup-/Launch-Gate: Circle Token, Vercel Env, Preview Signup E2E, Circle SSO, Fallback-Test, Sentry, Bundle-Secret-Grep.
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** Merge-Vorbereitung für Phase 22.8 Richtung `develop`; danach Phase 27 Copy-Pass & Launch-Cleanup.
-**First command (option A):** `/gsd-progress` — Roadmap + offene UAT-Items checken
-**First command (option B):** Phase 22.8 nach `develop` mergen (nach explizitem OK), dann Phase 27 planen/starten.
-**Erst tun (Phase 22.6 cleanup):**
+**Next phase:** Phase 27 Copy-Pass & Launch-Cleanup fortsetzen.
+**First command:** Phase-27-Diff prüfen und offene Launch-Gates abarbeiten.
+**Erst tun (Phase 27 Fortsetzung):**
 
-- Item 6 Logged-in Regression auf develop-Preview live testen (5min) — Lite-Account einloggen, CTAs verschwinden, Settings + Signout sichtbar, Lite/Pro Toggle, Logout. Siehe 22.6-HUMAN-UAT.md §6.
-- Optional: `git branch -d feature/phase-22.6-pre-launch-polish` (lokal löschen, ist gemerged)
+- `27-SUMMARY.md` + `27-LAUNCH-CHECKLIST.md` nutzen: Janna-Feedback-Slice ist lokal grün; Supabase/Vercel/Sentry/Bundlegrep-Basics sind erledigt; übrig sind optionales Motivationsfeld-Entscheid, Circle-Invitation-Template-Check im Dashboard, Marketing-Mail-Screenshots und Phase-25 Preview-Signup-UAT durch Luca.
+- Circle-Sync nicht blind live schalten: Phase 25 ist kein normaler UAT, sondern Secret-/External-Service-Gate. Signup-Reactivation bleibt Luca-Approval-Gate.
 
 **Phase 22.6 Status (final):**
 
 - 9/9 Plans done (Track A 5 + Track B 4)
 - Verifier passed (16/16 must_haves)
 - Code-Review: 0 Critical · 4 Warnings (V1-akzeptabel) · 6 Info
-- UAT: 5 passed · 1 partial (Item 2 perf pre-existing tech-debt) · 1 blocked (Item 6)
+- UAT: 6 passed/accepted · 1 partial accepted (tools-app perf pre-existing tech-debt)
 - Lighthouse /events: **99/100/100/100** ✅
 - Lighthouse tools-app: 78/94/100/92 (perf pre-existing — eigene Performance-Phase post-launch, Pre-22.6 Baseline war 53)
 - Drive-by Footer-Polish: a28821b (/events in Footer Entdecken-section, Header bleibt D-18-locked)

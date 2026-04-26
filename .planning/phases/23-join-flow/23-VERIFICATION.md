@@ -1,7 +1,7 @@
 ---
 phase: 23-join-flow
 verified: 2026-04-24T12:00:00Z
-status: human_needed
+status: accepted
 score: 15/16 must-haves verified
 overrides_applied: 0
 re_verification: false
@@ -15,6 +15,10 @@ human_verification:
   - test: "Run Lighthouse on /join in Chrome DevTools on the deployed Vercel preview URL"
     expected: "Performance >= 90 (localhost scored 87, CDN expected higher); A11y, Best Practices, SEO all >= 90"
     why_human: "Localhost LCP is inflated vs CDN; real score needs a Vercel preview URL; automated check cannot run browser lighthouse"
+human_acceptance:
+  accepted_by: "Luca"
+  accepted_at: "2026-04-26"
+  note: "Live submit passed on 2026-04-24; remaining Playwright/Lighthouse pre-launch items accepted as non-blocking."
 deferred:
   - truth: "Assessment CTA on success card links to a live /test route"
     addressed_in: "Phase 24"
@@ -25,7 +29,7 @@ deferred:
 
 **Phase Goal:** Waitlist-V1-Landing (Single-Page + Inline-Success-Swap) mit Form-Validation, Rate-Limit, Supabase-Insert, Resend-Confirmation-Mail. Live-Signup-Reaktivierung bleibt auf Phase 25 verschoben — bis dahin sammelt /join Waitlist-Einträge.
 **Verified:** 2026-04-24T12:00:00Z
-**Status:** human_needed
+**Status:** accepted
 **Re-verification:** No — initial verification
 
 ---

@@ -35,7 +35,7 @@ export interface UserCircleLinkInsert {
  */
 export interface CircleUserMetadata {
   /** Carried from /join Step 1 payload */
-  status?: 'student' | 'working' | 'alumni' | 'other'
+  status?: 'student' | 'early_career' | 'working' | 'alumni' | 'other'
   university?: string
   university_other?: string
   study_field?: string

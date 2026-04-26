@@ -84,9 +84,8 @@ export default function ConfirmSignupEmail({
         }}
       >
         Du bekommst gleich eine zweite Mail von <strong>Circle</strong> (unser
-        Community-Host). Klick da auf <em>„Accept invitation"</em>, setz dir ein
-        Passwort und einen Namen — dann bist du direkt in der Community drin und
-        kannst loslegen.
+        Community-Host). Öffne die Einladung, setz dir ein Passwort und einen
+        Namen — dann bist du direkt in der Community drin und kannst loslegen.
       </Text>
 
       <Text
@@ -147,8 +146,8 @@ export default function ConfirmSignupEmail({
           style={{
             display: 'inline-block',
             padding: '14px 32px',
-            backgroundColor: tokens.light.text,
-            color: tokens.light.bg,
+            backgroundColor: tokens.dark.accent,
+            color: tokens.dark.textOnAccent,
             fontFamily: fontStack.mono,
             fontSize: '15px',
             fontWeight: 700,

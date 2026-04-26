@@ -49,7 +49,9 @@ export function ToolsHero() {
 
         {/* Body — Geist Sans (default), text-text-secondary */}
         <p className="mx-auto mt-3 max-w-xl text-base leading-[1.65] text-text-secondary">
-          Über 100 Tools, sortiert nach Anwendungsfall. Brauchst du Hilfe? Frag unseren Agenten.
+          Über 100 Tools, sortiert nach Anwendungsfall. Finde schneller das
+          richtige Setup für Recherche, Lernen, Schreiben und Bauen — oder frag
+          direkt unseren Agenten.
         </p>
       </motion.div>
     </section>

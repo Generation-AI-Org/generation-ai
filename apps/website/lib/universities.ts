@@ -1,8 +1,8 @@
 /**
  * Phase 23 — Uni-Dropdown-Liste für /join Waitlist-Form.
  *
- * Enthält 50 wichtige Hochschulen im DACH-Raum, gemischt Unis + HAWs,
- * plus deterministische Fallback-Option "Andere" am Ende.
+ * Enthält wichtige Hochschulen im DACH-Raum plus ausgewählte internationale
+ * Master-Standorte mit hohem DACH-Anteil, gemischt Unis + HAWs.
  *
  * Auswertung: "Andere" bleibt als stabiler Wert in `waitlist.university`.
  * Der optionale Freitext dazu wird separat als Kontext gesendet, damit
@@ -82,8 +82,26 @@ export const UNIVERSITIES: University[] = [
   // Österreich & Schweiz (DACH)
   'Universität Wien',
   'Technische Universität Wien',
+  'Wirtschaftsuniversität Wien',
+  'Universität Innsbruck',
+  'Universität Graz',
+  'Universität Salzburg',
   'ETH Zürich',
   'Universität Zürich',
+  'Universität St. Gallen (HSG)',
+  'Universität Basel',
+  'Universität Bern',
+  'École polytechnique fédérale de Lausanne (EPFL)',
+  'Universität Luzern',
+
+  // Portugal / internationale Master-Standorte mit vielen deutschen Studierenden
+  'Universidade Católica Portuguesa',
+  'Católica Lisbon School of Business & Economics',
+  'Nova School of Business & Economics',
+  'Universidade Nova de Lisboa',
+  'Universidade de Lisboa',
+  'Universidade do Porto',
+  'ISCTE - Instituto Universitário de Lisboa',
 
   // Deterministischer Fallback (immer am Ende)
   OTHER_UNIVERSITY,

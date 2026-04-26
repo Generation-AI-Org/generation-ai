@@ -66,7 +66,7 @@ export function TestHeroSection() {
               textShadow: textShadowLg,
             }}
           >
-            15 Minuten. 10 Aufgaben. Ehrliches Ergebnis.
+            Ermittle deinen Status quo — und leg dann los, besser zu werden.
           </p>
 
           {/* Intro lede */}
@@ -74,7 +74,8 @@ export function TestHeroSection() {
             className="mx-auto mt-6 max-w-2xl text-lg leading-[1.5] text-text-secondary text-pretty sm:text-xl"
             style={{ textShadow: textShadowSm }}
           >
-            Kein Selbsteinschätzungs-Quiz — wir fragen ab, was du kannst.
+            10 kurze Aufgaben zeigen dir, wo du heute stehst und welcher
+            nächste Schritt wirklich lohnt.
           </p>
 
           {/* Badges */}
@@ -105,8 +106,8 @@ export function TestHeroSection() {
             className="mx-auto mt-4 max-w-lg text-sm text-[var(--text-muted)]"
             style={{ textShadow: textShadowSm }}
           >
-            Kein Self-Assessment — wir fragen ab, was du kannst, nicht was du
-            glaubst zu können.
+            Funktioniert direkt als Leadmagnet: Test machen, Ergebnis sehen,
+            dann rein in die Community.
           </p>
         </motion.div>
       </LabeledNodes>

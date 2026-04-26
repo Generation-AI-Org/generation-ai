@@ -46,14 +46,15 @@ export function SkillRadarChart({
   const bottom = DIM_LABELS[sorted[sorted.length - 1][0]]
 
   return (
-    <figure className="mx-auto max-w-lg py-8" data-testid="skill-radar" data-level={slug}>
+    <figure className="mx-auto max-w-xl py-8" data-testid="skill-radar" data-level={slug}>
       <div className="aspect-square w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <RadarChart data={data} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
+          <RadarChart data={data} margin={{ top: 28, right: 56, bottom: 28, left: 56 }}>
             <PolarGrid stroke="var(--border)" />
             <PolarAngleAxis
               dataKey="dim"
               tick={{ fill: 'var(--text-muted)', fontSize: 14 }}
+              tickLine={false}
             />
             <Radar
               dataKey="score"

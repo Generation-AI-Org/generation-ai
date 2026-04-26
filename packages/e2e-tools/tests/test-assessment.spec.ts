@@ -148,8 +148,9 @@ test.describe('/test AI Literacy Assessment', () => {
     await completeAssessment(page)
 
     await expect(page.getByRole('heading', { level: 1 })).toContainText(/Level \d/)
-    const primaryCta = page.getByRole('link', { name: 'Jetzt beitreten & loslegen' })
+    const primaryCta = page.getByRole('link', { name: 'Jetzt registrieren' })
     await expect(primaryCta).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Zur Community' })).toBeVisible()
     const href = await primaryCta.getAttribute('href')
     expect(href).toMatch(
       /^\/join\?pre=(neugieriger|einsteiger|fortgeschritten|pro|expert)&source=test&skills=/,
@@ -178,7 +179,7 @@ test.describe('/test AI Literacy Assessment', () => {
     page,
   }) => {
     await completeAssessment(page)
-    await page.getByRole('link', { name: 'Jetzt beitreten & loslegen' }).click()
+    await page.getByRole('link', { name: 'Jetzt registrieren' }).click()
     await expect(page).toHaveURL(/\/join\?pre=.*source=test.*skills=/)
 
     const resultPayload = page.locator('input[name="test_result"]')

@@ -5,15 +5,17 @@ status: complete
 nyquist_compliant: true
 wave_4_complete: true
 lighthouse_passed: true
-uat_pending: true
+uat_pending: false
+uat_accepted_by: Luca
+uat_accepted_at: 2026-04-26
 created: 2026-04-25
-last-updated: 2026-04-25
-scope_note: "Block A (/community + 4 articles + sitemap + Schema.org) + Block B (live featured-tools API + MDX-driven landing preview) + Header-Nav-Renderer rewire (D-18). Lighthouse all ≥ 90 across mobile + desktop on /community + article. Manual UAT per 26-UAT.md remaining."
+last-updated: 2026-04-26
+scope_note: "Block A (/community + 4 articles + sitemap + Schema.org) + Block B (live featured-tools API + MDX-driven landing preview) + Header-Nav-Renderer rewire (D-18). Lighthouse all ≥ 90 across mobile + desktop on /community + article. Manual UAT accepted by Luca on 2026-04-26."
 ---
 
 # Phase 26 — Validation Report
 
-> Phase-Validation gegen die 21 Success-Criteria (15 Block A + 6 Block B) aus `26-CONTEXT.md` plus Header-Navigation-Acceptance aus `26-06-PLAN.md`. Automated Gates (Build, Tests, Lighthouse) sind grün. Manual UAT in `26-UAT.md`.
+> Phase-Validation gegen die 21 Success-Criteria (15 Block A + 6 Block B) aus `26-CONTEXT.md` plus Header-Navigation-Acceptance aus `26-06-PLAN.md`. Automated Gates (Build, Tests, Lighthouse) sind grün. Manual UAT wurde von Luca am 2026-04-26 akzeptiert.
 
 ---
 
@@ -150,7 +152,7 @@ Keine neuen Threat-Surfaces über die in den Plans registrierten hinaus — kein
 | 26-03 (Article-page + Schema.org + Sitemap) | Wave 3 (Block A) | ✅ complete | `26-03-SUMMARY.md` |
 | 26-04 (Featured-Tools API + featured flag) | Wave 2 (Block B) | ✅ complete | `26-04-SUMMARY.md` |
 | 26-05 (Server-Component refactor + MDX-driven preview) | Wave 3 (Block B) | ✅ complete | `26-05-SUMMARY.md` |
-| 26-06 (Header-Nav rewire + Lighthouse + UAT) | Wave 4 | 🚧 code-done, UAT pending Luca | `26-06-SUMMARY.md` |
+| 26-06 (Header-Nav rewire + Lighthouse + UAT) | Wave 4 | ✅ code-done, UAT accepted by Luca 2026-04-26 | `26-06-SUMMARY.md` |
 
 ---
 
@@ -197,6 +199,6 @@ Keine blockierenden Issues. Pre-existing items, die nicht in Phase-26-Scope fall
 - [x] 23 Decisions aus CONTEXT.md implementiert
 - [x] Threat-Mitigations alle DONE oder explizit accepted
 - [x] Self-Check pro Plan PASSED (siehe individual SUMMARIES)
-- [ ] Manual UAT signed-off durch Luca → siehe `26-UAT.md`
+- [x] Manual UAT signed-off durch Luca → siehe `26-UAT.md`
 
-**Gate Status:** Automated alles grün. Phase 26 Code-complete. UAT pending.
+**Gate Status:** Automated alles grün. Phase 26 Code-complete. UAT accepted by Luca on 2026-04-26.

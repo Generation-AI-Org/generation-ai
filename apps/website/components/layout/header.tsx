@@ -27,6 +27,7 @@ import {
 // Nav-Struktur (D-18, locked)
 const navLinks = [
   { label: "Tools", href: "https://tools.generation-ai.org", external: true, newTab: false },
+  { label: "Events", href: "/events", external: false },
   { label: "Community", href: "/community", external: false },
 ] as const
 
@@ -211,6 +212,7 @@ function MobileNavList({ prefersReducedMotion }: MobileNavListProps) {
   // Mobile-Nav items (locked D-18 order)
   const items: Array<{ type: "link" | "partner" | "about"; label?: string; href?: string; external?: boolean; newTab?: boolean }> = [
     { type: "link", label: "Tools", href: "https://tools.generation-ai.org", external: true, newTab: false },
+    { type: "link", label: "Events", href: "/events", external: false },
     { type: "link", label: "Community", href: "/community", external: false },
     { type: "partner" },
     { type: "about", label: "Über uns", href: "/about" },

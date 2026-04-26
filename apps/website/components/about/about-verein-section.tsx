@@ -90,7 +90,7 @@ export function AboutVereinSection() {
                 Finanziert durch Fördermittel, Sachleistungen und Partnerschaften mit Unternehmen, Stiftungen und Hochschulen. Keine Paywall, keine versteckten Kosten für Mitglieder.
               </p>
               <p>
-                Mitgliedschaft ist kostenlos. Aktives Mitmachen — Events organisieren, Content beitragen, Strategie mitbauen — ist möglich und willkommen.
+                Mitgliedschaft ist kostenlos und in 2 Minuten erledigt. Wenn du Bock hast, mit einem starken Team etwas zu verändern: Events, Content, Strategie und Tech brauchen Leute, die anpacken.
               </p>
             </div>
           </motion.div>

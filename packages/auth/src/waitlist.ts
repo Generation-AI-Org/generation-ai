@@ -20,6 +20,7 @@ export interface WaitlistRow {
   study_field: string | null
   study_program: string | null
   marketing_opt_in: boolean
+  birth_year: number | null
   redirect_after: string | null
   source: string
   created_at: string
@@ -34,9 +35,15 @@ export interface WaitlistInsert {
   university?: string | null
   study_field?: string | null
   study_program?: string | null
+  birth_year?: number | null
   marketing_opt_in?: boolean
   redirect_after?: string | null
   source?: string
 }
 
-export type WaitlistStatus = 'student' | 'working' | 'alumni' | 'other'
+export type WaitlistStatus =
+  | 'student'
+  | 'early_career'
+  | 'working'
+  | 'alumni'
+  | 'other'

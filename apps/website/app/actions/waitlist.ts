@@ -17,12 +17,18 @@ import { submitJoinSignup } from './signup'
 export type WaitlistFieldErrors = Partial<{
   email: string
   name: string
+  first_name: string
+  last_name: string
   status: string
   university: string
   university_other: string
   study_field: string
   study_field_other: string
   study_program: string
+  birth_year: string
+  highest_degree: string
+  career_field: string
+  context: string
   consent: string
   source: string
   pre: string
@@ -47,7 +53,13 @@ const ERR_GENERIC =
 const ERR_RATE_LIMIT = 'Zu viele Versuche. Bitte warte einen Moment.'
 const ERR_INVALID = 'Ungültige Anfrage.'
 
-const waitlistStatusSchema = z.enum(['student', 'working', 'alumni', 'other'])
+const waitlistStatusSchema = z.enum([
+  'student',
+  'early_career',
+  'working',
+  'alumni',
+  'other',
+])
 
 const schema = z
   .object({
@@ -82,6 +94,13 @@ const schema = z
       .string()
       .trim()
       .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    birth_year: z.coerce
+      .number()
+      .int()
+      .min(1940)
+      .max(new Date().getFullYear() - 12)
       .optional()
       .or(z.literal('').transform(() => undefined)),
     marketing_opt_in: z.boolean().default(false),
@@ -125,7 +144,7 @@ const schema = z
   })
   .superRefine((data, ctx) => {
     if (
-      (data.status === 'student' || data.status === 'alumni') &&
+      (data.status === 'student' || data.status === 'early_career') &&
       !data.university
     ) {
       ctx.addIssue({
@@ -185,6 +204,7 @@ async function legacySubmitWaitlist(
     study_field: formData.get('study_field')?.toString() ?? '',
     study_field_other: formData.get('study_field_other')?.toString() ?? '',
     study_program: formData.get('study_program')?.toString() ?? '',
+    birth_year: formData.get('birth_year')?.toString() ?? '',
     // checkboxes: 'on' in default HTML, '' or null otherwise; we coerce manually
     marketing_opt_in:
       formData.get('marketing_opt_in') === 'on' ||
@@ -231,6 +251,7 @@ async function legacySubmitWaitlist(
     university: data.university ?? null,
     study_field: data.study_field ?? null,
     study_program: data.study_program ?? null,
+    birth_year: data.birth_year ?? null,
     marketing_opt_in: data.marketing_opt_in,
     redirect_after: sanitizedRedirect,
     source: data.source ?? 'join-page',

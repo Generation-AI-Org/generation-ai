@@ -63,25 +63,11 @@ export function JoinSuccessCard({ compact = false, name }: JoinSuccessCardProps)
       {/* Primary CTA — Assessment (D-15): "Jetzt Level testen (2 min)" → /test */}
       <a
         href="/test"
-        className="mt-8 inline-flex items-center gap-2 rounded-full px-6 py-3 font-mono font-bold text-[14px] tracking-[0.02em] transition-all duration-300"
+        className="mt-8 inline-flex items-center gap-2 rounded-full px-6 py-3 font-mono text-[14px] font-bold tracking-[0.02em] transition-[box-shadow,transform] duration-300 hover:scale-[1.03] hover:shadow-[0_0_20px_var(--accent-glow)] active:scale-[0.96]"
         style={{
           background: 'var(--accent)',
           color: 'var(--text-on-accent)',
           minHeight: '44px',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 0 20px var(--accent-glow)'
-          e.currentTarget.style.transform = 'scale(1.03)'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = ''
-          e.currentTarget.style.transform = ''
-        }}
-        onMouseDown={(e) => {
-          e.currentTarget.style.transform = 'scale(0.98)'
-        }}
-        onMouseUp={(e) => {
-          e.currentTarget.style.transform = 'scale(1.03)'
         }}
       >
         Jetzt Level testen (2 min)

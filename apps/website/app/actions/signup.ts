@@ -21,12 +21,18 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export type SignupFieldErrors = Partial<{
   email: string
   name: string
+  first_name: string
+  last_name: string
   status: string
   university: string
   university_other: string
   study_field: string
   study_field_other: string
   study_program: string
+  birth_year: string
+  highest_degree: string
+  career_field: string
+  context: string
   consent: string
   redirect_after: string
   source: string
@@ -53,7 +59,13 @@ const ERR_RATE_LIMIT = 'Zu viele Versuche. Bitte warte einen Moment.'
 const ERR_INVALID = 'Ungültige Anfrage.'
 const ERR_SIGNUP_CLOSED = 'Anmeldung ist momentan geschlossen.'
 
-const signupStatusSchema = z.enum(['student', 'working', 'alumni', 'other'])
+const signupStatusSchema = z.enum([
+  'student',
+  'early_career',
+  'working',
+  'alumni',
+  'other',
+])
 
 // ---------------------------------------------------------------------------
 // Validation schema
@@ -92,6 +104,13 @@ const schema = z
       .string()
       .trim()
       .max(200)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    birth_year: z.coerce
+      .number()
+      .int()
+      .min(1940)
+      .max(new Date().getFullYear() - 12)
       .optional()
       .or(z.literal('').transform(() => undefined)),
     marketing_opt_in: z.boolean().default(false),
@@ -137,7 +156,7 @@ const schema = z
   })
   .superRefine((data, ctx) => {
     if (
-      (data.status === 'student' || data.status === 'alumni') &&
+      (data.status === 'student' || data.status === 'early_career') &&
       !data.university
     ) {
       ctx.addIssue({
@@ -198,6 +217,7 @@ export async function submitJoinSignup(
     study_field: formData.get('study_field')?.toString() ?? '',
     study_field_other: formData.get('study_field_other')?.toString() ?? '',
     study_program: formData.get('study_program')?.toString() ?? '',
+    birth_year: formData.get('birth_year')?.toString() ?? '',
     marketing_opt_in:
       formData.get('marketing_opt_in') === 'on' ||
       formData.get('marketing_opt_in') === 'true',
@@ -250,6 +270,7 @@ export async function submitJoinSignup(
       ? { study_field_other: data.study_field_other }
       : {}),
     ...(data.study_program ? { study_program: data.study_program } : {}),
+    ...(data.birth_year ? { birth_year: data.birth_year } : {}),
     marketing_opt_in: data.marketing_opt_in,
     ...(sanitizedRedirect ? { redirect_after: sanitizedRedirect } : {}),
     ...(data.motivation ? { motivation: data.motivation } : {}),

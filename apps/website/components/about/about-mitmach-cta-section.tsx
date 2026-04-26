@@ -48,7 +48,7 @@ export function AboutMitmachCTASection() {
           className="font-mono font-bold text-text text-balance"
           style={{ fontSize: "var(--fs-h2)", lineHeight: "var(--lh-headline)" }}
         >
-          Bock, mitzumachen?
+          Bock, mit einem coolen Team was zu verändern?
         </motion.h2>
 
         {/* Body */}
@@ -57,14 +57,14 @@ export function AboutMitmachCTASection() {
           className="mt-6 text-text-secondary text-pretty"
           style={{ fontSize: "var(--fs-lede)", lineHeight: "var(--lh-lede)" }}
         >
-          Wir suchen Leute, die mit aufbauen wollen. Events, Content, Strategie, Tech — sag uns, wo du anpacken würdest.
+          Wir suchen Leute, die mit aufbauen wollen. Events, Content, Strategie, Tech — sag uns, wo du anpacken würdest. Mitgliedschaft ist kostenlos und in 2 Minuten erledigt.
         </motion.p>
 
         {/* Primary-CTA: Sprung zum Verein-Formular */}
         <motion.div {...fadeIn} className="mt-10 flex justify-center">
           <a
             href="#verein-form"
-            className="group inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 font-mono text-[15px] font-bold tracking-[0.02em] text-[var(--text-on-accent)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.03] hover:shadow-[0_0_24px_var(--accent-glow)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
+            className="group inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 font-mono text-[15px] font-bold tracking-[0.02em] text-[var(--text-on-accent)] transition-[box-shadow,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.03] hover:shadow-[0_0_24px_var(--accent-glow)] active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
             style={{ background: "var(--accent)" }}
           >
             Zum Formular

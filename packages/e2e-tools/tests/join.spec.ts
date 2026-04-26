@@ -52,7 +52,10 @@ test.describe('/join page', () => {
     await page.goto(JOIN_URL)
 
     await expect(page.locator('input[name="email"]')).toBeVisible()
-    await expect(page.locator('input[name="name"]')).toBeVisible()
+    await expect(page.locator('input[name="first_name"]')).toBeVisible()
+    await expect(page.locator('input[name="last_name"]')).toBeVisible()
+    await expect(page.locator('input[name="birth_year"]')).toBeVisible()
+    await expect(page.locator('input[name="name"]')).toHaveCount(1)
     await expect(page.locator('input[name="status"]')).toHaveValue('student')
     await expect(page.locator('input[name="university"]')).toBeVisible()
     await expect(page.locator('select[name="study_field"]')).toBeVisible()
@@ -86,9 +89,9 @@ test.describe('/join page', () => {
   }) => {
     await page.goto(JOIN_URL)
     await page.getByRole('textbox', { name: 'E-MAIL' }).fill(testEmail())
-    await page
-      .getByRole('textbox', { name: 'VOR- UND NACHNAME' })
-      .fill('Test User')
+    await page.getByRole('textbox', { name: 'VORNAME' }).fill('Test')
+    await page.getByRole('textbox', { name: 'NACHNAME' }).fill('User')
+    await page.getByRole('spinbutton', { name: 'GEBURTSJAHR' }).fill('2001')
     await page.getByRole('combobox', { name: 'HOCHSCHULE' }).fill('Test Uni')
     // consent deliberately not checked
     await page.getByRole('button', { name: 'Kostenlos beitreten' }).click()
@@ -100,19 +103,16 @@ test.describe('/join page', () => {
     ).toBeVisible()
   })
 
-  test('status switch hides university for working applicants', async ({
+  test('status switch shows early-career fields and keeps university', async ({
     page,
   }) => {
     await page.goto(JOIN_URL)
-    await page.getByRole('radio', { name: /Berufstätig/ }).click()
-    await expect(page.locator('input[name="status"]')).toHaveValue('working')
-    await expect(page.locator('input[name="university"]')).toHaveCount(0)
-    await page.locator('select[name="study_field"]').selectOption('Informatik')
-    await expect(
-      page.getByRole('combobox', { name: /STUDIENFELD/ }).last(),
-    ).toHaveValue(
-      'Informatik',
-    )
+    await page.getByRole('radio', { name: /Early Career/ }).click()
+    await expect(page.locator('input[name="status"]')).toHaveValue('early_career')
+    await expect(page.locator('input[name="university"]')).toBeVisible()
+    await expect(page.locator('select[name="highest_degree"]')).toBeVisible()
+    await expect(page.locator('input[name="career_field"]')).toBeVisible()
+    await expect(page.locator('select[name="study_field"]')).toHaveCount(0)
   })
 
   test('uni combobox accepts free-text input', async ({ page }) => {
@@ -143,6 +143,16 @@ test.describe('/join page', () => {
     await expect(uni).toHaveValue('Andere')
     await expect(
       page.getByRole('textbox', { name: /Welche Hochschule/ }),
+    ).toBeVisible()
+  })
+
+  test('uni combobox includes international universities', async ({ page }) => {
+    await page.goto(JOIN_URL)
+    const uni = page.getByRole('combobox', { name: 'HOCHSCHULE' })
+    await uni.click()
+    await uni.fill('Nova')
+    await expect(
+      page.getByRole('option', { name: /Nova School of Business & Economics/ }),
     ).toBeVisible()
   })
 
@@ -184,17 +194,18 @@ test.describe('/join page', () => {
   })
 
   test('valid submit swaps form for success card', async ({ page }) => {
-    // Skip in CI if no Supabase + Resend configured — requires live DB
-    if (process.env.CI && !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    // Requires live Supabase + mail/Circle-side config; local UI runs should not
+    // fail just because secrets are intentionally absent.
+    if (process.env.RUN_LIVE_JOIN_E2E !== 'true') {
       test.skip()
       return
     }
 
     await page.goto(JOIN_URL)
     await page.getByRole('textbox', { name: 'E-MAIL' }).fill(testEmail())
-    await page
-      .getByRole('textbox', { name: 'VOR- UND NACHNAME' })
-      .fill('Max Mustermann')
+    await page.getByRole('textbox', { name: 'VORNAME' }).fill('Max')
+    await page.getByRole('textbox', { name: 'NACHNAME' }).fill('Mustermann')
+    await page.getByRole('spinbutton', { name: 'GEBURTSJAHR' }).fill('2001')
     await page
       .getByRole('combobox', { name: 'HOCHSCHULE' })
       .fill('LMU München')
@@ -223,7 +234,9 @@ test.describe('/join page', () => {
     await page
       .locator('input[name="email"]')
       .fill('reload-test@generation-ai.test')
-    await page.locator('input[name="name"]').fill('Reload User')
+    await page.locator('input[name="first_name"]').fill('Reload')
+    await page.locator('input[name="last_name"]').fill('User')
+    await page.locator('input[name="birth_year"]').fill('2002')
     await page.getByRole('combobox', { name: 'HOCHSCHULE' }).fill('TU Berlin')
     await page.locator('select[name="study_field"]').selectOption('Informatik')
     await page.waitForTimeout(500)
@@ -236,8 +249,14 @@ test.describe('/join page', () => {
       'reload-test@generation-ai.test',
     )
     await expect(
-      page.getByRole('textbox', { name: 'VOR- UND NACHNAME' }),
-    ).toHaveValue('Reload User')
+      page.getByRole('textbox', { name: 'VORNAME' }),
+    ).toHaveValue('Reload')
+    await expect(
+      page.getByRole('textbox', { name: 'NACHNAME' }),
+    ).toHaveValue('User')
+    await expect(
+      page.getByRole('spinbutton', { name: 'GEBURTSJAHR' }),
+    ).toHaveValue('2002')
     await expect(page.getByRole('combobox', { name: 'HOCHSCHULE' })).toHaveValue(
       'TU Berlin',
     )

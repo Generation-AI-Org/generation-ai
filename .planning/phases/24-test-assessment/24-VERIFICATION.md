@@ -1,5 +1,5 @@
 ---
-status: human_needed
+status: accepted
 phase: 24-test-assessment
 completed: 2026-04-24
 plans_complete: 9
@@ -9,6 +9,10 @@ tests_green: 69
 tests_failed: 0
 build_green: true
 typecheck_green: true
+human_acceptance:
+  accepted_by: "Luca"
+  accepted_at: "2026-04-26"
+  note: "Owner accepted /test content and remaining UAT items; no rerun performed in this update."
 ---
 
 # Phase 24 — Verification Report

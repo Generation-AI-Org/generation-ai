@@ -1,9 +1,11 @@
 ---
 phase: 26
 slug: community-page-and-subdomain-integration
-status: pending-luca
+status: approved
 created: 2026-04-25
-last-updated: 2026-04-25
+last-updated: 2026-04-26
+accepted_by: Luca
+acceptance_note: "Owner accepted remaining UAT items in chat; no rerun performed in this update."
 ---
 
 # Phase 26 — User Acceptance Test
@@ -192,8 +194,8 @@ lighthouse "http://localhost:3000/community/artikel/bachelorarbeit-mit-claude" -
 ## Sign-off
 
 ```
-Phase 26 UAT signed off by Luca on 2026-__-__.
-Open issues for follow-up: <list, oder "none">
+Phase 26 UAT signed off by Luca on 2026-04-26.
+Open issues for follow-up: none blocking for Phase 27 readiness.
 ```
 
 **Resume-Signal an Executor:**

@@ -17,7 +17,7 @@ export function Footer() {
               <Logo
                 context="footer"
                 theme={theme}
-                colorway={theme === "dark" ? "neon" : "red"}
+                colorway={theme === "dark" ? "white" : "red-on-pink"}
                 size="md"
               />
             </Link>
@@ -39,7 +39,7 @@ export function Footer() {
                 <Link
                   href="/about"
                   prefetch={false}
-                  className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
+                  className="text-white transition-colors hover:text-[var(--accent-hover)]"
                 >
                   Über uns
                 </Link>
@@ -47,7 +47,7 @@ export function Footer() {
               <li>
                 <a
                   href="https://tools.generation-ai.org"
-                  className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
+                  className="text-white transition-colors hover:text-[var(--accent-hover)]"
                 >
                   Tools
                 </a>
@@ -57,7 +57,7 @@ export function Footer() {
                   href="https://community.generation-ai.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
+                  className="text-white transition-colors hover:text-[var(--accent-hover)]"
                 >
                   Community
                 </a>
@@ -66,7 +66,7 @@ export function Footer() {
                 <Link
                   href="/events"
                   prefetch={false}
-                  className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
+                  className="text-white transition-colors hover:text-[var(--accent-hover)]"
                 >
                   Events
                 </Link>
@@ -75,7 +75,7 @@ export function Footer() {
                 <Link
                   href="/partner"
                   prefetch={false}
-                  className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
+                  className="text-white transition-colors hover:text-[var(--accent-hover)]"
                 >
                   Für Partner
                 </Link>
@@ -84,7 +84,7 @@ export function Footer() {
                 <Link
                   href="/join"
                   prefetch={false}
-                  className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
+                  className="text-white transition-colors hover:text-[var(--accent-hover)]"
                 >
                   Jetzt beitreten
                 </Link>
@@ -101,7 +101,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/impressum"
-                  className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
+                  className="text-white transition-colors hover:text-[var(--accent-hover)]"
                 >
                   Impressum
                 </Link>
@@ -109,7 +109,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/datenschutz"
-                  className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
+                  className="text-white transition-colors hover:text-[var(--accent-hover)]"
                 >
                   Datenschutz
                 </Link>
@@ -126,7 +126,7 @@ export function Footer() {
               <li>
                 <a
                   href="mailto:info@generation-ai.org"
-                  className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
+                  className="text-white transition-colors hover:text-[var(--accent-hover)]"
                 >
                   info@generation-ai.org
                 </a>
