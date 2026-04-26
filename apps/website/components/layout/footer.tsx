@@ -44,8 +44,6 @@ export function Footer() {
               <li>
                 <a
                   href="https://tools.generation-ai.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
                 >
                   Tools

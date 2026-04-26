@@ -87,8 +87,6 @@ function ToolCard({
     <li className="w-[280px] shrink-0">
       <a
         href={`${toolsBase}/${tool.slug}`}
-        target="_blank"
-        rel="noopener noreferrer"
         aria-label={`${tool.title} in der Tools-Bibliothek öffnen`}
         className="group block h-full rounded-2xl border border-border bg-bg-card p-5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-[var(--border-accent)] hover:shadow-[0_0_20px_var(--accent-glow)]"
       >

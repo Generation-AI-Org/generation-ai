@@ -203,8 +203,6 @@ export async function ToolShowcaseSection() {
             <BeispielBadge />
             <a
               href={TOOLS_BASE}
-              target="_blank"
-              rel="noopener noreferrer"
               className="inline-flex items-center gap-1 rounded-full font-mono text-[12px] font-bold uppercase tracking-[0.08em] text-[var(--accent)] hover:text-[var(--accent-hover,var(--accent))] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
               style={{
                 outlineColor: "var(--text)",

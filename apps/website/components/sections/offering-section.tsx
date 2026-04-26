@@ -30,6 +30,7 @@ type Surface = {
   cta: string
   href: string
   external: boolean
+  newTab?: boolean
   preview: React.ReactNode
 }
 
@@ -43,6 +44,7 @@ const surfaces: Surface[] = [
     cta: "Zur Community",
     href: "https://community.generation-ai.org",
     external: true,
+    newTab: true,
     preview: <CommunityPreview />,
   },
   {
@@ -54,6 +56,7 @@ const surfaces: Surface[] = [
     cta: "Tools entdecken",
     href: "https://tools.generation-ai.org",
     external: true,
+    newTab: false,
     preview: <ToolsPreview />,
   },
   {
@@ -200,8 +203,8 @@ function SurfaceCard({ surface }: { surface: Surface }) {
     return (
       <a
         href={surface.href}
-        target="_blank"
-        rel="noopener noreferrer"
+        target={surface.newTab ? "_blank" : undefined}
+        rel={surface.newTab ? "noopener noreferrer" : undefined}
         aria-label={`${surface.title} — ${surface.url} öffnen`}
         className={linkClassName}
         style={linkStyle}

@@ -32,8 +32,8 @@ import { motion, useReducedMotion } from "motion/react"
 // mit translate-x-[3px] on hover.
 //
 // Secondary: tools.generation-ai.org als DS-Pill-Outline-Button (wie Hero
-// "Mehr erfahren"), mit ArrowUpRight für external target. Vorher Small-
-// Textlink — zu dezent für den narrativen Closer-Peak.
+// "Mehr erfahren"). Vorher Small-Textlink — zu dezent für den narrativen
+// Closer-Peak.
 //
 // Section-Header: "// jetzt" slash-prefix konsistent mit Trust + Kurz-FAQ
 // + Community-Preview.
@@ -173,8 +173,6 @@ export function FinalCTASection() {
 
           <a
             href="https://tools.generation-ai.org"
-            target="_blank"
-            rel="noopener noreferrer"
             className="group inline-flex items-center justify-center gap-2 rounded-full border px-7 py-4 font-mono text-[15px] font-bold tracking-[0.02em] text-text transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
             style={{ borderColor: "var(--border)" }}
             onMouseEnter={(e) =>

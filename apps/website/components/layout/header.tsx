@@ -26,7 +26,7 @@ import {
 
 // Nav-Struktur (D-18, locked)
 const navLinks = [
-  { label: "Tools", href: "https://tools.generation-ai.org", external: true },
+  { label: "Tools", href: "https://tools.generation-ai.org", external: true, newTab: false },
   { label: "Community", href: "/community", external: false },
 ] as const
 
@@ -64,8 +64,8 @@ export function Header() {
                 <a
                   key={link.href}
                   href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target={link.newTab ? "_blank" : undefined}
+                  rel={link.newTab ? "noopener noreferrer" : undefined}
                   className="px-3 py-2 text-sm font-mono text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)] transition-colors"
                 >
                   {link.label}
@@ -209,8 +209,8 @@ function MobileNavList({ prefersReducedMotion }: MobileNavListProps) {
   const [isPartnerOpen, setIsPartnerOpen] = useState(false)
 
   // Mobile-Nav items (locked D-18 order)
-  const items: Array<{ type: "link" | "partner" | "about"; label?: string; href?: string; external?: boolean }> = [
-    { type: "link", label: "Tools", href: "https://tools.generation-ai.org", external: true },
+  const items: Array<{ type: "link" | "partner" | "about"; label?: string; href?: string; external?: boolean; newTab?: boolean }> = [
+    { type: "link", label: "Tools", href: "https://tools.generation-ai.org", external: true, newTab: false },
     { type: "link", label: "Community", href: "/community", external: false },
     { type: "partner" },
     { type: "about", label: "Über uns", href: "/about" },
@@ -234,8 +234,8 @@ function MobileNavList({ prefersReducedMotion }: MobileNavListProps) {
                 render={
                   <a
                     href={item.href}
-                    target={item.external ? "_blank" : undefined}
-                    rel={item.external ? "noopener noreferrer" : undefined}
+                    target={item.newTab ? "_blank" : undefined}
+                    rel={item.newTab ? "noopener noreferrer" : undefined}
                     className="block px-3 py-3 text-base font-mono text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)] hover:bg-white/5 rounded-lg transition-colors"
                   >
                     {item.label}
