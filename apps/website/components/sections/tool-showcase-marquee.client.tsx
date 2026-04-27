@@ -98,7 +98,11 @@ function ToolCard({
             }}
             aria-hidden="true"
           >
-            <ToolIcon slug={tool.slug} size={20} />
+            <ToolIcon
+              slug={tool.slug}
+              size={20}
+              className="transition-colors duration-300 group-hover:text-[var(--accent)]"
+            />
           </div>
         </div>
         <div className="font-mono text-[15px] font-bold text-text">

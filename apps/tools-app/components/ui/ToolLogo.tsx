@@ -30,8 +30,12 @@ export default function ToolLogo({ slug, domain, name, size = 48, priority = fal
 
   if (hasCustomIcon) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-[var(--border)] border border-[var(--border)] rounded-xl">
-        <ToolIcon slug={slug} size={iconSize} className="text-text-secondary" />
+      <div className="w-full h-full flex items-center justify-center bg-[var(--border)] border border-[var(--border)] rounded-xl transition-[background-color,border-color] duration-300 group-hover:border-[var(--accent)]/40 group-hover:bg-[var(--accent-soft)]">
+        <ToolIcon
+          slug={slug}
+          size={iconSize}
+          className="text-text-secondary transition-colors duration-300 group-hover:text-[var(--accent)]"
+        />
       </div>
     )
   }
@@ -51,7 +55,7 @@ export default function ToolLogo({ slug, domain, name, size = 48, priority = fal
   }
 
   return (
-    <div className="w-full h-full flex items-center justify-center bg-[var(--border)] border border-[var(--border)] rounded-xl overflow-hidden">
+    <div className="w-full h-full flex items-center justify-center bg-[var(--border)] border border-[var(--border)] rounded-xl overflow-hidden transition-[background-color,border-color] duration-300 group-hover:border-[var(--accent)]/40 group-hover:bg-[var(--accent-soft)]">
       <Image
         src={`https://logo.clearbit.com/${domain}`}
         alt={`${name} Logo`}
