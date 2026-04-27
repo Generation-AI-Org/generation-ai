@@ -119,7 +119,9 @@ test.describe('events page — Track A smoke', () => {
     expect(redirectAfter).not.toContain('http');
   });
 
-  // A-req-6: /events/[slug] renders as standalone page with H1 visible
+  // A-req-6: /events/[slug] renders as standalone page with H1 visible.
+  // Logged-out visitors must go through /join before seeing external
+  // registration links.
   test('slug page: /events/[slug] rendert Standalone (A-req-6)', async ({ page }) => {
     await page.goto('/events/2026-05-15-prompting-masterclass');
 
@@ -128,11 +130,15 @@ test.describe('events page — Track A smoke', () => {
       page.getByRole('heading', { level: 1, name: /Prompting Masterclass/i }),
     ).toBeVisible();
 
-    // "Zum Event anmelden" CTA with external link present
-    const externalLink = page.getByRole('link', { name: /Zum Event anmelden/i });
-    await expect(externalLink).toBeVisible();
-    const href = await externalLink.getAttribute('href');
-    expect(href).toMatch(/^https?:\/\//); // must be an absolute external URL
+    await expect(
+      page.getByRole('link', { name: /Mitglied werden und anmelden/i }),
+    ).toHaveAttribute(
+      'href',
+      '/join?redirect_after=%2Fevents%2F2026-05-15-prompting-masterclass',
+    );
+    await expect(
+      page.getByRole('link', { name: /Zum Event anmelden/i }),
+    ).toHaveCount(0);
 
     // Unknown slug should return 404
     const res = await page.request.get('/events/this-slug-does-not-exist');

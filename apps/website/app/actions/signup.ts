@@ -6,7 +6,7 @@ import { z } from 'zod'
 import * as Sentry from '@sentry/nextjs'
 import { Resend } from 'resend'
 import { render } from '@react-email/render'
-import { createAdminClient } from '@genai/auth'
+import { createAdminClient } from '@genai/auth/admin'
 import { CircleApiError, createMember } from '@genai/circle'
 import { ConfirmSignupEmail } from '@genai/emails'
 import { checkSignupRateLimit, getClientIp } from '@/lib/rate-limit'
@@ -434,7 +434,11 @@ export async function submitJoinSignup(
     }
 
     const html = await render(
-      ConfirmSignupEmail({ name: data.name, toolsLoginUrl }),
+      ConfirmSignupEmail({
+        name: data.name,
+        toolsLoginUrl,
+        circleProvisioned: !!circleMemberId,
+      }),
     )
 
     const { error: sendErr } = await resend.emails.send({

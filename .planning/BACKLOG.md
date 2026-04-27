@@ -25,6 +25,14 @@
 - [x] **CSP Edge Runtime** — proxy.ts fixen (braucht Testing). **Erledigt Phase 13 (13-04 + 13-05): nonce-per-request in proxy.ts, prefetch aus matcher ausgeschlossen.**
 - [x] **LLM Keys auf Vercel** — ZHIPU_API_KEY gelöscht ✓
 
+## Pre-Launch System Review — Launch Gates (2026-04-27)
+
+- [ ] **Circle/Vercel Env-Recheck** — `CIRCLE_API_TOKEN`, `CIRCLE_HEADLESS_TOKEN`, `CIRCLE_COMMUNITY_ID`, `CIRCLE_DEFAULT_SPACE_ID`, `CIRCLE_COMMUNITY_URL`, `ADMIN_EMAIL_ALLOWLIST`, Sentry DSNs und `SIGNUP_ENABLED` in Preview/Prod prüfen. Kein Flip auf Prod ohne Luca-Go.
+- [ ] **Phase 25 HUMAN-UAT ausführen** — aktueller Zwei-Mail-Flow: `/join` → Circle Invitation → Circle Aktivierung → Resend Welcome-Mail → Tools Magic-Link; plus Circle-Failure-Path und Admin-Reprovision.
+- [ ] **Phase 28 Visual UAT + develop-Status klären** — Header-Parität, Member CTA, Mobile Search, Kiwi/chat overlap, Card Preview, Footer home/detail mit Luca/Janna abnehmen. Pre-Launch Audit: lokale `visual-baseline.spec.ts` ist als Launch-Gate aktuell nicht verwertbar/stale (4 passed, 10 failed; große Höhen-/Snapshot-Diffs auf Website Home/Legal und Tools Home/Login). Entweder Snapshots bewusst erneuern oder manuelle Visual-UAT als Gate verwenden.
+- [ ] **Events Redirect-Follow-up** — `redirect_after=/events/<slug>` wird jetzt sicher gespeichert und gated, aber der aktuelle Zwei-Mail-Flow bringt User nicht automatisch zurück zur Event-Anmeldung. Launch-UAT entscheiden: manuell erklären oder eigenen Event-Reentry-Link ergänzen.
+- [ ] **Docs Modernisierung nach Launch-Flow-Entscheidung** — `docs/ARCHITECTURE.md`, `docs/API.md`, `docs/CIRCLE-INTEGRATION.md`, `docs/DEPLOYMENT.md` vollständig auf den finalen Signup-/Circle-Flow bringen.
+
 ---
 
 ## Backlog — Neu aufgenommen 2026-04-17

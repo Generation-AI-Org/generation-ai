@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit, getClientIp } from '@/lib/ratelimit'
+import { parsePublicHttpUrl } from '@/lib/url-safety'
 
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY
+const MAX_MARKDOWN_CHARS = 6000
 
 export async function POST(req: NextRequest) {
   if (!FIRECRAWL_API_KEY) {
@@ -11,11 +14,20 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const rate = await checkRateLimit(getClientIp(req), 'defuddle')
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: 'Zu viele URL-Abfragen. Bitte warte kurz.' },
+        { status: 429, headers: { 'Retry-After': String(rate.retryAfter ?? 60) } },
+      )
+    }
+
     const { url } = await req.json()
 
-    if (!url) {
+    const parsedUrl = parsePublicHttpUrl(url)
+    if (!parsedUrl) {
       return NextResponse.json(
-        { error: 'URL required' },
+        { error: 'Ungültige oder nicht unterstützte URL.' },
         { status: 400 }
       )
     }
@@ -28,7 +40,7 @@ export async function POST(req: NextRequest) {
         'Authorization': `Bearer ${FIRECRAWL_API_KEY}`,
       },
       body: JSON.stringify({
-        url,
+        url: parsedUrl.toString(),
         formats: ['markdown'],
         onlyMainContent: true,
       }),
@@ -46,15 +58,16 @@ export async function POST(req: NextRequest) {
     const data = await response.json()
 
     // Extract content from Firecrawl response
-    const content = data.data?.markdown || ''
-    const title = data.data?.metadata?.title || new URL(url).hostname
+    const rawContent = data.data?.markdown || ''
+    const content = rawContent.slice(0, MAX_MARKDOWN_CHARS)
+    const title = data.data?.metadata?.title || parsedUrl.hostname
     const excerpt = content.slice(0, 200) + (content.length > 200 ? '...' : '')
 
     return NextResponse.json({
       title,
       content,
       excerpt,
-      url,
+      url: parsedUrl.toString(),
     })
   } catch (error) {
     console.error('[Defuddle] Error:', error)

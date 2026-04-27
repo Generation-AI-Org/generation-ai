@@ -19,16 +19,22 @@ updated: 2026-04-24
 - [ ] **Circle Business-Plan aktiv:** In Circle-Admin → Billing prüfen dass API-Access enabled ist.
 - [ ] **Circle-Admin-Token generieren:**
   - Circle-Admin → Settings → Developer → Generate Token
-  - Scope: Full admin (oder minimum: read members, create members, create SSO tokens, add to space)
+  - Scope: Full admin (oder minimum: read members, create members, add to space)
+  - Token kopieren, nicht verlieren (erscheint nur einmal)
+- [ ] **Circle-Headless-Auth-Token generieren:**
+  - Circle-Admin → Settings → Developer → Generate Token
+  - Typ: Headless Auth
+  - Wird für Website-`/auth/confirm` SSO-Fallback/Bestandslinks benötigt
   - Token kopieren, nicht verlieren (erscheint nur einmal)
 - [ ] **Community-ID notiert:** `511295` (discovered via Circle-MCP `get_community`)
 - [ ] **Welcome-Space-ID notiert:** `2574363` ("How to" — Circle's eigener `default_new_member_space_id`, via `list_spaces` bestätigt)
 
 ### Vercel-Env-Push (prod + preview + dev)
 
-- [ ] 4 Circle-Vars in Vercel (prod + preview + dev):
+- [ ] 5 Circle-Vars in Vercel (prod + preview + dev):
   ```bash
   vercel env add CIRCLE_API_TOKEN            # <real token> — aus Circle-Admin
+  vercel env add CIRCLE_HEADLESS_TOKEN       # <real headless token> — Typ Headless Auth
   vercel env add CIRCLE_COMMUNITY_ID         # 511295
   vercel env add CIRCLE_DEFAULT_SPACE_ID     # 2574363
   vercel env add CIRCLE_COMMUNITY_URL        # https://community.generation-ai.org
@@ -53,10 +59,9 @@ updated: 2026-04-24
 - [x] **Migration applied** via Supabase-MCP während Plan-A execution — `public.user_circle_links` live mit RLS.
 - [ ] **Verify table present:** Supabase-MCP `list_tables` zeigt `user_circle_links` (rls_enabled: true).
 - [ ] **Email-Template in Supabase-Dashboard einspielen:**
-  - `apps/website/emails/dist/confirm-signup.html` öffnen, Inhalt kopieren
-  - Supabase-Dashboard → Authentication → Email Templates → Confirm signup → paste + save
-  - Subject: `Willkommen bei Generation AI 👋`
-  - Test-Mail an sich selbst senden → visuell prüfen (Button-Kontrast, Umlaute, Mobile-Responsive)
+  - Aktueller Happy-Path: Circle Invitation-Mail + Resend-Welcome-Mail; Supabase Confirm-Template ist Legacy/Fallback.
+  - Circle-Dashboard Invitation-Mail prüfen: `[accept invitation]` raus, Generation-AI-Branding und klare Set-Password-Anleitung rein.
+  - Resend-Welcome-Mail visuell prüfen: Button-Kontrast, Umlaute, Mobile-Responsive.
 
 ### Bundle-Safety Check
 
@@ -71,7 +76,8 @@ Nach Build:
 - [ ] Preview-URL öffnen (mit `SIGNUP_ENABLED=true` in preview)
 - [ ] `/join` aufrufen, Form mit Test-Email (z.B. `luca+test1@generation-ai.org`) ausfüllen, submitten
 - [ ] Mail landet im Postfach (ca. 10s)
-- [ ] Click "Loslegen →" → lande in Circle eingeloggt (kein zweiter Login-Prompt)
+- [ ] Circle Invitation-Mail öffnen → Passwort/Name setzen → lande in Circle als korrekter Test-User
+- [ ] Resend-Welcome-Mail öffnen → "Zu den KI-Tools" → lande in tools-app eingeloggt
 - [ ] Circle-Admin → Members: Test-User existiert, ist in Welcome-Space (2574363)
 - [ ] Sentry: keine Events (happy-path sollte clean sein)
 - [ ] Supabase-SQL: `SELECT raw_user_meta_data FROM auth.users WHERE email = 'luca+test1@generation-ai.org'` → `circle_member_id` gesetzt
@@ -81,7 +87,7 @@ Nach Build:
 
 - [ ] In Vercel preview env temporär `CIRCLE_API_TOKEN=bad_token` setzen → redeploy
 - [ ] Neuer Signup mit anderer Test-Email → `{ ok: true }` (D-03 non-blocking), Mail kommt
-- [ ] Confirm-Link klicken → lande auf `/welcome?circle=pending` mit Banner "Zur Community →"
+- [ ] Resend-Welcome-Mail weist korrekt auf manuelle Community-Freischaltung hin und enthält keinen falschen "Circle-Mail kommt gleich"-Text
 - [ ] Sentry: Event mit Tag `circle-api:true` + `op:createMember` gelandet
 - [ ] Token wieder zurücksetzen + redeploy
 

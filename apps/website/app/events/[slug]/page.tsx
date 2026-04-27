@@ -23,6 +23,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CalendarDays, MapPin, ArrowLeft } from "lucide-react";
 import { MotionConfig } from "motion/react";
+import { createClient } from "@genai/auth/server";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { BeispielBadge } from "@/components/ui/beispiel-badge";
@@ -84,6 +85,11 @@ export default async function EventDetailPage({ params }: PageProps) {
   }
 
   const fm = event.frontmatter;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const joinHref = `/join?redirect_after=${encodeURIComponent(`/events/${slug}`)}`;
 
   return (
     <MotionConfig nonce={nonce}>
@@ -188,22 +194,30 @@ export default async function EventDetailPage({ params }: PageProps) {
             is deferred to Phase 28+. The frontmatter description field serves
             as the primary content for the V1 standalone page. (T-22.6-A-MDX) */}
 
-        {/* Anmelde-CTA — links to external ctaUrl.
-            T-22.6-A-CTA-NEWTAB: rel="noopener noreferrer" required. */}
+        {/* Anmelde-CTA — external registration is members-only. */}
         <div className="mt-12 flex flex-col sm:flex-row gap-3">
-          <a
-            href={fm.ctaUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-[var(--accent)] text-[var(--text-on-accent)] font-mono font-bold text-sm rounded-full px-6 py-3 hover:shadow-[0_0_20px_var(--accent-glow)] hover:scale-[1.03] transition-all duration-[var(--dur-fast)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] text-center"
-          >
-            Zum Event anmelden →
-          </a>
+          {user ? (
+            <a
+              href={fm.ctaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[var(--accent)] text-[var(--text-on-accent)] font-mono font-bold text-sm rounded-full px-6 py-3 hover:shadow-[0_0_20px_var(--accent-glow)] hover:scale-[1.03] transition-all duration-[var(--dur-fast)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] text-center"
+            >
+              Zum Event anmelden →
+            </a>
+          ) : (
+            <Link
+              href={joinHref}
+              className="bg-[var(--accent)] text-[var(--text-on-accent)] font-mono font-bold text-sm rounded-full px-6 py-3 hover:shadow-[0_0_20px_var(--accent-glow)] hover:scale-[1.03] transition-all duration-[var(--dur-fast)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] text-center"
+            >
+              Mitglied werden und anmelden →
+            </Link>
+          )}
           <Link
-            href="/join"
+            href="/events"
             className="bg-bg-elevated border border-border text-text font-mono text-sm rounded-full px-6 py-3 hover:border-border-accent transition-colors duration-[var(--dur-normal)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] text-center"
           >
-            Erst Mitglied werden
+            Alle Events ansehen
           </Link>
         </div>
         </div>

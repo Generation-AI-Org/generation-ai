@@ -72,6 +72,7 @@ export default async function ArticlePage({ params }: PageProps) {
         {/* Schema.org Article JSON-LD (D-09).
             XSS-escape `<` → `\u003c` (T-26-03-01) per Next.js canonical doc. */}
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),

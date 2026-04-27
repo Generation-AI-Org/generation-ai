@@ -11,6 +11,7 @@ import {
   createServerClient,
   type CookieOptionsWithName,
 } from '@supabase/ssr'
+import { createAdminClient } from '@genai/auth/admin'
 import { CircleApiError, generateSsoUrl } from '@genai/circle'
 import { checkConfirmRateLimit, getClientIp } from '@/lib/rate-limit'
 
@@ -134,11 +135,22 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   const user = data.user
-  const meta = (user.user_metadata as Record<string, unknown> | null) ?? null
-  const circleMemberIdRaw = meta?.circle_member_id
+  const admin = createAdminClient()
+  const { data: link, error: linkError } = await admin
+    .from('user_circle_links')
+    .select('circle_member_id')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (linkError) {
+    Sentry.captureException(linkError, {
+      tags: { op: 'confirm.lookupCircleLink' },
+      extra: { user_id: user.id },
+    })
+  }
   const circleMemberId =
-    typeof circleMemberIdRaw === 'string' && circleMemberIdRaw.length > 0
-      ? circleMemberIdRaw
+    typeof link?.circle_member_id === 'string' && link.circle_member_id.length > 0
+      ? link.circle_member_id
       : null
 
   // -- 4. No Circle link → Fallback -----------------------------------------
@@ -147,7 +159,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       category: 'circle-api',
       message: 'confirm.no_circle_link',
       level: 'info',
-      data: { hasMetadata: !!meta },
+      data: { hasAuthoritativeLink: !!link },
     })
     return redirectWithCookies(fallbackUrl(origin))
   }

@@ -1,7 +1,10 @@
 /**
  * Phase 25 — Admin-Auth-Helper für Admin-Routes.
  *
- * Strategie (Q6): Magic-Link-Session + Role-Check ODER Allowlist.
+ * Strategie: Magic-Link-Session + ADMIN_EMAIL_ALLOWLIST.
+ *
+ * Do not trust `user_metadata.role` here. Supabase user metadata is writable by
+ * the authenticated user and must not grant service-role admin access.
  *
  * Usage:
  * ```ts
@@ -73,10 +76,7 @@ export async function checkAdminAuth(request: Request): Promise<AdminAuthResult>
   const emailLower = user.email.toLowerCase()
   const allowlist = getAllowlist()
   const isAllowlisted = allowlist.includes(emailLower)
-  const hasAdminRole =
-    (user.user_metadata as Record<string, unknown> | null)?.role === 'admin'
-
-  if (!isAllowlisted && !hasAdminRole) {
+  if (!isAllowlisted) {
     return { ok: false, status: 403, reason: 'Not authorized (admin only)' }
   }
 

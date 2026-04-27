@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 
 // CSP mit Nonce erfordert dynamic rendering — sonst wird HTML zur Build-Zeit
 // ohne Nonce gebaut, und der per-request-Nonce in den Script-Tags fehlt →
@@ -76,24 +77,28 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const nonce = (await headers()).get("x-nonce") ?? "";
+
   return (
     <html lang="de" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body className="antialiased min-h-screen">
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(buildOrganizationSchema()),
+            __html: JSON.stringify(buildOrganizationSchema()).replace(/</g, "\\u003c"),
           }}
         />
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(buildWebSiteSchema()),
+            __html: JSON.stringify(buildWebSiteSchema()).replace(/</g, "\\u003c"),
           }}
         />
         <ThemeProvider>

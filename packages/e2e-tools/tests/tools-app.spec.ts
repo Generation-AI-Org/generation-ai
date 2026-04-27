@@ -8,24 +8,27 @@ test.describe('tools-app website alignment — Phase 28 smoke', () => {
   test('public desktop: website header, member CTA, footer and preview cards are aligned', async ({ page }) => {
     await page.goto(TOOLS_URL);
 
-    const desktopNav = page.locator('[data-tools-nav="desktop"]');
+    const desktopNav = page.getByRole('navigation', { name: 'Hauptnavigation' });
     await expect(desktopNav).toBeVisible();
-    await expect(desktopNav.locator('[data-nav-item="tools"]')).toHaveText('Tools');
-    await expect(desktopNav.locator('[data-nav-item="tools"]')).toHaveAttribute('aria-current', 'page');
-    await expect(desktopNav.locator('[data-nav-item="events"]')).toHaveText('Events');
-    await expect(desktopNav.locator('[data-nav-item="community"]')).toHaveText('Community');
-    await expect(desktopNav.locator('[data-nav-item="partner"]')).toHaveText(/Für Partner/);
-    await expect(desktopNav.locator('[data-nav-item="about"]')).toHaveText(/Über uns/);
+    await expect(desktopNav.getByRole('link', { name: 'Tools' })).toBeVisible();
+    await expect(desktopNav.getByRole('link', { name: 'Events' })).toBeVisible();
+    await expect(desktopNav.getByRole('link', { name: 'Community' })).toBeVisible();
+    await expect(desktopNav.getByRole('link', { name: /Für Partner/ })).toBeVisible();
+    await expect(desktopNav.getByRole('link', { name: /Über uns/ })).toBeVisible();
 
     await expect(page.locator('header').getByText('Impressum')).toHaveCount(0);
     await expect(page.locator('header').getByText('Datenschutz')).toHaveCount(0);
 
-    const primary = page.locator('[data-cta="primary-register"]');
+    await expect(
+      desktopNav.getByRole('link', { name: 'Jetzt beitreten' }),
+    ).toHaveAttribute('href', 'https://generation-ai.org/join?utm_source=tools');
+
+    const primary = page.locator('[data-cta="member-panel-register"]');
     await expect(primary).toBeVisible();
     await expect(primary).toHaveText(/Kostenlos Mitglied werden/);
     await expect(primary).toHaveAttribute('href', 'https://generation-ai.org/join?utm_source=tools');
 
-    const secondary = page.locator('[data-cta="secondary-login"]');
+    const secondary = page.locator('[data-cta="member-panel-login"]');
     await expect(secondary).toBeVisible();
     await expect(secondary).toHaveText(/Einloggen/);
 
@@ -69,21 +72,23 @@ test.describe('tools-app website alignment — Phase 28 smoke', () => {
     await expect(page.getByPlaceholder('Tool suchen...')).toBeVisible();
     await page.keyboard.press('Escape');
 
-    await page.locator('[data-tools-burger]').click();
-    const mobileNav = page.locator('[data-tools-nav="mobile"]');
+    await page.getByRole('button', { name: 'Menü öffnen' }).click();
+    const mobileNav = page.getByRole('navigation', { name: 'Hauptnavigation mobil' });
     await expect(mobileNav).toBeVisible();
-    await expect(mobileNav.locator('[data-nav-item="tools"]')).toHaveAttribute('aria-current', 'page');
-    await expect(mobileNav.getByText('Events')).toBeVisible();
-    await expect(mobileNav.getByText('Community')).toBeVisible();
-    await expect(mobileNav.getByText('Kostenlos Mitglied werden')).toBeVisible();
-    await expect(mobileNav.getByText(/Bereits Mitglied/)).toBeVisible();
+    await expect(mobileNav.getByRole('link', { name: 'Tools' })).toBeVisible();
+    await expect(mobileNav.getByRole('link', { name: 'Events' })).toBeVisible();
+    await expect(mobileNav.getByRole('link', { name: 'Community' })).toBeVisible();
+    await expect(mobileNav.getByRole('link', { name: /Für Partner/ })).toBeVisible();
+    await expect(mobileNav.getByRole('link', { name: /Über uns/ })).toBeVisible();
+    await expect(mobileNav.getByRole('link', { name: 'Jetzt beitreten' })).toBeVisible();
   });
 
   test('chat: public badge says Lite and attachment disabled label has no sparkle', async ({ page }) => {
     await page.goto(TOOLS_URL);
 
     await page.getByLabel('Chat öffnen').click();
-    await expect(page.getByText('Lite')).toBeVisible();
+    await expect(page.getByText('Lite', { exact: true })).toBeVisible();
+    await expect(page.getByTitle('Spracheingabe starten')).toHaveCount(0);
     await expect(page.locator('body')).not.toContainText('bald ✨');
   });
 

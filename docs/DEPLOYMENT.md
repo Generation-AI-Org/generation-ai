@@ -76,17 +76,19 @@ cd apps/tools-app && vercel --prod
 | Variable | Beschreibung | Wo setzen |
 |----------|--------------|-----------|
 | `RESEND_API_KEY` | Email fuer Magic Links | Vercel |
-| `CIRCLE_API_TOKEN` | Circle.so API | Vercel |
+| `CIRCLE_API_TOKEN` | Circle Admin API | Vercel |
+| `CIRCLE_HEADLESS_TOKEN` | Circle Headless Auth API fuer SSO-Fallback/Bestandslinks | Vercel |
 | `CIRCLE_COMMUNITY_ID` | Circle Community ID | Vercel |
 | `CIRCLE_COMMUNITY_URL` | Circle URL | Vercel |
 
 ### Circle-API-Sync (Phase 25)
 
-Fünf Env-Vars steuern Circle-Provisioning + Signup-Gate:
+Sechs Env-Vars steuern Circle-Provisioning, SSO-Fallback und Signup-Gate:
 
 | Variable | Wert | Scope | Wo setzen |
 |----------|------|-------|-----------|
 | `CIRCLE_API_TOKEN` | Circle Admin-API-Bearer-Token | prod + preview + dev | Circle → Settings → Developer → Generate Token |
+| `CIRCLE_HEADLESS_TOKEN` | Circle Headless-Auth-Bearer-Token | prod + preview + dev | Circle → Settings → Developer → Generate Token, Typ "Headless Auth" |
 | `CIRCLE_COMMUNITY_ID` | `511295` (GenerationAI) | prod + preview + dev | Circle-MCP `get_community` oder Admin-UI |
 | `CIRCLE_DEFAULT_SPACE_ID` | `2574363` (How to — Circle's `default_new_member_space_id`) | prod + preview + dev | Circle-MCP `list_spaces` |
 | `CIRCLE_COMMUNITY_URL` | `https://community.generation-ai.org` | prod + preview + dev | Bekannt |
@@ -95,20 +97,24 @@ Fünf Env-Vars steuern Circle-Provisioning + Signup-Gate:
 **Setup-Kommandos** (via Vercel-CLI oder `mcp__vercel__*`):
 
 ```bash
-# Prod (alle 4 ausser SIGNUP_ENABLED kriegen echte Werte)
+# Prod (alle Circle-Werte ausser SIGNUP_ENABLED kriegen echte Werte)
 vercel env add CIRCLE_API_TOKEN production
+vercel env add CIRCLE_HEADLESS_TOKEN production
 vercel env add CIRCLE_COMMUNITY_ID production       # 511295
 vercel env add CIRCLE_DEFAULT_SPACE_ID production   # 2574363
 vercel env add CIRCLE_COMMUNITY_URL production      # https://community.generation-ai.org
 # SIGNUP_ENABLED bleibt bei false bis Phase 27
 
 # Preview + Development mit SIGNUP_ENABLED=true für E2E-Tests
+vercel env add CIRCLE_HEADLESS_TOKEN preview
+vercel env add CIRCLE_HEADLESS_TOKEN development
 vercel env add SIGNUP_ENABLED preview       # true
 vercel env add SIGNUP_ENABLED development   # true
 ```
 
 **Rotation:**
 - `CIRCLE_API_TOKEN`: Circle-Admin → alten Token revoken → neuen generieren → in Vercel + lokal `.env.local` updaten → Deploy triggern.
+- `CIRCLE_HEADLESS_TOKEN`: separat vom Admin-Token rotieren; ohne diesen Token schlägt der Website-`/auth/confirm` → Circle-SSO-Fallback fehl.
 - `CIRCLE_DEFAULT_SPACE_ID`: Wenn Welcome-Space umgezogen wird, Var updaten + Redeploy. Nicht breaking — nur neue Members landen anderswo.
 
 **Signup-Reactivation-Gate (Q11):**

@@ -1,6 +1,6 @@
 # Circle-Integration (Phase 25)
 
-> Unified Signup: User meldet sich auf `/join` an → eine Mail → ein Klick → in Circle eingeloggt.
+> Unified Signup nach dem Phase-25-Pivot: User meldet sich auf `/join` an → Circle-Member wird angelegt → Circle sendet die Aktivierungs-Mail → unsere Welcome-Mail bringt den User parallel in die Tools-App.
 
 ## Architektur-Überblick
 
@@ -57,7 +57,7 @@
 | `apps/website/lib/rate-limit.ts` | Rate-limiter für signup/confirm/admin |
 | `packages/circle/` | Circle-API-Client (createMember, generateSsoUrl, etc.) |
 | `packages/auth/src/circle.ts` | TypeScript-Types für user_circle_links + CircleUserMetadata |
-| `packages/emails/src/templates/confirm-signup.tsx` | Single-CTA-Confirm-Mail (Supabase-Template) |
+| `packages/emails/src/templates/confirm-signup.tsx` | Branded Welcome-Mail mit Tools-Magic-Link |
 | `packages/emails/src/templates/waitlist-reinvite.tsx` | Post-launch Waitlist-Re-Invite-Mail |
 | `scripts/waitlist-reinvite.ts` | Manuelles One-Shot-Script |
 | `supabase/migrations/20260425000001_circle_profile_fields.sql` | `user_circle_links` Table |
@@ -71,6 +71,7 @@ Siehe `docs/DEPLOYMENT.md` "Circle-API-Sync (Phase 25)" für Tabelle + Setup-Com
 Benötigt in prod + preview + dev:
 
 - `CIRCLE_API_TOKEN` (Circle-Admin → Developer → Generate Token)
+- `CIRCLE_HEADLESS_TOKEN` (Circle-Admin → Developer → Generate Token, Typ "Headless Auth"; für `/auth/confirm` SSO-Fallback/Bestandslinks)
 - `CIRCLE_COMMUNITY_ID` (discovered: `511295` für GenerationAI)
 - `CIRCLE_DEFAULT_SPACE_ID` (discovered: `2574363` — "How to", Circle's default_new_member_space_id)
 - `CIRCLE_COMMUNITY_URL` = `https://community.generation-ai.org`
@@ -92,9 +93,9 @@ supabase db push --project-ref wbohulnuwqrhystaamjc
 
 Verify via MCP `list_tables` → `public.user_circle_links` present.
 
-### 3. Email-Template in Supabase-Dashboard
+### 3. Email-Templates / Circle-Invitation
 
-Siehe Sektion "Email-Templates in Supabase-Dashboard einspielen" weiter unten.
+Der aktuelle Happy-Path nutzt Circle's eigene Invitation-Mail zur Aktivierung und eine Resend-Welcome-Mail aus `packages/emails/src/templates/confirm-signup.tsx`. Supabase-Confirm-Template-Doku unten ist nur noch relevant, falls der alte Website-`/auth/confirm`-Flow reaktiviert oder als Fallback getestet wird.
 
 ### 4. Circle-Welcome-Space prüfen
 
@@ -108,9 +109,9 @@ SIGNUP_ENABLED=true
 # Trigger redeploy (Vercel auto-detects env changes)
 ```
 
-## Email-Templates in Supabase-Dashboard einspielen
+## Legacy: Email-Templates in Supabase-Dashboard einspielen
 
-**Wann:** Nach jedem `pnpm --filter @genai/emails email:export` Run, oder wenn `packages/emails/src/templates/confirm-signup.tsx` geändert wurde.
+**Wann:** Nur wenn der alte Supabase-Confirm-Mail-Flow wieder produktiv genutzt wird. Der aktuelle Launch-Flow sendet die Welcome-Mail direkt via Resend und verlässt sich für Community-Aktivierung auf Circle's Invitation-Mail.
 
 **Schritte:**
 

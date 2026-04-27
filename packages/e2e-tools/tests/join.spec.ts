@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 
 const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:3000'
 const JOIN_URL = `${BASE_URL}/join`
@@ -6,6 +6,10 @@ const JOIN_URL = `${BASE_URL}/join`
 // Unique email per test run to avoid unique-index collisions in waitlist table
 function testEmail() {
   return `e2e-join+${Date.now()}-${Math.random().toString(36).slice(2, 8)}@generation-ai.test`
+}
+
+function joinForm(page: Page) {
+  return page.locator('form[aria-label="Beitrittsformular"]').last()
 }
 
 test.describe('/join page', () => {
@@ -30,14 +34,16 @@ test.describe('/join page', () => {
     page,
   }) => {
     await page.goto(JOIN_URL)
-    const h1 = page.locator('h1')
+    const h1 = page
+      .getByRole('heading', { level: 1, name: /2 Minuten.*dann bist du dabei/i })
+      .first()
     await expect(h1).toBeVisible()
     await expect(h1).toContainText('2 Minuten')
     await expect(h1).toContainText('dann bist du dabei')
 
     // Eyebrow
     await expect(
-      page.getByText('// jetzt beitreten', { exact: false }),
+      page.getByText('// jetzt beitreten', { exact: false }).first(),
     ).toBeVisible()
 
     // 3 Benefit items (verbatim from UI-SPEC Copywriting Contract)
@@ -50,20 +56,21 @@ test.describe('/join page', () => {
 
   test('renders form with all required fields', async ({ page }) => {
     await page.goto(JOIN_URL)
+    const form = joinForm(page)
 
-    await expect(page.locator('input[name="email"]')).toBeVisible()
-    await expect(page.locator('input[name="first_name"]')).toBeVisible()
-    await expect(page.locator('input[name="last_name"]')).toBeVisible()
-    await expect(page.locator('select[name="birth_year"]')).toBeVisible()
-    await expect(page.locator('input[name="name"]')).toHaveCount(1)
-    await expect(page.locator('input[name="status"]')).toHaveValue('student')
-    await expect(page.locator('input[name="university"]')).toBeVisible()
-    await expect(page.locator('select[name="study_field"]')).toBeVisible()
-    await expect(page.locator('input[name="consent"]')).toBeVisible()
-    await expect(page.locator('input[name="marketing_opt_in"]')).toBeVisible()
+    await expect(form.locator('input[name="email"]')).toBeVisible()
+    await expect(form.locator('input[name="first_name"]')).toBeVisible()
+    await expect(form.locator('input[name="last_name"]')).toBeVisible()
+    await expect(form.locator('select[name="birth_year"]')).toBeVisible()
+    await expect(form.locator('input[name="name"]')).toHaveCount(1)
+    await expect(form.locator('input[name="status"]')).toHaveValue('student')
+    await expect(form.locator('input[name="university"]')).toBeVisible()
+    await expect(form.locator('select[name="study_field"]')).toBeVisible()
+    await expect(form.locator('input[name="consent"]')).toBeVisible()
+    await expect(form.locator('input[name="marketing_opt_in"]')).toBeVisible()
 
     // Honeypot should exist (sr-only, hidden from visible layout)
-    const honeypot = page.locator('input[name="website"]')
+    const honeypot = form.locator('input[name="website"]')
     await expect(honeypot).toHaveCount(1)
 
     // Submit button visible
@@ -74,7 +81,7 @@ test.describe('/join page', () => {
 
   test('shows inline error on invalid email', async ({ page }) => {
     await page.goto(JOIN_URL)
-    const emailInput = page.locator('input[name="email"]')
+    const emailInput = joinForm(page).locator('input[name="email"]')
     await emailInput.fill('not-an-email')
     await emailInput.blur()
 
@@ -109,12 +116,13 @@ test.describe('/join page', () => {
     page,
   }) => {
     await page.goto(JOIN_URL)
+    const form = joinForm(page)
     await page.getByRole('radio', { name: /Early Career/ }).click()
-    await expect(page.locator('input[name="status"]')).toHaveValue('early_career')
-    await expect(page.locator('input[name="university"]')).toBeVisible()
-    await expect(page.locator('select[name="highest_degree"]')).toBeVisible()
-    await expect(page.locator('input[name="career_field"]')).toBeVisible()
-    await expect(page.locator('select[name="study_field"]')).toHaveCount(0)
+    await expect(form.locator('input[name="status"]')).toHaveValue('early_career')
+    await expect(form.locator('input[name="university"]')).toBeVisible()
+    await expect(form.locator('select[name="highest_degree"]')).toBeVisible()
+    await expect(form.locator('input[name="career_field"]')).toBeVisible()
+    await expect(form.locator('select[name="study_field"]')).toHaveCount(0)
   })
 
   test('uni combobox accepts free-text input', async ({ page }) => {
@@ -165,14 +173,15 @@ test.describe('/join page', () => {
     page,
   }) => {
     await page.goto(JOIN_URL)
-    await page.locator('select[name="study_field"]').selectOption('Sonstiges')
+    const form = joinForm(page)
+    await form.locator('select[name="study_field"]').selectOption('Sonstiges')
     await expect(
       page.getByRole('textbox', { name: /Welches Studienfeld/ }),
     ).toBeVisible()
     await page
       .getByRole('textbox', { name: /Welches Studienfeld/ })
       .fill('AI Policy')
-    await expect(page.locator('input[name="study_program"]')).toHaveValue(
+    await expect(form.locator('input[name="study_program"]')).toHaveValue(
       'Studienfeld: AI Policy',
     )
   })
@@ -193,7 +202,7 @@ test.describe('/join page', () => {
     page,
   }) => {
     await page.goto(`${JOIN_URL}?redirect_after=%2Fevents%2Fsample`)
-    const hidden = page.locator('input[name="redirect_after"]')
+    const hidden = joinForm(page).locator('input[name="redirect_after"]')
     await expect(hidden).toHaveCount(1)
     await expect(hidden).toHaveValue('/events/sample')
   })
@@ -207,6 +216,7 @@ test.describe('/join page', () => {
     }
 
     await page.goto(JOIN_URL)
+    const form = joinForm(page)
     await page.getByRole('textbox', { name: 'E-MAIL' }).fill(testEmail())
     await page.getByRole('textbox', { name: 'VORNAME' }).fill('Max')
     await page.getByRole('textbox', { name: 'NACHNAME' }).fill('Mustermann')
@@ -217,9 +227,11 @@ test.describe('/join page', () => {
       .getByRole('combobox', { name: 'HOCHSCHULE' })
       .fill('LMU München')
     await page
+      .locator('form[aria-label="Beitrittsformular"]')
+      .last()
       .locator('select[name="study_field"]')
       .selectOption('BWL / Wirtschaft')
-    await page.locator('input[name="consent"]').check()
+    await form.locator('input[name="consent"]').check()
     await page.getByRole('button', { name: 'Kostenlos beitreten' }).click()
 
     await expect(
@@ -237,15 +249,18 @@ test.describe('/join page', () => {
     page,
   }) => {
     await page.goto(JOIN_URL)
+    const form = joinForm(page)
     // Fill fields and wait for debounced sessionStorage write (300ms per Plan 23-05)
     await page
+      .locator('form[aria-label="Beitrittsformular"]')
+      .last()
       .locator('input[name="email"]')
       .fill('reload-test@generation-ai.test')
-    await page.locator('input[name="first_name"]').fill('Reload')
-    await page.locator('input[name="last_name"]').fill('User')
-    await page.locator('select[name="birth_year"]').selectOption('2002')
+    await form.locator('input[name="first_name"]').fill('Reload')
+    await form.locator('input[name="last_name"]').fill('User')
+    await form.locator('select[name="birth_year"]').selectOption('2002')
     await page.getByRole('combobox', { name: 'HOCHSCHULE' }).fill('TU Berlin')
-    await page.locator('select[name="study_field"]').selectOption('Informatik')
+    await form.locator('select[name="study_field"]').selectOption('Informatik')
     await page.waitForTimeout(500)
 
     // Reload page
@@ -267,7 +282,7 @@ test.describe('/join page', () => {
     await expect(page.getByRole('combobox', { name: 'HOCHSCHULE' })).toHaveValue(
       'TU Berlin',
     )
-    await expect(page.locator('select[name="study_field"]')).toHaveValue(
+    await expect(joinForm(page).locator('select[name="study_field"]')).toHaveValue(
       'Informatik',
     )
   })

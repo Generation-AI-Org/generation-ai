@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
-import { createAdminClient } from '@genai/auth'
+import { createAdminClient } from '@genai/auth/admin'
 import { CircleApiError, createMember } from '@genai/circle'
 import { checkAdminAuth } from '@/lib/admin-auth'
 import { checkAdminReprovisionRateLimit } from '@/lib/rate-limit'

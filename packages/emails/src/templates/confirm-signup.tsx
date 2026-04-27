@@ -12,6 +12,7 @@ export interface ConfirmSignupEmailProps {
    * Falls back to the bare tools URL (login required) if generation failed.
    */
   toolsLoginUrl?: string
+  circleProvisioned?: boolean
   /**
    * @deprecated Phase 25 — wir senden keinen eigenen Confirm-Link mehr.
    * Email wird via Circle's Set-Password-Mail validiert; unsere Welcome-Mail
@@ -31,6 +32,7 @@ export interface ConfirmSignupEmailProps {
 export default function ConfirmSignupEmail({
   name = 'da',
   toolsLoginUrl,
+  circleProvisioned = true,
 }: ConfirmSignupEmailProps): React.ReactElement {
   // Auto-login fallback: if magic-link generation failed in signup-action,
   // ship the bare URL so the mail still works (user just has to log in).
@@ -83,9 +85,19 @@ export default function ConfirmSignupEmail({
           margin: '0 0 16px 0',
         }}
       >
-        Du bekommst gleich eine zweite Mail von <strong>Circle</strong> (unser
-        Community-Host). Öffne die Einladung, setz dir ein Passwort und einen
-        Namen — dann bist du direkt in der Community drin und kannst loslegen.
+        {circleProvisioned ? (
+          <>
+            Du bekommst gleich eine zweite Mail von <strong>Circle</strong> (unser
+            Community-Host). Öffne die Einladung, setz dir ein Passwort und einen
+            Namen — dann bist du direkt in der Community drin und kannst loslegen.
+          </>
+        ) : (
+          <>
+            Deine Tools sind schon bereit. Die Community-Verknüpfung hängt gerade
+            noch bei uns; wir sehen das im Monitoring und schalten dich manuell
+            frei. Wenn du sofort reinmusst, antworte einfach auf diese Mail.
+          </>
+        )}
       </Text>
 
       <Text
@@ -109,7 +121,7 @@ export default function ConfirmSignupEmail({
           margin: '0 0 16px 0',
         }}
       >
-        Als Member hast du <strong>exklusiven Zugriff auf den Pro-Assistenten</strong> —
+        Als Member hast du <strong>Zugriff auf den Member-Assistenten</strong> —
         unseren KI-Assistenten mit Web-Suche und Spezial-Tools. Damit
         strukturierst du Hausarbeiten, recherchierst Quellen und lässt dir
         komplexe Konzepte in Sekunden verständlich erklären.

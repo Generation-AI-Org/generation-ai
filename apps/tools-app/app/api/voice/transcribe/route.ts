@@ -1,4 +1,8 @@
 import { NextResponse } from 'next/server'
+import { createClient as createAuthClient } from '@genai/auth/server'
+import { checkRateLimit, getClientIp } from '@/lib/ratelimit'
+
+const MAX_AUDIO_BYTES = 10 * 1024 * 1024
 
 export async function POST(request: Request) {
   if (!process.env.DEEPGRAM_API_KEY) {
@@ -6,11 +10,39 @@ export async function POST(request: Request) {
   }
 
   try {
+    const auth = await createAuthClient()
+    const {
+      data: { user },
+    } = await auth.auth.getUser()
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Bitte melde dich an, um Spracheingabe zu nutzen.' },
+        { status: 401 },
+      )
+    }
+
+    const rate = await checkRateLimit(getClientIp(request), 'voice-transcribe')
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: 'Zu viele Transkriptionen. Bitte warte kurz.' },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(rate.retryAfter ?? 60) },
+        },
+      )
+    }
+
     const formData = await request.formData()
     const audioFile = formData.get('audio') as Blob
 
     if (!audioFile) {
       return NextResponse.json({ error: 'No audio provided' }, { status: 400 })
+    }
+    if (audioFile.size > MAX_AUDIO_BYTES) {
+      return NextResponse.json(
+        { error: 'Audio ist zu groß. Bitte nimm eine kürzere Aufnahme auf.' },
+        { status: 413 },
+      )
     }
 
     // Convert blob to buffer

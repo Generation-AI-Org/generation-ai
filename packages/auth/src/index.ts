@@ -6,7 +6,6 @@
 //   - @genai/auth/helpers     — getUser, getSession
 //   - @genai/auth/middleware  — updateSession (for proxy.ts)
 export { createClient as createBrowserClient } from './browser'
-export { createAdminClient } from './admin'
 export { needsFirstLoginPrompt } from './password'
 
 // Phase 23 — /join Waitlist types

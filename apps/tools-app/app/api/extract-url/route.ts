@@ -1,11 +1,22 @@
 import { NextResponse } from 'next/server'
 import { JSDOM } from 'jsdom'
 import { Readability } from '@mozilla/readability'
+import { checkRateLimit, getClientIp } from '@/lib/ratelimit'
+import { parsePublicHttpUrl } from '@/lib/url-safety'
 
 const MAX_CONTENT_LENGTH = 4000 // Characters to extract
+const MAX_HTML_BYTES = 2 * 1024 * 1024
 
 export async function POST(req: Request) {
   try {
+    const rate = await checkRateLimit(getClientIp(req), 'extract-url')
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: 'Zu viele URL-Abfragen. Bitte warte kurz.' },
+        { status: 429, headers: { 'Retry-After': String(rate.retryAfter ?? 60) } },
+      )
+    }
+
     const body = await req.json()
     const { url } = body as { url: string }
 
@@ -13,16 +24,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'URL fehlt.' }, { status: 400 })
     }
 
-    // Validate URL format
-    let parsedUrl: URL
-    try {
-      parsedUrl = new URL(url)
-      if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
-        throw new Error('Invalid protocol')
-      }
-    } catch {
+    const parsedUrl = parsePublicHttpUrl(url)
+    if (!parsedUrl) {
       return NextResponse.json(
-        { error: 'Ungültige URL. Bitte gib eine vollständige URL an (z.B. https://example.com).' },
+        { error: 'Ungültige oder nicht unterstützte URL.' },
         { status: 400 }
       )
     }
@@ -59,6 +64,13 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: `Die Seite gab einen Fehler zurück (${response.status}).` },
         { status: 502 }
+      )
+    }
+    const length = Number(response.headers.get('content-length') ?? '0')
+    if (length > MAX_HTML_BYTES) {
+      return NextResponse.json(
+        { error: 'Die Seite ist zu groß zum Auslesen.' },
+        { status: 413 },
       )
     }
 

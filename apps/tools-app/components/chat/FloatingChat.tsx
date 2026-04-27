@@ -575,14 +575,16 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
           <div className="mt-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
-                {/* Voice Button with animated bars */}
-                <VoiceInputButton
-                  isRecording={isRecording}
-                  isProcessing={isProcessing}
-                  isSupported={isVoiceSupported}
-                  onToggle={toggleRecording}
-                  audioLevels={audioLevels}
-                />
+                {/* Voice input is a member-only feature. */}
+                {mode === 'member' && (
+                  <VoiceInputButton
+                    isRecording={isRecording}
+                    isProcessing={isProcessing}
+                    isSupported={isVoiceSupported}
+                    onToggle={toggleRecording}
+                    audioLevels={audioLevels}
+                  />
+                )}
 
                 {/* Attachments Dropdown */}
                 <div className="relative" data-attachment-dropdown>
@@ -956,13 +958,15 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1">
                     {/* Voice Button with animated bars */}
-                    <VoiceInputButton
-                      isRecording={isRecording}
-                      isProcessing={isProcessing}
-                      isSupported={isVoiceSupported}
-                      onToggle={toggleRecording}
-                      audioLevels={audioLevels}
-                    />
+                    {mode === 'member' && (
+                      <VoiceInputButton
+                        isRecording={isRecording}
+                        isProcessing={isProcessing}
+                        isSupported={isVoiceSupported}
+                        onToggle={toggleRecording}
+                        audioLevels={audioLevels}
+                      />
+                    )}
 
                     {/* Attachments Dropdown */}
                     <div className="relative">

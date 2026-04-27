@@ -58,7 +58,7 @@ describe('checkAdminAuth', () => {
     expect(result).toMatchObject({ ok: false, status: 403 })
   })
 
-  it('returns ok when user has role=admin in metadata', async () => {
+  it('ignores user_metadata.role=admin because user metadata is client-writable', async () => {
     vi.mocked(createClient).mockResolvedValue({
       auth: {
         getUser: vi.fn().mockResolvedValue({
@@ -74,7 +74,11 @@ describe('checkAdminAuth', () => {
       },
     } as never)
     const result = await checkAdminAuth(makeRequest())
-    expect(result).toEqual({ ok: true, userId: 'u1', email: 'a@admin.de' })
+    expect(result).toEqual({
+      ok: false,
+      status: 403,
+      reason: 'Not authorized (admin only)',
+    })
   })
 
   it('returns ok when user email is in ADMIN_EMAIL_ALLOWLIST', async () => {
@@ -139,7 +143,7 @@ describe('checkAdminAuth', () => {
           data: {
             user: {
               id: 'u1',
-              email: 'a@admin.de',
+              email: 'luca@generation-ai.org',
               user_metadata: { role: 'admin' },
             },
           },
@@ -147,6 +151,7 @@ describe('checkAdminAuth', () => {
         }),
       },
     } as never)
+    process.env.ADMIN_EMAIL_ALLOWLIST = 'luca@generation-ai.org'
     const result = await checkAdminAuth(
       makeRequest({ origin: 'https://generation-ai.org' }),
     )

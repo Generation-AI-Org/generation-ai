@@ -104,15 +104,14 @@ Default `SIGNUP_ENABLED=false` → `/api/auth/signup` returnt 503 und der Join-R
 1. User auf `/join`, Form ausfüllen (Email, Name, Uni, Consent)
 2. Server-Action `submitJoinSignup`:
    a. Honeypot + Rate-Limit
-   b. `admin.createUser({ email_confirm:false, user_metadata:{...flow-data, has_password:false} })` mit random placeholder password
-   c. `createMember` + `addMemberToSpace` via `@genai/circle` (non-blocking, D-03)
-   d. Upsert `user_circle_links` + Stamp `circle_member_id` in user_metadata
-   e. `admin.generateLink({ type:'magiclink' })` triggert die Confirm-Mail via Supabase-SMTP
-3. User öffnet Mail, klickt "Loslegen →"
-4. Route `/auth/confirm`: verifyOtp → liest `circle_member_id` → `generateSsoUrl` → 303-Redirect zur Circle-Community
-5. Circle-SSO aktiv, User ist eingeloggt
+   b. `admin.createUser({ email_confirm:true, user_metadata:{...flow-data, has_password:false} })` mit random placeholder password
+   c. `createMember({ skipInvitation:false, spaceIds:[...] })` via `@genai/circle` (non-blocking, D-03). Circle sendet die Aktivierungs-/Set-Password-Mail.
+   d. Upsert `user_circle_links` + Stamp `circle_member_id` in user_metadata als Cache
+   e. `admin.generateLink({ type:'magiclink' })` erzeugt einen Tools-App-Magic-Link; unsere Resend-Welcome-Mail wird direkt verschickt.
+3. User aktiviert Circle über die Circle-Invitation-Mail und ist danach in der Community.
+4. User klickt in unserer Welcome-Mail "Zu den KI-Tools" → tools-app `/auth/confirm` → verifyOtp → shared Supabase-Cookie → Tools-App Member-Modus.
 
-**Fallback** wenn Circle zur Signup-Zeit down war: User landet nach Confirm auf `/welcome?circle=pending` mit manuellem Community-Link. Admin kann via `POST /api/admin/circle-reprovision` nachträglich provisionieren.
+**Fallback** wenn Circle zur Signup-Zeit down war: Signup bleibt erfolgreich, Welcome-Mail verschweigt keine erwartete Circle-Mail mehr und Admin kann via `POST /api/admin/circle-reprovision` nachträglich provisionieren. Website-`/auth/confirm` nutzt `user_circle_links` als authoritative SSO-Quelle und ist Bestands-/Fallback-Pfad, nicht der aktuelle Happy-Path.
 
 ### Session-Sharing
 

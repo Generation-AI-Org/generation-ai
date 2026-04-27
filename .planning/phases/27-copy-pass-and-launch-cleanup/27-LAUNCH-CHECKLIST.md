@@ -31,11 +31,12 @@ updated: 2026-04-26
 ## Launch Gates Outside Phase 27
 
 - [x] Apply Supabase migration for `early_career` enum + `birth_year`.
-- [x] Circle token and Vercel env set in preview/prod.
+- [ ] Circle Admin token, Circle Headless token, and Vercel env scopes rechecked in preview/prod after pre-launch audit.
 - [ ] Circle invitation email template copy checked in Circle Dashboard (`[accept invitation]` removed). No Circle MCP tool exposes template editing.
 - [x] Resend/Welcome mail repo template updated for current two-mail flow.
-- [ ] Preview signup E2E with real test user.
-- [ ] Circle member created, Welcome/default space visible, SSO/fallback verified.
+- [ ] Preview signup E2E with real test user against the current two-mail flow.
+- [ ] Circle member created, Welcome/default space visible, Circle invitation activation verified.
+- [ ] Circle failure path verified: no false "Circle-Mail kommt gleich" copy; admin reprovision path documented.
 - [x] Sentry DSN env vars present in Vercel; production event capture still needs Preview/Prod runtime smoke.
 - [x] Bundle secret grep before launch.
 - [ ] `SIGNUP_ENABLED=true` only after Luca approval.
