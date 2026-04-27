@@ -160,7 +160,7 @@ export default function HomeLayout({ items }: HomeLayoutProps) {
       )}
 
       <div
-        className="flex flex-col flex-1 overflow-hidden"
+        className="min-h-[calc(100vh-5rem)]"
         onClick={(e) => {
           // Clear highlights on any click outside of highlighted cards
           const card = (e.target as HTMLElement).closest('[data-card]')
@@ -177,11 +177,9 @@ export default function HomeLayout({ items }: HomeLayoutProps) {
           }
         }}
       >
-        <div className="flex-1 overflow-y-auto">
-          {/* Phase 22.6 Plan 08: Hero inside scroll container per RESEARCH Pitfall 2.
-              FilterBar moved INSIDE the scroll container so hero+filterbar+grid scroll
-              together (V1 trade-off: filterbar is no longer position-sticky relative
-              to viewport — acceptable per CONTEXT.md §B.2 "scroll-with-content"). */}
+        <div>
+          {/* Hero, CTA, filters and grid scroll together in the document,
+              matching the website's fixed-header page model. */}
           <ToolsHero />
           {mode === 'public' && <MemberCTA />}
           {searchCtx?.openSearch && (

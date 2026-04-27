@@ -76,7 +76,7 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
   return (
     <HighlightContext.Provider value={{ highlightedSlugs, setHighlightedSlugs }}>
       <SearchContext.Provider value={{ openSearch, registerOpenSearch }}>
-        <div className="flex flex-col h-screen overflow-hidden bg-bg">
+        <div className="min-h-screen bg-bg">
           <ToolsHeader
             mode={mode}
             openSearch={openSearch}
@@ -86,7 +86,7 @@ export default function GlobalLayout({ mode, children }: GlobalLayoutProps) {
           {/* Main Content — children provide route-specific content */}
           <main
             id="main-content"
-            className={`flex flex-col flex-1 overflow-hidden transition-[margin] duration-300 ${
+            className={`min-h-screen pt-20 transition-[margin] duration-300 ${
               isChatExpanded
                 ? chatContext
                   ? 'lg:mr-[400px]'

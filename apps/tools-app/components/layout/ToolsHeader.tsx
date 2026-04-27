@@ -37,7 +37,6 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
       partnerLinks={partnerLinks}
       aboutHref="https://generation-ai.org/about"
       ctaHref="https://generation-ai.org/join?utm_source=tools"
-      fixed={false}
       onClear={onClearHighlights}
       searchSlot={
         openSearch ? (

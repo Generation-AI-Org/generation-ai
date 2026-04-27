@@ -20,7 +20,7 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[var(--bg)] pt-8 pb-16 px-4">
+    <div className="bg-[var(--bg)] px-4 pb-16 pt-8">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"

@@ -49,12 +49,13 @@ export function HomeClient({ nonce, toolShowcase, communityPreview }: HomeClient
         <TerminalSplash onComplete={handleSplashComplete} skipIfSeen={true} />
       )}
 
+      <Header />
+
       <div
         className={`transition-all duration-700 ${
           showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
-        <Header />
         <main id="main-content" className="min-h-screen pt-20">
           <HeroSection />
           {/* Hero → Problem-Block: keine SectionTransition. Luca UAT

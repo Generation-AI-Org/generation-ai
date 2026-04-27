@@ -34,7 +34,7 @@ export default async function ItemPage({ params }: Props) {
 
   return (
     <DetailPageShell item={item}>
-      <div className="h-full overflow-y-auto">
+      <div>
         <div className="max-w-2xl mx-auto px-4 md:px-6 py-8 md:py-12 pb-24">
           {/* Back */}
           <Link
