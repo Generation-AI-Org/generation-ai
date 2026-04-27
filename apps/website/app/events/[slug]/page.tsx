@@ -88,7 +88,8 @@ export default async function EventDetailPage({ params }: PageProps) {
   return (
     <MotionConfig nonce={nonce}>
       <Header />
-      <main id="main-content" className="mx-auto max-w-3xl px-6 py-16">
+      <main id="main-content" className="min-h-screen pt-20">
+        <div className="mx-auto max-w-3xl px-6 py-16">
         <Link
           href="/events"
           className="inline-flex items-center gap-2 font-mono text-xs text-text-muted hover:text-text transition-colors mb-8"
@@ -204,6 +205,7 @@ export default async function EventDetailPage({ params }: PageProps) {
           >
             Erst Mitglied werden
           </Link>
+        </div>
         </div>
       </main>
       <Footer />

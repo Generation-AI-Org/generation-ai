@@ -31,7 +31,7 @@ export function EventsClient({
   return (
     <MotionConfig nonce={nonce}>
       <Header />
-      <main id="main-content" className="min-h-screen">
+      <main id="main-content" className="min-h-screen pt-20">
         <EventsHero />
         <EventsGrid events={upcomingEvents} />
         <SectionTransition variant="soft-fade" />

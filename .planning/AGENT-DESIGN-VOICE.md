@@ -24,6 +24,14 @@ Use tokens and shared components instead of ad hoc styling.
 
 Website subpages must follow `apps/website/AGENTS.md`: `LabeledNodes` background, `max-w-4xl`, `--fs-display`, client wrapper with `MotionConfig nonce={nonce}`, and `SectionTransition` between content sections.
 
+Header/scroll behavior is a brand consistency requirement:
+
+- Website and Tools-App use the shared `MarketingHeader` geometry from `@genai/ui`.
+- Header is fixed, content begins below it (`pt-20` for standard pages), and the document owns vertical scrolling.
+- Do not wrap the header in splash/page-transition containers or any animated parent that changes transform/opacity.
+- Do not introduce page-level `h-screen overflow-hidden` plus inner `overflow-y-auto` containers for normal website/tools pages.
+- Extra app-specific actions such as Tools search must live in reserved header slots so Logo/Nav/Theme/CTA positions stay identical.
+
 ## Voice
 
 User-facing product copy is German with real umlauts: ö, ä, ü, ß. Never use oe/ae/ue/ss substitutions.

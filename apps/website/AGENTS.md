@@ -23,6 +23,17 @@ Kurzversion der Regeln (siehe LEARNINGS.md für Kontext):
 
 Alle Unterseiten (`/about`, `/partner`, `/join`, … ausser Landing `/`) teilen ein einheitliches Hero- + Section-Framework. Beim Bauen neuer Unterseiten: **kopiere `/about` als Blueprint, nicht die Landing.** Landing (`home-client.tsx`, `sections/hero-section.tsx`) darf abweichen, Unterseiten nicht.
 
+### Header- und Scroll-Standard
+
+Der Marketing-Header ist globaler Website-Standard und muss geometrisch mit der Tools-App identisch bleiben.
+
+- **Komponente:** Immer `Header` aus `components/layout/header.tsx` verwenden. Diese rendert den shared `MarketingHeader` aus `@genai/ui`.
+- **Position:** Header bleibt `fixed` über dem Dokument. Keine Unterseite baut einen eigenen sticky/relative Header nach.
+- **Main-Offset:** Direkt nach `<Header />` folgt `<main id="main-content" className="min-h-screen pt-20">` bzw. bei Legal/Plain-Content ein äquivalentes `pt-24` inklusive Header-Freiraum.
+- **Scroll-Modell:** Die Seite scrollt über das Dokument (`document.scrollingElement`). Keine `h-screen overflow-hidden` App-Shell und kein vertikaler `overflow-y-auto` Main-Container für normale Website-Seiten.
+- **Animation:** Header darf nie in Splash-, Page-Transition- oder Motion-Wrappern liegen, die `transform`, `opacity`, `translate` oder Layout-Animationen setzen. Nur Content unterhalb des Headers animieren.
+- **Rechte Aktionen:** Zusätzliche Slots wie Tools-Suche reservieren feste Breite in `MarketingHeader`; Logo, Navigation, Theme-Toggle und CTA dürfen dadurch nicht ihre Position ändern.
+
 ### Hero-Pattern (alle Unterseiten)
 
 Referenz: [`components/about/about-hero-section.tsx`](components/about/about-hero-section.tsx)
@@ -56,7 +67,7 @@ Referenz: [`components/about/about-hero-section.tsx`](components/about/about-her
 
 Jede Unterseite hat einen Client-Wrapper analog [`about-client.tsx`](components/about-client.tsx):
 - `'use client'` + `MotionConfig nonce={nonce}` (CSP-Pflicht)
-- `<Header />` + `<main id="main-content" className="min-h-screen pt-20">` + `<Footer />`
+- `<Header />` ausserhalb aller Content-Animationen + `<main id="main-content" className="min-h-screen pt-20">` + `<Footer />`
 - Sections + SectionTransitions darin
 - Server Component in `app/<page>/page.tsx` holt `nonce` via `await headers()` und rendert den Client-Wrapper
 

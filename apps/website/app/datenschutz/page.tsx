@@ -1,5 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { Header } from '@/components/layout/header'
+import { Footer } from '@/components/layout/footer'
 
 export const metadata: Metadata = {
   title: 'Datenschutzerklärung | Generation AI',
@@ -8,8 +10,10 @@ export const metadata: Metadata = {
 
 export default function Datenschutz() {
   return (
-    <main className="min-h-screen bg-bg pt-24 pb-16 px-5">
-      <div className="max-w-2xl mx-auto">
+    <>
+      <Header />
+      <main id="main-content" className="min-h-screen bg-bg px-5 pb-16 pt-24">
+        <div className="max-w-2xl mx-auto">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-text-muted hover:text-text mb-8 transition-colors"
@@ -165,7 +169,9 @@ export default function Datenschutz() {
             </p>
           </section>
         </div>
-      </div>
-    </main>
+        </div>
+      </main>
+      <Footer />
+    </>
   )
 }
