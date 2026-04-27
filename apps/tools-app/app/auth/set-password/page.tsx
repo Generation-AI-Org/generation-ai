@@ -77,7 +77,7 @@ function SetPasswordInner() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[var(--bg)] flex items-start justify-center px-4 pb-12 pt-[14vh] sm:pt-[16vh]">
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="text-center mb-8">
