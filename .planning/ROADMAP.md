@@ -985,6 +985,49 @@ Page Plans:
 
 ---
 
+### Phase 28: Tools-App Website Alignment 🆕 (2026-04-26)
+
+**Goal:** Tools-App als echten Teil der Generation-AI-Website ausrichten: gleicher Website-Feel, Header/Nav/Footer-Parität, klarer Member-Modus, Account-Menü, kompaktere Tool-Cards, mehr Whitespace und Mobile/Desktop-QA.
+**Depends on:** Phase 27 done on `develop`
+**Detailplan:** `.planning/phases/28-tools-app-website-alignment/28-CONTEXT.md`
+**Out-of-Scope:** Kiwi ersetzen, komplette Tool-Content-Redaktion, `packages/ui` Header-Extraktion, FloatingChat-Komplettrefactor, Performance-Bundle-Phase, Deploy/Push/live-service writes.
+
+**Scope:**
+- Website-parity Header: gleiche Hauptnavigation, Logo-Verhalten, Brand-Band, aktive Tools-Route
+- Legal raus aus Desktop-Header, kompakter Footer rein
+- App-Actions trennen: Suche/Theme/Account nicht mit Hauptnavigation vermischen
+- Account-Menü für eingeloggte User statt loser Settings/Logout-Icons
+- Public Member-CTA: Community, Events, stärkerer Assistent, bessere Empfehlungen
+- `Pro` UI-Sprache durch `Member`/`Member-Modus` ersetzen
+- Tool-Cards als Preview: weniger Text, ein klarer Nutzensatz, keine dekorativen Emojis
+- Kiwi bleibt als vorläufiges Mascot/Chat-Experiment
+- Whitespace/UI-Qualität mit `ui-ux-pro-max` als Checkliste prüfen; Brand-Docs bleiben verbindlich
+- Responsive QA: 375/768/1024/1440, Dark/Light, Chat offen
+
+**Plans:** 6 planned
+
+Plans:
+- [ ] 28-01-shell-header-footer-PLAN.md — Shell/Header/Footer Foundation
+- [ ] 28-02-account-menu-member-cta-PLAN.md — Account Menu + Member CTA
+- [ ] 28-03-search-mobile-navigation-PLAN.md — Search + Mobile Navigation
+- [ ] 28-04-card-preview-emoji-cleanup-PLAN.md — Card Preview + Emoji Cleanup
+- [ ] 28-05-chat-focus-token-polish-PLAN.md — Chat + Focus + Token Polish
+- [ ] 28-06-verification-summary-PLAN.md — Verification + Summary
+
+**Success Criteria:**
+- [ ] Tools-App Header wirkt wie Website-Unterseite, nicht wie separates Dashboard
+- [ ] Legal ist im Footer/mobile low-priority, nicht im Desktop-Header
+- [ ] Public User verstehen Member-Wert: Community, Events, stärkerer Assistent, tiefere Empfehlungen
+- [ ] Logged-in User haben sauberes Account-Menü
+- [ ] Cards sind kompakte Previews ohne dekorative Emojis
+- [ ] `Lite`/`Member` statt `Lite`/`Pro`
+- [ ] UI wirkt luftiger und ruhiger, ohne Tool-Nutzbarkeit zu verlieren
+- [ ] Mobile/Desktop/Dark/Light/Chat-open QA dokumentiert
+
+**Release:** Patch/minor before launch, no production deploy without Luca approval
+
+---
+
 ## Backlog
 
 Ideen & Follow-ups ohne feste Phase-Zuordnung. Mit `/gsd-review-backlog` in aktive Phase promoten, wenn reif.
@@ -1009,12 +1052,13 @@ Plans:
 
 ### Phase 999.3: Tools-App als Website-Teil integrieren (BACKLOG)
 
+**Status:** Promoted to Phase 28 on 2026-04-26.
 **Goal:** Tools-App soll sich wie ein Teil der Website anfühlen, nicht wie ein separates Produkt. Gemeinsamer Rahmen für alle öffentlichen Flächen: Header, Navigation, Theme-Toggle, Footer-/Shell-Logik, Abstände, Logo-Verhalten und Light/Dark-Auftritt sollen grundsätzlich der Website folgen. Abweichungen nur dort behalten, wo die Tools-App sie funktional braucht (z.B. Suche, eingeloggter Zustand, Settings/Signout, app-spezifische aktive Route).
-**Requirements:** TBD — Website-Frame als Blueprint definieren, Tools-App-Shell dagegen mappen, notwendige Unterschiede explizit festlegen, Desktop/Mobile/Light/Dark prüfen.
-**Plans:** 0 plans
+**Requirements:** See `.planning/phases/28-tools-app-website-alignment/28-CONTEXT.md`.
+**Plans:** Promoted
 
 Plans:
-- [ ] TBD (promote with /gsd-review-backlog when ready)
+- [x] Promoted to Phase 28
 
 ---
 

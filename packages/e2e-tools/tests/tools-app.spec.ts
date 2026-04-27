@@ -4,75 +4,99 @@ import { test, expect } from '@playwright/test';
 // Override via TOOLS_URL env for CI / Vercel-Preview.
 const TOOLS_URL = process.env.TOOLS_URL ?? 'http://localhost:3001';
 
-test.describe('tools-app polish — Track B smoke (Phase 22.6)', () => {
-  test('login: 2 sichtbare Elemente (Primary CTA + Secondary Link) when logged-out (B-req-1)', async ({ page }) => {
-    await page.goto(TOOLS_URL);
-
-    // Primary CTA button — "Kostenlos registrieren" (always visible)
-    const primary = page.locator('[data-cta="primary-register"]');
-    await expect(primary).toBeVisible();
-    await expect(primary).toHaveText(/Kostenlos registrieren/);
-
-    // Secondary login link — "Bereits Mitglied? Einloggen"
-    // Hidden below sm-breakpoint, visible on default Playwright viewport (1280×720 desktop)
-    const secondary = page.locator('[data-cta="secondary-login"]');
-    await expect(secondary).toBeVisible();
-    await expect(secondary).toHaveText(/Bereits Mitglied/);
-  });
-
-  test('utm: "Kostenlos registrieren" href hat ?utm_source=tools (B-req-2)', async ({ page }) => {
-    await page.goto(TOOLS_URL);
-
-    const primary = page.locator('[data-cta="primary-register"]');
-    await expect(primary).toBeVisible();
-    const href = await primary.getAttribute('href');
-    expect(href).toBe('https://generation-ai.org/join?utm_source=tools');
-  });
-
-  test('hero: Hero-Sektion sichtbar zwischen Header und FilterBar mit H1 "KI-Tools" (B-req-3)', async ({ page }) => {
-    await page.goto(TOOLS_URL);
-
-    // Hero section visible — stable selector via data-section attribute
-    const hero = page.locator('[data-section="tools-hero"]');
-    await expect(hero).toBeVisible();
-
-    // H1 contains "KI-Tools"
-    const h1 = hero.getByRole('heading', { level: 1 });
-    await expect(h1).toBeVisible();
-    await expect(h1).toContainText(/KI-Tools/);
-
-    // Eyebrow label visible
-    await expect(hero).toContainText(/deine ki-tool-bibliothek/i);
-
-    // Body text visible — Umlaute mandatory ("Über", not "Ueber")
-    await expect(hero).toContainText(/Über 100 Tools/);
-  });
-
-  test('nav: alle Items sichtbar (Events, Tools active, Community, Für Partner, Über uns) (B-req-4)', async ({ page }) => {
+test.describe('tools-app website alignment — Phase 28 smoke', () => {
+  test('public desktop: website header, member CTA, footer and preview cards are aligned', async ({ page }) => {
     await page.goto(TOOLS_URL);
 
     const desktopNav = page.locator('[data-tools-nav="desktop"]');
     await expect(desktopNav).toBeVisible();
-
-    // All 5 items present with correct text (Umlaute mandatory)
-    await expect(desktopNav.locator('[data-nav-item="events"]')).toHaveText('Events');
     await expect(desktopNav.locator('[data-nav-item="tools"]')).toHaveText('Tools');
+    await expect(desktopNav.locator('[data-nav-item="tools"]')).toHaveAttribute('aria-current', 'page');
+    await expect(desktopNav.locator('[data-nav-item="events"]')).toHaveText('Events');
     await expect(desktopNav.locator('[data-nav-item="community"]')).toHaveText('Community');
     await expect(desktopNav.locator('[data-nav-item="partner"]')).toHaveText(/Für Partner/);
     await expect(desktopNav.locator('[data-nav-item="about"]')).toHaveText(/Über uns/);
 
-    // Tools is the active item
-    const tools = desktopNav.locator('[data-nav-item="tools"]');
-    await expect(tools).toHaveAttribute('aria-current', 'page');
+    await expect(page.locator('header').getByText('Impressum')).toHaveCount(0);
+    await expect(page.locator('header').getByText('Datenschutz')).toHaveCount(0);
 
-    // Cross-domain hrefs hardcoded (B-05 full page-load via <a>, no SPA routing)
-    await expect(desktopNav.locator('[data-nav-item="events"]')).toHaveAttribute('href', 'https://generation-ai.org/events');
-    await expect(desktopNav.locator('[data-nav-item="community"]')).toHaveAttribute('href', 'https://generation-ai.org/community');
-    await expect(desktopNav.locator('[data-nav-item="partner"]')).toHaveAttribute('href', 'https://generation-ai.org/partner');
-    await expect(desktopNav.locator('[data-nav-item="about"]')).toHaveAttribute('href', 'https://generation-ai.org/about');
+    const primary = page.locator('[data-cta="primary-register"]');
+    await expect(primary).toBeVisible();
+    await expect(primary).toHaveText(/Kostenlos Mitglied werden/);
+    await expect(primary).toHaveAttribute('href', 'https://generation-ai.org/join?utm_source=tools');
+
+    const secondary = page.locator('[data-cta="secondary-login"]');
+    await expect(secondary).toBeVisible();
+    await expect(secondary).toHaveText(/Einloggen/);
+
+    await expect(page.getByText('Member-Modus')).toBeVisible();
+    await expect(page.getByText(/Community-Zugang, Events und einen stärkeren KI-Assistenten/)).toBeVisible();
+
+    const footer = page.locator('footer').first();
+    await expect(footer).toBeVisible();
+    await expect(footer.getByText('Impressum')).toBeVisible();
+    await expect(footer.getByText('Datenschutz')).toBeVisible();
+
+    const firstCard = page.locator('[data-card]').first();
+    await expect(firstCard).toBeVisible();
+    await expect(firstCard).not.toContainText('✨');
   });
 
-  test('eingeloggt: User-Menu statt CTA-Buttons sichtbar — kein Regression (B-req-5)', async ({ page }) => {
+  test('hero: Hero-Sektion sichtbar zwischen Header und FilterBar mit H1 "KI-Tools"', async ({ page }) => {
+    await page.goto(TOOLS_URL);
+
+    const hero = page.locator('[data-section="tools-hero"]');
+    await expect(hero).toBeVisible();
+
+    const h1 = hero.getByRole('heading', { level: 1 });
+    await expect(h1).toBeVisible();
+    await expect(h1).toContainText(/KI-Tools/);
+
+    await expect(hero).toContainText(/deine ki-tool-bibliothek/i);
+    await expect(hero).toContainText(/Über 100 Tools/);
+  });
+
+  test('mobile: burger exposes nav and CTAs, search stays near content', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(TOOLS_URL);
+
+    const header = page.locator('header');
+    await expect(header.getByLabel(/Suche öffnen/)).toBeHidden();
+
+    const contentSearch = page.getByRole('button', { name: /Suche öffnen/ });
+    await expect(contentSearch).toBeVisible();
+    await contentSearch.click();
+    await expect(page.getByPlaceholder('Tool suchen...')).toBeVisible();
+    await page.keyboard.press('Escape');
+
+    await page.locator('[data-tools-burger]').click();
+    const mobileNav = page.locator('[data-tools-nav="mobile"]');
+    await expect(mobileNav).toBeVisible();
+    await expect(mobileNav.locator('[data-nav-item="tools"]')).toHaveAttribute('aria-current', 'page');
+    await expect(mobileNav.getByText('Events')).toBeVisible();
+    await expect(mobileNav.getByText('Community')).toBeVisible();
+    await expect(mobileNav.getByText('Kostenlos Mitglied werden')).toBeVisible();
+    await expect(mobileNav.getByText(/Bereits Mitglied/)).toBeVisible();
+  });
+
+  test('chat: public badge says Lite and attachment disabled label has no sparkle', async ({ page }) => {
+    await page.goto(TOOLS_URL);
+
+    await page.getByLabel('Chat öffnen').click();
+    await expect(page.getByText('Lite')).toBeVisible();
+    await expect(page.locator('body')).not.toContainText('bald ✨');
+  });
+
+  test('detail route: footer appears and full summary remains available', async ({ page }) => {
+    await page.goto(`${TOOLS_URL}/chatgpt`);
+
+    await expect(page.getByRole('heading', { level: 1, name: /ChatGPT/i })).toBeVisible();
+    const footer = page.locator('footer').first();
+    await expect(footer).toBeVisible();
+    await expect(footer.getByText('Impressum')).toBeVisible();
+  });
+
+  test('eingeloggt: Account-Menü statt public CTA — kein Regression', async ({ page }) => {
     test.setTimeout(60_000);
 
     // Aligned with Phase 19 + auth.spec.ts: TEST_USER_EMAIL / TEST_USER_PASSWORD via repo secrets in CI.
@@ -97,12 +121,11 @@ test.describe('tools-app polish — Track B smoke (Phase 22.6)', () => {
     await expect(page.locator('[data-cta="primary-register"]')).toHaveCount(0);
     await expect(page.locator('[data-cta="secondary-login"]')).toHaveCount(0);
 
-    // User-menu hallmarks from GlobalLayout's logged-in branch:
-    // Settings link (aria-label="Einstellungen") + Signout button (aria-label="Abmelden")
-    // are mobile-only (md:hidden). On default Playwright viewport (1280×720) they would
-    // be hidden. We assert COUNT > 0 (in DOM) rather than visible — this proves the
-    // logged-in branch rendered, which is what the regression check protects.
-    await expect(page.getByLabel('Einstellungen')).toHaveCount(1);
-    await expect(page.getByLabel('Abmelden')).toHaveCount(1);
+    const accountButton = page.getByLabel('Account-Menü öffnen');
+    await expect(accountButton).toBeVisible();
+    await accountButton.click();
+    await expect(page.getByRole('menuitem', { name: /Einstellungen/ })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: /Community öffnen/ })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: /Abmelden/ })).toBeVisible();
   });
 });

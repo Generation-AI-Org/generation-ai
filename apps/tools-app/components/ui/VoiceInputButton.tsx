@@ -50,7 +50,7 @@ export function VoiceInputButton({
         type="button"
         onClick={onToggle}
         disabled={!isSupported}
-        className={`group flex p-2 items-center justify-center rounded-full cursor-pointer transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
+        className={`group flex p-2 items-center justify-center rounded-full cursor-pointer transition-[background-color,border-color,opacity,transform,width] duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
           isRecording
             ? 'bg-[var(--accent)]/15 border border-[var(--accent)]/40'
             : 'hover:bg-[var(--accent)]/10 border border-transparent hover:border-[var(--accent)]/30'
@@ -87,7 +87,7 @@ export function VoiceInputButton({
               }}
             />
           ) : (
-            <Mic className="w-4 h-4 text-[var(--accent)]/60 group-hover:text-[var(--accent)] transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-0.5" />
+            <Mic className="w-4 h-4 text-[var(--accent)]/60 group-hover:text-[var(--accent)] transition-[color,transform] duration-300 group-hover:scale-110 group-hover:-translate-y-0.5" />
           )}
         </div>
         <AnimatePresence mode="wait">

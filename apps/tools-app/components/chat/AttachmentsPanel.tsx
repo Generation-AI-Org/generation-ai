@@ -23,7 +23,7 @@ export default function AttachmentsPanel({ attachments, onRemove, onAddLink }: A
       <div className="px-4 py-3 border-b border-[var(--border)]/50">
         <button
           onClick={onAddLink}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-[var(--accent)]/50 hover:border-[var(--accent)] transition-all"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-[var(--accent)]/50 hover:border-[var(--accent)] transition-colors"
         >
           <FolderPlus className="w-5 h-5 text-[var(--accent)]/70" />
           <span className="text-sm text-[var(--text-muted)]">Web-Link hinzufügen</span>
@@ -74,7 +74,7 @@ export default function AttachmentsPanel({ attachments, onRemove, onAddLink }: A
 
             <button
               onClick={() => onRemove(attachment.id)}
-              className="shrink-0 p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--status-error)] hover:bg-[var(--status-error)]/10 opacity-0 group-hover:opacity-100 transition-all"
+              className="shrink-0 p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--status-error)] hover:bg-[var(--status-error)]/10 opacity-0 group-hover:opacity-100 transition-[background-color,color,opacity]"
               title="Entfernen"
             >
               <X className="w-4 h-4" />

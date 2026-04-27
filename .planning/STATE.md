@@ -5,11 +5,11 @@ milestone_name: Website Conversion-Layer & Onboarding-Funnel
 status: in_progress
 last_updated: "2026-04-26T00:00:00.000Z"
 progress:
-  total_phases: 20
-  completed_phases: 18
-  total_plans: 113
-  completed_plans: 113
-  percent: 99
+  total_phases: 21
+  completed_phases: 19
+  total_plans: 119
+  completed_plans: 119
+  percent: 100
 ---
 
 # Project State — Generation AI Monorepo
@@ -18,10 +18,10 @@ progress:
 
 ## Current Status
 
-**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 22.6 ✅ done + auf develop, **Phase 22.8 ✅ DONE + auf develop 2026-04-26**, **Phase 27 ✅ DONE + auf develop 2026-04-26**)
-**Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
+**Milestone:** v4.0 Website Conversion-Layer & Onboarding-Funnel — 🚧 IN PROGRESS (Phase 22.6 ✅ done + auf develop, **Phase 22.8 ✅ DONE + auf develop 2026-04-26**, **Phase 27 ✅ DONE + auf develop 2026-04-26**, **Phase 28 ✅ DONE lokal 2026-04-26**)
+**Roadmap revidiert 2026-04-23** nach Simons Website-Konzept (April 2026). Scope von 9 auf 11 Phasen erweitert: Phase 22 umgebaut (3-Anker → 4-Tab-System + Initiativen), Phase 22.5 `/events` + Phase 22.7 Tools-Polish + Phase 27 Copy-Pass **neu**, Phase 26 erweitert (`/community` als eigene Seite mit MDX-Artikeln + Blog-SEO). Phase 28 wurde am 2026-04-26 aus Backlog 999.3 promotet: Tools-App soll als Website-Teil mit Header/Footer/Whitespace/Member-Modus/Card-Preview alignment umgesetzt werden. Details siehe ROADMAP.md + CONTEXT-Dokumente pro Phase.
 
-**Phase:** Phase 27 Copy-Pass & Launch-Cleanup — ✅ DONE auf `develop`. 22.8 ist auf `develop`; offene nicht-Circle-UATs wurden von Luca am 2026-04-26 für Phase-27-Readiness akzeptiert. Janna/Sparring-Feedback vom 2026-04-26 wurde umgesetzt (Join-Formular, `/test` Leadmagnet-CTA, Footer/Header, Welcome-Mail, Tools-Hero-Copy). Supabase `early_career`/`birth_year` Migration ist live angewendet. `/join` H1 ist von dynamischer Formhöhe entkoppelt. UI/UX Pro Max Audit liegt als Phase-27-Artefakt vor. Circle-Sync bleibt separates Preview-/Launch-UAT-Gate; `SIGNUP_ENABLED` bleibt unverändert.
+**Phase:** Phase 28 Tools-App Website Alignment — ✅ DONE lokal auf `feature/phase-28-tools-app-website-alignment`. 6/6 Plan-Slices umgesetzt: Shell/Header/Footer, Account-Menü + Member-CTA, Search/Mobile Nav, Card Preview + Emoji Cleanup, Chat/Focus/Token Polish, Verification/Summary. Kiwi bleibt; UI nutzt `Member`/`Member-Modus` statt `Pro`; UI/UX Pro Max wurde als Checkliste genutzt, Brand-Docs blieben source of truth. Circle-Sync bleibt separates Preview-/Launch-UAT-Gate; `SIGNUP_ENABLED` bleibt unverändert.
 **Branch-Setup:** Seit 2026-04-25 **develop-pattern aktiv** — alle Phasen mergen in `develop`, NICHT direkt in main. Production-merge erst zum Launch. Siehe [.planning/BRANCH-WORKFLOW.md](BRANCH-WORKFLOW.md).
 
 - `main` = Production (Stand: Phase 20+20.5, Vercel auto-deployed seit 2026-04-22)
@@ -30,17 +30,18 @@ progress:
 - `feature/phase-22.8-join-about-test-polish` = Phase 22.8 complete + in `develop` integriert.
 - `feature/phase-26-community` = abgeschlossen + von Luca für Phase-27-Readiness akzeptiert.
 
-**Last Updated:** 2026-04-26 (Phase 22.8 final DONE auf `feature/phase-22.8-join-about-test-polish`. `/test` persistiert anonymen Fortschritt in `sessionStorage` und abgeschlossene Ergebnisse in `localStorage`; `/join` übernimmt gespeicherte Testdaten als Hidden Payload, `submitJoinSignup` schreibt validiertes `user_metadata.test_result` bei aktivem Signup. Website- und tools-app-Theme-Toggle sind visuell synchronisiert. Closeout-Rerun: Website + tools-app Typecheck grün, Website Vitest 110/110, Lint 0 Errors/15 bestehende Warnings, Full Build grün. Wave-4 E2E/Visual-Smoke: `/test` Playwright 9/9, `/join` Playwright 14/14, Theme-Toggle Visual-Smoke grün gegen lokale Production-Server.)
+**Last Updated:** 2026-04-26 (Phase 28 completed locally: `.planning/phases/28-tools-app-website-alignment/28-SUMMARY.md`. Built: Website-parity shell/header/footer, account menu, Member CTA, content search for mobile/tablet, preview cards, emoji cleanup, chat Member/Lite polish, visual QA screenshots.)
 **Site Status:** ✅ Live auf generation-ai.org (alter Stand, Phase 20+20.5). `develop` hat alles bisher Gebaute (Phase 21–26 + 22.6 + 22.8). Luca hat am 2026-04-26 die offenen nicht-Circle-UATs für Phase-27-Readiness akzeptiert (20.6 Landing, 22.6 Logged-in Risk, 23 deferred Checks, 24 `/test`, 26 `/community`). Phase 25 Circle-Sync bleibt External-Setup-/Launch-Gate: Circle Token, Vercel Env, Preview Signup E2E, Circle SSO, Fallback-Test, Sentry, Bundle-Secret-Grep.
 
 ## 🚀 Next Session Start Here
 
-**Next phase:** Tools-App UI Alignment gemeinsam mit Luca/Janna prüfen, basierend auf Phase-27 UI/UX Pro Max Audit.
-**First command:** Audit lesen und Tools-App lokal/Preview visuell prüfen.
+**Next phase:** Phase 28 visuell durch Luca/Janna abnehmen, danach Launch-Readiness-UAT fortsetzen.
+**First command:** `git status --short && sed -n '1,220p' .planning/phases/28-tools-app-website-alignment/28-SUMMARY.md`
 **Erst tun (nächste Session):**
 
-- `27-UI-UX-PRO-MAX-AUDIT.md` nutzen: wichtigste Themen sind Tools-App-Drift, Kiwi/Prisma-Identität, `transition-all`, Focus-Overrides, responsive Chat-QA.
-- `27-SUMMARY.md` + `27-LAUNCH-CHECKLIST.md` nutzen: Phase 27 ist repo-seitig done; Circle-Invitation-Template-Check im Dashboard, Marketing-Mail-Screenshots und Phase-25 Preview-Signup-UAT bleiben Launch-Gates durch Luca.
+- Screenshots in `.planning/phases/28-tools-app-website-alignment/screenshots/` prüfen.
+- Luca/Janna UAT: Header-Parität, Member CTA, mobile/tablet search, card preview density, Kiwi/chat overlap, dark/light, footer home/detail.
+- Bei Freigabe: branch reviewen/mergen nach `develop`. Kein Push/Deploy ohne Luca.
 - Circle-Sync nicht blind live schalten: Phase 25 ist kein normaler UAT, sondern Secret-/External-Service-Gate. Signup-Reactivation bleibt Luca-Approval-Gate.
 
 **Phase 22.6 Status (final):**
