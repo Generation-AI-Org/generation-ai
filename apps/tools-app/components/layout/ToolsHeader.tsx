@@ -47,7 +47,7 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
               event.stopPropagation()
               openSearch()
             }}
-            className={`group hidden min-h-[44px] items-center gap-2 rounded-full px-3 py-2 text-sm font-mono text-white transition-[background-color,transform,color] duration-300 hover:scale-[1.03] md:inline-flex ${
+            className={`group inline-flex min-h-[44px] w-[76px] items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-mono text-white transition-[background-color,transform,color] duration-300 hover:scale-[1.03] ${
               theme === 'dark'
                 ? 'bg-white/10 hover:bg-white/15'
                 : 'bg-black/20 hover:bg-black/25'

@@ -142,7 +142,9 @@ export function MarketingHeader({
           </div>
 
           <div className="flex items-center justify-end gap-2">
-            {searchSlot}
+            <div className="hidden h-11 w-[76px] items-center justify-end md:flex">
+              {searchSlot}
+            </div>
 
             <button
               type="button"
