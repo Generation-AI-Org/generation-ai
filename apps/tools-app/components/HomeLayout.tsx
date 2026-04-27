@@ -185,7 +185,7 @@ export default function HomeLayout({ items }: HomeLayoutProps) {
           <ToolsHero />
           {mode === 'public' && <MemberCTA />}
           {searchCtx?.openSearch && (
-            <div className="mx-auto mt-6 w-full max-w-7xl px-4 sm:px-6 xl:hidden">
+            <div className="mx-auto mt-6 w-full max-w-7xl px-4 sm:px-6 md:hidden">
               <button
                 type="button"
                 onClick={openSearch}

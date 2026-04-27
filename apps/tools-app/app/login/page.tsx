@@ -3,13 +3,11 @@
 import { useState } from 'react'
 import { createBrowserClient } from '@genai/auth'
 import Link from 'next/link'
-import { useTheme } from '@/components/ThemeProvider'
-import { Logo } from '@genai/ui'
+import { TerminalBrandHeader } from '@/components/auth/TerminalBrandHeader'
 import { StatusPill } from '@/components/ui/StatusPill'
 
 export default function LoginPage() {
   const supabase = createBrowserClient()
-  const { theme } = useTheme()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -90,9 +88,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-4 hover:opacity-90 transition-opacity">
-            <Logo context="header" theme={theme} size="lg" />
-          </Link>
+          <TerminalBrandHeader />
           <h1 className="text-xl font-semibold text-[var(--text)]">Bei Generation AI anmelden</h1>
           <p className="text-sm text-[var(--text-muted)] mt-1">
             Zugang zum erweiterten KI-Assistenten

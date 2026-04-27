@@ -2,18 +2,23 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Menu, X } from 'lucide-react'
+import { ChevronDown, Menu, X } from 'lucide-react'
 import { Logo } from '@genai/ui'
 import { useTheme } from '@/components/ThemeProvider'
 import { AccountMenu } from '@/components/layout/AccountMenu'
 import type { ChatMode } from '@/lib/types'
 
 const navLinks = [
-  { label: 'Tools', href: 'https://tools.generation-ai.org', key: 'tools', active: true },
-  { label: 'Events', href: 'https://generation-ai.org/events', key: 'events', active: false },
-  { label: 'Community', href: 'https://generation-ai.org/community', key: 'community', active: false },
-  { label: 'Für Partner', href: 'https://generation-ai.org/partner', key: 'partner', active: false },
-  { label: 'Über uns', href: 'https://generation-ai.org/about', key: 'about', active: false },
+  { label: 'Tools', href: 'https://tools.generation-ai.org', key: 'tools' },
+  { label: 'Events', href: 'https://generation-ai.org/events', key: 'events' },
+  { label: 'Community', href: 'https://generation-ai.org/community', key: 'community' },
+] as const
+
+const partnerSubItems = [
+  { label: 'Unternehmen', href: 'https://generation-ai.org/partner?typ=unternehmen' },
+  { label: 'Stiftungen', href: 'https://generation-ai.org/partner?typ=stiftungen' },
+  { label: 'Hochschulen', href: 'https://generation-ai.org/partner?typ=hochschulen' },
+  { label: 'Initiativen', href: 'https://generation-ai.org/partner?typ=initiativen' },
 ] as const
 
 interface ToolsHeaderProps {
@@ -49,14 +54,14 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
       </a>
 
       <nav aria-label="Hauptnavigation" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between gap-4">
-          <a href="https://generation-ai.org" className="flex shrink-0 items-center" aria-label="Generation AI - Startseite">
+        <div className="grid h-20 grid-cols-[1fr_auto_1fr] items-center gap-4">
+          <a href="https://generation-ai.org" className="flex min-w-0 items-center justify-self-start" aria-label="Generation AI - Startseite">
             <Logo context="header" theme={theme} size="lg" interactive />
           </a>
 
           <div
             aria-label="Tools-App Hauptnavigation"
-            className="hidden items-center gap-1 xl:flex"
+            className="hidden items-center gap-1 md:flex"
             data-tools-nav="desktop"
           >
             {navLinks.map((link) => (
@@ -64,22 +69,55 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
                 key={link.key}
                 href={link.href}
                 data-nav-item={link.key}
-                aria-current={link.active ? 'page' : undefined}
-                className={`relative px-3 py-2 text-sm font-mono transition-colors duration-150 ${
-                  link.active
-                    ? 'font-bold text-[var(--text-on-header-hover)]'
-                    : 'font-medium text-[var(--text-on-header)] hover:text-[var(--text-on-header-hover)]'
-                }`}
+                className="px-3 py-2 text-sm font-mono text-[var(--text-on-header)] transition-colors duration-150 hover:text-[var(--text-on-header-hover)]"
               >
                 {link.label}
-                {link.active && (
-                  <span className="absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-[var(--accent)]" aria-hidden="true" />
-                )}
               </a>
             ))}
+
+            <div className="group relative flex items-center">
+              <a
+                href="https://generation-ai.org/partner"
+                data-nav-item="partner"
+                className="px-3 py-2 text-sm font-mono text-[var(--text-on-header)] transition-colors duration-150 hover:text-[var(--text-on-header-hover)]"
+              >
+                Für Partner
+              </a>
+              <button
+                type="button"
+                aria-label="Partnertypen-Untermenü öffnen"
+                className="-ml-1 p-1.5 text-[var(--text-on-header)] transition-colors duration-150 hover:text-[var(--text-on-header-hover)]"
+              >
+                <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+              <div className="invisible absolute left-0 top-full z-50 min-w-44 pt-2 opacity-0 transition-[opacity,visibility] duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-2 shadow-xl">
+                  <p className="px-3 pb-1 pt-2 text-xs font-mono uppercase tracking-[0.08em] text-[var(--text-muted)]">
+                    Für Partner
+                  </p>
+                  {partnerSubItems.map((item) => (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      className="block rounded-xl px-3 py-2.5 text-sm font-mono text-[var(--text)] transition-colors duration-150 hover:bg-[var(--accent-soft)]"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <a
+              href="https://generation-ai.org/about"
+              data-nav-item="about"
+              className="px-3 py-2 text-sm font-mono text-[var(--text-on-header)] transition-colors duration-150 hover:text-[var(--text-on-header-hover)]"
+            >
+              Über uns
+            </a>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center justify-end gap-2">
             {openSearch && (
               <button
                 type="button"
@@ -87,7 +125,7 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
                   event.stopPropagation()
                   openSearch()
                 }}
-                className={`group hidden min-h-[44px] items-center gap-2 rounded-full px-3 py-2 text-sm font-mono text-white transition-[background-color,transform,color] duration-300 hover:scale-[1.03] xl:inline-flex ${
+                className={`group hidden min-h-[44px] items-center gap-2 rounded-full px-3 py-2 text-sm font-mono text-white transition-[background-color,transform,color] duration-300 hover:scale-[1.03] md:inline-flex ${
                   theme === 'dark'
                     ? 'bg-white/10 hover:bg-white/15'
                     : 'bg-black/20 hover:bg-black/25'
@@ -98,7 +136,7 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <span className="hidden xl:inline">Suche</span>
-                <kbd className="hidden rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] text-white/75 xl:inline">
+                <kbd className="hidden rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] text-white/75 2xl:inline">
                   ⌘K
                 </kbd>
               </button>
@@ -130,21 +168,14 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
             </button>
 
             {mode === 'public' ? (
-              <div className="hidden items-center gap-3 xl:flex">
+              <div className="hidden items-center gap-3 md:flex">
                 <a
                   href="https://generation-ai.org/join?utm_source=tools"
                   data-cta="primary-register"
-                  className="whitespace-nowrap rounded-full bg-[var(--accent)] px-4 py-2.5 text-sm font-mono font-bold text-[var(--text-on-accent)] transition-[box-shadow,transform,background-color] duration-300 hover:scale-[1.03] hover:shadow-[0_0_20px_var(--accent-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="whitespace-nowrap rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-mono font-bold text-[var(--text-on-accent)] transition-opacity duration-150 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
-                  Kostenlos Mitglied werden
+                  Jetzt beitreten
                 </a>
-                <Link
-                  href="/login"
-                  data-cta="secondary-login"
-                  className="whitespace-nowrap text-xs font-mono text-white/75 transition-colors duration-150 hover:text-white"
-                >
-                  Einloggen
-                </Link>
               </div>
             ) : (
               <AccountMenu />
@@ -160,7 +191,7 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
               aria-expanded={mobileNavOpen}
               aria-controls="tools-mobile-nav"
               data-tools-burger
-              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full p-2.5 text-white/80 transition-colors duration-150 hover:bg-white/10 hover:text-white xl:hidden"
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full p-2.5 text-white/80 transition-colors duration-150 hover:bg-white/10 hover:text-white md:hidden"
             >
               {mobileNavOpen ? (
                 <X className="h-5 w-5" aria-hidden="true" />
@@ -177,7 +208,7 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
           id="tools-mobile-nav"
           data-tools-nav="mobile"
           onClick={(event) => event.stopPropagation()}
-          className="absolute left-0 right-0 top-full z-50 border-b border-white/10 bg-[var(--bg-header)] shadow-xl xl:hidden"
+          className="absolute left-0 right-0 top-full z-50 border-b border-white/10 bg-[var(--bg-header)] shadow-xl md:hidden"
         >
           <nav aria-label="Hauptnavigation mobil" className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4">
             {navLinks.map((link) => (
@@ -185,10 +216,10 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
                 key={link.key}
                 href={link.href}
                 data-nav-item={link.key}
-                aria-current={link.active ? 'page' : undefined}
+                aria-current={link.key === 'tools' ? 'page' : undefined}
                 onClick={() => setMobileNavOpen(false)}
                 className={`rounded-xl px-3 py-3 text-sm font-mono transition-colors duration-150 ${
-                  link.active
+                  link.key === 'tools'
                     ? 'bg-white/10 font-bold text-white'
                     : 'text-white/80 hover:bg-white/5 hover:text-white'
                 }`}
@@ -197,15 +228,44 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
               </a>
             ))}
 
+            <a
+              href="https://generation-ai.org/partner"
+              data-nav-item="partner"
+              onClick={() => setMobileNavOpen(false)}
+              className="rounded-xl px-3 py-3 text-sm font-mono text-white/80 transition-colors duration-150 hover:bg-white/5 hover:text-white"
+            >
+              Für Partner
+            </a>
+            <a
+              href="https://generation-ai.org/about"
+              data-nav-item="about"
+              onClick={() => setMobileNavOpen(false)}
+              className="rounded-xl px-3 py-3 text-sm font-mono text-white/80 transition-colors duration-150 hover:bg-white/5 hover:text-white"
+            >
+              Über uns
+            </a>
+
             {mode === 'public' ? (
               <div className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-4">
+                {openSearch && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileNavOpen(false)
+                      openSearch()
+                    }}
+                    className="rounded-xl px-3 py-3 text-left text-sm font-mono text-white/80 transition-colors duration-150 hover:bg-white/5 hover:text-white"
+                  >
+                    Suche öffnen
+                  </button>
+                )}
                 <a
                   href="https://generation-ai.org/join?utm_source=tools"
                   data-cta="mobile-primary-register"
                   onClick={() => setMobileNavOpen(false)}
-                  className="rounded-full bg-[var(--accent)] px-4 py-2.5 text-center text-sm font-mono font-bold text-[var(--text-on-accent)] transition-[box-shadow,transform] duration-300 hover:shadow-[0_0_20px_var(--accent-glow)] active:scale-[0.98]"
+                  className="rounded-full bg-[var(--accent)] px-4 py-3 text-center text-sm font-mono font-bold text-[var(--text-on-accent)] transition-opacity duration-150 hover:opacity-90"
                 >
-                  Kostenlos Mitglied werden
+                  Jetzt beitreten
                 </a>
                 <Link
                   href="/login"
@@ -218,6 +278,18 @@ export function ToolsHeader({ mode, openSearch, onClearHighlights }: ToolsHeader
               </div>
             ) : (
               <div className="mt-3 border-t border-white/10 pt-4">
+                {openSearch && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileNavOpen(false)
+                      openSearch()
+                    }}
+                    className="block w-full rounded-xl px-3 py-3 text-left text-sm font-mono text-white/80 transition-colors duration-150 hover:bg-white/5 hover:text-white"
+                  >
+                    Suche öffnen
+                  </button>
+                )}
                 <p className="px-3 pb-2 text-[11px] font-mono font-bold uppercase tracking-[0.08em] text-white/55">
                   Account
                 </p>

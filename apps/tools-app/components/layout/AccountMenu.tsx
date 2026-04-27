@@ -31,7 +31,7 @@ export function AccountMenu() {
   }, [open])
 
   return (
-    <div ref={rootRef} className="relative hidden xl:block">
+    <div ref={rootRef} className="relative hidden md:block">
       <button
         type="button"
         aria-label="Account-Menü öffnen"

@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createBrowserClient } from '@genai/auth'
 import Link from 'next/link'
+import { TerminalBrandHeader } from '@/components/auth/TerminalBrandHeader'
 import { StatusPill } from '@/components/ui/StatusPill'
 
 function SetPasswordInner() {
@@ -80,11 +81,7 @@ function SetPasswordInner() {
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-[var(--accent)]/15 flex items-center justify-center mx-auto">
-              <span className="w-3 h-3 rounded-full bg-[var(--accent)] shadow-[0_0_12px_var(--accent-glow)]" />
-            </div>
-          </Link>
+          <TerminalBrandHeader />
           <h1 className="text-xl font-semibold text-[var(--text)]">Neues Passwort setzen</h1>
           <p className="text-sm text-[var(--text-muted)] mt-1">
             Wähle ein sicheres Passwort für deinen Account
