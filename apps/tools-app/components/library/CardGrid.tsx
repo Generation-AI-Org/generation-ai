@@ -53,7 +53,7 @@ export default function CardGrid({ items, highlightedSlugs, activeFilter }: Card
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 p-5">
+    <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-4 pb-2 pt-3 sm:grid-cols-2 sm:px-6 xl:grid-cols-3 lg:px-8">
       {sorted.map((item, index) => {
         const isHighlighted = hasHighlights && highlightedSlugs.includes(item.slug)
         const isDimmed = hasHighlights && !highlightedSlugs.includes(item.slug)

@@ -447,23 +447,21 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
 
   const isEmpty = messages.length === 0
 
-  // In expanded mode, render as a fixed sidebar panel (below header + filterbar)
-  // Header: py-4(16) + h-11(44) + py-4(16) + border(1) = 77px
-  // FilterBar: py-3(12) + min-h-44(44) + py-3(12) + border(1) = 69px
-  // Total: ~146px, use 148px to align exactly with FilterBar bottom edge
+  // In expanded mode, render below the fixed website-parity header. Filter and
+  // CTA content scroll normally, so chat no longer anchors to a filterbar line.
   if (isExpanded && isOpen) {
     return (
       <>
         {/* Mobile backdrop — blur unter Header, Footer darf mit geblurrt werden */}
         <div
-          className="fixed top-[77px] bottom-0 left-0 right-0 md:hidden bg-black/40 backdrop-blur-md z-30"
+          className="fixed top-20 bottom-0 left-0 right-0 md:hidden bg-black/40 backdrop-blur-md z-30"
           onClick={() => { setIsOpen(false); setIsExpanded(false); }}
           aria-hidden="true"
         />
       <div
         ref={chatRef}
-        className={`fixed top-[77px] bottom-[96px] left-0 right-0 md:inset-auto md:right-0 md:bottom-0 w-full ${
-          isSidebarMode ? 'md:top-[77px] lg:w-[400px]' : 'md:top-[148px] md:w-[35%]'
+        className={`fixed top-20 bottom-[96px] left-0 right-0 md:inset-auto md:right-0 md:bottom-0 w-full ${
+          isSidebarMode ? 'md:top-20 lg:w-[400px]' : 'md:top-24 md:w-[35%]'
         } flex flex-col rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none border-t md:border-l md:border-t border-[var(--border)] bg-[var(--bg)] md:bg-[var(--bg-card)] z-40 shadow-2xl animate-slide-in`}
       >
         {/* Header */}
@@ -483,11 +481,11 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                   : 'bg-[var(--status-success)]/10 text-[var(--status-success)] border-[var(--status-success)]/25'
               }`}
             >
-              {mode === 'member' ? 'Pro' : 'Lite'}
+              {mode === 'member' ? 'Member' : 'Lite'}
             </span>
             <button
               onClick={toggleExpand}
-              className="hidden lg:inline-flex p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110 active:scale-95"
+              className="hidden lg:inline-flex p-1.5 rounded-full hover:bg-[var(--border)] transition-[background-color,transform] duration-200 hover:scale-110 active:scale-95"
               aria-label="Minimieren"
             >
               <Minimize2 className="w-4 h-4 text-[var(--text-muted)]" />
@@ -557,7 +555,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
 
         {/* Input Section - styled like example */}
         <div className="shrink-0 p-4">
-          <div className="relative overflow-hidden rounded-xl bg-[var(--border)]/20">
+          <div className="relative overflow-hidden rounded-xl bg-[var(--border)]/20 transition-[box-shadow,background-color] duration-200 focus-within:ring-2 focus-within:ring-[var(--text)] focus-within:ring-offset-2 focus-within:ring-offset-[var(--bg-card)]">
             <textarea
               ref={textareaRef}
               value={message}
@@ -590,10 +588,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                 <div className="relative" data-attachment-dropdown>
                   <button
                     onClick={() => setShowAttachments(!showAttachments)}
-                    className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105 active:scale-95"
+                    className="group relative p-1.5 rounded-md transition-[transform,color,background-color] duration-300 hover:scale-105 active:scale-95"
                     title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhang hinzufügen'}
                   >
-                    <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-15deg] ${
+                    <Paperclip className={`w-4 h-4 transition-[color,transform] duration-300 group-hover:scale-110 group-hover:rotate-[-15deg] ${
                       attachments.length > 0
                         ? 'text-[var(--accent)]'
                         : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)]'
@@ -654,10 +652,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                             setIsEditingUrl(true)
                             setTimeout(() => urlInputRef.current?.focus(), 50)
                           }}
-                          className="group w-full flex items-center gap-3 px-3 py-2.5 text-sm text-[var(--text)] hover:bg-[var(--accent)]/10 transition-all duration-200 rounded-lg mx-1 hover:mx-0 hover:px-4"
+                          className="group w-full flex items-center gap-3 px-3 py-2.5 text-sm text-[var(--text)] hover:bg-[var(--accent)]/10 transition-[background-color,color,padding,margin] duration-200 rounded-lg mx-1 hover:mx-0 hover:px-4"
                           style={{ width: 'calc(100% - 8px)' }}
                         >
-                          <div className="relative w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center group-hover:bg-[var(--accent)]/20 transition-all duration-300 group-hover:scale-110">
+                          <div className="relative w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center group-hover:bg-[var(--accent)]/20 transition-[background-color,transform] duration-300 group-hover:scale-110">
                             <svg
                               className="w-4 h-4 text-[var(--accent)] transition-transform duration-300 group-hover:rotate-[-20deg] group-hover:scale-110"
                               fill="none"
@@ -671,7 +669,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                             <span className="font-medium group-hover:text-[var(--accent)] transition-colors">Web-Link</span>
                             <span className="text-[10px] text-[var(--text-muted)]">URL einfügen</span>
                           </div>
-                          <svg className="w-4 h-4 ml-auto text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-1 group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 ml-auto text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-200 transform translate-x-1 group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
                         </button>
@@ -696,7 +694,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                             <span className="text-[10px] truncate">Datei hochladen</span>
                           </div>
                           <span className="shrink-0 text-[9px] px-2 py-0.5 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium border border-[var(--accent)]/20">
-                            bald ✨
+                            bald
                           </span>
                         </div>
                       )}
@@ -714,7 +712,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                 <button
                   onClick={isLoading ? stopGeneration : handleSend}
                   disabled={!isLoading && !message.trim()}
-                  className={`group relative p-3 rounded-xl transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed ${
+                  className={`group relative p-3 rounded-xl transition-[background-color,border-color,color,opacity,transform] duration-300 disabled:opacity-30 disabled:cursor-not-allowed ${
                     isLoading
                       ? 'bg-[var(--accent)]/15 border border-[var(--accent)]/40 text-[var(--accent)] hover:bg-[var(--accent)]/25'
                       : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2 active:scale-95'
@@ -727,7 +725,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                   {isLoading ? (
                     <Square className="w-4 h-4 fill-current" />
                   ) : (
-                    <Send className="w-5 h-5 transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:rotate-12 group-hover:scale-110" />
+                    <Send className="w-5 h-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:rotate-12 group-hover:scale-110" />
                   )}
                   {/* Glow effect on hover */}
                   {!isLoading && (
@@ -755,7 +753,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
       {/* Mobile backdrop — blur unter Header, Footer darf mit geblurrt werden */}
       {isOpen && (
         <div
-          className="fixed top-[77px] bottom-0 left-0 right-0 md:hidden bg-black/40 backdrop-blur-md z-30"
+          className="fixed top-20 bottom-0 left-0 right-0 md:hidden bg-black/40 backdrop-blur-md z-30"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
@@ -764,7 +762,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
       {/* Floating Kiwi Button */}
       <button
         ref={buttonRef}
-        className={`floating-ai-button relative w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-500 transform bg-transparent border-none ${
+        className={`floating-ai-button relative w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-[transform,box-shadow] duration-500 transform bg-transparent border-none ${
           isOpen ? 'rotate-90 scale-95' : 'rotate-0 scale-100'
         }`}
         onClick={handleKiwiClick}
@@ -829,12 +827,11 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
         )}
       </button>
 
-      {/* Chat Window Popup - always fills from FilterBar line to Kiwi button */}
-      {/* Top: 148px (header + filterbar), Bottom: 96px (kiwi button area) */}
+      {/* Chat Window Popup - sits below the fixed header and above the Kiwi button. */}
       {isOpen && (
         <div
           ref={chatRef}
-          className="fixed top-[77px] bottom-[96px] left-0 right-0 md:inset-auto md:top-[148px] md:bottom-[96px] md:left-auto md:right-6 md:w-[420px] md:max-w-[420px] transition-all duration-300 origin-bottom-right"
+          className="fixed top-20 bottom-[96px] left-0 right-0 md:inset-auto md:top-24 md:bottom-[96px] md:left-auto md:right-6 md:w-[420px] md:max-w-[420px] transition-[opacity,transform,width,height] duration-300 origin-bottom-right"
           style={{
             animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
           }}
@@ -863,11 +860,11 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                       : 'bg-[var(--status-success)]/10 text-[var(--status-success)] border-[var(--status-success)]/25'
                   }`}
                 >
-                  {mode === 'member' ? 'Pro' : 'Lite'}
+                  {mode === 'member' ? 'Member' : 'Lite'}
                 </span>
                 <button
                   onClick={toggleExpand}
-                  className="hidden lg:inline-flex p-1.5 rounded-full hover:bg-[var(--border)] transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="hidden lg:inline-flex p-1.5 rounded-full hover:bg-[var(--border)] transition-[background-color,transform] duration-200 hover:scale-110 active:scale-95"
                   aria-label="Maximieren"
                 >
                   <Maximize2 className="w-4 h-4 text-[var(--text-muted)]" />
@@ -936,7 +933,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
             )}
 
             {/* Input Section - styled like example component */}
-            <div className="relative overflow-hidden rounded-xl mx-4 mb-2 bg-[var(--border)]/20">
+            <div className="relative overflow-hidden rounded-xl mx-4 mb-2 bg-[var(--border)]/20 transition-[box-shadow,background-color] duration-200 focus-within:ring-2 focus-within:ring-[var(--text)] focus-within:ring-offset-2 focus-within:ring-offset-[var(--bg-card)]">
               <textarea
                 ref={textareaRef}
                 value={message}
@@ -971,10 +968,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                     <div className="relative">
                       <button
                         onClick={() => setShowAttachments(!showAttachments)}
-                        className="group relative p-1.5 rounded-md transition-all duration-300 hover:scale-105 active:scale-95"
+                        className="group relative p-1.5 rounded-md transition-[transform,color,background-color] duration-300 hover:scale-105 active:scale-95"
                         title={attachments.length > 0 ? `${attachments.length} Anhänge` : 'Anhang hinzufügen'}
                       >
-                        <Paperclip className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-15deg] ${
+                        <Paperclip className={`w-4 h-4 transition-[color,transform] duration-300 group-hover:scale-110 group-hover:rotate-[-15deg] ${
                           attachments.length > 0
                             ? 'text-[var(--accent)]'
                             : 'text-[var(--accent)]/60 group-hover:text-[var(--accent)]'
@@ -1035,10 +1032,10 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                                 setIsEditingUrl(true)
                                 setTimeout(() => urlInputRef.current?.focus(), 50)
                               }}
-                              className="group w-full flex items-center gap-3 px-3 py-2.5 text-sm text-[var(--text)] hover:bg-[var(--accent)]/10 transition-all duration-200 rounded-lg mx-1 hover:mx-0 hover:px-4"
+                              className="group w-full flex items-center gap-3 px-3 py-2.5 text-sm text-[var(--text)] hover:bg-[var(--accent)]/10 transition-[background-color,color,padding,margin] duration-200 rounded-lg mx-1 hover:mx-0 hover:px-4"
                               style={{ width: 'calc(100% - 8px)' }}
                             >
-                              <div className="relative w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center group-hover:bg-[var(--accent)]/20 transition-all duration-300 group-hover:scale-110">
+                              <div className="relative w-8 h-8 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center group-hover:bg-[var(--accent)]/20 transition-[background-color,transform] duration-300 group-hover:scale-110">
                                 <svg
                                   className="w-4 h-4 text-[var(--accent)] transition-transform duration-300 group-hover:rotate-[-20deg] group-hover:scale-110"
                                   fill="none"
@@ -1052,7 +1049,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                                 <span className="font-medium group-hover:text-[var(--accent)] transition-colors">Web-Link</span>
                                 <span className="text-[10px] text-[var(--text-muted)]">URL einfügen</span>
                               </div>
-                              <svg className="w-4 h-4 ml-auto text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-1 group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 ml-auto text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-200 transform translate-x-1 group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                               </svg>
                             </button>
@@ -1077,7 +1074,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                                 <span className="text-[10px] truncate">Datei hochladen</span>
                               </div>
                               <span className="shrink-0 text-[9px] px-2 py-0.5 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium border border-[var(--accent)]/20">
-                                bald ✨
+                                bald
                               </span>
                             </div>
                           )}
@@ -1096,7 +1093,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                   <button
                     onClick={isLoading ? stopGeneration : handleSend}
                     disabled={!isLoading && !message.trim()}
-                    className={`group relative p-3 rounded-xl transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 ${
+                    className={`group relative p-3 rounded-xl transition-[background-color,border-color,color,opacity,transform] duration-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 ${
                       isLoading
                         ? 'bg-[var(--accent)]/15 border border-[var(--accent)]/40 text-[var(--accent)] hover:bg-[var(--accent)]/25'
                         : 'bg-[var(--accent)] text-[var(--text-on-accent)] hover:scale-110 hover:-rotate-2 active:scale-95'
@@ -1109,7 +1106,7 @@ export default function FloatingChat({ onHighlight, onExpandChange, mode, contex
                     {isLoading ? (
                       <Square className="w-4 h-4 fill-current" />
                     ) : (
-                      <Send className="w-5 h-5 transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:rotate-12 group-hover:scale-110" />
+                      <Send className="w-5 h-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:rotate-12 group-hover:scale-110" />
                     )}
                     {/* Glow effect */}
                     {!isLoading && (

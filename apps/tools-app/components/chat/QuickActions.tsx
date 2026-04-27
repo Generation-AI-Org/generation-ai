@@ -65,7 +65,7 @@ export default function QuickActions({ onPick, variant = 'generic', context }: Q
         <button
           key={action.id}
           onClick={() => onPick(action.prompt)}
-          className="text-left px-4 py-3 min-h-[48px] rounded-xl border border-[var(--border)] bg-transparent text-[var(--text-muted)] text-sm transition-all duration-200 hover:border-[var(--accent)]/50 hover:text-[var(--accent)] hover:bg-[var(--accent)]/10 hover:shadow-[0_0_12px_var(--accent-glow)]"
+          className="text-left px-4 py-3 min-h-[48px] rounded-xl border border-[var(--border)] bg-transparent text-[var(--text-muted)] text-sm transition-[background-color,border-color,box-shadow,color] duration-200 hover:border-[var(--accent)]/50 hover:text-[var(--accent)] hover:bg-[var(--accent)]/10 hover:shadow-[0_0_12px_var(--accent-glow)]"
         >
           {action.label}
         </button>

@@ -70,8 +70,8 @@ export default async function SettingsPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-red-400 mb-4">Gefahrenzone</h2>
-          <div className="p-4 bg-[var(--surface)] rounded-lg border border-red-500/30">
+          <h2 className="text-xl font-semibold text-[var(--status-error)] mb-4">Gefahrenzone</h2>
+          <div className="p-4 bg-[var(--surface)] rounded-lg border border-[var(--status-error)]/30">
             <h3 className="text-lg font-medium text-[var(--text)] mb-2">Account löschen</h3>
             <p className="text-[var(--text-secondary)] mb-4">
               Löscht deinen Account und alle zugehörigen Daten (Chat-Verlauf, Sessions).

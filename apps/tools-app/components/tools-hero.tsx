@@ -31,7 +31,7 @@ export function ToolsHero() {
         initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
         animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="mx-auto max-w-3xl px-4 py-8 text-center sm:px-6 sm:py-16"
+        className="mx-auto max-w-3xl px-4 pb-8 pt-10 text-center sm:px-6 sm:pb-12 sm:pt-16"
       >
         {/* Eyebrow label */}
         <div className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">

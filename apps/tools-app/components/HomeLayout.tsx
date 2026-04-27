@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import CardGrid from '@/components/library/CardGrid'
 import FilterBar from '@/components/library/FilterBar'
+import { MemberCTA } from '@/components/member-cta'
 import { ToolsHero } from '@/components/tools-hero'
+import { ToolsFooter } from '@/components/layout/ToolsFooter'
 import { useAuth } from '@/components/AuthProvider'
 import {
   useHighlightContext,
@@ -33,6 +35,7 @@ export default function HomeLayout({ items }: HomeLayoutProps) {
     ? items.filter(item =>
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.summary?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.quick_win?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.category?.toLowerCase().includes(searchQuery.toLowerCase())
       ).slice(0, 6)
     : []
@@ -125,7 +128,7 @@ export default function HomeLayout({ items }: HomeLayoutProps) {
                     <a
                       key={item.id}
                       href={`/${item.slug}`}
-                      className={`group flex items-center gap-3 px-4 py-3 transition-all duration-200 ${
+                      className={`group flex items-center gap-3 px-4 py-3 transition-[background-color,border-color,padding,transform] duration-200 ${
                         index === selectedIndex
                           ? 'bg-[var(--accent)]/10 border-l-2 border-[var(--accent)]'
                           : 'hover:bg-[var(--accent)]/5 hover:pl-5'
@@ -180,12 +183,32 @@ export default function HomeLayout({ items }: HomeLayoutProps) {
               together (V1 trade-off: filterbar is no longer position-sticky relative
               to viewport — acceptable per CONTEXT.md §B.2 "scroll-with-content"). */}
           <ToolsHero />
-          <FilterBar active={activeFilter} onChange={setActiveFilter} mode={mode} />
+          {mode === 'public' && <MemberCTA />}
+          {searchCtx?.openSearch && (
+            <div className="mx-auto mt-6 w-full max-w-7xl px-4 sm:px-6 xl:hidden">
+              <button
+                type="button"
+                onClick={openSearch}
+                className="flex min-h-[44px] w-full items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] px-4 py-3 pr-24 text-left text-sm text-[var(--text-muted)] transition-[background-color,border-color,color] duration-300 hover:border-[var(--border-accent)] hover:bg-[var(--accent-soft)] hover:text-[var(--text)]"
+                aria-label="Suche öffnen"
+              >
+                <span className="flex items-center gap-2 font-mono">
+                  <svg className="h-4 w-4 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  Suche
+                </span>
+                <span className="hidden text-xs sm:inline">Tools, Kategorien, Use Cases</span>
+              </button>
+            </div>
+          )}
+          <FilterBar active={activeFilter} onChange={setActiveFilter} />
           <CardGrid
             items={items}
             highlightedSlugs={highlightedSlugs}
             activeFilter={activeFilter}
           />
+          <ToolsFooter />
         </div>
       </div>
     </>

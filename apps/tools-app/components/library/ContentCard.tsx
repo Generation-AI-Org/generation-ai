@@ -2,6 +2,7 @@ import { memo } from 'react'
 import Link from 'next/link'
 import Badge from '@/components/ui/Badge'
 import ToolLogo from '@/components/ui/ToolLogo'
+import { getCardPreview } from '@/components/library/card-preview'
 import type { ContentItemMeta } from '@/lib/types'
 
 interface ContentCardProps {
@@ -14,13 +15,15 @@ interface ContentCardProps {
 
 // Memoized to prevent re-renders when grid updates but this card's props are stable
 const ContentCard = memo(function ContentCard({ item, isHighlighted, isDimmed, animationDelay = 0, priority = false }: ContentCardProps) {
+  const preview = getCardPreview(item)
+
   return (
     <Link
       href={`/${item.slug}`}
       data-card
       data-slug={item.slug}
       className={`
-        group block rounded-2xl border p-4 md:p-5 transition-all duration-300 cursor-pointer min-h-[120px]
+        group block rounded-2xl border p-4 md:p-5 transition-[transform,box-shadow,border-color,background-color,opacity] duration-300 ease-[var(--ease-out)] cursor-pointer min-h-[176px]
         hover:scale-[1.015] hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)]
         active:scale-[0.98] active:transition-transform active:duration-75
         ${isHighlighted
@@ -31,8 +34,7 @@ const ContentCard = memo(function ContentCard({ item, isHighlighted, isDimmed, a
       `}
       style={{ animationDelay: `${animationDelay}ms` }}
     >
-      {/* Top: Logo + Pricing Badge */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="mb-4 flex items-start justify-between">
         <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0">
           <ToolLogo slug={item.slug} domain={item.logo_domain} name={item.title} size={48} priority={priority} />
         </div>
@@ -51,18 +53,9 @@ const ContentCard = memo(function ContentCard({ item, isHighlighted, isDimmed, a
         {item.category}
       </p>
 
-      {/* Summary */}
-      <p className="text-text-secondary text-[14px] md:text-[13px] leading-relaxed line-clamp-2">
-        {item.summary}
+      <p className="border-t border-[var(--border)]/60 pt-3 text-[13px] leading-relaxed text-text-secondary line-clamp-2">
+        {preview}
       </p>
-
-      {/* Quick Win — der Hook, der zum Klick einlädt */}
-      {item.quick_win && (
-        <p className="mt-3 pt-3 border-t border-[var(--border)]/60 text-[var(--accent)]/85 text-[12px] md:text-[12px] leading-snug line-clamp-2 flex gap-1.5">
-          <span aria-hidden="true" className="shrink-0">✨</span>
-          <span>{item.quick_win}</span>
-        </p>
-      )}
     </Link>
   )
 })
