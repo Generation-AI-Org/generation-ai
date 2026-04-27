@@ -5,6 +5,5 @@ function stripWrappingQuotes(value: string) {
 }
 
 export function getCardPreview(item: ContentItemMeta) {
-  const source = item.quick_win || item.summary
-  return stripWrappingQuotes(source)
+  return stripWrappingQuotes(item.summary)
 }
