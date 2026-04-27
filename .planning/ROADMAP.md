@@ -1060,6 +1060,15 @@ Plans:
 Plans:
 - [x] Promoted to Phase 28
 
+### Phase 999.4: Tools-App Tool-Katalog und Taxonomie ausbauen (BACKLOG)
+
+**Goal:** Tools-App in einem späteren redaktionellen/produktseitigen Pass auf einen aktuellen Katalog mit tatsächlich über 100 relevanten KI-Tools ausbauen und die Kategorien deutlich genauer schneiden. Die Taxonomie soll nicht bei groben Sammelbegriffen wie `Bilder & Design` stehen bleiben, sondern fachlich sinnvollere Kategorien und Subkategorien abbilden, z.B. `Bilderstellung`, `Bildbearbeitung`, `Design`, `Präsentationen`, `Recherche`, `Automatisierung`, `Coding`, `Audio`, `Video`, `Studium/Lernen` usw. Für Grenzfälle wie Canva, Figma oder ähnliche hybride Tools muss später entschieden werden, ob sie in Design, Bildbearbeitung, Präsentation, Produktivität oder mehrere Facetten fallen.
+**Requirements:** TBD — Tool-Liste recherchieren/kuratieren, aktuelle Marktstände prüfen, Kategorie-/Facet-Modell definieren, bestehende Datenstruktur gegen neue Taxonomie prüfen, Migration/Seed-/Supabase-Update planen, Suche/Filter/Detailseiten gegen neue Kategorien testen.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
 ---
 
 *v2.0 Roadmap erstellt: 2026-04-13*
